@@ -167,7 +167,7 @@
                     <a href="{{ route('admin.dashboard') }}"
                         class="sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-bold {{ request()->routeIs('admin.dashboard') ? 'text-slate-900 bg-slate-50 border border-slate-100' : 'text-slate-500 hover:bg-slate-50' }}">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0 {{ request()->routeIs('admin.dashboard') ? 'text-[#ff6900]' : 'text-slate-400' }}"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
-                        <span x-show="sidebarOpen" x-cloak class="truncate">{{ __('admin.analytics') }}</span>
+                        <span x-show="sidebarOpen" x-cloak class="truncate">Dashboard</span>
                     </a>
                 </div>
 
@@ -176,7 +176,7 @@
                     <button @click="openCRM = !openCRM" class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-lg text-[0.8rem] font-bold text-slate-500 hover:bg-slate-50 transition-all">
                         <div class="flex items-center gap-4">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-slate-400 flex-shrink-0"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                            <span x-show="sidebarOpen" x-cloak>{{ __('admin.leads_management') }}</span>
+                            <span x-show="sidebarOpen" x-cloak>CRM & Operations</span>
                         </div>
                         {{-- Inline SVG chevron - no lucide re-render --}}
                         <svg x-show="sidebarOpen" x-cloak :class="openCRM ? 'rotate-180' : ''"
@@ -189,36 +189,36 @@
                     
                     <ul x-show="openCRM" x-cloak x-collapse class="pl-12 space-y-1 mt-1 border-l-2 border-slate-50 ml-6">
                         <li>
-                            <a href="{{ route('admin.leads.index') }}" class="block py-2 text-[0.75rem] font-medium {{ request()->routeIs('admin.leads.*') ? 'text-[#ff6900]' : 'text-slate-500 hover:text-slate-800' }}">{{ __('admin.leads_management') }}</a>
+                            <a href="{{ route('admin.leads.index') }}" class="block py-2 text-[0.75rem] font-medium {{ request()->routeIs('admin.leads.*') ? 'text-[#ff6900]' : 'text-slate-500 hover:text-slate-800' }}">Leads</a>
                         </li>
                         <li>
-                            <a href="{{ route('admin.inspections.calendar') }}" class="block py-2 text-[0.75rem] font-medium {{ request()->routeIs('admin.inspections.calendar') ? 'text-[#ff6900]' : 'text-slate-500 hover:text-slate-800' }}">{{ __('admin.inspections_calendar') }}</a>
+                            <a href="{{ route('admin.inspections.calendar') }}" class="block py-2 text-[0.75rem] font-medium {{ request()->routeIs('admin.inspections.calendar') ? 'text-[#ff6900]' : 'text-slate-500 hover:text-slate-800' }}">Inspections Calendar</a>
                         </li>
                         <li>
-                            <a href="{{ route('admin.inspections.tasks') }}" class="block py-2 text-[0.75rem] font-medium {{ request()->routeIs('admin.inspections.tasks') ? 'text-[#ff6900]' : 'text-slate-500 hover:text-slate-800' }}">{{ __('admin.field_tasks') }}</a>
+                            <a href="{{ route('admin.inspections.tasks') }}" class="block py-2 text-[0.75rem] font-medium {{ request()->routeIs('admin.inspections.tasks') ? 'text-[#ff6900]' : 'text-slate-500 hover:text-slate-800' }}">Field Tasks</a>
                         </li>
                         <li>
-                            <a href="{{ route('admin.inspections.index') }}" class="block py-2 text-[0.75rem] font-medium {{ (request()->routeIs('admin.inspections.*') && !request()->routeIs('admin.inspections.calendar') && !request()->routeIs('admin.inspections.tasks')) ? 'text-[#ff6900]' : 'text-slate-500 hover:text-slate-800' }}">{{ __('admin.valuation_reports') }}</a>
+                            <a href="{{ route('admin.inspections.index') }}" class="block py-2 text-[0.75rem] font-medium {{ (request()->routeIs('admin.inspections.*') && !request()->routeIs('admin.inspections.calendar') && !request()->routeIs('admin.inspections.tasks')) ? 'text-[#ff6900]' : 'text-slate-500 hover:text-slate-800' }}">Appraisal Reports</a>
                         </li>
                     </ul>
                 </div>
 
                 {{-- Group 2: Fleet Management --}}
                 <div class="space-y-2 pt-2">
-                    <div x-show="sidebarOpen" x-cloak class="text-[0.6rem] text-slate-400 font-bold mb-3 uppercase tracking-[0.2em] pl-3 opacity-70 italic">{{ __('admin.fleet_management') }}</div>
+                    <div x-show="sidebarOpen" x-cloak class="text-[0.6rem] text-slate-400 font-bold mb-3 uppercase tracking-[0.2em] pl-3 opacity-70 italic">Fleet Management</div>
                     <ul class="space-y-1">
                         <li>
                             <a href="{{ route('admin.cars.index') }}"
                                 class="sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-bold {{ request()->routeIs('admin.cars.*') ? 'text-slate-900 bg-slate-50 border border-slate-100 shadow-sm' : 'text-slate-500 hover:bg-slate-50' }}">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0 {{ request()->routeIs('admin.cars.*') ? 'text-[#ff6900]' : 'text-slate-400' }}"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9C2 11 2 11.1 2 11.2V16c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></svg>
-                                <span x-show="sidebarOpen" x-cloak class="truncate">{{ __('admin.vehicles_matrix') }}</span>
+                                <span x-show="sidebarOpen" x-cloak class="truncate">Vehicles</span>
                             </a>
                         </li>
                         <li>
                             <a href="{{ route('admin.auctions.index') }}"
                                 class="sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-bold {{ request()->routeIs('admin.auctions.*') ? 'text-slate-900 bg-slate-50 border border-slate-100 shadow-sm' : 'text-slate-500 hover:bg-slate-50' }}">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0 {{ request()->routeIs('admin.auctions.*') ? 'text-[#ff6900]' : 'text-slate-400' }}"><path d="m6 15-4-4 6.7-6.7a2.1 2.1 0 1 1 3 3L5 14"/><path d="m15 13 4 4"/><path d="m21 11-8 8"/><path d="m21 15-8 8"/><path d="m10 11 8-8"/></svg>
-                                <span x-show="sidebarOpen" x-cloak class="truncate">{{ __('admin.auction_cycles') }}</span>
+                                <span x-show="sidebarOpen" x-cloak class="truncate">Auctions</span>
                             </a>
                         </li>
                         <li>
@@ -255,8 +255,8 @@
                                     $financeLinks = [
                                         ['route' => 'admin.finance.dashboard', 'label' => 'Overview',             'svg' => '<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>'],
                                         ['route' => 'admin.finance.invoices',  'label' => 'Invoices',             'svg' => '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>'],
-                                        ['route' => 'admin.finance.receipts',  'label' => 'Receipts — القبض',    'svg' => '<line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/>'],
-                                        ['route' => 'admin.finance.vouchers',  'label' => 'Payments — الصرف',    'svg' => '<line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/>'],
+                                        ['route' => 'admin.finance.receipts',  'label' => 'Receipts',             'svg' => '<line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/>'],
+                                        ['route' => 'admin.finance.vouchers',  'label' => 'Payment Vouchers',     'svg' => '<line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/>'],
                                         ['route' => 'admin.finance.accounts',  'label' => 'Cash & Bank Accounts', 'svg' => '<rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/>'],
                                     ];
                                 @endphp
@@ -280,26 +280,30 @@
 
                 {{-- Group 3: Editorial --}}
                 <div class="space-y-2 pt-2">
-                    <div x-show="sidebarOpen" x-cloak class="text-[0.6rem] text-slate-400 font-bold mb-3 uppercase tracking-[0.2em] pl-3 opacity-70 italic">{{ __('admin.editorial') }}</div>
+                    <div x-show="sidebarOpen" x-cloak class="text-[0.6rem] text-slate-400 font-bold mb-3 uppercase tracking-[0.2em] pl-3 opacity-70 italic">Content</div>
                     <ul class="space-y-1">
                         <li>
                             <a href="{{ route('admin.cms.home') }}" class="sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-medium {{ request()->routeIs('admin.cms.*') ? 'text-slate-800 bg-slate-50 border border-slate-100' : 'text-slate-500 hover:bg-slate-50' }}">
-                                <i data-lucide="home" class="w-5 h-5"></i> <span x-show="sidebarOpen">Home CMS</span>
+                                <i data-lucide="home" class="w-5 h-5"></i>
+                                <span x-show="sidebarOpen" x-cloak>Home CMS</span>
                             </a>
                         </li>
                         <li>
                             <a href="{{ route('admin.posts.index') }}" class="sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-medium {{ request()->routeIs('admin.posts.*') ? 'text-slate-800 bg-slate-50 border border-slate-100' : 'text-slate-500 hover:bg-slate-50' }}">
-                                <i data-lucide="file-text" class="w-5 h-5"></i> <span x-show="sidebarOpen">Blog Posts</span>
+                                <i data-lucide="file-text" class="w-5 h-5"></i>
+                                <span x-show="sidebarOpen" x-cloak>Blog Posts</span>
                             </a>
                         </li>
                         <li>
                             <a href="{{ route('admin.pages.index') }}" class="sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-medium {{ request()->routeIs('admin.pages.*') ? 'text-slate-800 bg-slate-50 border border-slate-100' : 'text-slate-500 hover:bg-slate-50' }}">
-                                <i data-lucide="layers" class="w-5 h-5"></i> <span x-show="sidebarOpen">Static Pages</span>
+                                <i data-lucide="layers" class="w-5 h-5"></i>
+                                <span x-show="sidebarOpen" x-cloak>Static Pages</span>
                             </a>
                         </li>
                         <li>
                             <a href="{{ route('admin.menus.index') }}" class="sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-medium {{ request()->routeIs('admin.menus.*') ? 'text-slate-800 bg-slate-50 border border-slate-100' : 'text-slate-500 hover:bg-slate-50' }}">
-                                <i data-lucide="menu" class="w-5 h-5"></i> <span x-show="sidebarOpen">Site Navigation</span>
+                                <i data-lucide="menu" class="w-5 h-5"></i>
+                                <span x-show="sidebarOpen" x-cloak>Site Navigation</span>
                             </a>
                         </li>
                     </ul>
@@ -357,18 +361,13 @@
                      <div class="text-slate-500 font-bold text-[0.7rem] uppercase tracking-widest italic flex items-center gap-2">
                         {{ __('messages.location') }} <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-300"></i> 
                         <span class="text-slate-900">
-                            @if(request()->segment(2) == 'leads')
-                                {{ __('admin.leads_management') }}
+                            @if(request()->segment(2) == 'leads') Leads
                             @elseif(request()->segment(2) == 'inspections')
-                                @if(request()->segment(3) == 'calendar')
-                                    {{ __('admin.inspections_calendar') }}
-                                @elseif(request()->segment(3) == 'tasks')
-                                    {{ __('admin.field_tasks') }}
-                                @else
-                                    {{ __('admin.valuation_reports') }}
+                                @if(request()->segment(3) == 'calendar') Inspections Calendar
+                                @elseif(request()->segment(3) == 'tasks') Field Tasks
+                                @else Appraisal Reports
                                 @endif
-                            @else
-                                @yield('page_title', __('admin.admin_dashboard'))
+                            @else @yield('page_title', 'Dashboard')
                             @endif
                         </span>
                      </div>
