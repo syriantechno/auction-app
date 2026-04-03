@@ -12,11 +12,17 @@ class DealerController extends Controller
     /**
      * List all dealers (users with bids)
      */
-    public function index()
+    public function index(Request $request)
     {
         $dealers = User::whereHas('bids')
             ->withCount(['bids'])
-            ->with(['bids' => fn($q) => $q->latest()->limit(1)])
+            ->with(['bids' => fn($q) => $q->orderByDesc('amount')->limit(1)])
+            ->when($request->filled('search'), function ($q) use ($request) {
+                $q->where(function ($q2) use ($request) {
+                    $q2->where('name', 'like', '%' . $request->search . '%')
+                       ->orWhere('email', 'like', '%' . $request->search . '%');
+                });
+            })
             ->orderByDesc('bids_count')
             ->paginate(20);
 
