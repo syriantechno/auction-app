@@ -9,7 +9,13 @@ class InspectionReport extends Model
 {
     protected $fillable = [
         'car_id',
+        'lead_id',
         'expert_id',
+        'inspector_id',
+        'scheduled_date',
+        'scheduled_time',
+        'location',
+        'status',
         'paint_score',
         'body_notes',
         'engine_score',
@@ -27,27 +33,32 @@ class InspectionReport extends Model
 
     protected $casts = [
         'detailed_checklists' => 'array',
-        'paint_score' => 'integer',
-        'engine_score' => 'integer',
-        'transmission_score' => 'integer',
-        'interior_score' => 'integer',
-        'tires_score' => 'integer',
-        'overall_score' => 'integer',
+        'paint_score'         => 'integer',
+        'engine_score'        => 'integer',
+        'transmission_score'  => 'integer',
+        'interior_score'      => 'integer',
+        'tires_score'         => 'integer',
+        'overall_score'       => 'integer',
+        'scheduled_date'      => 'date',
     ];
 
-    /**
-     * الحصول على السيارة المرتبطة بالفحص.
-     */
     public function car(): BelongsTo
     {
         return $this->belongsTo(Car::class);
     }
 
-    /**
-     * الحصول على الخبير الذي قام بالفحص.
-     */
     public function expert(): BelongsTo
     {
         return $this->belongsTo(User::class, 'expert_id');
+    }
+
+    public function inspector(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'inspector_id');
+    }
+
+    public function lead(): BelongsTo
+    {
+        return $this->belongsTo(Lead::class);
     }
 }

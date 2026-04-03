@@ -1,4 +1,4 @@
-﻿@extends('admin.layout')
+@extends('admin.layout')
 
 @section('title', 'Leads Management')
 @section('page_title', 'Leads Management')
@@ -20,17 +20,17 @@
     <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
         <form id="filterForm" action="{{ route('admin.leads.index') }}" method="GET" class="flex flex-wrap items-end gap-3">
             <div class="flex-1 min-w-[220px]">
-                <label class="text-[0.65rem] font-medium text-slate-500 uppercase tracking-widest mb-1.5 block ml-1">Inquiry Inspector</label>
+                <label class="text-[0.65rem] font-medium text-slate-500 uppercase tracking-widest mb-1.5 block ml-1">Search</label>
                 <div class="relative">
                     <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2"></i>
                     <input type="text" name="search" id="searchInput" placeholder="Lead name, email or status..." class="w-full h-[44px] bg-slate-50 border border-slate-300 rounded-md pl-11 pr-4 py-2 text-[0.9rem] font-normal text-slate-700 outline-none focus:bg-white focus:border-orange-500/40 transition-all shadow-sm">
                 </div>
             </div>
             <div class="w-52">
-                <label class="text-[0.65rem] font-medium text-slate-500 uppercase tracking-widest mb-1.5 block ml-1">Protocol Index</label>
+                <label class="text-[0.65rem] font-medium text-slate-500 uppercase tracking-widest mb-1.5 block ml-1">Status</label>
                 <div class="relative">
                     <select name="status" id="statusFilter" class="w-full h-[44px] bg-slate-50 border border-slate-300 rounded-md px-4 py-2 text-[0.9rem] font-normal text-slate-700 appearance-none outline-none focus:bg-white focus:border-orange-500/40 transition-all">
-                        <option value="">All Procedures</option>
+                        <option value="">All Statuses</option>
                         <option value="pending">Pending</option>
                         <option value="in_review">In Review</option>
                         <option value="approved">Approved</option>
@@ -41,7 +41,7 @@
             </div>
             
             <button type="button" id="resetBtn" class="bg-slate-100 h-[44px] border border-slate-300 text-slate-700 rounded-md px-5 py-2 text-[0.65rem] font-medium uppercase tracking-widest hover:bg-slate-200 transition-all flex items-center gap-2 shadow-sm">
-                <i data-lucide="refresh-cw" class="w-4 h-4 text-slate-400"></i> Sync Reset
+                <i data-lucide="refresh-cw" class="w-4 h-4 text-slate-400"></i> Reset
             </button>
             
             <div class="relative flex items-center justify-center bg-slate-800 h-[44px] border border-slate-700 rounded-md px-4 py-2 overflow-hidden min-w-[5.5rem]">
@@ -70,7 +70,7 @@
                 </div>
                 <div>
                     <h4 class="text-xl font-black text-slate-900 tracking-tight italic">Schedule Inspection</h4>
-                    <p class="text-[0.6rem] text-slate-500 font-bold uppercase tracking-[0.2em] mt-1">Assigning Node to Technical Inspector</p>
+                    <p class="text-[0.6rem] text-slate-500 font-bold uppercase tracking-[0.2em] mt-1">Fill the inspection report when ready</p>
                 </div>
             </div>
             <button onclick="closeSchedulingModal()" class="absolute right-10 top-8 w-12 h-12 rounded-md bg-white hover:bg-slate-100 border border-slate-200 flex items-center justify-center transition-all">
@@ -86,7 +86,7 @@
                 <!-- Data Segment 1: Client & Car -->
                 <div class="col-span-12 md:col-span-5 space-y-8 pr-10 border-r border-slate-100">
                     <div>
-                        <label class="text-[0.6rem] font-black uppercase text-slate-400 tracking-widest mb-4 block">Asset Context</label>
+                        <label class="text-[0.6rem] font-black uppercase text-slate-400 tracking-widest mb-4 block">Vehicle Info</label>
                         <div id="schedCarInfo" class="bg-slate-50 p-6 rounded-lg border border-slate-100 space-y-3">
                             <h3 id="schedCarTitle" class="text-lg font-medium text-slate-800 italic">...</h3>
                             <div class="flex flex-wrap gap-2">
@@ -97,7 +97,7 @@
                     </div>
 
                     <div>
-                        <label class="text-[0.6rem] font-black uppercase text-slate-400 tracking-widest mb-4 block">Client Intel</label>
+                        <label class="text-[0.6rem] font-black uppercase text-slate-400 tracking-widest mb-4 block">Client Info</label>
                         <div class="space-y-4">
                             <div class="flex items-center gap-3">
                                 <div class="w-8 h-8 rounded-lg bg-orange-50 flex items-center justify-center text-[#ff6900]">
@@ -154,7 +154,7 @@
                     </div>
 
                     <div class="pt-6 border-t border-slate-100 flex items-center justify-end gap-4">
-                        <button type="button" onclick="closeSchedulingModal()" class="px-8 py-4 rounded-lg text-[0.7rem] font-bold uppercase tracking-widest text-slate-400 hover:text-slate-700 transition-all">Abort Assignment</button>
+                        <button type="button" onclick="closeSchedulingModal()" class="px-8 py-4 rounded-lg text-[0.7rem] font-bold uppercase tracking-widest text-slate-400 hover:text-slate-700 transition-all">Cancel</button>
                         <button type="submit" class="bg-slate-800 px-10 py-4 rounded-lg text-[0.7rem] font-bold uppercase tracking-[0.2em] text-white shadow-xl hover:bg-[#1d293d] active:scale-95 transition-all flex items-center gap-3">
                             <i data-lucide="send" class="w-4 h-4"></i> Submit
                         </button>
@@ -169,7 +169,7 @@
 <div id="leadModal" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-[#1d293d]/30 backdrop-blur-sm transition-all duration-300">
     <div class="bg-[#e7e7e7] w-full max-w-md rounded-lg shadow-2xl overflow-hidden relative border border-slate-200 flex flex-col animate-in fade-in zoom-in-95 duration-300">
         <div class="bg-slate-50 px-8 py-6 border-b border-slate-200 flex items-center justify-between">
-            <h4 class="text-[0.65rem] font-black text-slate-500 uppercase tracking-[0.2em]">Protocol Recalibration</h4>
+            <h4 class="text-[0.65rem] font-black text-slate-500 uppercase tracking-[0.2em]">Update Status</h4>
             <button onclick="closeLeadModal()" class="w-10 h-10 rounded-md bg-white border border-slate-200 hover:bg-slate-100 flex items-center justify-center transition-all">
                 <i data-lucide="x" class="w-4 h-4 text-slate-400"></i>
             </button>
@@ -179,7 +179,7 @@
                 @csrf
                 <input type="hidden" id="leadId" name="id">
                 <div class="space-y-1.5">
-                    <label class="text-[0.65rem] font-medium text-slate-500 uppercase tracking-widest ml-1">New Protocol Status</label>
+                    <label class="text-[0.65rem] font-medium text-slate-500 uppercase tracking-widest ml-1">Status</label>
                     <select id="inputStatus" name="status" required class="w-full h-[48px] bg-slate-50 border border-slate-300 rounded-md px-4 py-2 text-[0.9rem] font-normal text-slate-700 appearance-none outline-none focus:bg-white focus:border-orange-500/40 transition-all shadow-inner">
                         <option value="pending">Pending</option>
                         <option value="in_review">In Review</option>
@@ -189,11 +189,11 @@
                     </select>
                 </div>
                 <div class="space-y-1.5">
-                    <label class="text-[0.65rem] font-medium text-slate-500 uppercase tracking-widest ml-1">Operator Log Notes</label>
+                    <label class="text-[0.65rem] font-medium text-slate-500 uppercase tracking-widest ml-1">Notes</label>
                     <textarea id="inputNotes" name="notes" rows="3" class="w-full bg-slate-50 border border-slate-300 rounded-md px-5 py-3.5 text-[0.9rem] font-normal text-slate-700 outline-none focus:bg-white focus:border-orange-500 transition-all shadow-inner"></textarea>
                 </div>
                 <button type="submit" style="background: var(--primary-orange);" class="w-full text-white py-4 rounded-lg text-[0.7rem] font-medium uppercase tracking-[0.2em] shadow-xl shadow-orange-500/10 flex items-center justify-center gap-2 hover:scale-[1.01] active:scale-98 transition-all">
-                    <i data-lucide="save" class="w-4 h-4 text-white/80"></i> Update Segment Node
+                    <i data-lucide="save" class="w-4 h-4 text-white/80"></i> Update
                 </button>
             </form>
         </div>
@@ -325,8 +325,8 @@
                                 <span id="auditInitial" class="text-xl font-black uppercase">U</span>
                             </div>
                             <div>
-                                <h4 class="text-[0.75rem] font-black text-slate-900 uppercase tracking-widest mb-0.5">Protocol Control</h4>
-                                <p class="text-[0.55rem] text-slate-400 font-extrabold uppercase tracking-widest">Update Segment State</p>
+                                <h4 class="text-[0.75rem] font-black text-slate-900 uppercase tracking-widest mb-0.5">Update Lead</h4>
+                                <p class="text-[0.55rem] text-slate-400 font-extrabold uppercase tracking-widest">Change Status & Notes</p>
                             </div>
                         </div>
 
@@ -336,7 +336,7 @@
                             <input type="hidden" name="lead_id" id="auditLeadIdHidden">
                             
                             <div class="space-y-2">
-                                <label class="text-[0.6rem] text-slate-400 font-black uppercase tracking-widest ml-1">Lifecycle State</label>
+                                <label class="text-[0.6rem] text-slate-400 font-black uppercase tracking-widest ml-1">Status</label>
                                 <select id="auditStatusSelect" name="status" class="w-full h-14 bg-slate-50 border border-slate-100 px-6 rounded-md font-black text-[0.75rem] text-slate-900 outline-none focus:border-[#FF6900] focus:bg-white transition-all appearance-none cursor-pointer">
                                     <option value="new">New Proposal</option>
                                     <option value="pending">In Queue</option>
@@ -348,11 +348,11 @@
                             </div>
 
                             <div class="space-y-2">
-                                <label class="text-[0.6rem] text-slate-400 font-black uppercase tracking-widest ml-1">Observation Registry</label>
+                                <label class="text-[0.6rem] text-slate-400 font-black uppercase tracking-widest ml-1">Notes</label>
                                 <textarea id="auditNotes" name="notes" rows="6" class="w-full bg-slate-50 border border-slate-100 px-6 py-5 rounded-md font-black text-[0.75rem] text-slate-900 outline-none focus:border-[#FF6900] focus:bg-white transition-all placeholder:text-slate-300" placeholder="Enter administrative notes..."></textarea>
                             </div>
 
-                            <button type="submit" class="w-full h-16 bg-[#FF6900] text-white rounded-md font-black text-[0.7rem] uppercase tracking-[0.4em] shadow-[0_15px_40px_-5px_rgba(255,105,0,0.3)] hover:bg-black transition-all">Commit Re-Calibration</button>
+                            <button type="submit" class="w-full h-16 bg-[#FF6900] text-white rounded-md font-black text-[0.7rem] uppercase tracking-[0.4em] shadow-[0_15px_40px_-5px_rgba(255,105,0,0.3)] hover:bg-black transition-all">Save Changes</button>
                         </form>
                     </div>
 
@@ -360,11 +360,11 @@
                     <div class="bg-white p-8 rounded-lg border border-slate-200 shadow-sm">
                         <div class="space-y-4">
                             <div class="flex items-center justify-between text-[0.65rem] font-black uppercase tracking-widest text-slate-400">
-                                <span>Registry Node</span>
+                                <span>Lead ID</span>
                                 <span class="text-slate-900">#001</span>
                             </div>
                             <div class="flex items-center justify-between text-[0.65rem] font-black uppercase tracking-widest text-slate-400">
-                                <span>Channel Verified</span>
+                                <span>Channel</span>
                                 <span class="text-[#ff6900]">Secure SSL</span>
                             </div>
                         </div>
@@ -572,13 +572,13 @@
 
     async function deleteLead(id) {
         const result = await Swal.fire({
-            title: 'Authorize Segment Purge?',
-            text: "Permanent removal of lead node #" + id,
+            title: 'Delete this lead?',
+            text: "Lead #" + id + " will be permanently removed.",
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#ff4605',
             cancelButtonColor: '#1e293b',
-            confirmButtonText: 'Yes, Purge Segment'
+            confirmButtonText: 'Yes, Delete'
         });
 
         if (result.isConfirmed) {
@@ -588,11 +588,8 @@
                     headers: { 'X-Requested-With': 'XMLHttpRequest', 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
                 });
                 const data = await res.json();
-                if(data.success) {
-                    window.notify.success(data.message || 'Segment Purged');
-                    syncMatrix();
-                }
-            } catch (err) { window.notify.error("Purge Protocol Error"); }
+                if(data.success) { window.notify.success(data.message || 'Lead deleted'); syncMatrix(); }
+            } catch (err) { window.notify.error("Failed to delete lead"); }
         }
     }
 
@@ -639,9 +636,14 @@
             if(data.success) {
                 document.getElementById('schedulingModal').classList.add('hidden');
                 window.notify.success(data.message);
-                syncMatrix();
+                // Redirect to inspection creation form pre-filled with this lead
+                if (data.inspection_create_url) {
+                    setTimeout(() => { window.location.href = data.inspection_create_url; }, 800);
+                } else {
+                    syncMatrix();
+                }
             }
-        } catch (err) { window.notify.error("Lead Profile Sync Failed"); }
+        } catch (err) { window.notify.error("Failed to save schedule"); }
         finally { btn.disabled = false; }
     });
 

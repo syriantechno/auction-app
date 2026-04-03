@@ -113,13 +113,16 @@ class LeadController extends Controller
         
         if (request()->ajax()) {
             return response()->json([
-                'success' => true, 
-                'message' => 'Inspection scheduled and assigned to ' . ($inspector ? $inspector->name : 'Team'),
-                'status' => 'inspection_scheduled'
+                'success'               => true,
+                'message'               => 'Inspection scheduled and assigned to ' . ($inspector ? $inspector->name : 'Team'),
+                'status'                => 'inspection_scheduled',
+                'inspection_create_url' => route('admin.inspections.create', ['lead_id' => $lead->id]),
             ]);
         }
 
-        return back()->with('success', 'Inspection assigned to ' . ($inspector ? $inspector->name : 'operator'));
+        return redirect()
+            ->route('admin.inspections.create', ['lead_id' => $lead->id])
+            ->with('success', 'Inspection scheduled for ' . ($inspector ? $inspector->name : 'team') . '. Fill in the report when ready.');
     }
 
     public function destroy(Lead $lead)

@@ -7,6 +7,7 @@ use App\Models\Brand;
 use App\Models\Car;
 use App\Models\CarModel;
 use App\Models\InspectionReport;
+use App\Services\ReferenceCodeService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -87,8 +88,20 @@ class InspectionController extends Controller
         // Calculate weighted overall score
         $overall = ($validated['paint_score'] + $validated['engine_score'] + $validated['transmission_score'] + $validated['interior_score'] + $validated['tires_score']) / 5;
 
-        $validated['expert_id'] = Auth::id();
+        $validated['expert_id']    = Auth::id();
         $validated['overall_score'] = round($overall);
+
+        // Pull scheduling info from the lead if available
+        if ($request->filled('lead_id')) {
+            $lead = \App\Models\Lead::find($request->lead_id);
+            if ($lead) {
+                $details = $lead->car_details ?? [];
+                $validated['scheduled_date'] = $details['inspection_date'] ?? null;
+                $validated['scheduled_time'] = $details['inspection_time'] ?? null;
+                $validated['location']       = $details['location'] ?? null;
+                $validated['inspector_id']   = $details['inspector_id'] ?? Auth::id();
+            }
+        }
 
         $report = InspectionReport::create($validated);
 
@@ -101,21 +114,25 @@ class InspectionController extends Controller
             \App\Models\Lead::where('id', $request->lead_id)->update(['status' => 'inspected']);
         }
 
-        // AUTOMATED WORKFLOW: Create "Coming Soon" Auction
-        // This ensures the car enters the marketplace queue but stays "Pending Approval" (Coming Soon)
-        \App\Models\Auction::create([
-            'car_id' => $car->id,
-            'status' => 'coming_soon',
-            'initial_price' => 1000, // Placeholder, admin will refine later
-            'current_price' => 1000,
-            'start_at' => now()->addDays(2), // Give admin time to approve
-            'end_at' => now()->addDays(5),
-            'duration_minutes' => 4320, // 3 days
-            'deposit_type' => 'fixed',
-            'deposit_amount' => 500,
+        // AUTOMATED WORKFLOW: Create "Coming Soon" Auction + assign Reference Code immediately
+        $auction = \App\Models\Auction::create([
+            'car_id'           => $car->id,
+            'lead_id'          => $request->input('lead_id'),
+            'status'           => 'coming_soon',
+            'initial_price'    => 1000,
+            'current_price'    => 1000,
+            'start_at'         => now()->addDays(2),
+            'end_at'           => now()->addDays(5),
+            'duration_minutes' => 4320,
+            'deposit_type'     => 'fixed',
+            'deposit_amount'   => 500,
         ]);
 
-        return redirect()->route('admin.inspections.index')->with('success', 'Technical report published and vehicle queued for auction clearance.');
+        // Assign Reference Code right away
+        $refCode = ReferenceCodeService::assignTo($auction);
+
+        return redirect()->route('admin.inspections.index')
+            ->with('success', "Inspection report saved. Vehicle queued for auction. Reference: {$refCode}");
     }
 
     public function show(InspectionReport $report)
