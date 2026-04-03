@@ -1,40 +1,17 @@
 <IfModule mod_rewrite.c>
-    <IfModule mod_negotiation.c>
-        Options -MultiViews -Indexes
-    </IfModule>
-
     RewriteEngine On
 
-    # Block access to sensitive Laravel directories
-    RewriteRule ^(app|bootstrap|config|database|resources|routes|storage|tests|vendor)(/.*)?$ - [F,L]
-    RewriteRule ^\.env$ - [F,L]
-    RewriteRule ^composer\.(json|lock)$ - [F,L]
-    RewriteRule ^package\.(json|lock)$ - [F,L]
-    RewriteRule ^artisan$ - [F,L]
+    # Block direct access to sensitive directories
+    RewriteRule ^(app|bootstrap|config|database|resources|routes|storage|tests|vendor)(/|$) - [F,L]
+    RewriteRule ^(\.env|artisan|composer\.(json|lock)|package\.json)$ - [F,L]
 
-    # Serve existing files/dirs directly from public/
-    RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteCond %{REQUEST_FILENAME} !-d
+    # If the request is for an existing file/dir in public/, serve it directly
+    RewriteCond %{DOCUMENT_ROOT}/public%{REQUEST_URI} -f
+    RewriteRule ^ - [L]
+
+    RewriteCond %{DOCUMENT_ROOT}/public%{REQUEST_URI} -d
+    RewriteRule ^ - [L]
 
     # Route everything through public/index.php
-    RewriteRule ^ public/index.php [L]
-
-    # Also handle requests that already go to public/
-    RewriteCond %{THE_REQUEST} \s/public/
-    RewriteRule ^public/(.*)$ /$1 [R=301,L]
-</IfModule>
-
-# Security Headers
-<IfModule mod_headers.c>
-    Header always set X-Content-Type-Options nosniff
-    Header always set X-Frame-Options SAMEORIGIN
-    Header always set X-XSS-Protection "1; mode=block"
-</IfModule>
-
-# PHP settings for Laravel
-<IfModule mod_php.c>
-    php_value upload_max_filesize 64M
-    php_value post_max_size 64M
-    php_value max_execution_time 300
-    php_value memory_limit 256M
+    RewriteRule ^ /public/index.php [L]
 </IfModule>
