@@ -4,6 +4,27 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @property int $id
+ * @property int $car_id
+ * @property int $auction_id
+ * @property int|null $negotiation_id
+ * @property int|null $lead_id
+ * @property string|null $reference_code
+ * @property float $purchase_price
+ * @property float $dealer_bid
+ * @property float $profit_margin
+ * @property string $status
+ * @property \Illuminate\Support\Carbon|null $entry_date
+ * @property \Illuminate\Support\Carbon|null $qc_completed_date
+ * @property \Illuminate\Support\Carbon|null $delivery_date
+ * @property float|null $amount_received
+ * @property-read \App\Models\Car $car
+ * @property-read \App\Models\Auction $auction
+ * @property-read \App\Models\Negotiation|null $negotiation
+ * @property-read \App\Models\Lead|null $lead
+ * @property-read \App\Models\QualityControlReport|null $qcReport
+ */
 class StockEntry extends Model
 {
     protected $fillable = [
@@ -37,13 +58,12 @@ class StockEntry extends Model
 
     public function getStatusColorAttribute(): string
     {
-        return match($this->status) {
+        return match((string) $this->status) {
             'in_stock'        => 'blue',
             'qc_in_progress'  => 'amber',
             'qc_approved'     => 'emerald',
             'payment_pending' => 'purple',
             'delivered'       => 'indigo',
-            'sold'            => 'slate',
             default           => 'slate',
         };
     }

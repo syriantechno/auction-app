@@ -1,0 +1,677 @@
+Note: Using configuration file D:\auction_app\phpstan.neon.
+??????  You're using a deprecated config option checkMissingIterableValueType ?????????
+System.Management.Automation.RemoteException
+It's strongly recommended to remove it from your configuration file
+and add the missing array typehints.
+System.Management.Automation.RemoteException
+If you want to continue ignoring missing typehints from arrays,
+add missingType.iterableValue error identifier to your ignoreErrors:
+System.Management.Automation.RemoteException
+parameters:
+	ignoreErrors:
+		-
+			identifier: missingType.iterableValue
+System.Management.Automation.RemoteException
+??????  You're using a deprecated config option checkGenericClassInNonGenericObjectType ?????????
+System.Management.Automation.RemoteException
+It's strongly recommended to remove it from your configuration file
+and add the missing generic typehints.
+System.Management.Automation.RemoteException
+If you want to continue ignoring missing typehints from generics,
+add missingType.generics error identifier to your ignoreErrors:
+System.Management.Automation.RemoteException
+parameters:
+	ignoreErrors:
+		-
+			identifier: missingType.generics
+System.Management.Automation.RemoteException
+{
+    "totals": {
+        "errors": 2,
+        "file_errors": 81
+    },
+    "files": {
+        "D:\\auction_app\\app\\Http\\Controllers\\Admin\\AuctionController.php": {
+            "errors": 5,
+            "messages": [
+                {
+                    "message": "Relation 'car' is not found in App\\Models\\Auction model.",
+                    "line": 24,
+                    "ignorable": true,
+                    "identifier": "rules.relationExistence"
+                },
+                {
+                    "message": "Relation 'car' is not found in App\\Models\\Auction model.",
+                    "line": 28,
+                    "ignorable": true,
+                    "identifier": "rules.relationExistence"
+                },
+                {
+                    "message": "Undefined variable: $normalizedCatalog",
+                    "line": 33,
+                    "ignorable": true,
+                    "identifier": "variable.undefined"
+                },
+                {
+                    "message": "Access to an undefined property App\\Models\\Auction::$car.",
+                    "line": 93,
+                    "ignorable": true,
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property",
+                    "identifier": "property.notFound"
+                },
+                {
+                    "message": "Access to an undefined property App\\Models\\Auction::$bids_count.",
+                    "line": 172,
+                    "ignorable": true,
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property",
+                    "identifier": "property.notFound"
+                }
+            ]
+        },
+        "D:\\auction_app\\app\\Http\\Controllers\\Admin\\DashboardController.php": {
+            "errors": 1,
+            "messages": [
+                {
+                    "message": "Relation 'auction' is not found in App\\Models\\Bid model.",
+                    "line": 142,
+                    "ignorable": true,
+                    "identifier": "rules.relationExistence"
+                }
+            ]
+        },
+        "D:\\auction_app\\app\\Http\\Controllers\\Admin\\InvoiceController.php": {
+            "errors": 1,
+            "messages": [
+                {
+                    "message": "Relation 'auction' is not found in App\\Models\\Invoice model.",
+                    "line": 13,
+                    "ignorable": true,
+                    "identifier": "rules.relationExistence"
+                }
+            ]
+        },
+        "D:\\auction_app\\app\\Http\\Controllers\\Admin\\LeadController.php": {
+            "errors": 5,
+            "messages": [
+                {
+                    "message": "Relation 'user' is not found in App\\Models\\Lead model.",
+                    "line": 16,
+                    "ignorable": true,
+                    "identifier": "rules.relationExistence"
+                },
+                {
+                    "message": "Relation 'user' is not found in App\\Models\\Lead model.",
+                    "line": 21,
+                    "ignorable": true,
+                    "identifier": "rules.relationExistence"
+                },
+                {
+                    "message": "Relation 'user' is not found in App\\Models\\Lead model.",
+                    "line": 48,
+                    "ignorable": true,
+                    "identifier": "rules.relationExistence"
+                },
+                {
+                    "message": "Access to an undefined property App\\Models\\Lead::$user.",
+                    "line": 52,
+                    "ignorable": true,
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property",
+                    "identifier": "property.notFound"
+                },
+                {
+                    "message": "Access to an undefined property App\\Models\\Lead::$user.",
+                    "line": 69,
+                    "ignorable": true,
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property",
+                    "identifier": "property.notFound"
+                }
+            ]
+        },
+        "D:\\auction_app\\app\\Http\\Controllers\\Admin\\NegotiationController.php": {
+            "errors": 3,
+            "messages": [
+                {
+                    "message": "Access to an undefined property App\\Models\\Negotiation::$auction.",
+                    "line": 92,
+                    "ignorable": true,
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property",
+                    "identifier": "property.notFound"
+                },
+                {
+                    "message": "Relation 'lead' is not found in App\\Models\\Negotiation model.",
+                    "line": 141,
+                    "ignorable": true,
+                    "identifier": "rules.relationExistence"
+                },
+                {
+                    "message": "Relation 'winningBidder' is not found in App\\Models\\Negotiation model.",
+                    "line": 141,
+                    "ignorable": true,
+                    "identifier": "rules.relationExistence"
+                }
+            ]
+        },
+        "D:\\auction_app\\app\\Http\\Controllers\\Admin\\PostController.php": {
+            "errors": 1,
+            "messages": [
+                {
+                    "message": "Relation 'category' is not found in App\\Models\\Post model.",
+                    "line": 15,
+                    "ignorable": true,
+                    "identifier": "rules.relationExistence"
+                }
+            ]
+        },
+        "D:\\auction_app\\app\\Http\\Controllers\\Admin\\SEOController.php": {
+            "errors": 1,
+            "messages": [
+                {
+                    "message": "Expression on left side of ?? is not nullable.",
+                    "line": 271,
+                    "ignorable": true,
+                    "identifier": "nullCoalesce.expr"
+                }
+            ]
+        },
+        "D:\\auction_app\\app\\Http\\Controllers\\Admin\\StockController.php": {
+            "errors": 16,
+            "messages": [
+                {
+                    "message": "Relation 'auction' is not found in App\\Models\\StockEntry model.",
+                    "line": 22,
+                    "ignorable": true,
+                    "identifier": "rules.relationExistence"
+                },
+                {
+                    "message": "Relation 'car' is not found in App\\Models\\StockEntry model.",
+                    "line": 22,
+                    "ignorable": true,
+                    "identifier": "rules.relationExistence"
+                },
+                {
+                    "message": "Relation 'lead' is not found in App\\Models\\StockEntry model.",
+                    "line": 22,
+                    "ignorable": true,
+                    "identifier": "rules.relationExistence"
+                },
+                {
+                    "message": "Relation 'qcReport' is not found in App\\Models\\StockEntry model.",
+                    "line": 22,
+                    "ignorable": true,
+                    "identifier": "rules.relationExistence"
+                },
+                {
+                    "message": "Relation 'car' is not found in App\\Models\\StockEntry model.",
+                    "line": 29,
+                    "ignorable": true,
+                    "identifier": "rules.relationExistence"
+                },
+                {
+                    "message": "Access to an undefined property App\\Models\\Negotiation::$auction.",
+                    "line": 48,
+                    "ignorable": true,
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property",
+                    "identifier": "property.notFound"
+                },
+                {
+                    "message": "Access to an undefined property App\\Models\\StockEntry::$qcReport.",
+                    "line": 69,
+                    "ignorable": true,
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property",
+                    "identifier": "property.notFound"
+                },
+                {
+                    "message": "Access to an undefined property App\\Models\\StockEntry::$qcReport.",
+                    "line": 108,
+                    "ignorable": true,
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property",
+                    "identifier": "property.notFound"
+                },
+                {
+                    "message": "Access to an undefined property App\\Models\\StockEntry::$qcReport.",
+                    "line": 132,
+                    "ignorable": true,
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property",
+                    "identifier": "property.notFound"
+                },
+                {
+                    "message": "Access to an undefined property App\\Models\\StockEntry::$car.",
+                    "line": 144,
+                    "ignorable": true,
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property",
+                    "identifier": "property.notFound"
+                },
+                {
+                    "message": "Access to an undefined property App\\Models\\StockEntry::$auction.",
+                    "line": 147,
+                    "ignorable": true,
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property",
+                    "identifier": "property.notFound"
+                },
+                {
+                    "message": "Access to an undefined property App\\Models\\StockEntry::$car.",
+                    "line": 190,
+                    "ignorable": true,
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property",
+                    "identifier": "property.notFound"
+                },
+                {
+                    "message": "Access to an undefined property App\\Models\\StockEntry::$auction.",
+                    "line": 191,
+                    "ignorable": true,
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property",
+                    "identifier": "property.notFound"
+                },
+                {
+                    "message": "Access to an undefined property App\\Models\\StockEntry::$car.",
+                    "line": 208,
+                    "ignorable": true,
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property",
+                    "identifier": "property.notFound"
+                },
+                {
+                    "message": "Access to an undefined property App\\Models\\StockEntry::$qcReport.",
+                    "line": 209,
+                    "ignorable": true,
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property",
+                    "identifier": "property.notFound"
+                },
+                {
+                    "message": "Access to an undefined property App\\Models\\StockEntry::$qcReport.",
+                    "line": 210,
+                    "ignorable": true,
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property",
+                    "identifier": "property.notFound"
+                }
+            ]
+        },
+        "D:\\auction_app\\app\\Http\\Controllers\\AuctionController.php": {
+            "errors": 7,
+            "messages": [
+                {
+                    "message": "Relation 'car' is not found in App\\Models\\Auction model.",
+                    "line": 38,
+                    "ignorable": true,
+                    "identifier": "rules.relationExistence"
+                },
+                {
+                    "message": "Relation 'car' is not found in App\\Models\\Auction model.",
+                    "line": 45,
+                    "ignorable": true,
+                    "identifier": "rules.relationExistence"
+                },
+                {
+                    "message": "Relation 'car' is not found in App\\Models\\Auction model.",
+                    "line": 56,
+                    "ignorable": true,
+                    "identifier": "rules.relationExistence"
+                },
+                {
+                    "message": "Access to an undefined property App\\Models\\Auction::$starting_price.",
+                    "line": 85,
+                    "ignorable": true,
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property",
+                    "identifier": "property.notFound"
+                },
+                {
+                    "message": "Access to an undefined property App\\Models\\Auction::$starting_price.",
+                    "line": 86,
+                    "ignorable": true,
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property",
+                    "identifier": "property.notFound"
+                },
+                {
+                    "message": "Access to an undefined property App\\Models\\Auction::$bids_count.",
+                    "line": 136,
+                    "ignorable": true,
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property",
+                    "identifier": "property.notFound"
+                },
+                {
+                    "message": "Access to an undefined property App\\Models\\Auction::$bids_count.",
+                    "line": 178,
+                    "ignorable": true,
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property",
+                    "identifier": "property.notFound"
+                }
+            ]
+        },
+        "D:\\auction_app\\app\\Http\\Controllers\\HomeController.php": {
+            "errors": 3,
+            "messages": [
+                {
+                    "message": "Relation 'bids' is not found in App\\Models\\Auction model.",
+                    "line": 29,
+                    "ignorable": true,
+                    "identifier": "rules.relationExistence"
+                },
+                {
+                    "message": "Relation 'bids' is not found in App\\Models\\User model.",
+                    "line": 43,
+                    "ignorable": true,
+                    "identifier": "rules.relationExistence"
+                },
+                {
+                    "message": "Parameter #2 $default of method Illuminate\\Http\\Request::query() expects array|string|null, int given.",
+                    "line": 234,
+                    "ignorable": true,
+                    "identifier": "argument.type"
+                }
+            ]
+        },
+        "D:\\auction_app\\app\\Http\\Middleware\\SEOMiddleware.php": {
+            "errors": 6,
+            "messages": [
+                {
+                    "message": "Access to an undefined property App\\Models\\SEOData::$meta_description.",
+                    "line": 39,
+                    "ignorable": true,
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property",
+                    "identifier": "property.notFound"
+                },
+                {
+                    "message": "Access to an undefined property App\\Models\\SEOData::$meta_title.",
+                    "line": 39,
+                    "ignorable": true,
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property",
+                    "identifier": "property.notFound"
+                },
+                {
+                    "message": "Access to an undefined property App\\Models\\SEOData::$structured_data.",
+                    "line": 44,
+                    "ignorable": true,
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property",
+                    "identifier": "property.notFound"
+                },
+                {
+                    "message": "Access to an undefined property App\\Models\\SEOData::$meta_title.",
+                    "line": 114,
+                    "ignorable": true,
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property",
+                    "identifier": "property.notFound"
+                },
+                {
+                    "message": "Access to an undefined property App\\Models\\SEOData::$meta_description.",
+                    "line": 119,
+                    "ignorable": true,
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property",
+                    "identifier": "property.notFound"
+                },
+                {
+                    "message": "Access to an undefined property App\\Models\\SEOData::$meta_keywords.",
+                    "line": 124,
+                    "ignorable": true,
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property",
+                    "identifier": "property.notFound"
+                }
+            ]
+        },
+        "D:\\auction_app\\app\\Jobs\\GenerateSEOContent.php": {
+            "errors": 1,
+            "messages": [
+                {
+                    "message": "Undefined variable: $seoData",
+                    "line": 113,
+                    "ignorable": true,
+                    "identifier": "variable.undefined"
+                }
+            ]
+        },
+        "D:\\auction_app\\app\\Mail\\DealerHandoverMail.php": {
+            "errors": 1,
+            "messages": [
+                {
+                    "message": "Access to an undefined property App\\Models\\StockEntry::$car.",
+                    "line": 31,
+                    "ignorable": true,
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property",
+                    "identifier": "property.notFound"
+                }
+            ]
+        },
+        "D:\\auction_app\\app\\Models\\MenuItem.php": {
+            "errors": 1,
+            "messages": [
+                {
+                    "message": "Access to an undefined property App\\Models\\MenuItem::$page.",
+                    "line": 44,
+                    "ignorable": true,
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property",
+                    "identifier": "property.notFound"
+                }
+            ]
+        },
+        "D:\\auction_app\\app\\Models\\Negotiation.php": {
+            "errors": 1,
+            "messages": [
+                {
+                    "message": "Match arm is unreachable because previous comparison is always true.",
+                    "line": 62,
+                    "ignorable": true,
+                    "identifier": "match.unreachable"
+                }
+            ]
+        },
+        "D:\\auction_app\\app\\Models\\SEOData.php": {
+            "errors": 7,
+            "messages": [
+                {
+                    "message": "Access to an undefined property App\\Models\\SEOData::$indexed_at.",
+                    "line": 76,
+                    "ignorable": true,
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property",
+                    "identifier": "property.notFound"
+                },
+                {
+                    "message": "Access to an undefined property App\\Models\\SEOData::$last_submitted.",
+                    "line": 84,
+                    "ignorable": true,
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property",
+                    "identifier": "property.notFound"
+                },
+                {
+                    "message": "Access to an undefined property App\\Models\\SEOData::$model.",
+                    "line": 88,
+                    "ignorable": true,
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property",
+                    "identifier": "property.notFound"
+                },
+                {
+                    "message": "Access to an undefined property App\\Models\\SEOData::$seo_score.",
+                    "line": 101,
+                    "ignorable": true,
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property",
+                    "identifier": "property.notFound"
+                },
+                {
+                    "message": "Access to an undefined property App\\Models\\SEOData::$meta_title.",
+                    "line": 117,
+                    "ignorable": true,
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property",
+                    "identifier": "property.notFound"
+                },
+                {
+                    "message": "Access to an undefined property App\\Models\\SEOData::$meta_description.",
+                    "line": 122,
+                    "ignorable": true,
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property",
+                    "identifier": "property.notFound"
+                },
+                {
+                    "message": "Access to an undefined property App\\Models\\SEOData::$meta_keywords.",
+                    "line": 127,
+                    "ignorable": true,
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property",
+                    "identifier": "property.notFound"
+                }
+            ]
+        },
+        "D:\\auction_app\\app\\Models\\StockEntry.php": {
+            "errors": 1,
+            "messages": [
+                {
+                    "message": "Match arm is unreachable because previous comparison is always true.",
+                    "line": 47,
+                    "ignorable": true,
+                    "identifier": "match.unreachable"
+                }
+            ]
+        },
+        "D:\\auction_app\\app\\Providers\\AppServiceProvider.php": {
+            "errors": 4,
+            "messages": [
+                {
+                    "message": "Using nullsafe method call on non-nullable type Illuminate\\Http\\Request. Use -> instead.",
+                    "line": 33,
+                    "ignorable": true,
+                    "identifier": "nullsafe.neverNull"
+                },
+                {
+                    "message": "Using nullsafe method call on non-nullable type Illuminate\\Http\\Request. Use -> instead.",
+                    "line": 34,
+                    "ignorable": true,
+                    "identifier": "nullsafe.neverNull"
+                },
+                {
+                    "message": "Relation 'items' is not found in App\\Models\\Menu model.",
+                    "line": 41,
+                    "ignorable": true,
+                    "identifier": "rules.relationExistence"
+                },
+                {
+                    "message": "Relation 'items' is not found in App\\Models\\Menu model.",
+                    "line": 45,
+                    "ignorable": true,
+                    "identifier": "rules.relationExistence"
+                }
+            ]
+        },
+        "D:\\auction_app\\app\\Services\\AISEOService.php": {
+            "errors": 7,
+            "messages": [
+                {
+                    "message": "Property App\\Services\\AISEOService::$timeout is never read, only written.",
+                    "line": 14,
+                    "ignorable": true,
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties",
+                    "identifier": "property.onlyWritten"
+                },
+                {
+                    "message": "Method App\\Services\\AISEOService::generateDemoMetaTags() is unused.",
+                    "line": 76,
+                    "ignorable": true,
+                    "identifier": "method.unused"
+                },
+                {
+                    "message": "Offset 0 on array{array<int, string>} on left side of ?? always exists and is not nullable.",
+                    "line": 104,
+                    "ignorable": true,
+                    "identifier": "nullCoalesce.offset"
+                },
+                {
+                    "message": "Variable $error in empty() always exists and is always falsy.",
+                    "line": 284,
+                    "ignorable": true,
+                    "identifier": "empty.variable"
+                },
+                {
+                    "message": "Offset 'body_preview' on *NEVER* on left side of ?? always exists and is not nullable.",
+                    "line": 285,
+                    "ignorable": true,
+                    "identifier": "nullCoalesce.offset"
+                },
+                {
+                    "message": "Offset 'error' on *NEVER* on left side of ?? always exists and is not nullable.",
+                    "line": 285,
+                    "ignorable": true,
+                    "identifier": "nullCoalesce.offset"
+                },
+                {
+                    "message": "Offset 'status' on *NEVER* on left side of ?? always exists and is not nullable.",
+                    "line": 285,
+                    "ignorable": true,
+                    "identifier": "nullCoalesce.offset"
+                }
+            ]
+        },
+        "D:\\auction_app\\app\\Services\\GoogleAnalyticsService.php": {
+            "errors": 1,
+            "messages": [
+                {
+                    "message": "Anonymous function has an unused use $limit.",
+                    "line": 161,
+                    "ignorable": true,
+                    "identifier": "closure.unusedUse"
+                }
+            ]
+        },
+        "D:\\auction_app\\app\\Services\\InvoiceService.php": {
+            "errors": 1,
+            "messages": [
+                {
+                    "message": "Access to an undefined property App\\Models\\Invoice::$user.",
+                    "line": 70,
+                    "ignorable": true,
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property",
+                    "identifier": "property.notFound"
+                }
+            ]
+        },
+        "D:\\auction_app\\app\\Services\\ReferenceCodeService.php": {
+            "errors": 1,
+            "messages": [
+                {
+                    "message": "Parameter #1 $string of function str_pad expects string, int given.",
+                    "line": 22,
+                    "ignorable": true,
+                    "identifier": "argument.type"
+                }
+            ]
+        },
+        "D:\\auction_app\\app\\Services\\WhatsAppAgentService.php": {
+            "errors": 6,
+            "messages": [
+                {
+                    "message": "Method App\\Services\\WhatsAppAgentService::buildSEOMessage() should return string but returns bool.",
+                    "line": 216,
+                    "ignorable": true,
+                    "identifier": "return.type"
+                },
+                {
+                    "message": "Method App\\Services\\WhatsAppAgentService::buildSEOMessage() should return string but returns bool.",
+                    "line": 219,
+                    "ignorable": true,
+                    "identifier": "return.type"
+                },
+                {
+                    "message": "Method App\\Services\\WhatsAppAgentService::buildSEOMessage() should return string but returns bool.",
+                    "line": 222,
+                    "ignorable": true,
+                    "identifier": "return.type"
+                },
+                {
+                    "message": "Method App\\Services\\WhatsAppAgentService::buildSEOMessage() should return string but returns bool.",
+                    "line": 225,
+                    "ignorable": true,
+                    "identifier": "return.type"
+                },
+                {
+                    "message": "Method App\\Services\\WhatsAppAgentService::buildSEOMessage() should return string but returns bool.",
+                    "line": 228,
+                    "ignorable": true,
+                    "identifier": "return.type"
+                },
+                {
+                    "message": "Method App\\Services\\WhatsAppAgentService::buildSEOMessage() should return string but returns bool.",
+                    "line": 231,
+                    "ignorable": true,
+                    "identifier": "return.type"
+                }
+            ]
+        }
+    },
+    "errors": [
+        "Ignored error pattern #Call to an undefined method Illuminate\\\\Database\\\\Eloquent\\\\Builder::# was not matched in reported errors.",
+        "Ignored error pattern #PHPDoc tag @var# was not matched in reported errors."
+    ]
+}

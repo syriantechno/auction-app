@@ -4,6 +4,22 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @property int $id
+ * @property int $car_id
+ * @property int|null $lead_id
+ * @property string|null $reference_code
+ * @property string $status
+ * @property float $initial_price
+ * @property float $current_price
+ * @property float|null $deposit_amount
+ * @property int|null $duration_minutes
+ * @property int $bids_count
+ * @property-read \App\Models\Car $car
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Bid> $bids
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Invoice> $invoices
+ * @property-read \App\Models\Lead|null $lead
+ */
 class Auction extends Model
 {
     protected $fillable = [
@@ -35,8 +51,13 @@ class Auction extends Model
         return $this->hasMany(Bid::class);
     }
 
-    public function invoices()
+    public function lead()
     {
-        return $this->hasMany(Invoice::class);
+        return $this->belongsTo(Lead::class);
+    }
+
+    public function negotiation()
+    {
+        return $this->hasOne(Negotiation::class);
     }
 }

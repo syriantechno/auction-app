@@ -1,0 +1,22 @@
+Note: Using configuration file D:\auction_app\phpstan.neon.
+{
+    "totals": {
+        "errors": 0,
+        "file_errors": 1
+    },
+    "files": {
+        "D:\\auction_app\\app\\Http\\Controllers\\Admin\\StockController.php": {
+            "errors": 1,
+            "messages": [
+                {
+                    "message": "Access to an undefined property App\\Models\\QualityControlReport::$inspectionReport.",
+                    "line": 210,
+                    "ignorable": true,
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property",
+                    "identifier": "property.notFound"
+                }
+            ]
+        }
+    },
+    "errors": []
+}

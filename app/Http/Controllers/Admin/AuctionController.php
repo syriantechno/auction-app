@@ -28,12 +28,9 @@ class AuctionController extends Controller
             $query->whereHas('car', function($q) use ($search) {
                 $q->where('make', 'like', "%{$search}%")
                   ->orWhere('model', 'like', "%{$search}%")
-                  ->orWhere('year', 'like', "%{$search}%");
-
-                if ($normalizedCatalog) {
-                    $q->orWhereHas('brand', fn ($brandQuery) => $brandQuery->where('name', 'like', "%{$search}%"))
-                      ->orWhereHas('carModel', fn ($modelQuery) => $modelQuery->where('name', 'like', "%{$search}%"));
-                }
+                  ->orWhere('year', 'like', "%{$search}%")
+                  ->orWhereHas('brand', fn ($brandQuery) => $brandQuery->where('name', 'like', "%{$search}%"))
+                  ->orWhereHas('carModel', fn ($modelQuery) => $modelQuery->where('name', 'like', "%{$search}%"));
             });
         }
 

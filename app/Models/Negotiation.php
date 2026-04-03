@@ -4,6 +4,21 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @property int $id
+ * @property int $auction_id
+ * @property int|null $lead_id
+ * @property int|null $winning_bidder_id
+ * @property float $highest_bid
+ * @property float|null $offer_to_lead
+ * @property float|null $profit_margin
+ * @property string $status
+ * @property float|null $counter_offer
+ * @property string|null $notes
+ * @property-read \App\Models\Auction $auction
+ * @property-read \App\Models\Lead|null $lead
+ * @property-read \App\Models\User|null $winningBidder
+ */
 class Negotiation extends Model
 {
     protected $fillable = [
@@ -53,13 +68,13 @@ class Negotiation extends Model
     // Status badge color
     public function getStatusColorAttribute(): string
     {
-        return match($this->status) {
-            'pending'        => 'amber',
-            'offer_sent'     => 'blue',
-            'accepted'       => 'emerald',
-            'rejected'       => 'red',
-            'counter_offered'=> 'purple',
-            default          => 'slate',
+        return match((string) $this->status) {
+            'pending'         => 'amber',
+            'offer_sent'      => 'blue',
+            'accepted'        => 'emerald',
+            'rejected'        => 'red',
+            'counter_offered' => 'purple',
+            default           => 'slate',
         };
     }
 }

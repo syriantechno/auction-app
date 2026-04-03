@@ -1,0 +1,469 @@
+Note: Using configuration file D:\auction_app\phpstan.neon.
+??????  You're using a deprecated config option checkMissingIterableValueType ?????????
+System.Management.Automation.RemoteException
+It's strongly recommended to remove it from your configuration file
+and add the missing array typehints.
+System.Management.Automation.RemoteException
+If you want to continue ignoring missing typehints from arrays,
+add missingType.iterableValue error identifier to your ignoreErrors:
+System.Management.Automation.RemoteException
+parameters:
+	ignoreErrors:
+		-
+			identifier: missingType.iterableValue
+System.Management.Automation.RemoteException
+??????  You're using a deprecated config option checkGenericClassInNonGenericObjectType ?????????
+System.Management.Automation.RemoteException
+It's strongly recommended to remove it from your configuration file
+and add the missing generic typehints.
+System.Management.Automation.RemoteException
+If you want to continue ignoring missing typehints from generics,
+add missingType.generics error identifier to your ignoreErrors:
+System.Management.Automation.RemoteException
+parameters:
+	ignoreErrors:
+		-
+			identifier: missingType.generics
+System.Management.Automation.RemoteException
+ ------ -------------------------------------------------------------------------- 
+  Line   Http\Controllers\Admin\AuctionController.php                              
+ ------ -------------------------------------------------------------------------- 
+  :24    Relation 'car' is not found                                               
+         in App\Models\Auction model.                                              
+  :28    Relation 'car' is not found                                               
+         in App\Models\Auction model.                                              
+  :33    Undefined variable:                                                       
+         $normalizedCatalog                                                        
+  :93    Access to an undefined                                                    
+         property                                                                  
+         App\Models\Auction::$car.                                                 
+         ???? Learn more:                                                            
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+  :172   Access to an undefined                                                    
+         property                                                                  
+         App\Models\Auction::$bids_count.                                          
+         ???? Learn more:                                                            
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+ ------ -------------------------------------------------------------------------- 
+
+ ------ ------------------------------------------------ 
+  Line   Http\Controllers\Admin\DashboardController.php  
+ ------ ------------------------------------------------ 
+  :142   Relation 'auction' is not                       
+         found in App\Models\Bid                         
+         model.                                          
+ ------ ------------------------------------------------ 
+
+ ------ ---------------------------------------------- 
+  Line   Http\Controllers\Admin\InvoiceController.php  
+ ------ ---------------------------------------------- 
+  :13    Relation 'auction' is not                     
+         found in App\Models\Invoice                   
+         model.                                        
+ ------ ---------------------------------------------- 
+
+ ------ -------------------------------------------------------------------------- 
+  Line   Http\Controllers\Admin\LeadController.php                                 
+ ------ -------------------------------------------------------------------------- 
+  :16    Relation 'user' is not found                                              
+         in App\Models\Lead model.                                                 
+  :21    Relation 'user' is not found                                              
+         in App\Models\Lead model.                                                 
+  :48    Relation 'user' is not found                                              
+         in App\Models\Lead model.                                                 
+  :52    Access to an undefined                                                    
+         property                                                                  
+         App\Models\Lead::$user.                                                   
+         ???? Learn more:                                                            
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+  :69    Access to an undefined                                                    
+         property                                                                  
+         App\Models\Lead::$user.                                                   
+         ???? Learn more:                                                            
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+ ------ -------------------------------------------------------------------------- 
+
+ ------ -------------------------------------------------------------------------- 
+  Line   Http\Controllers\Admin\NegotiationController.php                          
+ ------ -------------------------------------------------------------------------- 
+  :92    Access to an undefined                                                    
+         property                                                                  
+         App\Models\Negotiation::$auction.                                         
+         ???? Learn more:                                                            
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+  :141   Relation 'lead' is not found                                              
+         in App\Models\Negotiation                                                 
+         model.                                                                    
+  :141   Relation 'winningBidder' is                                               
+         not found in                                                              
+         App\Models\Negotiation model.                                             
+ ------ -------------------------------------------------------------------------- 
+
+ ------ ------------------------------------------- 
+  Line   Http\Controllers\Admin\PostController.php  
+ ------ ------------------------------------------- 
+  :15    Relation 'category' is not                 
+         found in App\Models\Post                   
+         model.                                     
+ ------ ------------------------------------------- 
+
+ ------ ------------------------------------------ 
+  Line   Http\Controllers\Admin\SEOController.php  
+ ------ ------------------------------------------ 
+  :271   Expression on left side of ??             
+         is not nullable.                          
+ ------ ------------------------------------------ 
+
+ ------ -------------------------------------------------------------------------- 
+  Line   Http\Controllers\Admin\StockController.php                                
+ ------ -------------------------------------------------------------------------- 
+  :22    Relation 'auction' is not                                                 
+         found in                                                                  
+         App\Models\StockEntry model.                                              
+  :22    Relation 'car' is not found                                               
+         in App\Models\StockEntry                                                  
+         model.                                                                    
+  :22    Relation 'lead' is not found                                              
+         in App\Models\StockEntry                                                  
+         model.                                                                    
+  :22    Relation 'qcReport' is not                                                
+         found in                                                                  
+         App\Models\StockEntry model.                                              
+  :29    Relation 'car' is not found                                               
+         in App\Models\StockEntry                                                  
+         model.                                                                    
+  :48    Access to an undefined                                                    
+         property                                                                  
+         App\Models\Negotiation::$auction.                                         
+         ???? Learn more:                                                            
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+  :69    Access to an undefined                                                    
+         property                                                                  
+         App\Models\StockEntry::$qcReport.                                         
+         ???? Learn more:                                                            
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+  :108   Access to an undefined                                                    
+         property                                                                  
+         App\Models\StockEntry::$qcReport.                                         
+         ???? Learn more:                                                            
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+  :132   Access to an undefined                                                    
+         property                                                                  
+         App\Models\StockEntry::$qcReport.                                         
+         ???? Learn more:                                                            
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+  :144   Access to an undefined                                                    
+         property                                                                  
+         App\Models\StockEntry::$car.                                              
+         ???? Learn more:                                                            
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+  :147   Access to an undefined                                                    
+         property                                                                  
+         App\Models\StockEntry::$auction.                                          
+         ???? Learn more:                                                            
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+  :190   Access to an undefined                                                    
+         property                                                                  
+         App\Models\StockEntry::$car.                                              
+         ???? Learn more:                                                            
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+  :191   Access to an undefined                                                    
+         property                                                                  
+         App\Models\StockEntry::$auction.                                          
+         ???? Learn more:                                                            
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+  :208   Access to an undefined                                                    
+         property                                                                  
+         App\Models\StockEntry::$car.                                              
+         ???? Learn more:                                                            
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+  :209   Access to an undefined                                                    
+         property                                                                  
+         App\Models\StockEntry::$qcReport.                                         
+         ???? Learn more:                                                            
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+  :210   Access to an undefined                                                    
+         property                                                                  
+         App\Models\StockEntry::$qcReport.                                         
+         ???? Learn more:                                                            
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+ ------ -------------------------------------------------------------------------- 
+
+ ------ -------------------------------------------------------------------------- 
+  Line   Http\Controllers\AuctionController.php                                    
+ ------ -------------------------------------------------------------------------- 
+  :38    Relation 'car' is not found                                               
+         in App\Models\Auction model.                                              
+  :45    Relation 'car' is not found                                               
+         in App\Models\Auction model.                                              
+  :56    Relation 'car' is not found                                               
+         in App\Models\Auction model.                                              
+  :85    Access to an undefined                                                    
+         property                                                                  
+         App\Models\Auction::$starting_price.                                      
+         ???? Learn more:                                                            
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+  :86    Access to an undefined                                                    
+         property                                                                  
+         App\Models\Auction::$starting_price.                                      
+         ???? Learn more:                                                            
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+  :136   Access to an undefined                                                    
+         property                                                                  
+         App\Models\Auction::$bids_count.                                          
+         ???? Learn more:                                                            
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+  :178   Access to an undefined                                                    
+         property                                                                  
+         App\Models\Auction::$bids_count.                                          
+         ???? Learn more:                                                            
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+ ------ -------------------------------------------------------------------------- 
+
+ ------ ------------------------------------- 
+  Line   Http\Controllers\HomeController.php  
+ ------ ------------------------------------- 
+  :29    Relation 'bids' is not found         
+         in App\Models\Auction model.         
+  :43    Relation 'bids' is not found         
+         in App\Models\User model.            
+  :234   Parameter #2 $default of             
+         method                               
+         Illuminate\Http\Request::query()     
+         expects array|string|null,           
+         int given.                           
+ ------ ------------------------------------- 
+
+ ------ -------------------------------------------------------------------------- 
+  Line   Http\Middleware\SEOMiddleware.php                                         
+ ------ -------------------------------------------------------------------------- 
+  :39    Access to an undefined                                                    
+         property                                                                  
+         App\Models\SEOData::$meta_description.                                    
+         ???? Learn more:                                                            
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+  :39    Access to an undefined                                                    
+         property                                                                  
+         App\Models\SEOData::$meta_title.                                          
+         ???? Learn more:                                                            
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+  :44    Access to an undefined                                                    
+         property                                                                  
+         App\Models\SEOData::$structured_data.                                     
+         ???? Learn more:                                                            
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+  :114   Access to an undefined                                                    
+         property                                                                  
+         App\Models\SEOData::$meta_title.                                          
+         ???? Learn more:                                                            
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+  :119   Access to an undefined                                                    
+         property                                                                  
+         App\Models\SEOData::$meta_description.                                    
+         ???? Learn more:                                                            
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+  :124   Access to an undefined                                                    
+         property                                                                  
+         App\Models\SEOData::$meta_keywords.                                       
+         ???? Learn more:                                                            
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+ ------ -------------------------------------------------------------------------- 
+
+ ------ ------------------------------ 
+  Line   Jobs\GenerateSEOContent.php   
+ ------ ------------------------------ 
+  :113   Undefined variable: $seoData  
+ ------ ------------------------------ 
+
+ ------ -------------------------------------------------------------------------- 
+  Line   Mail\DealerHandoverMail.php                                               
+ ------ -------------------------------------------------------------------------- 
+  :31    Access to an undefined                                                    
+         property                                                                  
+         App\Models\StockEntry::$car.                                              
+         ???? Learn more:                                                            
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+ ------ -------------------------------------------------------------------------- 
+
+ ------ -------------------------------------------------------------------------- 
+  Line   Models\MenuItem.php                                                       
+ ------ -------------------------------------------------------------------------- 
+  :44    Access to an undefined                                                    
+         property                                                                  
+         App\Models\MenuItem::$page.                                               
+         ???? Learn more:                                                            
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+ ------ -------------------------------------------------------------------------- 
+
+ ------ ----------------------------- 
+  Line   Models\Negotiation.php       
+ ------ ----------------------------- 
+  :62    Match arm is unreachable     
+         because previous comparison  
+         is always true.              
+ ------ ----------------------------- 
+
+ ------ -------------------------------------------------------------------------- 
+  Line   Models\SEOData.php                                                        
+ ------ -------------------------------------------------------------------------- 
+  :76    Access to an undefined                                                    
+         property                                                                  
+         App\Models\SEOData::$indexed_at.                                          
+         ???? Learn more:                                                            
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+  :84    Access to an undefined                                                    
+         property                                                                  
+         App\Models\SEOData::$last_submitted.                                      
+         ???? Learn more:                                                            
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+  :88    Access to an undefined                                                    
+         property                                                                  
+         App\Models\SEOData::$model.                                               
+         ???? Learn more:                                                            
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+  :101   Access to an undefined                                                    
+         property                                                                  
+         App\Models\SEOData::$seo_score.                                           
+         ???? Learn more:                                                            
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+  :117   Access to an undefined                                                    
+         property                                                                  
+         App\Models\SEOData::$meta_title.                                          
+         ???? Learn more:                                                            
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+  :122   Access to an undefined                                                    
+         property                                                                  
+         App\Models\SEOData::$meta_description.                                    
+         ???? Learn more:                                                            
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+  :127   Access to an undefined                                                    
+         property                                                                  
+         App\Models\SEOData::$meta_keywords.                                       
+         ???? Learn more:                                                            
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+ ------ -------------------------------------------------------------------------- 
+
+ ------ ----------------------------- 
+  Line   Models\StockEntry.php        
+ ------ ----------------------------- 
+  :47    Match arm is unreachable     
+         because previous comparison  
+         is always true.              
+ ------ ----------------------------- 
+
+ ------ ---------------------------------- 
+  Line   Providers\AppServiceProvider.php  
+ ------ ---------------------------------- 
+  :33    Using nullsafe method call on     
+         non-nullable type                 
+         Illuminate\Http\Request. Use      
+         -> instead.                       
+  :34    Using nullsafe method call on     
+         non-nullable type                 
+         Illuminate\Http\Request. Use      
+         -> instead.                       
+  :41    Relation 'items' is not found     
+         in App\Models\Menu model.         
+  :45    Relation 'items' is not found     
+         in App\Models\Menu model.         
+ ------ ---------------------------------- 
+
+ ------ ----------------------------------------------------------------------------- 
+  Line   Services\AISEOService.php                                                    
+ ------ ----------------------------------------------------------------------------- 
+  :14    Property                                                                     
+         App\Services\AISEOService::$timeout                                          
+         is never read, only written.                                                 
+         ???? See:                                                                      
+            https://phpstan.org/developing-extensions/always-read-written-properties  
+  :76    Method                                                                       
+         App\Services\AISEOService::generateDemoMetaTags()                            
+         is unused.                                                                   
+  :104   Offset 0 on array{array<int,                                                 
+         string>} on left side of ??                                                  
+         always exists and is not                                                     
+         nullable.                                                                    
+  :284   Variable $error in empty()                                                   
+         always exists and is always                                                  
+         falsy.                                                                       
+  :285   Offset 'body_preview' on                                                     
+         *NEVER* on left side of ??                                                   
+         always exists and is not                                                     
+         nullable.                                                                    
+  :285   Offset 'error' on *NEVER* on                                                 
+         left side of ?? always exists                                                
+         and is not nullable.                                                         
+  :285   Offset 'status' on *NEVER* on                                                
+         left side of ?? always exists                                                
+         and is not nullable.                                                         
+ ------ ----------------------------------------------------------------------------- 
+
+ ------ ------------------------------------- 
+  Line   Services\GoogleAnalyticsService.php  
+ ------ ------------------------------------- 
+  :161   Anonymous function has an            
+         unused use $limit.                   
+ ------ ------------------------------------- 
+
+ ------ -------------------------------------------------------------------------- 
+  Line   Services\InvoiceService.php                                               
+ ------ -------------------------------------------------------------------------- 
+  :70    Access to an undefined                                                    
+         property                                                                  
+         App\Models\Invoice::$user.                                                
+         ???? Learn more:                                                            
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+ ------ -------------------------------------------------------------------------- 
+
+ ------ ----------------------------------- 
+  Line   Services\ReferenceCodeService.php  
+ ------ ----------------------------------- 
+  :22    Parameter #1 $string of            
+         function str_pad expects           
+         string, int given.                 
+ ------ ----------------------------------- 
+
+ ------ ------------------------------------------------------ 
+  Line   Services\WhatsAppAgentService.php                     
+ ------ ------------------------------------------------------ 
+  :216   Method                                                
+         App\Services\WhatsAppAgentService::buildSEOMessage()  
+         should return string but                              
+         returns bool.                                         
+  :219   Method                                                
+         App\Services\WhatsAppAgentService::buildSEOMessage()  
+         should return string but                              
+         returns bool.                                         
+  :222   Method                                                
+         App\Services\WhatsAppAgentService::buildSEOMessage()  
+         should return string but                              
+         returns bool.                                         
+  :225   Method                                                
+         App\Services\WhatsAppAgentService::buildSEOMessage()  
+         should return string but                              
+         returns bool.                                         
+  :228   Method                                                
+         App\Services\WhatsAppAgentService::buildSEOMessage()  
+         should return string but                              
+         returns bool.                                         
+  :231   Method                                                
+         App\Services\WhatsAppAgentService::buildSEOMessage()  
+         should return string but                              
+         returns bool.                                         
+ ------ ------------------------------------------------------ 
+
+ -- -------------------------------------------- 
+     Error                                       
+ -- -------------------------------------------- 
+     Ignored error pattern #Call to an           
+     undefined method                            
+     Illuminate\\Database\\Eloquent\\Builder::#  
+     was not matched in reported                 
+     errors.                                     
+     Ignored error pattern #PHPDoc tag           
+     @var# was not matched in reported           
+     errors.                                     
+ -- -------------------------------------------- 
+
+ [ERROR] Found 83 errors               
+

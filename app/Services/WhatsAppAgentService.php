@@ -211,28 +211,15 @@ class WhatsAppAgentService
      */
     private function buildSEOMessage(string $type, array $data): string
     {
-        switch ($type) {
-            case 'new_auction':
-                return $this->sendNewAuctionNotification($data);
-                
-            case 'seo_score_low':
-                return $this->sendSEOScoreAlert($data['url'], $data['score'], $data['issues']);
-                
-            case 'indexing_failed':
-                return $this->sendIndexingFailureNotification($data['url'], $data['search_engine'], $data['error']);
-                
-            case 'ranking_dropped':
-                return $this->sendRankingChangeNotification($data['keyword'], $data['old_position'], $data['new_position'], $data['url']);
-                
-            case 'daily_report':
-                return $this->sendDailySEOReport($data);
-                
-            case 'bulk_completed':
-                return $this->sendBulkOperationNotification($data['operation'], $data['processed'], $data['successful'], $data['errors'] ?? []);
-                
-            default:
-                return "🤖 SEO Notification: {$type}";
-        }
+        return match ($type) {
+            'new_auction'      => "🚗 *New Auction!*\n📋 {$data['title']}\n💰 Starting: {$data['starting_price']}\n⏰ Ends: {$data['end_time']}\n🔗 " . url("/auctions/{$data['id']}"),
+            'seo_score_low'    => "⚠️ *SEO Low Score*\n📄 {$data['url']}\n📊 Score: {$data['score']}/100\n🔧 Issues: " . implode(', ', array_slice($data['issues'] ?? [], 0, 2)),
+            'indexing_failed'  => "❌ *Indexing Failed*\n🔍 {$data['search_engine']}\n📄 {$data['url']}\n⚠️ {$data['error']}",
+            'ranking_dropped'  => "📉 *Ranking Changed*\n🔍 {$data['keyword']}\n#{$data['old_position']} → #{$data['new_position']}\n📄 {$data['url']}",
+            'daily_report'     => "📊 *Daily SEO Report*\n📅 " . now()->format('Y-m-d') . "\n📄 Pages: {$data['total_pages']}\n✅ Optimized: {$data['optimized_pages']}",
+            'bulk_completed'   => "✅ *Bulk Op Done*\n🔧 {$data['operation']}\n📊 Processed: {$data['processed']}\n✅ OK: {$data['successful']}",
+            default            => "🤖 SEO Notification: {$type}",
+        };
     }
 
     /**

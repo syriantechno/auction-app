@@ -19,7 +19,7 @@ class ReferenceCodeService
         $year     = now()->year;
         $sequence = self::nextSequence($prefix, $year);
 
-        return "{$prefix}-{$year}-" . str_pad($sequence, 4, '0', STR_PAD_LEFT);
+        return "{$prefix}-{$year}-" . str_pad((string) $sequence, 4, '0', STR_PAD_LEFT);
     }
 
     /**

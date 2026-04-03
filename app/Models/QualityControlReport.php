@@ -4,6 +4,16 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @property int $id
+ * @property int $stock_entry_id
+ * @property int|null $inspection_report_id
+ * @property int|null $qc_by
+ * @property string $status
+ * @property-read \App\Models\StockEntry $stockEntry
+ * @property-read \App\Models\InspectionReport|null $inspectionReport
+ * @property-read \App\Models\User|null $qcBy
+ */
 class QualityControlReport extends Model
 {
     protected $fillable = [

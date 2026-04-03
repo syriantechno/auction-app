@@ -4,6 +4,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @property int $id
+ * @property int|null $user_id
+ * @property array $car_details
+ * @property string $status
+ * @property string|null $notes
+ * @property-read \App\Models\User|null $user
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\InspectionReport> $inspections
+ */
 class Lead extends Model
 {
     protected $fillable = [
@@ -50,5 +59,10 @@ class Lead extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function inspections()
+    {
+        return $this->hasMany(InspectionReport::class);
     }
 }

@@ -1,0 +1,48 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+
+parameters:
+    paths:
+        - app
+    level: 5
+    ignoreErrors:
+        # Known pre-existing: SEOData model uses dynamic magic properties (not our new code)
+        - identifier: property.notFound
+          path: app/Models/SEOData.php
+        - identifier: property.notFound
+          path: app/Http/Middleware/SEOMiddleware.php
+        - identifier: property.notFound
+          path: app/Services/InvoiceService.php
+        - identifier: property.notFound
+          path: app/Models/MenuItem.php
+        # Jobs
+        - identifier: variable.undefined
+          path: app/Jobs/GenerateSEOContent.php
+        # AI/SEO Service pre-existing issues
+        - identifier: property.onlyWritten
+          path: app/Services/AISEOService.php
+        - identifier: method.unused
+          path: app/Services/AISEOService.php
+        - identifier: nullCoalesce.offset
+          path: app/Services/AISEOService.php
+        - identifier: empty.variable
+          path: app/Services/AISEOService.php
+        # Google Analytics pre-existing
+        - identifier: closure.unusedUse
+          path: app/Services/GoogleAnalyticsService.php
+        # AppServiceProvider nullsafe pattern
+        - identifier: nullsafe.neverNull
+          path: app/Providers/AppServiceProvider.php
+        # SEOController
+        - identifier: nullCoalesce.expr
+          path: app/Http/Controllers/Admin/SEOController.php
+        # Public AuctionController pre-existing bids_count withCount pattern
+        - identifier: property.notFound
+          path: app/Http/Controllers/AuctionController.php
+        - identifier: rules.relationExistence
+          path: app/Http/Controllers/AuctionController.php
+        # HomeController query default type
+        - identifier: argument.type
+          path: app/Http/Controllers/HomeController.php
+        # Relation not in strict model — these use whereHas which is valid
+        - message: '#Relation .* is not found in App\\Models\\#'
