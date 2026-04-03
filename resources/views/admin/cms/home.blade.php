@@ -1088,10 +1088,16 @@
                 <!-- ==================== FOOTER TAB ==================== -->
                 <div x-show="activeTab === 'footer'" x-cloak x-transition>
 
+                    @php
+                        $_defaultLinks = [['label'=>'Home','url'=>'/'],['label'=>'Browse Auctions','url'=>'/auctions'],['label'=>'How it Works','url'=>'/how-it-works'],['label'=>'Sell Your Car','url'=>'#']];
+                        $_footerLinks  = data_get($page->content, 'footer.quick_links', $_defaultLinks);
+                        $_footerPages  = data_get($page->content, 'footer.pages', []);
+                    @endphp
+
                     <!-- Data for Alpine (safe script context) -->
                     <script>
-                        window.__footerLinks = @json(data_get($page->content, 'footer.quick_links', [['label'=>'Home','url'=>'/'],['label'=>'Browse Auctions','url'=>'/auctions'],['label'=>'How it Works','url'=>'/how-it-works'],['label'=>'Sell Your Car','url'=>'#']]));
-                        window.__footerPages = @json(data_get($page->content, 'footer.pages', []));
+                        window.__footerLinks = @json($_footerLinks);
+                        window.__footerPages = @json($_footerPages);
                     </script>
 
                     <!-- Header Banner -->
