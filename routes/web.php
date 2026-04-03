@@ -76,6 +76,23 @@ Route::prefix('admin')->middleware(['auth'])->name('admin.')->group(function () 
         Route::post('/{stockEntry}/complete-deal',  [\App\Http\Controllers\Admin\StockController::class, 'completeDeal'])->name('complete-deal');
     });
 
+    // ── Finance System ─────────────────────────────────────────────
+    Route::prefix('finance')->name('admin.finance.')->group(function () {
+        Route::get('/',                                           [\App\Http\Controllers\Admin\FinanceController::class, 'dashboard'])->name('dashboard');
+        Route::get('/invoices',                                   [\App\Http\Controllers\Admin\FinanceController::class, 'invoices'])->name('invoices');
+        Route::get('/invoices/{invoice}',                         [\App\Http\Controllers\Admin\FinanceController::class, 'showInvoice'])->name('invoice.show');
+        Route::patch('/invoices/{invoice}',                       [\App\Http\Controllers\Admin\FinanceController::class, 'updateInvoice'])->name('invoice.update');
+        Route::post('/invoices/from-negotiation/{negotiation}',   [\App\Http\Controllers\Admin\FinanceController::class, 'createInvoiceFromNegotiation'])->name('invoice.from-negotiation');
+        Route::get('/receipts',                                   [\App\Http\Controllers\Admin\FinanceController::class, 'receipts'])->name('receipts');
+        Route::post('/receipts',                                  [\App\Http\Controllers\Admin\FinanceController::class, 'storeReceipt'])->name('receipts.store');
+        Route::get('/vouchers',                                   [\App\Http\Controllers\Admin\FinanceController::class, 'vouchers'])->name('vouchers');
+        Route::post('/vouchers',                                  [\App\Http\Controllers\Admin\FinanceController::class, 'storeVoucher'])->name('vouchers.store');
+        Route::post('/expenses',                                  [\App\Http\Controllers\Admin\FinanceController::class, 'storeExpense'])->name('expenses.store');
+        Route::delete('/expenses/{expense}',                      [\App\Http\Controllers\Admin\FinanceController::class, 'destroyExpense'])->name('expenses.destroy');
+        Route::get('/accounts',                                   [\App\Http\Controllers\Admin\FinanceController::class, 'accounts'])->name('accounts');
+        Route::post('/accounts',                                  [\App\Http\Controllers\Admin\FinanceController::class, 'storeAccount'])->name('accounts.store');
+    });
+
     // CRM: Advanced Leads Pipeline
     Route::post('/leads/{lead}/confirm', [\App\Http\Controllers\Admin\LeadController::class, 'confirm'])->name('leads.confirm');
     Route::resource('/leads', \App\Http\Controllers\Admin\LeadController::class)->names('leads');
