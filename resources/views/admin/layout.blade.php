@@ -71,8 +71,16 @@
         .rounded-md { border-radius: 0.375rem !important; }
 
         [x-cloak] { display: none !important; }
-        /* Prevent FOUC on sidebar transitions */
-        aside { transition: width 0.3s cubic-bezier(0.4,0,0.2,1); }
+
+        /*
+         * ANTI-FLASH SIDEBAR: width is controlled by CSS class on <html>,
+         * set synchronously before first paint (see script below).
+         * Alpine only toggles the class — never sets width directly.
+         */
+        html:not(.sidebar-collapsed) #admin-sidebar { width: 260px; }
+        html.sidebar-collapsed        #admin-sidebar { width: 80px;  }
+        /* Transition added only AFTER Alpine loads to prevent initial animation */
+        #admin-sidebar.sidebar-ready  { transition: width 0.25s cubic-bezier(0.4,0,0.2,1); }
 
         /* Global Typography Policy (Elegant Clean) */
         body { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 400; }
@@ -88,18 +96,34 @@
     </style>
 
     @stack('head')
+
+    {{-- ANTI-FLASH: runs synchronously before first paint to set sidebar state --}}
+    <script>
+        (function(){
+            if (localStorage.getItem('sidebarOpen') === 'false') {
+                document.documentElement.classList.add('sidebar-collapsed');
+            }
+        })();
+    </script>
 </head>
 
 <body class="antialiased text-[#111827] bg-[#e7e7e7]">
 
     <div class="flex h-screen overflow-hidden" x-data="{
-        sidebarOpen: localStorage.getItem('sidebarOpen') !== 'false',
+        sidebarOpen: !document.documentElement.classList.contains('sidebar-collapsed'),
         openCRM: {{ request()->routeIs('admin.leads.*') || request()->routeIs('admin.inspections.*') ? 'true' : 'false' }}
-    }" x-init="$watch('sidebarOpen', v => localStorage.setItem('sidebarOpen', v))">
+    }" x-init="
+        // Add transition class AFTER Alpine init (prevents initial animation)
+        setTimeout(() => document.getElementById('admin-sidebar')?.classList.add('sidebar-ready'), 50);
+        $watch('sidebarOpen', v => {
+            localStorage.setItem('sidebarOpen', v);
+            document.documentElement.classList.toggle('sidebar-collapsed', !v);
+        });
+    ">
 
-        <!-- Sidebar: Full Restoration -->
-        <aside :class="sidebarOpen ? 'w-[260px]' : 'w-[80px]'"
-            class="bg-white border-r border-[#f1f5f9] flex flex-col transition-all duration-300 ease-in-out relative z-40 overflow-hidden shadow-[4px_0_24px_rgba(0,0,0,0.02)]">
+        <!-- Sidebar -->
+        <aside id="admin-sidebar"
+            class="bg-white border-r border-[#f1f5f9] flex flex-col relative z-40 overflow-hidden shadow-[4px_0_24px_rgba(0,0,0,0.02)]">
             
             @php
                 $primaryAdminWord = explode(' ', $adminSiteName)[0] ?? 'Motor';
@@ -271,26 +295,21 @@
 
                 {{-- Group 4: System & Financial --}}
                 <div class="space-y-2 pt-2">
-                    <div x-show="sidebarOpen" class="text-[0.6rem] text-slate-400 font-bold mb-3 uppercase tracking-[0.2em] pl-3 opacity-70 italic">System & Finance</div>
+                    <div x-show="sidebarOpen" x-cloak class="text-[0.6rem] text-slate-400 font-bold mb-3 uppercase tracking-[0.2em] pl-3 opacity-70 italic">System & Finance</div>
                     <ul class="space-y-1">
                         <li>
                             <a href="{{ route('admin.seo.dashboard') }}" class="sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-medium {{ request()->routeIs('admin.seo.*') ? 'text-slate-800 bg-slate-50 border border-slate-100' : 'text-slate-500 hover:bg-slate-50' }}">
-                                <i data-lucide="bar-chart-3" class="w-5 h-5"></i> <span x-show="sidebarOpen">SEO Intelligence</span>
+                                <span x-show="sidebarOpen" x-cloak>SEO Intelligence</span>
                             </a>
                         </li>
-                        <li>
-                            <a href="{{ route('admin.invoices.index') }}" class="sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-medium {{ request()->routeIs('admin.invoices.*') ? 'text-slate-800 bg-slate-50 border border-slate-100' : 'text-slate-500 hover:bg-slate-50' }}">
-                                <i data-lucide="credit-card" class="w-5 h-5"></i> <span x-show="sidebarOpen">Financial Hub</span>
-                            </a>
-                        </li>
-                        <li>
+
                             <a href="{{ route('admin.settings.logo') }}" class="sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-medium {{ request()->routeIs('admin.settings.logo') ? 'text-slate-800 bg-slate-50 border border-slate-100 shadow-sm' : 'text-slate-500 hover:bg-slate-50' }}">
-                                <i data-lucide="settings" class="w-5 h-5"></i> <span x-show="sidebarOpen">System Profile</span>
+                                <span x-show="sidebarOpen" x-cloak>System Profile</span>
                             </a>
                         </li>
                         <li>
                             <a href="{{ route('admin.settings.google-maps') }}" class="sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-medium {{ request()->routeIs('admin.settings.google-maps') ? 'text-slate-800 bg-slate-50 border border-slate-100 shadow-sm' : 'text-slate-500 hover:bg-slate-50' }}">
-                                <i data-lucide="map-pin" class="w-5 h-5"></i> <span x-show="sidebarOpen">Maps Config</span>
+                                <span x-show="sidebarOpen" x-cloak>Maps Config</span>
                             </a>
                         </li>
                     </ul>
@@ -301,7 +320,7 @@
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
                         <button type="submit" class="sidebar-item w-full flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-bold text-red-500 hover:bg-red-50 transition-all italic">
-                            <i data-lucide="log-out" class="w-5 h-5"></i> <span x-show="sidebarOpen">Logout</span>
+                                <span x-show="sidebarOpen" x-cloak>Logout</span>
                         </button>
                     </form>
                 </div>
@@ -310,7 +329,11 @@
             <!-- Toggle Controller -->
             <div class="p-4 border-t border-[#f1f5f9] flex justify-center flex-shrink-0">
                 <button @click="sidebarOpen = !sidebarOpen" class="w-10 h-10 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-slate-400 hover:text-slate-800 hover:border-slate-300 transition-all shadow-sm active:scale-90">
-                    <i :data-lucide="sidebarOpen ? 'chevron-left' : 'chevron-right'" class="w-4 h-4"></i>
+                    {{-- Inline SVG: no Lucide dependency, no re-render --}}
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path x-show="!sidebarOpen" x-cloak d="m9 18 6-6-6-6"/>
+                        <path x-show="sidebarOpen" x-cloak d="m15 18-6-6 6-6"/>
+                    </svg>
                 </button>
             </div>
         </aside>
