@@ -1019,6 +1019,13 @@
                                     <p class="text-[0.45rem] text-slate-400 font-medium mt-1 ml-1">Browse all icons at lucide.dev/icons</p>
                                 </div>
 
+                                {{-- Description --}}
+                                <div class="mb-4">
+                                    <label class="text-[0.5rem] font-black uppercase tracking-widest text-slate-500 mb-1.5 block">Description (optional)</label>
+                                    <textarea name="trust_badges[{{ $tbIndex }}][desc]" rows="2"
+                                              class="w-full bg-white border border-slate-200 rounded-lg px-4 py-2.5 text-[0.72rem] text-slate-600 outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100 transition-all shadow-sm resize-none">{{ data_get($tb,'desc','') }}</textarea>
+                                </div>
+
                                 {{-- Colors --}}
                                 <div class="grid grid-cols-2 gap-3">
                                     <div>
@@ -1052,6 +1059,14 @@
                                 </div>
                             </div>
                             @endforeach
+                        </div>
+
+                        {{-- Section Title --}}
+                        <div class="mt-6 pt-6 border-t border-slate-100">
+                            <label class="text-[0.5rem] font-black uppercase tracking-widest text-slate-500 mb-1.5 block">Section Heading</label>
+                            <input type="text" name="trust_badges_title"
+                                   value="{{ old('trust_badges_title', data_get($page->content, 'trust_badges_title', 'We built our business on trust')) }}"
+                                   class="w-full bg-white border border-slate-200 rounded-lg px-4 py-2.5 text-[0.85rem] font-black text-slate-800 outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100 transition-all shadow-sm">
                         </div>
                     </div>
                 </div>

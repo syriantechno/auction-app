@@ -948,49 +948,53 @@
                 </form>
             </div>
 
-            {{-- Trust Badges: Premium Design --}}
+            {{-- Trust Badges: Centered Icon + Title + Description --}}
             @php
                 $trustBadges = data_get($page?->content, 'trust_badges', [
-                    ['label' => 'Guaranteed Purchase',    'icon' => 'shield-check', 'color' => '#ff4605', 'bg_color' => '#fff7ed'],
-                    ['label' => 'No Costs. No Obligation','icon' => 'wallet',       'color' => '#031629', 'bg_color' => '#f1f5f9'],
-                    ['label' => 'Quick and Easy',         'icon' => 'zap',          'color' => '#3b82f6', 'bg_color' => '#eff6ff'],
-                    ['label' => 'Fast and Secure',        'icon' => 'lock',         'color' => '#334155', 'bg_color' => '#f1f5f9'],
+                    ['label' => 'Guaranteed Purchase',    'icon' => 'shield-check', 'color' => '#ff4605', 'bg_color' => '#fff7ed', 'desc' => 'We guarantee every transaction is safe, verified, and backed by Motor Bazar.'],
+                    ['label' => 'No Costs. No Obligation','icon' => 'wallet',       'color' => '#031629', 'bg_color' => '#f1f5f9', 'desc' => 'Free valuations with zero hidden fees. Walk away any time — no strings attached.'],
+                    ['label' => 'Quick and Easy',         'icon' => 'zap',          'color' => '#ff6900', 'bg_color' => '#fff7ed', 'desc' => 'Submit your car in under 3 minutes. Our team contacts you within 24 hours.'],
+                    ['label' => 'Fast and Secure',        'icon' => 'lock',         'color' => '#334155', 'bg_color' => '#f8fafc', 'desc' => 'Bank-grade encryption protects your data and payment at every step.'],
                 ]);
+                $badgesTitle = data_get($page?->content, 'trust_badges_title', 'We built our business on trust');
             @endphp
-            <div class="mt-10 grid grid-cols-2 xl:grid-cols-4 gap-4">
+
+            {{-- Section Heading --}}
+            <div class="mt-14 mb-12 text-center">
+                <h3 class="text-2xl lg:text-3xl font-black text-[#031629] tracking-tight">{{ $badgesTitle }}</h3>
+            </div>
+
+            {{-- Badges Grid --}}
+            <div class="grid grid-cols-2 xl:grid-cols-4 divide-x divide-slate-200/80">
                 @foreach($trustBadges as $i => $badge)
                 @php
                     $bColor = data_get($badge, 'color', '#333');
-                    $bBg    = data_get($badge, 'bg_color', '#f1f5f9');
                     $bIcon  = data_get($badge, 'icon', 'star');
                     $bLabel = data_get($badge, 'label', '');
+                    $bDesc  = data_get($badge, 'desc', '');
                 @endphp
-                <div class="trust-badge-card group relative bg-white/70 backdrop-blur-sm border border-white/80 rounded-2xl p-5 shadow-[0_4px_24px_-8px_rgba(0,0,0,0.08)] hover:shadow-[0_12px_40px_-12px_rgba(0,0,0,0.15)] hover:-translate-y-1 transition-all duration-300 overflow-hidden cursor-default">
-                    {{-- Subtle glow bg --}}
-                    <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none rounded-2xl"
-                         style="background: radial-gradient(circle at 30% 50%, {{ $bBg }}cc 0%, transparent 70%)"></div>
+                <div class="group flex flex-col items-center text-center px-8 py-6 cursor-default">
 
-                    {{-- Number badge --}}
-                    <span class="absolute top-3 right-3 text-[0.45rem] font-black text-slate-300 uppercase tracking-widest">0{{ $i+1 }}</span>
-
-                    {{-- Icon --}}
-                    <div class="relative w-12 h-12 rounded-xl mb-4 flex items-center justify-center transition-transform duration-300 group-hover:scale-110"
-                         style="background-color: {{ $bBg }}; color: {{ $bColor }}; box-shadow: 0 4px 14px -4px {{ $bBg }}">
-                        <i data-lucide="{{ $bIcon }}" class="w-5 h-5"></i>
+                    {{-- Large Icon — bounces + color shift on hover --}}
+                    <div class="w-20 h-20 mb-5 flex items-center justify-center transition-all duration-300 group-hover:-translate-y-2 group-hover:scale-110"
+                         style="color: {{ $bColor }};">
+                        <i data-lucide="{{ $bIcon }}" class="w-12 h-12 transition-all duration-300" style="stroke-width: 1.5; filter: drop-shadow(0 6px 12px {{ $bColor }}66);"></i>
                     </div>
 
                     {{-- Label --}}
-                    <p class="text-[0.78rem] font-black text-slate-900 leading-snug tracking-tight">{{ $bLabel }}</p>
+                    <p class="text-[0.92rem] font-black text-[#031629] mb-2 tracking-tight">{{ $bLabel }}</p>
 
-                    {{-- Bottom accent line --}}
-                    <div class="absolute bottom-0 left-0 h-[3px] w-0 group-hover:w-full transition-all duration-500 rounded-b-2xl"
-                         style="background: linear-gradient(90deg, {{ $bColor }}, {{ $bBg }})"></div>
+                    {{-- Description --}}
+                    @if($bDesc)
+                    <p class="text-[0.75rem] text-slate-500 font-medium leading-relaxed max-w-[200px]">{{ $bDesc }}</p>
+                    @endif
                 </div>
                 @endforeach
             </div>
 
         </div>
     </section>
+
 
     {{-- Latest Luxury Listings: Elite Inventory Segment --}}
                 <section class="py-24 px-6 lg:px-12 bg-[#e7e7e7] relative z-30">

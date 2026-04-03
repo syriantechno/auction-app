@@ -233,6 +233,7 @@ class CMSController extends Controller
         ];
 
         // Trust Badges
+        $content['trust_badges_title'] = $request->input('trust_badges_title', data_get($content, 'trust_badges_title', 'We built our business on trust'));
         if ($request->has('trust_badges')) {
             $content['trust_badges'] = collect($request->input('trust_badges', []))
                 ->map(fn($b) => [
@@ -240,6 +241,7 @@ class CMSController extends Controller
                     'icon'      => data_get($b, 'icon', 'star'),
                     'color'     => data_get($b, 'color', '#333333'),
                     'bg_color'  => data_get($b, 'bg_color', '#f1f5f9'),
+                    'desc'      => data_get($b, 'desc', ''),
                 ])->values()->all();
         }
 
