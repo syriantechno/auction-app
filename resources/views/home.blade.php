@@ -1053,6 +1053,83 @@
         </div>
     </section>
 
+    {{-- Location Map Card --}}
+    <section class="py-16 px-6 lg:px-12 bg-[#e7e7e7] relative z-10">
+        <div class="max-w-[1440px] mx-auto">
+
+            {{-- Section Label --}}
+            <div class="flex items-center gap-4 mb-8">
+                <div class="h-1 w-10 bg-[#ff4605] rounded-full"></div>
+                <span class="text-[0.62rem] font-black uppercase tracking-[0.3em] text-slate-500">Find Us</span>
+            </div>
+
+            {{-- Map Card --}}
+            <div class="relative rounded-3xl overflow-hidden shadow-[0_24px_80px_-20px_rgba(3,22,41,0.18)] min-h-[420px]">
+
+                {{-- Map Embed --}}
+                <iframe
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3608.6!2d55.296249!3d25.264171!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjXCsDE1JzUxLjAiTiA1NcKwMTcnNDYuNSJF!5e0!3m2!1sen!2sae!4v1680000000000!5m2!1sen!2sae"
+                    width="100%" height="100%"
+                    class="absolute inset-0 w-full h-full object-cover"
+                    style="border:0; min-height: 420px; filter: grayscale(20%) contrast(1.05);"
+                    allowfullscreen="" loading="lazy"
+                    referrerpolicy="no-referrer-when-downgrade">
+                </iframe>
+
+                {{-- Overlay gradient --}}
+                <div class="absolute inset-0 bg-gradient-to-r from-[#031629]/90 via-[#031629]/50 to-transparent pointer-events-none"></div>
+
+                {{-- Info Card --}}
+                <div class="relative z-10 flex flex-col justify-center h-full min-h-[420px] max-w-sm px-10 py-10">
+
+                    <h2 class="text-3xl lg:text-4xl font-black text-white tracking-tight leading-tight mb-2">
+                        Visit Motor<br><span class="text-[#ff4605]">Bazar</span>
+                    </h2>
+                    <p class="text-slate-300 text-sm font-medium mb-8">Come see our full inventory in person — our team is ready to help.</p>
+
+                    <div class="space-y-4 mb-8">
+                        <div class="flex items-center gap-3">
+                            <div class="w-9 h-9 rounded-xl bg-[#ff4605]/10 border border-[#ff4605]/20 flex items-center justify-center shrink-0">
+                                <i data-lucide="map-pin" class="w-4 h-4 text-[#ff4605]"></i>
+                            </div>
+                            <div>
+                                <p class="text-[0.5rem] font-black uppercase tracking-widest text-slate-400 mb-0.5">Address</p>
+                                <p class="text-sm font-bold text-white">{{ data_get($page?->content, 'location.address', 'Dubai, United Arab Emirates') }}</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-3">
+                            <div class="w-9 h-9 rounded-xl bg-[#ff4605]/10 border border-[#ff4605]/20 flex items-center justify-center shrink-0">
+                                <i data-lucide="phone" class="w-4 h-4 text-[#ff4605]"></i>
+                            </div>
+                            <div>
+                                <p class="text-[0.5rem] font-black uppercase tracking-widest text-slate-400 mb-0.5">Phone</p>
+                                <p class="text-sm font-bold text-white">{{ data_get($page?->content, 'location.phone', '+971 4 000 0000') }}</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-3">
+                            <div class="w-9 h-9 rounded-xl bg-[#ff4605]/10 border border-[#ff4605]/20 flex items-center justify-center shrink-0">
+                                <i data-lucide="clock" class="w-4 h-4 text-[#ff4605]"></i>
+                            </div>
+                            <div>
+                                <p class="text-[0.5rem] font-black uppercase tracking-widest text-slate-400 mb-0.5">Working Hours</p>
+                                <p class="text-sm font-bold text-white">{{ data_get($page?->content, 'location.hours', 'Mon – Sat: 9:00 AM – 7:00 PM') }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <a href="{{ data_get($page?->content, 'location.maps_url', 'https://maps.google.com') }}"
+                       target="_blank"
+                       class="inline-flex items-center gap-2.5 bg-[#ff4605] hover:bg-[#ff6900] text-white font-black text-[0.72rem] uppercase tracking-[0.2em] px-6 py-3.5 rounded-xl transition-all duration-300 hover:shadow-[0_8px_24px_-6px_rgba(255,70,5,0.5)] hover:-translate-y-0.5 w-fit">
+                        <i data-lucide="navigation" class="w-4 h-4"></i>
+                        Get Directions
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
     {{-- Body Type Browser: Dynamic CMS Sync --}}
     <section class="py-20 px-6 lg:px-12 bg-transparent relative z-10">
         <div class="max-w-[1440px] mx-auto">
