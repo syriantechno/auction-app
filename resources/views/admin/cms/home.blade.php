@@ -226,7 +226,21 @@
                         </div>
                     </button>
 
-                    <button type="button" @click="activeTab = 'settings'" 
+                    <button type="button" @click="activeTab = 'footer'"
+                        :class="activeTab === 'footer' ? 'bg-indigo-50 border-indigo-200 text-indigo-600' : 'bg-transparent border-transparent text-slate-400 grayscale opacity-60 hover:bg-slate-50 hover:border-slate-100 hover:grayscale-0 hover:opacity-100'"
+                        class="w-full flex items-center gap-2 p-2.5 rounded-lg border-2 transition-all duration-300 text-left active:scale-[0.98] group">
+                        <div class="w-8 h-8 rounded-lg bg-white border border-slate-200 flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" :class="activeTab === 'footer' ? 'text-indigo-500' : 'text-slate-400 group-hover:text-indigo-500'">
+                                <rect width="20" height="14" x="2" y="3" rx="2"/><path d="M8 21h8M12 17v4"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="text-[0.65rem] font-medium uppercase text-slate-900">Footer</div>
+                            <div class="text-[0.5rem] font-bold uppercase tracking-tighter text-slate-400">Links · Social · Info</div>
+                        </div>
+                    </button>
+
+                    <button type="button" @click="activeTab = 'settings'"
                         :class="activeTab === 'settings' ? 'bg-slate-800 text-white border-slate-800' : 'bg-transparent border-transparent text-slate-400 grayscale opacity-60 hover:bg-slate-50 hover:border-slate-100 hover:grayscale-0 hover:opacity-100'"
                         class="w-full flex items-center gap-2 p-2.5 rounded-lg border-2 transition-all duration-300 text-left active:scale-[0.98] group">
                         <div class="w-8 h-8 rounded-lg bg-white border border-slate-200 flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow">
@@ -1067,6 +1081,180 @@
                             <input type="text" name="trust_badges_title"
                                    value="{{ old('trust_badges_title', data_get($page->content, 'trust_badges_title', 'We built our business on trust')) }}"
                                    class="w-full bg-white border border-slate-200 rounded-lg px-4 py-2.5 text-[0.85rem] font-black text-slate-800 outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100 transition-all shadow-sm">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ==================== FOOTER TAB ==================== -->
+                <div x-show="activeTab === 'footer'" x-cloak x-transition>
+
+                    <!-- Header Banner -->
+                    <div class="bg-indigo-600 p-8 rounded-xl text-white shadow-xl mb-6 relative overflow-hidden">
+                        <div class="absolute right-0 top-0 h-full w-2 bg-indigo-400 opacity-50"></div>
+                        <div class="flex items-center gap-6">
+                            <div class="w-16 h-16 bg-white/10 rounded-xl flex items-center justify-center border border-white/20">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="3" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-black tracking-tight">Footer Settings</h3>
+                                <p class="text-indigo-200 text-xs mt-1">Control all footer content — brand, social, contact, links, and internal pages.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+                        <!-- Left: Brand + Contact + Social -->
+                        <div class="space-y-5">
+                            <!-- Brand Description -->
+                            <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+                                <div class="text-[0.6rem] font-black uppercase tracking-widest text-indigo-500 mb-4 flex items-center gap-2">
+                                    <div class="w-4 h-px bg-indigo-300"></div> Brand Description
+                                </div>
+                                <textarea name="footer[description]" rows="3"
+                                    class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-[0.8rem] text-slate-700 outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 transition-all resize-none">{{ old('footer.description', data_get($page->content, 'footer.description', "The world's most trusted platform for premium car auctions.")) }}</textarea>
+                            </div>
+
+                            <!-- Contact Info -->
+                            <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+                                <div class="text-[0.6rem] font-black uppercase tracking-widest text-indigo-500 mb-4 flex items-center gap-2">
+                                    <div class="w-4 h-px bg-indigo-300"></div> Contact Info
+                                </div>
+                                <div class="space-y-3">
+                                    <div>
+                                        <label class="text-[0.5rem] font-black uppercase tracking-widest text-slate-400 mb-1 block">Address</label>
+                                        <input type="text" name="footer[address]" value="{{ old('footer.address', data_get($page->content, 'footer.address', '')) }}"
+                                            class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-[0.8rem] text-slate-700 outline-none focus:border-indigo-400 transition-all">
+                                    </div>
+                                    <div>
+                                        <label class="text-[0.5rem] font-black uppercase tracking-widest text-slate-400 mb-1 block">Email</label>
+                                        <input type="email" name="footer[email]" value="{{ old('footer.email', data_get($page->content, 'footer.email', '')) }}"
+                                            class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-[0.8rem] text-slate-700 outline-none focus:border-indigo-400 transition-all">
+                                    </div>
+                                    <div>
+                                        <label class="text-[0.5rem] font-black uppercase tracking-widest text-slate-400 mb-1 block">Phone</label>
+                                        <input type="text" name="footer[phone]" value="{{ old('footer.phone', data_get($page->content, 'footer.phone', '')) }}"
+                                            class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-[0.8rem] text-slate-700 outline-none focus:border-indigo-400 transition-all">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Social Media Links -->
+                            <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+                                <div class="text-[0.6rem] font-black uppercase tracking-widest text-indigo-500 mb-4 flex items-center gap-2">
+                                    <div class="w-4 h-px bg-indigo-300"></div> Social Media URLs
+                                </div>
+                                <div class="space-y-3">
+                                    @foreach([['key'=>'facebook','label'=>'Facebook','ph'=>'https://facebook.com/...'],['key'=>'instagram','label'=>'Instagram','ph'=>'https://instagram.com/...'],['key'=>'whatsapp','label'=>'WhatsApp','ph'=>'https://wa.me/...'],['key'=>'youtube','label'=>'YouTube','ph'=>'https://youtube.com/...']] as $soc)
+                                    <div class="flex items-center gap-2">
+                                        <label class="text-[0.55rem] font-black uppercase tracking-widest text-slate-400 w-20 shrink-0">{{ $soc['label'] }}</label>
+                                        <input type="url" name="footer[social][{{ $soc['key'] }}]"
+                                            value="{{ old('footer.social.'.$soc['key'], data_get($page->content, 'footer.social.'.$soc['key'], '')) }}"
+                                            placeholder="{{ $soc['ph'] }}"
+                                            class="flex-1 bg-slate-50 border border-slate-200 rounded-lg px-4 py-2 text-[0.75rem] text-slate-700 outline-none focus:border-indigo-400 transition-all">
+                                    </div>
+                                    @endforeach
+                                </div>
+                            </div>
+
+                            <!-- Bottom Bar -->
+                            <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+                                <div class="text-[0.6rem] font-black uppercase tracking-widest text-indigo-500 mb-4 flex items-center gap-2">
+                                    <div class="w-4 h-px bg-indigo-300"></div> Bottom Bar
+                                </div>
+                                <div class="space-y-3">
+                                    <div>
+                                        <label class="text-[0.5rem] font-black uppercase tracking-widest text-slate-400 mb-1 block">Copyright Text</label>
+                                        <input type="text" name="footer[copyright]" value="{{ old('footer.copyright', data_get($page->content, 'footer.copyright', '&copy; ' . date('Y') . ' MOTOR BAZAR. ALL RIGHTS RESERVED.')) }}"
+                                            class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-[0.8rem] text-slate-700 outline-none focus:border-indigo-400 transition-all">
+                                    </div>
+                                    <div class="grid grid-cols-3 gap-2">
+                                        <div>
+                                            <label class="text-[0.5rem] font-black uppercase tracking-widest text-slate-400 mb-1 block">Terms URL</label>
+                                            <input type="text" name="footer[terms_url]" value="{{ old('footer.terms_url', data_get($page->content, 'footer.terms_url', '#')) }}"
+                                                class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-[0.7rem] outline-none focus:border-indigo-400 transition-all">
+                                        </div>
+                                        <div>
+                                            <label class="text-[0.5rem] font-black uppercase tracking-widest text-slate-400 mb-1 block">Privacy URL</label>
+                                            <input type="text" name="footer[privacy_url]" value="{{ old('footer.privacy_url', data_get($page->content, 'footer.privacy_url', '#')) }}"
+                                                class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-[0.7rem] outline-none focus:border-indigo-400 transition-all">
+                                        </div>
+                                        <div>
+                                            <label class="text-[0.5rem] font-black uppercase tracking-widest text-slate-400 mb-1 block">Cookies URL</label>
+                                            <input type="text" name="footer[cookies_url]" value="{{ old('footer.cookies_url', data_get($page->content, 'footer.cookies_url', '#')) }}"
+                                                class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-[0.7rem] outline-none focus:border-indigo-400 transition-all">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right: Quick Links + Pages -->
+                        <div class="space-y-5">
+                            <!-- Quick Links manager -->
+                            <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5" x-data="{
+                                links: {{ json_encode(data_get($page->content, 'footer.quick_links', [['label'=>'Home','url'=>'/'],['label'=>'Browse Auctions','url'=>'/auctions'],['label'=>'How it Works','url'=>'/how-it-works'],['label'=>'Sell Your Car','url'=>'#']])) }},
+                                addLink() { this.links.push({label:'',url:''}); },
+                                removeLink(i) { this.links.splice(i,1); }
+                            }">
+                                <div class="flex items-center justify-between mb-4">
+                                    <div class="text-[0.6rem] font-black uppercase tracking-widest text-indigo-500 flex items-center gap-2">
+                                        <div class="w-4 h-px bg-indigo-300"></div> Quick Links
+                                    </div>
+                                    <button type="button" @click="addLink()" class="text-[0.55rem] font-black uppercase tracking-widest text-indigo-500 hover:text-indigo-700 flex items-center gap-1">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+                                        Add Link
+                                    </button>
+                                </div>
+                                <div class="space-y-2">
+                                    <template x-for="(link, i) in links" :key="i">
+                                        <div class="flex items-center gap-2">
+                                            <input type="text" :name="`footer_quick_links[${i}][label]`" x-model="link.label" placeholder="Label"
+                                                class="w-32 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-[0.72rem] text-slate-700 outline-none focus:border-indigo-400 transition-all">
+                                            <input type="text" :name="`footer_quick_links[${i}][url]`" x-model="link.url" placeholder="URL"
+                                                class="flex-1 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-[0.72rem] text-slate-700 outline-none focus:border-indigo-400 transition-all">
+                                            <button type="button" @click="removeLink(i)" class="w-7 h-7 rounded-lg bg-red-50 text-red-400 hover:bg-red-100 hover:text-red-600 flex items-center justify-center transition-all">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>
+                                            </button>
+                                        </div>
+                                    </template>
+                                </div>
+                            </div>
+
+                            <!-- Internal Pages (for future page builder) -->
+                            <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5" x-data="{
+                                pages: {{ json_encode(data_get($page->content, 'footer.pages', [])) }},
+                                addPage() { this.pages.push({label:'',url:''}); },
+                                removePage(i) { this.pages.splice(i,1); }
+                            }">
+                                <div class="flex items-center justify-between mb-2">
+                                    <div class="text-[0.6rem] font-black uppercase tracking-widest text-indigo-500 flex items-center gap-2">
+                                        <div class="w-4 h-px bg-indigo-300"></div> Internal Pages
+                                        <span class="bg-indigo-100 text-indigo-600 text-[0.45rem] font-black uppercase tracking-widest px-2 py-0.5 rounded-full">Page Builder</span>
+                                    </div>
+                                    <button type="button" @click="addPage()" class="text-[0.55rem] font-black uppercase tracking-widest text-indigo-500 hover:text-indigo-700 flex items-center gap-1">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+                                        Add Page
+                                    </button>
+                                </div>
+                                <p class="text-[0.6rem] text-slate-400 mb-4">These links will appear in the "Pages" column of the footer — used for pages generated by the page builder.</p>
+                                <div class="space-y-2">
+                                    <template x-if="pages.length === 0">
+                                        <div class="text-center py-6 text-slate-300 text-xs">No pages added yet. Click "Add Page" to start.</div>
+                                    </template>
+                                    <template x-for="(pg, i) in pages" :key="i">
+                                        <div class="flex items-center gap-2">
+                                            <input type="text" :name="`footer_pages[${i}][label]`" x-model="pg.label" placeholder="Page label"
+                                                class="w-32 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-[0.72rem] text-slate-700 outline-none focus:border-indigo-400 transition-all">
+                                            <input type="text" :name="`footer_pages[${i}][url]`" x-model="pg.url" placeholder="/page-url"
+                                                class="flex-1 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-[0.72rem] text-slate-700 outline-none focus:border-indigo-400 transition-all">
+                                            <button type="button" @click="removePage(i)" class="w-7 h-7 rounded-lg bg-red-50 text-red-400 hover:bg-red-100 hover:text-red-600 flex items-center justify-center transition-all">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>
+                                            </button>
+                                        </div>
+                                    </template>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

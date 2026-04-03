@@ -245,6 +245,41 @@ class CMSController extends Controller
                 ])->values()->all();
         }
 
+        // Footer settings
+        $content['footer'] = array_merge(data_get($content, 'footer', []), [
+            'background_color' => $request->input('footer.background_color', data_get($content, 'footer.background_color', '#eef3f9')),
+            'description'      => $request->input('footer.description', data_get($content, 'footer.description', '')),
+            'address'          => $request->input('footer.address', data_get($content, 'footer.address', '')),
+            'email'            => $request->input('footer.email', data_get($content, 'footer.email', '')),
+            'phone'            => $request->input('footer.phone', data_get($content, 'footer.phone', '')),
+            'copyright'        => $request->input('footer.copyright', data_get($content, 'footer.copyright', '')),
+            'terms_url'        => $request->input('footer.terms_url', data_get($content, 'footer.terms_url', '#')),
+            'privacy_url'      => $request->input('footer.privacy_url', data_get($content, 'footer.privacy_url', '#')),
+            'cookies_url'      => $request->input('footer.cookies_url', data_get($content, 'footer.cookies_url', '#')),
+            'social' => [
+                'facebook'  => $request->input('footer.social.facebook', data_get($content, 'footer.social.facebook', '')),
+                'instagram' => $request->input('footer.social.instagram', data_get($content, 'footer.social.instagram', '')),
+                'whatsapp'  => $request->input('footer.social.whatsapp', data_get($content, 'footer.social.whatsapp', '')),
+                'youtube'   => $request->input('footer.social.youtube', data_get($content, 'footer.social.youtube', '')),
+            ],
+        ]);
+
+        // Footer quick links
+        if ($request->has('footer_quick_links')) {
+            $content['footer']['quick_links'] = collect($request->input('footer_quick_links', []))
+                ->filter(fn($l) => !empty(data_get($l, 'label')))
+                ->map(fn($l) => ['label' => data_get($l, 'label', ''), 'url' => data_get($l, 'url', '#')])
+                ->values()->all();
+        }
+
+        // Footer pages (internal pages from page builder)
+        if ($request->has('footer_pages')) {
+            $content['footer']['pages'] = collect($request->input('footer_pages', []))
+                ->filter(fn($p) => !empty(data_get($p, 'label')))
+                ->map(fn($p) => ['label' => data_get($p, 'label', ''), 'url' => data_get($p, 'url', '#')])
+                ->values()->all();
+        }
+
         $page->update([
             'title' => $request->input('title'),
             'hero_image' => $heroCarImage,
