@@ -1,338 +1,298 @@
 @extends('admin.layout')
 
-@section('title', isset($page) ? 'Edit Page' : 'New Page')
+@section('title', isset($page) ? 'Edit — ' . $page->title : 'New Page')
 
 @push('head')
-{{-- Jodit WYSIWYG Editor --}}
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jodit/4.2.25/jodit.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jodit/4.2.25/jodit.min.js"></script>
+{{-- Jodit v3 (stable CDN) --}}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jodit@3.24.5/build/jodit.min.css">
+<script src="https://cdn.jsdelivr.net/npm/jodit@3.24.5/build/jodit.min.js"></script>
 @endpush
 
 @section('content')
-<div class="max-w-5xl mx-auto space-y-6">
+<div class="space-y-4">
 
-    {{-- Header --}}
-    <div class="flex items-center gap-4">
+    {{-- ── Header ── --}}
+    <div class="flex items-center gap-3">
         <a href="{{ route('admin.pages.index') }}"
-           class="w-9 h-9 rounded-xl border border-slate-200 bg-white flex items-center justify-center hover:bg-slate-50 transition-all shadow-sm">
+           class="w-8 h-8 rounded-lg border border-slate-200 bg-white flex items-center justify-center hover:bg-slate-50 transition-all shadow-sm shrink-0">
             <i data-lucide="arrow-left" class="w-4 h-4 text-slate-600"></i>
         </a>
-        <div>
-            <div class="text-[0.55rem] font-black uppercase tracking-[0.3em] text-slate-400 mb-0.5">
-                {{ isset($page) ? 'Editing' : 'Creating' }}
+        <div class="flex-1 min-w-0">
+            <div class="text-[0.55rem] font-black uppercase tracking-[0.3em] text-slate-400">
+                {{ isset($page) ? 'Editing Page' : 'Creating New Page' }}
             </div>
-            <h1 class="text-xl font-black text-slate-900 tracking-tight">
+            <h1 class="text-lg font-black text-slate-900 truncate">
                 {{ isset($page) ? $page->title : 'New Page' }}
             </h1>
         </div>
         @if(isset($page) && $page->is_published)
             <a href="{{ route('page.show', $page->slug) }}" target="_blank"
-               class="ml-auto flex items-center gap-1.5 text-[0.65rem] font-black text-emerald-600 bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-full hover:bg-emerald-100 transition-all">
-                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Live →
+               class="shrink-0 flex items-center gap-1.5 text-[0.65rem] font-black text-emerald-600 bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-full hover:bg-emerald-100 transition-all">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Live ↗
             </a>
         @endif
     </div>
 
     @if($errors->any())
-        <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm font-bold">
-            @foreach($errors->all() as $error) <div>• {{ $error }}</div> @endforeach
+        <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-xs font-bold">
+            @foreach($errors->all() as $error)<div>• {{ $error }}</div>@endforeach
         </div>
     @endif
 
     <form action="{{ isset($page) ? route('admin.pages.update', $page) : route('admin.pages.store') }}"
-          method="POST" id="pageForm" class="space-y-5">
+          method="POST" id="pageForm">
         @csrf
         @if(isset($page)) @method('PUT') @endif
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+        {{-- ── Two-column layout: wide left + narrow right ── --}}
+        <div class="grid grid-cols-1 xl:grid-cols-4 gap-4 items-start">
 
-            {{-- ── LEFT: Main Content ── --}}
-            <div class="lg:col-span-2 space-y-5">
+            {{-- ═══════ LEFT (3/4) ═══════ --}}
+            <div class="xl:col-span-3 space-y-4">
 
                 {{-- Title + Slug --}}
-                <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 space-y-4">
-                    <div class="text-[0.6rem] font-black uppercase tracking-widest text-slate-400 flex items-center gap-2">
-                        <div class="w-4 h-px bg-slate-300"></div> Page Identity
+                <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+                    <div class="text-[0.55rem] font-black uppercase tracking-[0.28em] text-slate-400 mb-4 flex items-center gap-2">
+                        <div class="w-3 h-px bg-slate-300"></div> Page Identity
                     </div>
-
-                    <div class="space-y-2">
-                        <label class="text-xs font-bold text-slate-700">Page Title <span class="text-red-400">*</span></label>
-                        <input type="text" name="title" id="pageTitle"
-                               value="{{ old('title', $page->title ?? '') }}" required
-                               class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-semibold text-slate-900 outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100 transition-all"
-                               placeholder="e.g. About Us">
-                    </div>
-
-                    <div class="space-y-2">
-                        <label class="text-xs font-bold text-slate-700">URL Slug</label>
-                        <div class="flex items-center gap-2">
-                            <span class="text-xs text-slate-400 font-mono shrink-0">/</span>
-                            <input type="text" name="slug" id="pageSlug"
-                                   value="{{ old('slug', $page->slug ?? '') }}"
-                                   class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-mono text-slate-700 outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100 transition-all"
-                                   placeholder="about-us">
-                            <button type="button" id="regenerateSlug"
-                                    class="shrink-0 px-3 py-2 rounded-lg bg-slate-100 text-slate-500 text-[0.65rem] font-black uppercase hover:bg-slate-200 transition-all">
-                                Auto
-                            </button>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="space-y-1.5">
+                            <label class="text-xs font-bold text-slate-700">Page Title <span class="text-red-400">*</span></label>
+                            <input type="text" name="title" id="pageTitle"
+                                   value="{{ old('title', $page->title ?? '') }}" required
+                                   class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3.5 py-2.5 text-sm font-semibold text-slate-900 outline-none focus:border-slate-400 transition-all"
+                                   placeholder="e.g. About Us">
                         </div>
-                        <p class="text-[0.6rem] text-slate-400">Leave blank to auto-generate from title. Lowercase, hyphens only.</p>
+                        <div class="space-y-1.5">
+                            <label class="text-xs font-bold text-slate-700">URL Slug</label>
+                            <div class="flex items-center gap-1.5">
+                                <span class="text-xs text-slate-400 font-mono shrink-0">/</span>
+                                <input type="text" name="slug" id="pageSlug"
+                                       value="{{ old('slug', $page->slug ?? '') }}"
+                                       class="flex-1 bg-slate-50 border border-slate-200 rounded-lg px-3.5 py-2.5 text-sm font-mono text-slate-700 outline-none focus:border-slate-400 transition-all"
+                                       placeholder="about-us">
+                                <button type="button" id="regenerateSlug"
+                                        class="shrink-0 px-2.5 py-2 rounded-lg bg-slate-100 text-slate-500 text-[0.6rem] font-black uppercase hover:bg-slate-200 transition-all">
+                                    Auto
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                {{-- Content --}}
-                <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 space-y-4">
-                    <div class="text-[0.6rem] font-black uppercase tracking-widest text-slate-400 flex items-center gap-2">
-                        <div class="w-4 h-px bg-slate-300"></div> Page Content
+                {{-- ── JODIT EDITOR ── --}}
+                <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                    <div class="px-5 py-3 border-b border-slate-100 flex items-center gap-2">
+                        <div class="text-[0.55rem] font-black uppercase tracking-[0.28em] text-slate-400 flex items-center gap-2">
+                            <div class="w-3 h-px bg-slate-300"></div> Page Content
+                        </div>
                         <span class="bg-emerald-100 text-emerald-600 text-[0.45rem] font-black uppercase tracking-widest px-2 py-0.5 rounded-full">Rich Editor</span>
                     </div>
-                    {{-- Jodit attaches to this textarea --}}
-                    <textarea name="content" id="pageContent"
-                              class="w-full">{{ old('content', $page->content ?? '') }}</textarea>
-                    <p class="text-[0.6rem] text-slate-400">Full-featured rich text editor — supports images, tables, colors, lists, and raw HTML mode.</p>
+                    {{-- Jodit initializes on this element --}}
+                    <textarea name="content" id="pageContent">{{ old('content', $page->content ?? '') }}</textarea>
                 </div>
 
                 {{-- SEO --}}
-                <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 space-y-4">
-                    <div class="text-[0.6rem] font-black uppercase tracking-widest text-slate-400 flex items-center gap-2">
-                        <div class="w-4 h-px bg-slate-300"></div> SEO Settings
+                <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+                    <div class="text-[0.55rem] font-black uppercase tracking-[0.28em] text-slate-400 mb-4 flex items-center gap-2">
+                        <div class="w-3 h-px bg-slate-300"></div> SEO Settings
                     </div>
-                    <div class="space-y-2">
-                        <label class="text-xs font-bold text-slate-700">Meta Description</label>
-                        <textarea name="meta_description" rows="2" maxlength="320"
-                                  class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-700 outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100 transition-all resize-none"
-                                  placeholder="Brief description for search engines (120–160 chars recommended)">{{ old('meta_description', $page->meta_description ?? '') }}</textarea>
-                    </div>
-                    <div class="space-y-2">
-                        <label class="text-xs font-bold text-slate-700">Hero Image URL</label>
-                        <input type="text" name="hero_image"
-                               value="{{ old('hero_image', $page->hero_image ?? '') }}"
-                               class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-700 outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100 transition-all"
-                               placeholder="https://...">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="space-y-1.5">
+                            <label class="text-xs font-bold text-slate-700">Meta Description</label>
+                            <textarea name="meta_description" rows="3" maxlength="320"
+                                      class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3.5 py-2.5 text-xs text-slate-700 outline-none focus:border-slate-400 transition-all resize-none"
+                                      placeholder="120–160 chars for best SEO results">{{ old('meta_description', $page->meta_description ?? '') }}</textarea>
+                        </div>
+                        <div class="space-y-1.5">
+                            <label class="text-xs font-bold text-slate-700">Hero Image URL</label>
+                            <input type="text" name="hero_image"
+                                   value="{{ old('hero_image', $page->hero_image ?? '') }}"
+                                   class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3.5 py-2.5 text-xs text-slate-700 outline-none focus:border-slate-400 transition-all"
+                                   placeholder="https://...">
+                            @if(isset($page) && $page->hero_image)
+                                <img src="{{ $page->hero_image }}" class="w-full h-20 object-cover rounded-lg mt-2">
+                            @endif
+                        </div>
                     </div>
                 </div>
 
             </div>
 
-            {{-- ── RIGHT: Settings + Menu ── --}}
-            <div class="space-y-5">
+            {{-- ═══════ RIGHT (1/4) ═══════ --}}
+            <div class="space-y-4">
 
-                {{-- Publish --}}
-                <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 space-y-4">
-                    <div class="text-[0.6rem] font-black uppercase tracking-widest text-slate-400 flex items-center gap-2">
-                        <div class="w-4 h-px bg-slate-300"></div> Visibility
+                {{-- Publish + Save --}}
+                <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5 space-y-4">
+                    <div class="text-[0.55rem] font-black uppercase tracking-[0.28em] text-slate-400 flex items-center gap-2">
+                        <div class="w-3 h-px bg-slate-300"></div> Visibility
                     </div>
-                    <label class="flex items-center justify-between cursor-pointer group">
+                    <label class="flex items-center justify-between cursor-pointer">
                         <div>
-                            <div class="text-sm font-bold text-slate-900">Publish Page</div>
-                            <div class="text-[0.65rem] text-slate-400 mt-0.5">Make this page publicly visible</div>
+                            <div class="text-sm font-bold text-slate-900">Publish</div>
+                            <div class="text-[0.6rem] text-slate-400 mt-0.5">Make publicly visible</div>
                         </div>
                         <div class="relative">
                             <input type="checkbox" name="is_published" id="is_published" value="1"
                                    {{ old('is_published', $page->is_published ?? false) ? 'checked' : '' }}
                                    class="sr-only peer">
-                            <div class="w-11 h-6 bg-slate-200 rounded-full peer peer-checked:bg-emerald-500 transition-colors"></div>
-                            <div class="absolute left-0.5 top-0.5 w-5 h-5 bg-white rounded-full shadow-sm transition-transform peer-checked:translate-x-5"></div>
+                            <div class="w-10 h-5 bg-slate-200 rounded-full peer peer-checked:bg-emerald-500 transition-colors"></div>
+                            <div class="absolute left-0.5 top-0.5 w-4 h-4 bg-white rounded-full shadow-sm transition-transform peer-checked:translate-x-5"></div>
                         </div>
                     </label>
-
-                    <div class="pt-2 border-t border-slate-100">
-                        <button type="submit"
-                                class="w-full bg-slate-900 text-white py-3 rounded-xl text-[0.75rem] font-black uppercase tracking-widest shadow hover:bg-slate-800 transition-all flex items-center justify-center gap-2">
-                            <i data-lucide="save" class="w-4 h-4"></i>
-                            {{ isset($page) ? 'Save Changes' : 'Create Page' }}
-                        </button>
-                    </div>
+                    <button type="submit"
+                            class="w-full bg-slate-900 text-white py-2.5 rounded-xl text-[0.7rem] font-black uppercase tracking-widest shadow hover:bg-slate-800 transition-all flex items-center justify-center gap-2">
+                        <i data-lucide="save" class="w-3.5 h-3.5"></i>
+                        {{ isset($page) ? 'Save Changes' : 'Create Page' }}
+                    </button>
                 </div>
 
-                {{-- ── Menu Integration ── --}}
-                <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 space-y-4">
-                    <div class="text-[0.6rem] font-black uppercase tracking-widest text-indigo-500 flex items-center gap-2">
-                        <div class="w-4 h-px bg-indigo-300"></div> Navigation Menu
-                        <span class="bg-indigo-100 text-indigo-500 text-[0.42rem] font-black uppercase px-2 py-0.5 rounded-full tracking-widest">Integration</span>
+                {{-- Menu Integration --}}
+                <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5 space-y-3">
+                    <div class="text-[0.55rem] font-black uppercase tracking-[0.28em] text-indigo-500 flex items-center gap-2">
+                        <div class="w-3 h-px bg-indigo-300"></div> Navigation
+                        <span class="bg-indigo-100 text-indigo-500 text-[0.4rem] font-black uppercase px-1.5 py-0.5 rounded-full tracking-widest">Menu</span>
                     </div>
 
                     @if(isset($existingMenuItem) && $existingMenuItem)
-                        <div class="flex items-center gap-3 bg-indigo-50 border border-indigo-100 rounded-xl p-3">
-                            <i data-lucide="link-2" class="w-4 h-4 text-indigo-500 shrink-0"></i>
-                            <div class="min-w-0">
-                                <div class="text-xs font-bold text-indigo-700">Linked to: {{ $existingMenuItem->menu->name ?? 'Menu' }}</div>
-                                <div class="text-[0.6rem] text-indigo-400 truncate">{{ $existingMenuItem->url }}</div>
+                        <div class="flex items-center gap-2 bg-indigo-50 border border-indigo-100 rounded-lg p-2.5">
+                            <i data-lucide="link-2" class="w-3.5 h-3.5 text-indigo-500 shrink-0"></i>
+                            <div class="min-w-0 text-xs">
+                                <div class="font-bold text-indigo-700 truncate">{{ $existingMenuItem->menu->name ?? 'Menu' }}</div>
+                                <div class="text-indigo-400 truncate text-[0.6rem]">{{ $existingMenuItem->url }}</div>
                             </div>
                         </div>
                         <label class="flex items-center gap-2 cursor-pointer">
-                            <input type="checkbox" name="remove_from_menu" value="1" class="w-4 h-4 rounded border-slate-300 text-red-500 focus:ring-red-300">
-                            <span class="text-[0.7rem] font-bold text-red-500">Remove from menu</span>
+                            <input type="checkbox" name="remove_from_menu" value="1" class="w-3.5 h-3.5 rounded border-slate-300 text-red-500">
+                            <span class="text-[0.65rem] font-bold text-red-500">Remove from menu</span>
                         </label>
-                        <div class="pt-2 border-t border-slate-100 text-[0.6rem] text-slate-400">Or move to a different menu:</div>
                     @endif
 
-                    <div class="space-y-3">
-                        <div class="space-y-1.5">
-                            <label class="text-xs font-bold text-slate-700">Add to Menu</label>
-                            <select name="add_to_menu" id="addToMenu"
-                                    class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-700 outline-none focus:border-indigo-400 transition-all">
-                                <option value="">— Don't add to menu —</option>
-                                @foreach($menus as $menu)
-                                    <option value="{{ $menu->id }}"
-                                        {{ old('add_to_menu', isset($existingMenuItem) ? $existingMenuItem->menu_id : '') == $menu->id ? 'selected' : '' }}>
-                                        {{ $menu->name }}
-                                        @if($menu->location) · {{ $menu->location }} @endif
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        <div class="space-y-1.5" id="parentMenuWrapper" style="display:none">
-                            <label class="text-xs font-bold text-slate-700">As Sub-item of</label>
-                            <select name="menu_parent_id" id="menuParentSelect"
-                                    class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-700 outline-none focus:border-indigo-400 transition-all">
-                                <option value="">— Top-level item —</option>
-                                @if(isset($rootMenuItems))
-                                    @foreach($rootMenuItems as $ri)
-                                        <option value="{{ $ri->id }}"
-                                            {{ old('menu_parent_id', isset($existingMenuItem) ? $existingMenuItem->parent_id : '') == $ri->id ? 'selected' : '' }}>
-                                            {{ $ri->label }}
-                                        </option>
-                                    @endforeach
-                                @endif
-                            </select>
-                        </div>
+                    <div class="space-y-1.5">
+                        <label class="text-[0.6rem] font-black text-slate-600 uppercase tracking-wider">Add to Menu</label>
+                        <select name="add_to_menu" id="addToMenu"
+                                class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs font-bold text-slate-700 outline-none focus:border-indigo-400 transition-all">
+                            <option value="">— None —</option>
+                            @foreach($menus as $menu)
+                                <option value="{{ $menu->id }}"
+                                    {{ old('add_to_menu', isset($existingMenuItem) ? $existingMenuItem->menu_id : '') == $menu->id ? 'selected' : '' }}>
+                                    {{ $menu->name }}@if($menu->location) · {{ $menu->location }}@endif
+                                </option>
+                            @endforeach
+                        </select>
                     </div>
 
-                    <p class="text-[0.6rem] text-slate-400 leading-relaxed">
-                        The page title becomes the menu label automatically. You can rename it later in the Menu builder.
-                    </p>
+                    <div class="space-y-1.5" id="parentMenuWrapper" style="display:none">
+                        <label class="text-[0.6rem] font-black text-slate-600 uppercase tracking-wider">As Sub-item of</label>
+                        <select name="menu_parent_id" id="menuParentSelect"
+                                class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs font-bold text-slate-700 outline-none focus:border-indigo-400 transition-all">
+                            <option value="">— Top level —</option>
+                            @if(isset($rootMenuItems))
+                                @foreach($rootMenuItems as $ri)
+                                    <option value="{{ $ri->id }}"
+                                        {{ old('menu_parent_id', isset($existingMenuItem) ? $existingMenuItem->parent_id : '') == $ri->id ? 'selected' : '' }}>
+                                        {{ $ri->label }}
+                                    </option>
+                                @endforeach
+                            @endif
+                        </select>
+                    </div>
                 </div>
 
                 {{-- Quick Links --}}
                 <div class="bg-slate-50 rounded-xl border border-slate-200 p-4 space-y-2">
-                    <div class="text-[0.6rem] font-black uppercase tracking-widest text-slate-400">Quick Links</div>
+                    <div class="text-[0.55rem] font-black uppercase tracking-widest text-slate-400 mb-2">Quick Links</div>
                     <a href="{{ route('admin.menus.index') }}" class="flex items-center gap-2 text-xs font-bold text-slate-600 hover:text-slate-900 transition-colors">
-                        <i data-lucide="navigation" class="w-3.5 h-3.5"></i> Menu Builder
+                        <i data-lucide="navigation" class="w-3 h-3"></i> Menu Builder
                     </a>
                     @if(isset($page))
                         <a href="{{ route('page.show', $page->slug) }}" target="_blank" class="flex items-center gap-2 text-xs font-bold text-slate-600 hover:text-slate-900 transition-colors">
-                            <i data-lucide="external-link" class="w-3.5 h-3.5"></i> Preview Page
+                            <i data-lucide="external-link" class="w-3 h-3"></i> Preview Page
                         </a>
                     @endif
+                    <a href="{{ route('admin.pages.index') }}" class="flex items-center gap-2 text-xs font-bold text-slate-600 hover:text-slate-900 transition-colors">
+                        <i data-lucide="list" class="w-3 h-3"></i> All Pages
+                    </a>
                 </div>
 
             </div>
-
         </div>
     </form>
 </div>
 
 <script>
-(function() {
-    // Auto-generate slug from title
-    const titleEl = document.getElementById('pageTitle');
-    const slugEl  = document.getElementById('pageSlug');
+document.addEventListener('DOMContentLoaded', function() {
+
+    // ── Slug auto-generate ───────────────────────────────────────────
+    const titleEl  = document.getElementById('pageTitle');
+    const slugEl   = document.getElementById('pageSlug');
     const regenBtn = document.getElementById('regenerateSlug');
-    const menuSel = document.getElementById('addToMenu');
+    const menuSel  = document.getElementById('addToMenu');
     const parentWrapper = document.getElementById('parentMenuWrapper');
-    const parentSel = document.getElementById('menuParentSelect');
+    const parentSel     = document.getElementById('menuParentSelect');
 
     function toSlug(str) {
-        return str.toLowerCase()
-                  .replace(/[^\w\s-]/g, '')
-                  .replace(/\s+/g, '-')
-                  .replace(/-+/g, '-')
-                  .trim();
+        return str.toLowerCase().replace(/[^\w\s-]/g,'').replace(/\s+/g,'-').replace(/-+/g,'-').trim();
     }
-
-    // Auto-fill slug on title input (only if slug is empty or unchanged from title)
     titleEl?.addEventListener('input', function() {
-        if (!slugEl.dataset.manual) {
-            slugEl.value = toSlug(this.value);
-        }
+        if (!slugEl.dataset.manual) slugEl.value = toSlug(this.value);
     });
-
     slugEl?.addEventListener('input', function() {
         this.dataset.manual = '1';
         this.value = toSlug(this.value);
     });
-
     regenBtn?.addEventListener('click', function() {
-        if (titleEl.value) {
-            delete slugEl.dataset.manual;
-            slugEl.value = toSlug(titleEl.value);
-        }
+        if (titleEl.value) { delete slugEl.dataset.manual; slugEl.value = toSlug(titleEl.value); }
     });
 
-    // Show/hide parent selector based on menu selection
+    // ── Menu items AJAX ──────────────────────────────────────────────
     function loadMenuItems(menuId) {
-        if (!menuId) {
-            parentWrapper.style.display = 'none';
-            parentSel.innerHTML = '<option value="">— Top-level item —</option>';
-            return;
-        }
+        if (!menuId) { parentWrapper.style.display = 'none'; return; }
         parentWrapper.style.display = 'block';
         fetch(`/admin/pages/${menuId}/menu-items`)
             .then(r => r.json())
             .then(items => {
-                parentSel.innerHTML = '<option value="">— Top-level item —</option>';
-                items.forEach(item => {
-                    parentSel.innerHTML += `<option value="${item.id}">${item.label}</option>`;
-                });
-            })
-            .catch(() => {
-                parentWrapper.style.display = 'none';
-            });
+                parentSel.innerHTML = '<option value="">— Top level —</option>';
+                items.forEach(i => { parentSel.innerHTML += `<option value="${i.id}">${i.label}</option>`; });
+            }).catch(() => { parentWrapper.style.display = 'none'; });
     }
+    menuSel?.addEventListener('change', function() { loadMenuItems(this.value); });
+    if (menuSel?.value) parentWrapper.style.display = 'block';
 
-    menuSel?.addEventListener('change', function() {
-        loadMenuItems(this.value);
-    });
-
-    // Init: if a menu is pre-selected
-    if (menuSel?.value) {
-        parentWrapper.style.display = 'block';
-    }
-
-    // ── Jodit WYSIWYG Editor ──────────────────────────────────────────
+    // ── Jodit Rich Editor ────────────────────────────────────────────
     if (typeof Jodit !== 'undefined') {
         const editor = Jodit.make('#pageContent', {
-            height: 560,
-            language: 'auto',
-            direction: 'ltr',
-            toolbarAdaptive: false,
-            toolbarSticky: true,
-            spellcheck: true,
-            showCharsCounter: true,
-            showWordsCounter: true,
+            height:             640,
+            minHeight:          400,
+            toolbarAdaptive:    false,
+            toolbarSticky:      true,
+            showCharsCounter:   true,
+            showWordsCounter:   true,
             showXPathInStatusbar: false,
-            allowResizeTags: ['img', 'table'],
+            uploader:           { insertImageAsBase64URI: true },
             buttons: [
-                'undo', 'redo', '|',
-                'bold', 'italic', 'underline', 'strikethrough', '|',
-                'superscript', 'subscript', '|',
-                'align', '|',
-                'ul', 'ol', 'outdent', 'indent', '|',
-                'font', 'fontsize', 'brush', 'paragraph', '|',
-                'image', 'video', 'table', 'link', '|',
-                'hr', 'eraser', 'copyformat', '|',
-                'fullsize', 'selectall', 'print', '|',
-                'source'
+                'undo','redo','|',
+                'bold','italic','underline','strikethrough','|',
+                'ul','ol','|',
+                'outdent','indent','|',
+                'font','fontsize','brush','paragraph','|',
+                'image','table','link','|',
+                'align','|',
+                'hr','eraser','|',
+                'fullsize','source'
             ],
-            uploader: { insertImageAsBase64URI: true },
-            style: {
-                font: '14px / 1.7 "Plus Jakarta Sans", sans-serif',
-            },
-            colors: {
-                greens:  ['#1a7f37','#218838','#28a745','#48c774','#a8f0b8'],
-                blues:   ['#0d47a1','#1565c0','#1976d2','#2196f3','#90caf9'],
-                oranges: ['#ff4605','#ff6900','#ffa000','#ffb300','#ffe082'],
-                greys:   ['#212529','#495057','#6c757d','#adb5bd','#dee2e6'],
-            },
+            style: { font: '15px/1.8 "Plus Jakarta Sans",sans-serif', color: '#334155' },
         });
-
-        // Sync Jodit content to textarea before form submit
-        document.getElementById('pageForm')?.addEventListener('submit', function() {
+        // Sync to textarea on submit
+        document.getElementById('pageForm').addEventListener('submit', function() {
             document.getElementById('pageContent').value = editor.value;
         });
+    } else {
+        // Fallback: show raw textarea if Jodit fails
+        const ta = document.getElementById('pageContent');
+        ta.style.cssText = 'width:100%;min-height:500px;padding:1rem;font-family:monospace;font-size:13px;border:1px solid #e2e8f0;border-radius:0;outline:none;';
     }
-})();
+
+});
 </script>
 @endsection
