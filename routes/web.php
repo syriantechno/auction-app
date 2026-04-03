@@ -152,5 +152,9 @@ Route::get('/login-test', function () {
     return redirect()->route('home');
 })->name('login.test');
 
+// Dealer Public Profile
+Route::get('/dealer/{dealer}', [\App\Http\Controllers\DealerProfileController::class, 'show'])
+    ->name('dealer.profile');
+
 // Dynamic Pages (Catch-all)
 Route::get('/{slug}', [PageController::class, 'show'])->name('page.show');

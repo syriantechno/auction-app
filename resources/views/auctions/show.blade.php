@@ -210,11 +210,11 @@
                         @forelse($auction->bids->take(5) as $bid)
                         <div class="flex justify-between items-center bg-white p-3 rounded-md shadow-sm border border-black/5">
                             <div class="flex items-center gap-3">
-                                <div class="w-7 h-7 rounded-lg bg-zinc-900 text-white flex items-center justify-center font-bold text-[0.6rem]">
+                                <a href="{{ route('dealer.profile', $bid->user) }}" class="w-7 h-7 rounded-lg bg-zinc-900 text-white flex items-center justify-center font-bold text-[0.6rem] hover:bg-[#ff4605] transition-colors">
                                     {{ substr($bid->user->name, 0, 1) }}
-                                </div>
+                                </a>
                                 <div>
-                                    <div class="text-[0.7rem] font-black text-[#111827]">{{ $bid->user->name }}</div>
+                                    <a href="{{ route('dealer.profile', $bid->user) }}" class="text-[0.7rem] font-black text-[#111827] hover:text-[#ff4605] transition-colors">{{ $bid->user->name }}</a>
                                     <div class="text-[0.55rem] text-gray-400 font-bold tabular-nums">{{ $bid->created_at->diffForHumans() }}</div>
                                 </div>
                             </div>
