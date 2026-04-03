@@ -8,12 +8,25 @@ class Negotiation extends Model
 {
     protected $fillable = [
         'auction_id',
-        'buyer_id',
-        'seller_id',
-        'last_bid_amount',
-        'current_offer',
-        'status', // pending_seller, counter_offered, accepted, rejected
+        'lead_id',
+        'winning_bidder_id',
+        'highest_bid',
+        'offer_to_lead',
+        'profit_margin',
+        'status',
+        'counter_offer',
         'notes',
+        'offer_sent_at',
+        'responded_at',
+    ];
+
+    protected $casts = [
+        'highest_bid'    => 'decimal:2',
+        'offer_to_lead'  => 'decimal:2',
+        'profit_margin'  => 'decimal:2',
+        'counter_offer'  => 'decimal:2',
+        'offer_sent_at'  => 'datetime',
+        'responded_at'   => 'datetime',
     ];
 
     public function auction()
@@ -21,13 +34,32 @@ class Negotiation extends Model
         return $this->belongsTo(Auction::class);
     }
 
-    public function buyer()
+    public function lead()
     {
-        return $this->belongsTo(User::class, 'buyer_id');
+        return $this->belongsTo(Lead::class);
     }
 
-    public function seller()
+    public function winningBidder()
     {
-        return $this->belongsTo(User::class, 'seller_id');
+        return $this->belongsTo(User::class, 'winning_bidder_id');
+    }
+
+    // Calculated profit margin
+    public function getProfitAttribute(): float
+    {
+        return (float)$this->highest_bid - (float)$this->offer_to_lead;
+    }
+
+    // Status badge color
+    public function getStatusColorAttribute(): string
+    {
+        return match($this->status) {
+            'pending'        => 'amber',
+            'offer_sent'     => 'blue',
+            'accepted'       => 'emerald',
+            'rejected'       => 'red',
+            'counter_offered'=> 'purple',
+            default          => 'slate',
+        };
     }
 }

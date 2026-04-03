@@ -72,7 +72,19 @@
                 </td>
                 <td class="py-5 px-8 text-right">
                     <div class="flex items-center justify-end gap-3">
-                        @if($auction->status === 'coming_soon')
+                        @if($auction->status === 'closed')
+                        <button onclick="startNegotiation({{ $auction->id }})" title="Start Negotiation"
+                            class="h-10 px-4 rounded-md bg-purple-600 text-white flex items-center gap-2 hover:bg-purple-700 transition-all shadow-lg text-[0.6rem] font-black uppercase tracking-widest">
+                            <i data-lucide="handshake" class="w-3.5 h-3.5"></i> Negotiate
+                        </button>
+                        @endif
+
+                        @if($auction->status === 'deal_approved')
+                        <span class="inline-flex items-center gap-1.5 text-[0.6rem] font-black text-emerald-600 bg-emerald-50 border border-emerald-200 px-3 py-2 rounded-md">
+                            <i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i> Deal Approved
+                        </span>
+                        @endif
+
                         <button onclick="approveAuction({{ $auction->id }})" title="Go Live" class="h-10 px-4 rounded-md bg-emerald-500 text-white flex items-center justify-center gap-2 hover:bg-emerald-600 transition-all shadow-lg shadow-emerald-500/20 text-[0.6rem] font-black uppercase tracking-widest scale-100 hover:scale-105">
                             <i data-lucide="zap" class="w-3.5 h-3.5"></i> Go Live
                         </button>

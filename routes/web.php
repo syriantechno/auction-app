@@ -56,6 +56,16 @@ Route::prefix('admin')->middleware(['auth'])->name('admin.')->group(function () 
     Route::post('/auctions/{auction}/approve', [\App\Http\Controllers\Admin\AuctionController::class, 'approve'])->name('auctions.approve');
     Route::resource('/auctions', \App\Http\Controllers\Admin\AuctionController::class)->names('auctions');
 
+    // Negotiation (Post-Auction)
+    Route::prefix('negotiations')->name('negotiations.')->group(function () {
+        Route::post('/auction/{auction}/start',          [\App\Http\Controllers\Admin\NegotiationController::class, 'start'])->name('start');
+        Route::get('/auction/{auction}',                 [\App\Http\Controllers\Admin\NegotiationController::class, 'show'])->name('show');
+        Route::post('/{negotiation}/send-offer',         [\App\Http\Controllers\Admin\NegotiationController::class, 'sendOffer'])->name('send-offer');
+        Route::post('/{negotiation}/accept',             [\App\Http\Controllers\Admin\NegotiationController::class, 'accept'])->name('accept');
+        Route::post('/{negotiation}/reject',             [\App\Http\Controllers\Admin\NegotiationController::class, 'reject'])->name('reject');
+        Route::post('/{negotiation}/counter-offer',      [\App\Http\Controllers\Admin\NegotiationController::class, 'counterOffer'])->name('counter-offer');
+    });
+
     // CRM: Advanced Leads Pipeline
     Route::post('/leads/{lead}/confirm', [\App\Http\Controllers\Admin\LeadController::class, 'confirm'])->name('leads.confirm');
     Route::resource('/leads', \App\Http\Controllers\Admin\LeadController::class)->names('leads');
