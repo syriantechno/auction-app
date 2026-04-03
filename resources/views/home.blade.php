@@ -949,34 +949,25 @@
             </div>
 
             <div class="mt-10 grid grid-cols-2 xl:grid-cols-4 gap-6">
+                @php
+                    $trustBadges = data_get($page?->content, 'trust_badges', [
+                        ['label' => 'Guaranteed Purchase',    'icon' => 'shield-check', 'color' => '#ff4605', 'bg_color' => '#fff7ed'],
+                        ['label' => 'No Costs. No Obligation','icon' => 'wallet',       'color' => '#031629', 'bg_color' => '#f1f5f9'],
+                        ['label' => 'Quick and Easy',         'icon' => 'zap',          'color' => '#3b82f6', 'bg_color' => '#eff6ff'],
+                        ['label' => 'Fast and Secure',        'icon' => 'lock',         'color' => '#334155', 'bg_color' => '#f1f5f9'],
+                    ]);
+                @endphp
+                @foreach($trustBadges as $badge)
                     <div class="flex items-center gap-3">
-                        <div class="w-11 h-11 rounded-lg bg-orange-50 text-bazar-500 flex items-center justify-center shrink-0">
-                            <i data-lucide="shield-check" class="w-5 h-5"></i>
+                        <div class="w-11 h-11 rounded-lg flex items-center justify-center shrink-0"
+                             style="background-color: {{ data_get($badge, 'bg_color', '#f1f5f9') }}; color: {{ data_get($badge, 'color', '#333') }}">
+                            <i data-lucide="{{ data_get($badge, 'icon', 'star') }}" class="w-5 h-5"></i>
                         </div>
-                        <p class="text-sm font-black text-slate-900 leading-tight">Guaranteed Purchase</p>
+                        <p class="text-sm font-black text-slate-900 leading-tight">{{ data_get($badge, 'label', '') }}</p>
                     </div>
+                @endforeach
+            </div>
 
-                    <div class="flex items-center gap-3">
-                        <div class="w-11 h-11 rounded-lg bg-slate-100 text-[#031629] flex items-center justify-center shrink-0">
-                            <i data-lucide="wallet" class="w-5 h-5"></i>
-                        </div>
-                        <p class="text-sm font-black text-slate-900 leading-tight">No Costs. No Obligation</p>
-                    </div>
-
-                    <div class="flex items-center gap-3">
-                        <div class="w-11 h-11 rounded-lg bg-blue-50 text-blue-500 flex items-center justify-center shrink-0">
-                            <i data-lucide="zap" class="w-5 h-5"></i>
-                        </div>
-                        <p class="text-sm font-black text-slate-900 leading-tight">Quick and Easy</p>
-                    </div>
-
-                    <div class="flex items-center gap-3">
-                        <div class="w-11 h-11 rounded-lg bg-[#1d293d]/5 text-slate-700 flex items-center justify-center shrink-0">
-                            <i data-lucide="lock" class="w-5 h-5"></i>
-                        </div>
-                        <p class="text-sm font-black text-slate-900 leading-tight">Fast and Secure</p>
-                    </div>
-                </div>
         </div>
     </section>
 

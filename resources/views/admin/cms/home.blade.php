@@ -184,6 +184,20 @@
                         </div>
                     </button>
 
+                    <button type="button" @click="activeTab = 'trust_badges'" 
+                        :class="activeTab === 'trust_badges' ? 'bg-orange-50 border-orange-200 text-orange-600' : 'bg-transparent border-transparent text-slate-400 grayscale opacity-60 hover:bg-slate-50 hover:border-slate-100 hover:grayscale-0 hover:opacity-100'"
+                        class="w-full flex items-center gap-2 p-2.5 rounded-lg border-2 transition-all duration-300 text-left active:scale-[0.98] group">
+                        <div class="w-8 h-8 rounded-lg bg-white border border-slate-200 flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" :class="activeTab === 'trust_badges' ? 'text-orange-500' : 'text-slate-400 group-hover:text-orange-500'">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="text-[0.65rem] font-medium uppercase text-slate-900">Trust Badges</div>
+                            <div class="text-[0.5rem] font-bold uppercase tracking-tighter text-slate-400">Icon · Color · Text</div>
+                        </div>
+                    </button>
+
                     <button type="button" @click="activeTab = 'brands'" 
                         :class="activeTab === 'brands' ? 'bg-emerald-50 border-emerald-200 text-emerald-600' : 'bg-transparent border-transparent text-slate-400 grayscale opacity-60 hover:bg-slate-50 hover:border-slate-100 hover:grayscale-0 hover:opacity-100'"
                         class="w-full flex items-center gap-2 p-2.5 rounded-lg border-2 transition-all duration-300 text-left active:scale-[0.98] group">
@@ -941,7 +955,107 @@
                         </div>
                     </div>
                 </div>
-                
+
+                <!-- ==================== TRUST BADGES TAB ==================== -->
+                <div x-show="activeTab === 'trust_badges'" x-cloak x-transition>
+                    <div class="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm">
+                        <div class="flex items-center gap-4 mb-8">
+                            <div class="w-12 h-12 rounded-xl flex items-center justify-center shadow-md" style="background: linear-gradient(135deg,#ff6900,#ff4605)">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-black uppercase tracking-widest text-slate-800">Trust Badges</h3>
+                                <p class="text-[0.6rem] text-slate-400 font-medium uppercase tracking-widest mt-0.5">Icon • Color • Label — 4 Conversion Trust Signals</p>
+                            </div>
+                        </div>
+
+                        @php
+                            $tbDefaults = [
+                                ['label'=>'Guaranteed Purchase','icon'=>'shield-check','color'=>'#ff4605','bg_color'=>'#fff7ed'],
+                                ['label'=>'No Costs. No Obligation','icon'=>'wallet','color'=>'#031629','bg_color'=>'#f1f5f9'],
+                                ['label'=>'Quick and Easy','icon'=>'zap','color'=>'#3b82f6','bg_color'=>'#eff6ff'],
+                                ['label'=>'Fast and Secure','icon'=>'lock','color'=>'#334155','bg_color'=>'#f1f5f9'],
+                            ];
+                            $tbSaved = data_get($page->content, 'trust_badges', $tbDefaults);
+                        @endphp
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            @foreach($tbSaved as $tbIndex => $tb)
+                            <div class="group relative bg-gradient-to-br from-slate-50 to-white border border-slate-200 rounded-2xl p-6 shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300">
+                                {{-- Live Preview --}}
+                                <div class="flex items-center gap-3 mb-5 p-3 rounded-xl border border-slate-100 bg-white shadow-inner">
+                                    <div class="w-11 h-11 rounded-lg flex items-center justify-center shrink-0 transition-all duration-300"
+                                         id="badge-preview-bg-{{ $tbIndex }}"
+                                         style="background-color:{{ data_get($tb,'bg_color','#f1f5f9') }};color:{{ data_get($tb,'color','#333') }}">
+                                        <i data-lucide="{{ data_get($tb,'icon','star') }}" class="w-5 h-5" id="badge-preview-icon-{{ $tbIndex }}"></i>
+                                    </div>
+                                    <span class="text-sm font-black text-slate-900" id="badge-preview-label-{{ $tbIndex }}">{{ data_get($tb,'label','Badge') }}</span>
+                                    <span class="ml-auto text-[0.5rem] font-black uppercase tracking-widest text-slate-300 bg-slate-50 px-2 py-1 rounded-full">Badge {{ $tbIndex+1 }}</span>
+                                </div>
+
+                                {{-- Label --}}
+                                <div class="mb-4">
+                                    <label class="text-[0.5rem] font-black uppercase tracking-widest text-slate-500 mb-1.5 block">Label Text</label>
+                                    <input type="text"
+                                           name="trust_badges[{{ $tbIndex }}][label]"
+                                           value="{{ data_get($tb,'label','') }}"
+                                           oninput="document.getElementById('badge-preview-label-{{ $tbIndex }}').textContent=this.value"
+                                           class="w-full bg-white border border-slate-200 rounded-lg px-4 py-2.5 text-[0.78rem] font-black text-slate-800 outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100 transition-all shadow-sm">
+                                </div>
+
+                                {{-- Icon --}}
+                                <div class="mb-4">
+                                    <label class="text-[0.5rem] font-black uppercase tracking-widest text-slate-500 mb-1.5 block">Lucide Icon Name</label>
+                                    <div class="relative">
+                                        <input type="text"
+                                               name="trust_badges[{{ $tbIndex }}][icon]"
+                                               value="{{ data_get($tb,'icon','star') }}"
+                                               placeholder="e.g. shield-check, zap, lock, star"
+                                               class="w-full bg-white border border-slate-200 rounded-lg px-4 py-2.5 text-[0.78rem] font-mono text-slate-700 outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100 transition-all shadow-sm pr-10">
+                                        <a href="https://lucide.dev/icons" target="_blank" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-300 hover:text-orange-500 transition-colors" title="Browse icons">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                                        </a>
+                                    </div>
+                                    <p class="text-[0.45rem] text-slate-400 font-medium mt-1 ml-1">Browse all icons at lucide.dev/icons</p>
+                                </div>
+
+                                {{-- Colors --}}
+                                <div class="grid grid-cols-2 gap-3">
+                                    <div>
+                                        <label class="text-[0.5rem] font-black uppercase tracking-widest text-slate-500 mb-1.5 block">Icon Color</label>
+                                        <div class="flex items-center gap-2">
+                                            <input type="color"
+                                                   name="trust_badges[{{ $tbIndex }}][color]"
+                                                   value="{{ data_get($tb,'color','#333333') }}"
+                                                   oninput="document.getElementById('badge-preview-bg-{{ $tbIndex }}').style.color=this.value"
+                                                   class="w-10 h-9 rounded-lg border border-slate-200 cursor-pointer p-0.5 shadow-sm">
+                                            <input type="text"
+                                                   value="{{ data_get($tb,'color','#333333') }}"
+                                                   oninput="this.previousElementSibling.value=this.value;document.getElementById('badge-preview-bg-{{ $tbIndex }}').style.color=this.value"
+                                                   class="flex-1 bg-white border border-slate-200 rounded-lg px-3 py-2 text-[0.65rem] font-mono text-slate-600 outline-none focus:border-orange-400 transition-all">
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="text-[0.5rem] font-black uppercase tracking-widest text-slate-500 mb-1.5 block">BG Color</label>
+                                        <div class="flex items-center gap-2">
+                                            <input type="color"
+                                                   name="trust_badges[{{ $tbIndex }}][bg_color]"
+                                                   value="{{ data_get($tb,'bg_color','#f1f5f9') }}"
+                                                   oninput="document.getElementById('badge-preview-bg-{{ $tbIndex }}').style.backgroundColor=this.value"
+                                                   class="w-10 h-9 rounded-lg border border-slate-200 cursor-pointer p-0.5 shadow-sm">
+                                            <input type="text"
+                                                   value="{{ data_get($tb,'bg_color','#f1f5f9') }}"
+                                                   oninput="this.previousElementSibling.value=this.value;document.getElementById('badge-preview-bg-{{ $tbIndex }}').style.backgroundColor=this.value"
+                                                   class="flex-1 bg-white border border-slate-200 rounded-lg px-3 py-2 text-[0.65rem] font-mono text-slate-600 outline-none focus:border-orange-400 transition-all">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+
                 <!-- ==================== STYLES TAB ==================== -->
                 <div x-show="activeTab === 'styles'" x-cloak x-transition>
                     <div class="bg-emerald-600 p-10 rounded-lg text-white shadow-2xl relative overflow-hidden group">

@@ -232,6 +232,17 @@ class CMSController extends Controller
             'glass' => $request->boolean('navbar_glass', data_get($content, 'navbar.glass', true)),
         ];
 
+        // Trust Badges
+        if ($request->has('trust_badges')) {
+            $content['trust_badges'] = collect($request->input('trust_badges', []))
+                ->map(fn($b) => [
+                    'label'     => data_get($b, 'label', ''),
+                    'icon'      => data_get($b, 'icon', 'star'),
+                    'color'     => data_get($b, 'color', '#333333'),
+                    'bg_color'  => data_get($b, 'bg_color', '#f1f5f9'),
+                ])->values()->all();
+        }
+
         $page->update([
             'title' => $request->input('title'),
             'hero_image' => $heroCarImage,
