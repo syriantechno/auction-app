@@ -39,11 +39,11 @@ class AppServiceProvider extends ServiceProvider
             // Share Nav Menus with layouts/app
             view()->composer('layouts.app', function ($view) {
                 $headerMenu = \App\Models\Menu::where('location', 'header')->with(['items' => function($q) {
-                    $q->whereNull('parent_id')->with('children')->orderBy('order');
+                    $q->whereNull('parent_id')->with(['children.page', 'page'])->orderBy('order');
                 }])->first();
                 
                 $footerMenu = \App\Models\Menu::where('location', 'footer')->with(['items' => function($q) {
-                    $q->whereNull('parent_id')->with('children')->orderBy('order');
+                    $q->whereNull('parent_id')->with(['children.page', 'page'])->orderBy('order');
                 }])->first();
 
                 $view->with('headerMenu', $headerMenu)->with('footerMenu', $footerMenu);

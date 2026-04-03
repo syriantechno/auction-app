@@ -16,12 +16,18 @@ class Page extends Model
         'is_active',
         'hero_image',
         'is_published',
-        'meta_description'
+        'meta_description',
     ];
 
     protected $casts = [
-        'content' => 'json',
-        'is_active' => 'boolean',
+        'is_active'    => 'boolean',
         'is_published' => 'boolean',
+        // NOTE: content is raw HTML — NOT json-cast
     ];
+
+    /** Pages that appear in a menu */
+    public function menuItems()
+    {
+        return $this->hasMany(MenuItem::class);
+    }
 }
