@@ -76,6 +76,10 @@ Route::prefix('admin')->middleware(['auth'])->name('admin.')->group(function () 
         Route::post('/{stockEntry}/complete-deal',  [\App\Http\Controllers\Admin\StockController::class, 'completeDeal'])->name('complete-deal');
     });
 
+    // ── Dealer Profiles ────────────────────────────────────────────
+    Route::get('/dealers',           [\App\Http\Controllers\Admin\DealerController::class, 'index'])->name('dealers.index');
+    Route::get('/dealers/{user}',    [\App\Http\Controllers\Admin\DealerController::class, 'show'])->name('dealers.show');
+
     // ── Finance System ─────────────────────────────────────────────
     Route::prefix('finance')->name('finance.')->group(function () {
         Route::get('/',                                           [\App\Http\Controllers\Admin\FinanceController::class, 'dashboard'])->name('dashboard');
