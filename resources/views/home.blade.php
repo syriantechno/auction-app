@@ -507,7 +507,7 @@
                                     <i data-lucide="chevron-down" class="w-5 h-5 text-slate-400 group-hover:rotate-180 transition-transform duration-500"></i>
                                 </button>
 
-                                <div id="brandHubDrawer" class="hidden absolute left-0 right-0 top-[calc(100%+0.75rem)] z-[300] rounded-[1rem] overflow-hidden border border-slate-200 bg-white/95 backdrop-blur-2xl shadow-[0_40px_120px_-30px_rgba(15,23,42,0.28)] p-2.5 animate-in fade-in zoom-in-95 duration-500">
+                                <div id="brandHubDrawer" class="hidden absolute left-0 right-0 top-[calc(100%+0.75rem)] z-[9999] rounded-[1rem] overflow-hidden border border-slate-200 bg-white/95 backdrop-blur-2xl shadow-[0_40px_120px_-30px_rgba(15,23,42,0.28)] p-2.5 animate-in fade-in zoom-in-95 duration-500">
                                     <div class="flex items-center gap-2 pb-2 border-b border-slate-100">
                                         <div class="relative flex-1">
                                             <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300"></i>
@@ -965,7 +965,13 @@
             </div>
 
             {{-- Badges Grid --}}
-            <div class="grid grid-cols-2 xl:grid-cols-4 divide-x divide-slate-200/80 relative z-0">
+            <div class="grid grid-cols-2 xl:grid-cols-4 relative z-0">
+                {{-- Gradient separator lines --}}
+                <div class="hidden xl:block absolute top-[10%] bottom-[10%] left-1/4 w-px" style="background: linear-gradient(to bottom, transparent, #cbd5e1, transparent);"></div>
+                <div class="hidden xl:block absolute top-[10%] bottom-[10%] left-2/4 w-px" style="background: linear-gradient(to bottom, transparent, #cbd5e1, transparent);"></div>
+                <div class="hidden xl:block absolute top-[10%] bottom-[10%] left-3/4 w-px" style="background: linear-gradient(to bottom, transparent, #cbd5e1, transparent);"></div>
+                {{-- Mobile: horizontal separator --}}
+                <div class="xl:hidden absolute left-[10%] right-[10%] top-1/2 h-px" style="background: linear-gradient(to right, transparent, #cbd5e1, transparent);"></div>
                 @foreach($trustBadges as $i => $badge)
                 @php
                     $bColor = data_get($badge, 'color', '#333');
