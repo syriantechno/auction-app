@@ -81,8 +81,10 @@ Route::prefix('admin')->middleware(['auth'])->name('admin.')->group(function () 
     Route::post('/menus/{menu}/item', [\App\Http\Controllers\Admin\MenuController::class, 'addItem'])->name('menus.addItem');
     Route::patch('/menus/item/{item}', [\App\Http\Controllers\Admin\MenuController::class, 'updateItem'])->name('menus.updateItem');
     Route::delete('/menus/item/{item}', [\App\Http\Controllers\Admin\MenuController::class, 'removeItem'])->name('menus.removeItem');
+    Route::post('/menus/{menu}/reorder', [\App\Http\Controllers\Admin\MenuController::class, 'reorder'])->name('menus.reorder');
 
     // Dynamic Pages Management
+    Route::get('/pages/{menu}/menu-items', [\App\Http\Controllers\Admin\PageController::class, 'menuItems'])->name('pages.menu-items');
     Route::resource('/pages', \App\Http\Controllers\Admin\PageController::class)->names('pages');
 
     // System Settings
