@@ -1,13 +1,14 @@
-﻿<div class="bg-white rounded-[2rem] shadow-xl border border-slate-100 overflow-hidden">
+<div class="bg-white rounded-[2rem] shadow-xl border border-slate-100 overflow-hidden">
     <table class="w-full text-left border-collapse">
         <thead>
             <tr class="bg-slate-50/50 border-b border-slate-100">
-                <th class="py-5 px-8 text-[0.6rem] text-slate-400 font-black uppercase tracking-widest w-28 text-center">Asset preview</th>
-                <th class="py-5 px-6 text-[0.6rem] text-slate-400 font-black uppercase tracking-widest">Marketplace Identity</th>
-                <th class="py-5 px-6 text-[0.6rem] text-slate-400 font-black uppercase tracking-widest text-center">Operational Phase</th>
-                <th class="py-5 px-6 text-[0.6rem] text-slate-400 font-black uppercase tracking-widest text-center">Pricing Dynamics</th>
-                <th class="py-5 px-6 text-[0.6rem] text-slate-400 font-black uppercase tracking-widest">Temporal Vector</th>
-                <th class="py-5 px-8 text-[0.6rem] text-slate-400 font-black uppercase tracking-widest text-right">Directive Control</th>
+                <th class="py-5 px-8 text-[0.6rem] text-slate-400 font-black uppercase tracking-widest w-28 text-center">Photo</th>
+                <th class="py-5 px-6 text-[0.6rem] text-slate-400 font-black uppercase tracking-widest">Vehicle</th>
+                <th class="py-5 px-6 text-[0.6rem] text-slate-400 font-black uppercase tracking-widest text-center">Reference</th>
+                <th class="py-5 px-6 text-[0.6rem] text-slate-400 font-black uppercase tracking-widest text-center">Status</th>
+                <th class="py-5 px-6 text-[0.6rem] text-slate-400 font-black uppercase tracking-widest text-center">Price</th>
+                <th class="py-5 px-6 text-[0.6rem] text-slate-400 font-black uppercase tracking-widest">Schedule</th>
+                <th class="py-5 px-8 text-[0.6rem] text-slate-400 font-black uppercase tracking-widest text-right">Actions</th>
             </tr>
         </thead>
         <tbody id="tableBody" class="divide-y divide-slate-50">
@@ -25,8 +26,19 @@
                 <td class="py-5 px-6">
                     <div class="flex flex-col">
                         <span class="text-base font-black text-[#031629] tracking-tight truncate max-w-[200px]">{{ optional($auction->car)->year }} {{ optional($auction->car)->make }} {{ optional($auction->car)->model }}</span>
-                        <span class="text-[0.6rem] text-slate-400 mt-1 font-bold uppercase tracking-widest italic">Node ID # {{ str_pad($auction->id, 5, '0', STR_PAD_LEFT) }}</span>
+                        <span class="text-[0.6rem] text-slate-400 mt-1 font-bold uppercase tracking-widest">#{{ $auction->id }}</span>
                     </div>
+                </td>
+                {{-- Reference Code --}}
+                <td class="py-5 px-6 text-center">
+                    @if($auction->reference_code)
+                        <span class="inline-flex items-center gap-1.5 font-mono text-[0.7rem] font-black text-[#ff6900] bg-orange-50 border border-orange-200 px-3 py-1.5 rounded-lg">
+                            <i data-lucide="hash" class="w-3 h-3"></i>
+                            {{ $auction->reference_code }}
+                        </span>
+                    @else
+                        <span class="text-[0.6rem] text-slate-300 font-medium">—</span>
+                    @endif
                 </td>
                 <td class="py-5 px-6 text-center">
                     @php
@@ -90,7 +102,7 @@
         </tbody>
     </table>
 
-    <!-- Matrix Paging -->
+    {{-- Pagination --}}
     <div id="paginationContainer">
         @if($auctions->hasPages())
         <div class="bg-slate-50/50 px-10 py-10 border-t border-slate-100 flex items-center justify-center">

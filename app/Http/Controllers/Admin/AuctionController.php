@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Auction;
 use App\Models\Car;
+use App\Services\ReferenceCodeService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
 
@@ -67,13 +68,22 @@ class AuctionController extends Controller
             'status' => 'required|in:coming_soon,active,paused,closed',
         ]);
 
-        Auction::create($validated);
+        $auction = Auction::create($validated);
 
-        if ($request->ajax()) {
-            return response()->json(['success' => true, 'message' => 'Auction Cycle Launched']);
+        // Auto-generate reference code when going to Coming Soon or Active
+        if (in_array($auction->status, ['coming_soon', 'active'])) {
+            ReferenceCodeService::assignTo($auction);
         }
 
-        return redirect()->route('admin.auctions.index')->with('success', 'Auction launched.');
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Auction created.',
+                'reference_code' => $auction->fresh()->reference_code
+            ]);
+        }
+
+        return redirect()->route('admin.auctions.index')->with('success', 'Auction launched. Ref: ' . $auction->reference_code);
     }
 
     public function edit(Auction $auction)
@@ -119,17 +129,24 @@ class AuctionController extends Controller
         $duration = $request->input('duration', 20); // Default 20 mins
 
         $auction->update([
-            'status' => 'active',
-            'start_at' => now(),
-            'end_at' => now()->addMinutes($duration),
+            'status'           => 'active',
+            'start_at'         => now(),
+            'end_at'           => now()->addMinutes($duration),
             'duration_minutes' => $duration
         ]);
 
+        // Ensure ref code exists when going live
+        $refCode = ReferenceCodeService::assignTo($auction);
+
         if (request()->ajax()) {
-            return response()->json(['success' => true, 'message' => "Auction Live for {$duration} minutes."]);
+            return response()->json([
+                'success' => true,
+                'message' => "Auction is now LIVE for {$duration} minutes.",
+                'reference_code' => $refCode,
+            ]);
         }
 
-        return redirect()->back()->with('success', "Auction is now LIVE for {$duration} minutes.");
+        return redirect()->back()->with('success', "Auction is now LIVE for {$duration} minutes. Ref: {$refCode}");
     }
 
     /**

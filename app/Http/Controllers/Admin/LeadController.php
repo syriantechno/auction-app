@@ -83,7 +83,7 @@ class LeadController extends Controller
         $lead->update($validated);
         
         if ($request->ajax()) {
-            return response()->json(['success' => true, 'message' => 'Node Re-calibrated']);
+            return response()->json(['success' => true, 'message' => 'Lead updated']);
         }
 
         return back()->with('success', 'Lead updated.');
@@ -103,7 +103,7 @@ class LeadController extends Controller
             'status' => 'inspection_scheduled',
             'car_details' => $details,
             'notes' => trim(($lead->notes ?? "") . sprintf(
-                "\n[MATRIX UPDATE] Inspection Confirmed: %s @ %s | Venue: %s | Assigned to: %s",
+                "\n[CONFIRMED] Inspection: %s @ %s | Location: %s | Inspector: %s",
                 $details['inspection_date'],
                 $details['inspection_time'],
                 $details['location'] ?? 'Not Specified',
@@ -114,7 +114,7 @@ class LeadController extends Controller
         if (request()->ajax()) {
             return response()->json([
                 'success' => true, 
-                'message' => 'Operational Matrix Synchronized: Inspection Assigned to ' . ($inspector ? $inspector->name : 'Team'),
+                'message' => 'Inspection scheduled and assigned to ' . ($inspector ? $inspector->name : 'Team'),
                 'status' => 'inspection_scheduled'
             ]);
         }
@@ -126,7 +126,7 @@ class LeadController extends Controller
     {
         $lead->delete();
         if (request()->ajax()) {
-            return response()->json(['success' => true, 'message' => 'Node Purged']);
+            return response()->json(['success' => true, 'message' => 'Lead removed']);
         }
         return redirect()->route('admin.leads.index')->with('success', 'Lead removed.');
     }

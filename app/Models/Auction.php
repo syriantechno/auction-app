@@ -8,6 +8,8 @@ class Auction extends Model
 {
     protected $fillable = [
         'car_id',
+        'lead_id',
+        'reference_code',
         'start_at',
         'end_at',
         'initial_price',
