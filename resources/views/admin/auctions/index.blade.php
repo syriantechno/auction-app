@@ -4,34 +4,22 @@
 
 @section('content')
 <div class="px-1 space-y-5 animate-in fade-in duration-500">
-    <!-- Header: Operational Hub -->
-    <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
-        <div class="flex items-center gap-6">
-            <div class="w-16 h-16 rounded-[2rem] bg-[#1d293d] flex items-center justify-center shadow-xl shadow-slate-200">
-                <i data-lucide="gavel" class="w-8 h-8 text-[#ff6900]"></i>
-            </div>
-            <div>
-                <h1 class="text-3xl font-black text-[#031629] uppercase italic tracking-tighter">Auction LifeCycle</h1>
-                <p class="text-[0.6rem] text-slate-400 font-black uppercase tracking-[0.25em] mt-1">Auction Management</p>
-            </div>
-        </div>
-        
-        <div class="flex items-center gap-4">
-             <div class="flex items-center gap-4 bg-white px-6 py-3 rounded-lg border border-slate-100 shadow-sm">
-                <div class="flex flex-col">
-                    <span class="text-[0.55rem] font-black uppercase text-slate-400 tracking-widest leading-none">Global Pulse</span>
-                    <span id="totalCounter" class="text-xl font-black text-[#031629] tabular-nums mt-1">{{ number_format(\App\Models\Auction::where('status', 'active')->count()) }}</span>
-                </div>
+
+    <x-admin-header icon="gavel" title="Auctions"
+        subtitle="Live & upcoming auction sessions">
+        <x-slot name="actions">
+            <div class="flex items-center gap-2 bg-white px-5 py-2.5 rounded-lg border border-slate-100 shadow-sm">
+                <span class="text-[0.55rem] font-black uppercase text-slate-400 tracking-widest">Active</span>
+                <span id="totalCounter" class="text-xl font-black text-[#031629] tabular-nums">{{ \App\Models\Auction::where('status', 'active')->count() }}</span>
                 <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
             </div>
-            
-            <a href="{{ route('admin.auctions.create') }}" class="px-8 h-12 bg-[#ff4605] text-white rounded-lg font-black shadow-xl shadow-orange-500/20 hover:scale-[1.02] active:scale-95 transition-all text-[0.7rem] uppercase tracking-widest flex items-center gap-3">
+            <a href="{{ route('admin.auctions.create') }}" class="px-6 h-11 bg-[#ff4605] text-white rounded-lg font-black shadow-lg shadow-orange-500/20 hover:scale-[1.02] active:scale-95 transition-all text-[0.7rem] uppercase tracking-widest flex items-center gap-2">
                 <i data-lucide="plus" class="w-4 h-4"></i> New Auction
             </a>
-        </div>
-    </div>
+        </x-slot>
+    </x-admin-header>
 
-    <!-- Auctions Matrix Toolbar -->
+    {{-- Filter Toolbar --}}
     <div class="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-xl shadow-slate-900/5 mb-8">
         <form id="filterForm" action="{{ route('admin.auctions.index') }}" method="GET" class="flex flex-wrap items-end gap-6">
             <div class="flex-1 min-w-[300px]">

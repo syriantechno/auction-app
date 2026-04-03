@@ -8,11 +8,11 @@ return [
     'inspections_calendar' => 'جدول الفحوصات',
     'field_tasks' => 'مهام الميدان',
     'valuation_reports' => 'تقارير التقييم',
-    'vehicles_matrix' => 'مصفوفة المركبات',
-    'auction_cycles' => 'دورات المزاد',
-    'fleet_management' => 'إدارة الأسطول',
-    'editorial' => 'تحرير',
-    'system_settings' => 'إعدادات النظام',
+    'vehicles_matrix'    => 'السيارات',
+    'auction_cycles'     => 'المزادات',
+    'fleet_management'   => 'إدارة الأسطول',
+    'editorial'          => 'المحتوى',
+    'system_settings'    => 'الإعدادات',
     
     // Leads Section
     'leads' => 'العملاء المحتملين',
@@ -35,7 +35,6 @@ return [
     'send_via_whatsapp' => 'إرسال عبر واتساب',
     
     // Inspection Tasks
-    'field_tasks' => 'مهام الميدان',
     'mission_protocol_active' => 'بروتوكول المهمة نشط',
     'task_id' => 'رقم المهمة',
     'awaiting_onsite' => 'في انتظار الموقع',

@@ -8,11 +8,11 @@ return [
     'inspections_calendar' => 'Inspections Calendar',
     'field_tasks' => 'Field Tasks',
     'valuation_reports' => 'Valuation Reports',
-    'vehicles_matrix' => 'Vehicles Matrix',
-    'auction_cycles' => 'Auction Cycles',
-    'fleet_management' => 'Fleet Management',
-    'editorial' => 'Editorial',
-    'system_settings' => 'System Settings',
+    'vehicles_matrix'    => 'Vehicles',
+    'auction_cycles'     => 'Auctions',
+    'fleet_management'   => 'Fleet Management',
+    'editorial'          => 'Content',
+    'system_settings'    => 'Settings',
     
     // Leads Section
     'leads' => 'Leads',
@@ -35,7 +35,6 @@ return [
     'send_via_whatsapp' => 'Send via WhatsApp',
     
     // Inspection Tasks
-    'field_tasks' => 'Field Tasks',
     'mission_protocol_active' => 'Mission Protocol Active',
     'task_id' => 'Task ID',
     'awaiting_onsite' => 'Awaiting Onsite',

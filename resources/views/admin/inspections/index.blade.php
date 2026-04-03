@@ -5,22 +5,15 @@
 
 @section('content')
 <div class="px-1 space-y-6">
-    <!-- Page Header -->
-    <div class="px-1 mb-6">
-        <div class="flex items-center gap-4">
-            <i data-lucide="file-text" class="w-8 h-8 text-[#ff6900]"></i>
-            <div>
-                <h1 class="text-2xl font-black text-slate-900">Valuation Reports</h1>
-                <p class="text-slate-500 text-sm mt-1">Review and manage vehicle inspection and valuation reports</p>
-            </div>
-        </div>
-    </div>
 
-    <div class="flex justify-end">
-        <a href="{{ route('admin.inspections.create') }}" class="px-6 py-2.5 bg-slate-800 text-white rounded-md font-bold hover:bg-[#1d293d] transition-all flex items-center gap-2 text-[0.7rem] uppercase tracking-widest shadow-lg shadow-slate-200/50">
-            <i data-lucide="shield-check" class="w-4 h-4"></i> Launch New Audit
-        </a>
-    </div>
+    <x-admin-header icon="clipboard-check" title="Inspection Reports"
+        subtitle="Vehicle inspection & valuation records">
+        <x-slot name="actions">
+            <a href="{{ route('admin.inspections.create') }}" class="px-6 h-11 bg-[#ff4605] text-white rounded-lg font-black shadow-lg shadow-orange-500/20 hover:scale-[1.02] active:scale-95 transition-all text-[0.7rem] uppercase tracking-widest flex items-center gap-2">
+                <i data-lucide="plus" class="w-4 h-4"></i> New Inspection
+            </a>
+        </x-slot>
+    </x-admin-header>
 
     @if(session('success'))
         <div class="bg-emerald-50 text-emerald-600 px-4 py-3 rounded-md mb-6 font-bold border border-emerald-100 flex items-center gap-2 text-xs">
@@ -32,10 +25,10 @@
         <table class="w-full">
             <thead>
                 <tr class="border-b border-[#f1f5f9] bg-[#f8fafc]">
-                    <th class="text-left text-[0.6rem] text-[#adb5bd] uppercase py-4 px-6 font-black tracking-widest">Asset Segment</th>
-                    <th class="text-left text-[0.6rem] text-[#adb5bd] uppercase py-4 px-6 font-black tracking-widest text-center">Audit Score</th>
-                    <th class="text-left text-[0.6rem] text-[#adb5bd] uppercase py-4 px-6 font-black tracking-widest">Expert Authority</th>
-                    <th class="text-left text-[0.6rem] text-[#adb5bd] uppercase py-4 px-6 font-black tracking-widest">Audit Date</th>
+                    <th class="text-left text-[0.6rem] text-[#adb5bd] uppercase py-4 px-6 font-black tracking-widest">Vehicle</th>
+                    <th class="text-left text-[0.6rem] text-[#adb5bd] uppercase py-4 px-6 font-black tracking-widest text-center">Score</th>
+                    <th class="text-left text-[0.6rem] text-[#adb5bd] uppercase py-4 px-6 font-black tracking-widest">Inspector</th>
+                    <th class="text-left text-[0.6rem] text-[#adb5bd] uppercase py-4 px-6 font-black tracking-widest">Date</th>
                     <th class="text-right text-[0.6rem] text-[#adb5bd] uppercase py-4 px-6 font-black tracking-widest">Actions</th>
                 </tr>
             </thead>

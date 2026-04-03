@@ -5,16 +5,15 @@
 
 @section('content')
 <div class="px-1 space-y-5">
-    <!-- Page Header -->
-    <div class="px-1 mb-6">
-        <div class="flex items-center gap-4">
-            <i data-lucide="users" class="w-8 h-8 text-[#ff6900]"></i>
-            <div>
-                <h1 class="text-2xl font-black text-slate-900">Leads Management</h1>
-                <p class="text-slate-500 text-sm mt-1">Manage and track all customer leads and inquiries</p>
-            </div>
-        </div>
-    </div>
+
+    <x-admin-header icon="users" title="Leads"
+        subtitle="Customer leads & inquiries">
+        <x-slot name="actions">
+            <a href="{{ route('admin.leads.create') }}" class="px-6 h-11 bg-[#ff4605] text-white rounded-lg font-black shadow-lg shadow-orange-500/20 hover:scale-[1.02] active:scale-95 transition-all text-[0.7rem] uppercase tracking-widest flex items-center gap-2">
+                <i data-lucide="plus" class="w-4 h-4"></i> New Lead
+            </a>
+        </x-slot>
+    </x-admin-header>
 
     <!-- Leads Toolbar (Unified Height h-44px) -->
     <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">

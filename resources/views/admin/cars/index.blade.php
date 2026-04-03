@@ -1,28 +1,24 @@
-﻿@extends('admin.layout')
+@extends('admin.layout')
 
 @section('title', 'Vehicle Asset Inventory')
 
 @section('content')
 <div class="px-1 space-y-5 animate-in fade-in duration-500">
-    <!-- Header: Refined Lean Typography -->
-    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div class="flex items-center gap-4">
-            <h1 class="text-3xl font-medium text-slate-800 tracking-tighter italic">Vehicles</h1>
-            <div class="h-8 w-px bg-slate-200 hidden md:block"></div>
-            <p class="text-[0.65rem] text-slate-500 font-medium uppercase tracking-[0.2em] hidden md:block">Vehicle Catalog</p>
-        </div>
-        <div class="flex items-center gap-3">
-             <div class="flex items-center gap-3 bg-white px-5 py-2.5 rounded-lg border border-slate-200 shadow-sm">
-                <span class="text-[0.6rem] font-medium uppercase text-slate-400 tracking-widest">Total Vehicles:</span>
-                <span id="totalCounter" class="text-sm font-medium text-slate-800 tabular-nums">{{ number_format(\App\Models\Car::count()) }}</span>
-            </div>
-            <button onclick="openCreateModal()" style="background: var(--primary-orange);" class="px-6 h-[44px] text-white rounded-lg font-medium shadow-lg shadow-orange-500/10 hover:scale-[1.02] active:scale-95 transition-all text-[0.65rem] uppercase tracking-widest flex items-center gap-2">
-                <i data-lucide="plus-circle" class="w-4 h-4 text-white/80"></i> Add Vehicle
-            </button>
-        </div>
-    </div>
 
-    <!-- Unified Lean Hub (Normal Thickness) -->
+    <x-admin-header icon="car" title="Vehicles"
+        subtitle="Vehicle inventory & catalog">
+        <x-slot name="actions">
+            <div class="flex items-center gap-2 bg-white px-5 py-2.5 rounded-lg border border-slate-100 shadow-sm">
+                <span class="text-[0.55rem] font-black uppercase text-slate-400 tracking-widest">Total</span>
+                <span id="totalCounter" class="text-xl font-black text-[#031629] tabular-nums">{{ \App\Models\Car::count() }}</span>
+            </div>
+            <button onclick="openCreateModal()" class="px-6 h-11 bg-[#ff4605] text-white rounded-lg font-black shadow-lg shadow-orange-500/20 hover:scale-[1.02] active:scale-95 transition-all text-[0.7rem] uppercase tracking-widest flex items-center gap-2">
+                <i data-lucide="plus" class="w-4 h-4"></i> Add Vehicle
+            </button>
+        </x-slot>
+    </x-admin-header>
+
+    {{-- Filter Toolbar --}}
     <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
         <form id="filterForm" action="{{ route('admin.cars.index') }}" method="GET" class="flex flex-wrap items-end gap-3">
             <div class="flex-1 min-w-[220px]">
