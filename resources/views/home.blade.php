@@ -965,12 +965,11 @@
             </div>
 
             {{-- Badges Grid --}}
-            <div class="grid grid-cols-2 xl:grid-cols-4 relative z-0">
+            <div class="grid grid-cols-2 xl:grid-cols-4 relative" style="isolation: isolate; z-index: 0;">
                 {{-- Gradient separator lines --}}
                 <div class="hidden xl:block absolute top-[10%] bottom-[10%] left-1/4 w-px" style="background: linear-gradient(to bottom, transparent, #cbd5e1, transparent);"></div>
                 <div class="hidden xl:block absolute top-[10%] bottom-[10%] left-2/4 w-px" style="background: linear-gradient(to bottom, transparent, #cbd5e1, transparent);"></div>
                 <div class="hidden xl:block absolute top-[10%] bottom-[10%] left-3/4 w-px" style="background: linear-gradient(to bottom, transparent, #cbd5e1, transparent);"></div>
-                {{-- Mobile: horizontal separator --}}
                 <div class="xl:hidden absolute left-[10%] right-[10%] top-1/2 h-px" style="background: linear-gradient(to right, transparent, #cbd5e1, transparent);"></div>
                 @foreach($trustBadges as $i => $badge)
                 @php
@@ -981,10 +980,10 @@
                 @endphp
                 <div class="group flex flex-col items-center text-center px-8 py-6 cursor-default">
 
-                    {{-- Large Icon — bounces + color shift on hover --}}
-                    <div class="w-20 h-20 mb-5 flex items-center justify-center transition-all duration-300 group-hover:-translate-y-2 group-hover:scale-110"
+                    {{-- Large Icon — bounces on hover, NO filter to avoid z-index issues --}}
+                    <div class="w-20 h-20 mb-5 flex items-center justify-center"
                          style="color: {{ $bColor }};">
-                        <i data-lucide="{{ $bIcon }}" class="w-12 h-12 transition-all duration-300" style="stroke-width: 1.5; filter: drop-shadow(0 6px 12px {{ $bColor }}66);"></i>
+                        <i data-lucide="{{ $bIcon }}" class="w-12 h-12 transition-all duration-300 group-hover:-translate-y-2 group-hover:scale-110" style="stroke-width: 1.5;"></i>
                     </div>
 
                     {{-- Label --}}
