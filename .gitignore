@@ -26,3 +26,8 @@ Thumbs.db
 /storage/logs/migrate_output.txt
 /storage/logs/migration_data.txt
 /migrate_log.txt
+
+*.pdf
+.minimax/
+*.exe
+vibe_images/
