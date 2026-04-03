@@ -1100,21 +1100,6 @@
                         window.__footerPages = @json($_footerPages);
                     </script>
 
-                    <!-- Header Banner -->
-                    <div class="bg-indigo-600 p-8 rounded-xl text-white shadow-xl mb-6 relative overflow-hidden">
-
-                        <div class="absolute right-0 top-0 h-full w-2 bg-indigo-400 opacity-50"></div>
-                        <div class="flex items-center gap-6">
-                            <div class="w-16 h-16 bg-white/10 rounded-xl flex items-center justify-center border border-white/20">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="3" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
-                            </div>
-                            <div>
-                                <h3 class="text-xl font-black tracking-tight">Footer Settings</h3>
-                                <p class="text-indigo-200 text-xs mt-1">Control all footer content — brand, social, contact, links, and internal pages.</p>
-                            </div>
-                        </div>
-                    </div>
-
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
                         <!-- Left: Brand + Contact + Social -->
