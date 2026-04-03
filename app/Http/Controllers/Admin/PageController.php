@@ -31,10 +31,10 @@ class PageController extends Controller
             'title'            => 'required|string|max:255',
             'slug'             => 'nullable|string|unique:pages,slug',
             'content'          => 'nullable|string',
-            'hero_image'       => 'nullable|string',
+            'hero_image'       => 'nullable',  // can be file or URL string
+            'hero_image_file'  => 'nullable|image|max:4096',
             'meta_description' => 'nullable|string|max:320',
             'is_published'     => 'boolean',
-            // menu linking
             'add_to_menu'      => 'nullable|exists:menus,id',
             'menu_parent_id'   => 'nullable|exists:menu_items,id',
         ]);
@@ -42,9 +42,14 @@ class PageController extends Controller
         $data['slug']         = $data['slug'] ? Str::slug($data['slug']) : Str::slug($data['title']);
         $data['is_published'] = $request->boolean('is_published');
 
-        $page = Page::create($data);
+        // Handle file upload
+        if ($request->hasFile('hero_image_file')) {
+            $path = $request->file('hero_image_file')->store('pages/heroes', 'public');
+            $data['hero_image'] = asset('storage/' . $path);
+        }
+        unset($data['hero_image_file']);
 
-        // Optionally add to a menu
+        $page = Page::create($data);
         $this->syncToMenu($page, $request);
 
         return redirect()->route('admin.pages.index')->with('success', 'Page created successfully!');
@@ -67,10 +72,10 @@ class PageController extends Controller
             'title'            => 'required|string|max:255',
             'slug'             => 'required|string|unique:pages,slug,' . $page->id,
             'content'          => 'nullable|string',
-            'hero_image'       => 'nullable|string',
+            'hero_image'       => 'nullable',
+            'hero_image_file'  => 'nullable|image|max:4096',
             'meta_description' => 'nullable|string|max:320',
             'is_published'     => 'boolean',
-            // menu linking
             'add_to_menu'      => 'nullable|exists:menus,id',
             'menu_parent_id'   => 'nullable|exists:menu_items,id',
             'remove_from_menu' => 'nullable|boolean',
@@ -79,9 +84,19 @@ class PageController extends Controller
         $data['slug']         = Str::slug($data['slug']);
         $data['is_published'] = $request->boolean('is_published');
 
+        // Handle file upload
+        if ($request->hasFile('hero_image_file')) {
+            if ($page->hero_image && str_contains($page->hero_image, '/storage/pages/heroes/')) {
+                $oldPath = ltrim(str_replace(config('app.url') . '/storage/', '', $page->hero_image), '/');
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($oldPath);
+            }
+            $path = $request->file('hero_image_file')->store('pages/heroes', 'public');
+            $data['hero_image'] = asset('storage/' . $path);
+        }
+        unset($data['hero_image_file']);
+
         $page->update($data);
 
-        // Handle menu sync
         if ($request->boolean('remove_from_menu')) {
             MenuItem::where('page_id', $page->id)->delete();
         } else {

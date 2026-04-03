@@ -40,7 +40,7 @@
     @endif
 
     <form action="{{ isset($page) ? route('admin.pages.update', $page) : route('admin.pages.store') }}"
-          method="POST" id="pageForm">
+          method="POST" id="pageForm" enctype="multipart/form-data">
         @csrf
         @if(isset($page)) @method('PUT') @endif
 
@@ -97,23 +97,11 @@
                     <div class="text-[0.55rem] font-black uppercase tracking-[0.28em] text-slate-400 mb-4 flex items-center gap-2">
                         <div class="w-3 h-px bg-slate-300"></div> SEO Settings
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="space-y-1.5">
-                            <label class="text-xs font-bold text-slate-700">Meta Description</label>
-                            <textarea name="meta_description" rows="3" maxlength="320"
-                                      class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3.5 py-2.5 text-xs text-slate-700 outline-none focus:border-slate-400 transition-all resize-none"
-                                      placeholder="120–160 chars for best SEO results">{{ old('meta_description', $page->meta_description ?? '') }}</textarea>
-                        </div>
-                        <div class="space-y-1.5">
-                            <label class="text-xs font-bold text-slate-700">Hero Image URL</label>
-                            <input type="text" name="hero_image"
-                                   value="{{ old('hero_image', $page->hero_image ?? '') }}"
-                                   class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3.5 py-2.5 text-xs text-slate-700 outline-none focus:border-slate-400 transition-all"
-                                   placeholder="https://...">
-                            @if(isset($page) && $page->hero_image)
-                                <img src="{{ $page->hero_image }}" class="w-full h-20 object-cover rounded-lg mt-2">
-                            @endif
-                        </div>
+                    <div class="space-y-1.5">
+                        <label class="text-xs font-bold text-slate-700">Meta Description</label>
+                        <textarea name="meta_description" rows="3" maxlength="320"
+                                  class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3.5 py-2.5 text-xs text-slate-700 outline-none focus:border-slate-400 transition-all resize-none"
+                                  placeholder="120–160 chars for best SEO results">{{ old('meta_description', $page->meta_description ?? '') }}</textarea>
                     </div>
                 </div>
 
@@ -145,6 +133,65 @@
                         <i data-lucide="save" class="w-3.5 h-3.5"></i>
                         {{ isset($page) ? 'Save Changes' : 'Create Page' }}
                     </button>
+                </div>
+
+                {{-- ── Hero Image Upload ── --}}
+                <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                    <div class="px-5 py-3 border-b border-slate-100 flex items-center gap-2">
+                        <div class="text-[0.55rem] font-black uppercase tracking-[0.28em] text-slate-400 flex items-center gap-2">
+                            <div class="w-3 h-px bg-slate-300"></div> Hero Image
+                        </div>
+                        <span class="text-[0.4rem] font-black uppercase bg-amber-100 text-amber-600 px-1.5 py-0.5 rounded-full tracking-widest">Per Page</span>
+                    </div>
+
+                    {{-- Drop Zone --}}
+                    <div id="heroDropZone"
+                         class="relative cursor-pointer group"
+                         onclick="document.getElementById('heroFileInput').click()"
+                         ondragover="event.preventDefault();this.classList.add('border-[#ff4605]','bg-orange-50')"
+                         ondragleave="this.classList.remove('border-[#ff4605]','bg-orange-50')"
+                         ondrop="handleHeroDrop(event)">
+
+                        {{-- Preview (hidden until image chosen) --}}
+                        <div id="heroPreview" class="{{ (isset($page) && $page->hero_image) ? '' : 'hidden' }} relative">
+                            <img id="heroPreviewImg"
+                                 src="{{ $page->hero_image ?? '' }}"
+                                 class="w-full h-36 object-cover">
+                            <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                <span class="text-white text-[0.65rem] font-black uppercase tracking-wider">Change Image</span>
+                            </div>
+                            <button type="button" id="heroClearBtn"
+                                    onclick="event.stopPropagation();clearHeroImage()"
+                                    class="absolute top-2 right-2 w-6 h-6 rounded-full bg-red-500 text-white flex items-center justify-center hover:bg-red-600 transition-all shadow">
+                                <i data-lucide="x" class="w-3 h-3"></i>
+                            </button>
+                        </div>
+
+                        {{-- Empty State --}}
+                        <div id="heroEmpty" class="{{ (isset($page) && $page->hero_image) ? 'hidden' : '' }} p-6 flex flex-col items-center justify-center gap-2 border-2 border-dashed border-slate-200 m-3 rounded-xl hover:border-[#ff4605] transition-all">
+                            <div class="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center">
+                                <i data-lucide="image-plus" class="w-5 h-5 text-slate-400"></i>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-xs font-bold text-slate-700">Drop image or click</div>
+                                <div class="text-[0.6rem] text-slate-400 mt-0.5">JPG / PNG / WebP · Max 4MB</div>
+                            </div>
+                        </div>
+
+                        <input type="file" id="heroFileInput" name="hero_image_file"
+                               accept="image/*" class="hidden"
+                               onchange="handleHeroFile(this.files[0])">
+                    </div>
+
+                    {{-- URL fallback --}}
+                    <div class="px-4 pb-4 pt-2">
+                        <div class="text-[0.55rem] font-black uppercase tracking-widest text-slate-400 mb-1.5">Or paste URL</div>
+                        <input type="text" name="hero_image" id="heroUrlInput"
+                               value="{{ old('hero_image', $page->hero_image ?? '') }}"
+                               class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-[0.65rem] font-mono text-slate-600 outline-none focus:border-slate-400 transition-all"
+                               placeholder="https://..."
+                               oninput="if(this.value){showHeroPreview(this.value)}">
+                    </div>
                 </div>
 
                 {{-- Menu Integration --}}
@@ -292,6 +339,41 @@ document.addEventListener('DOMContentLoaded', function() {
         const ta = document.getElementById('pageContent');
         ta.style.cssText = 'width:100%;min-height:500px;padding:1rem;font-family:monospace;font-size:13px;border:1px solid #e2e8f0;border-radius:0;outline:none;';
     }
+
+    // ── Hero Image Upload ─────────────────────────────────────────────
+    window.showHeroPreview = function(src) {
+        document.getElementById('heroPreviewImg').src = src;
+        document.getElementById('heroPreview').classList.remove('hidden');
+        document.getElementById('heroEmpty').classList.add('hidden');
+    };
+    window.clearHeroImage = function() {
+        document.getElementById('heroPreviewImg').src = '';
+        document.getElementById('heroPreview').classList.add('hidden');
+        document.getElementById('heroEmpty').classList.remove('hidden');
+        document.getElementById('heroFileInput').value = '';
+        document.getElementById('heroUrlInput').value = '';
+    };
+    window.handleHeroFile = function(file) {
+        if (!file) return;
+        if (file.size > 4 * 1024 * 1024) {
+            alert('Image too large — max 4MB.');
+            return;
+        }
+        const reader = new FileReader();
+        reader.onload = e => showHeroPreview(e.target.result);
+        reader.readAsDataURL(file);
+        // Clear URL field since we're using file
+        document.getElementById('heroUrlInput').value = '';
+    };
+    window.handleHeroDrop = function(e) {
+        e.preventDefault();
+        e.currentTarget.classList.remove('border-[#ff4605]','bg-orange-50');
+        const file = e.dataTransfer.files[0];
+        if (file && file.type.startsWith('image/')) {
+            document.getElementById('heroFileInput').files = e.dataTransfer.files;
+            handleHeroFile(file);
+        }
+    };
 
 });
 </script>
