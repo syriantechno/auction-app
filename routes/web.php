@@ -66,6 +66,16 @@ Route::prefix('admin')->middleware(['auth'])->name('admin.')->group(function () 
         Route::post('/{negotiation}/counter-offer',      [\App\Http\Controllers\Admin\NegotiationController::class, 'counterOffer'])->name('counter-offer');
     });
 
+    // Stock Management (Steps 6-9)
+    Route::prefix('stock')->name('stock.')->group(function () {
+        Route::get('/',                             [\App\Http\Controllers\Admin\StockController::class, 'index'])->name('index');
+        Route::get('/{stockEntry}',                 [\App\Http\Controllers\Admin\StockController::class, 'show'])->name('show');
+        Route::post('/{stockEntry}/start-qc',       [\App\Http\Controllers\Admin\StockController::class, 'startQC'])->name('start-qc');
+        Route::post('/{stockEntry}/save-qc',        [\App\Http\Controllers\Admin\StockController::class, 'saveQC'])->name('save-qc');
+        Route::post('/{stockEntry}/approve-qc',     [\App\Http\Controllers\Admin\StockController::class, 'approveQC'])->name('approve-qc');
+        Route::post('/{stockEntry}/complete-deal',  [\App\Http\Controllers\Admin\StockController::class, 'completeDeal'])->name('complete-deal');
+    });
+
     // CRM: Advanced Leads Pipeline
     Route::post('/leads/{lead}/confirm', [\App\Http\Controllers\Admin\LeadController::class, 'confirm'])->name('leads.confirm');
     Route::resource('/leads', \App\Http\Controllers\Admin\LeadController::class)->names('leads');

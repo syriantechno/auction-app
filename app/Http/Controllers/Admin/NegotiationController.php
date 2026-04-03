@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Admin\StockController;
 use App\Models\Auction;
 use App\Models\Negotiation;
 use Illuminate\Http\Request;
@@ -87,12 +88,15 @@ class NegotiationController extends Controller
             'responded_at' => now(),
         ]);
 
-        // Update auction status to "deal_approved"
+        // Update auction status
         $negotiation->auction->update(['status' => 'deal_approved']);
+
+        // STEP 6: Auto-create stock entry
+        StockController::createFromNegotiation($negotiation);
 
         return response()->json([
             'success' => true,
-            'message' => 'Deal approved. Vehicle will now enter stock.',
+            'message' => 'Deal approved. Vehicle is now in stock.',
         ]);
     }
 
