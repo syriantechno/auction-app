@@ -184,13 +184,50 @@
                                 <span x-show="sidebarOpen" class="truncate">Stock</span>
                             </a>
                         </li>
-                        <li>
-                            <a href="{{ route('admin.finance.dashboard') }}"
-                                class="sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-bold {{ request()->routeIs('admin.finance.*') ? 'text-slate-900 bg-slate-50 border border-slate-100 shadow-sm' : 'text-slate-500 hover:bg-slate-50' }}">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0 {{ request()->routeIs('admin.finance.*') ? 'text-[#ff6900]' : 'text-slate-400' }}"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
-                                <span x-show="sidebarOpen" class="truncate">Finance</span>
-                            </a>
                         </li>
+
+                        {{-- ── Accounting Dropdown ──────────────────── --}}
+                        <li x-data="{ open: {{ request()->routeIs('admin.finance.*') ? 'true' : 'false' }} }">
+                            {{-- Dropdown Toggle --}}
+                            <button @click="open = !open"
+                                class="w-full sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-bold transition-all
+                                    {{ request()->routeIs('admin.finance.*') ? 'text-slate-900 bg-slate-50 border border-slate-100 shadow-sm' : 'text-slate-500 hover:bg-slate-50' }}">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                    class="flex-shrink-0 {{ request()->routeIs('admin.finance.*') ? 'text-[#ff6900]' : 'text-slate-400' }}">
+                                    <rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/>
+                                </svg>
+                                <span x-show="sidebarOpen" class="flex-1 text-left truncate">Accounting</span>
+                                <svg x-show="sidebarOpen" :class="open ? 'rotate-180' : ''" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="transition-transform duration-200 text-slate-400"><path d="m6 9 6 6 6-6"/></svg>
+                            </button>
+
+                            {{-- Sub-items --}}
+                            <ul x-show="open && sidebarOpen" x-transition:enter="transition ease-out duration-150" x-transition:enter-start="opacity-0 -translate-y-1" x-transition:enter-end="opacity-100 translate-y-0"
+                                class="mt-1 ml-9 space-y-0.5 border-l-2 border-slate-100 pl-3">
+
+                                @php
+                                    $financeLinks = [
+                                        ['route' => 'admin.finance.dashboard', 'label' => 'Overview',              'icon' => 'layout-dashboard'],
+                                        ['route' => 'admin.finance.invoices',  'label' => 'Invoices',              'icon' => 'file-text'],
+                                        ['route' => 'admin.finance.receipts',  'label' => 'Receipts — القبض',      'icon' => 'arrow-down-left'],
+                                        ['route' => 'admin.finance.vouchers',  'label' => 'Payments — الصرف',      'icon' => 'arrow-up-right'],
+                                        ['route' => 'admin.finance.accounts',  'label' => 'Cash & Bank Accounts',  'icon' => 'wallet'],
+                                    ];
+                                @endphp
+
+                                @foreach($financeLinks as $fl)
+                                <li>
+                                    <a href="{{ route($fl['route']) }}"
+                                        class="flex items-center gap-2.5 px-2 py-2 rounded-md text-[0.72rem] font-bold transition-all
+                                            {{ request()->routeIs($fl['route']) ? 'text-[#ff6900] bg-orange-50' : 'text-slate-400 hover:text-slate-700 hover:bg-slate-50' }}">
+                                        <i data-lucide="{{ $fl['icon'] }}" class="w-3.5 h-3.5 flex-shrink-0"></i>
+                                        {{ $fl['label'] }}
+                                    </a>
+                                </li>
+                                @endforeach
+
+                            </ul>
+                        </li>
+
                     </ul>
                 </div>
 

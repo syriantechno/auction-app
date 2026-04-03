@@ -196,7 +196,9 @@ class FinanceController extends Controller
     // ── FINANCIAL ACCOUNTS ────────────────────────────────────────
     public function accounts()
     {
-        $accounts = FinancialAccount::withCount(['receipts', 'paymentVouchers'])->get();
+        $accounts = FinancialAccount::with(['receipts', 'paymentVouchers'])
+                    ->withCount(['receipts', 'paymentVouchers'])
+                    ->get();
         return view('admin.finance.accounts', compact('accounts'));
     }
 

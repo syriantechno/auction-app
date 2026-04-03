@@ -1,10 +1,10 @@
 @extends('admin.layout')
-@section('title', 'Finance Dashboard')
+@section('title', 'Accounting Overview')
 @section('content')
 <div class="px-1 space-y-6 animate-in fade-in duration-500">
 
-    <x-admin-header icon="landmark" title="Finance Dashboard"
-        subtitle="Real-time financial overview">
+    <x-admin-header icon="landmark" title="Accounting Overview"
+        subtitle="Financial summary & cash flow">
         <x-slot name="actions">
             <a href="{{ route('admin.finance.receipts') }}" class="px-5 h-10 bg-emerald-600 text-white rounded-lg font-black text-[0.65rem] uppercase tracking-widest flex items-center gap-2 hover:bg-emerald-700 transition-all shadow-lg">
                 <i data-lucide="plus" class="w-4 h-4"></i> New Receipt
