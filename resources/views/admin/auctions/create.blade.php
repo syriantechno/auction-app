@@ -116,7 +116,88 @@
                 </div>
             </div>
         </div>
+
+                {{-- ══ BID RULES ══ --}}
+                <div class="bg-white rounded-lg p-6 shadow-sm border border-[#f1f5f9]">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="w-8 h-8 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center">
+                            <i data-lucide="trending-up" class="w-4"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-[0.75rem] font-black text-[#111827] uppercase tracking-wider">Bid Rules</h2>
+                            <p class="text-[0.6rem] text-slate-400 mt-0.5">Increment per bid & time extension</p>
+                        </div>
+                    </div>
+
+                    <div class="space-y-5">
+                        {{-- Bid Increment --}}
+                        <div class="space-y-2">
+                            <label class="text-[0.6rem] text-[#adb5bd] font-black uppercase tracking-widest">Bid Increment (min. raise per bid)</label>
+                            <div class="flex gap-2">
+                                <select id="bidIncrementPreset" onchange="syncBidIncrement(this)"
+                                    class="flex-1 bg-[#f8fafc] border border-[#f1f5f9] px-4 py-3 rounded-md font-black text-[#111827] text-sm outline-none focus:border-purple-300">
+                                    <option value="250">$250</option>
+                                    <option value="500" selected>$500</option>
+                                    <option value="1000">$1,000</option>
+                                    <option value="2000">$2,000</option>
+                                    <option value="5000">$5,000</option>
+                                    <option value="custom">Custom...</option>
+                                </select>
+                                <input type="number" name="bid_increment" id="bidIncrementInput" value="500" min="1" step="1"
+                                    class="w-32 bg-[#f8fafc] border border-[#f1f5f9] px-3 py-3 rounded-md font-black text-[#111827] text-sm outline-none focus:border-purple-300 tabular-nums">
+                            </div>
+                            <p class="text-[0.6rem] text-slate-400">Each bid must be at least this amount above the current price.</p>
+                        </div>
+
+                        <hr class="border-slate-100">
+
+                        {{-- Time Extension --}}
+                        <div class="space-y-4">
+                            <div class="flex items-center gap-2">
+                                <div class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></div>
+                                <span class="text-[0.6rem] font-black text-slate-500 uppercase tracking-widest">Auto Time Extension</span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="space-y-1.5">
+                                    <label class="text-[0.6rem] text-[#adb5bd] font-black uppercase tracking-widest">Trigger Window (seconds before end)</label>
+                                    <input type="number" name="time_extension_threshold" value="30" min="5" max="300"
+                                        class="w-full bg-[#f8fafc] border border-[#f1f5f9] px-4 py-3 rounded-md font-black text-[#111827] text-sm outline-none focus:border-amber-300 tabular-nums">
+                                    <p class="text-[0.6rem] text-slate-400">If bid placed within this many secs of end → extend.</p>
+                                </div>
+                                <div class="space-y-1.5">
+                                    <label class="text-[0.6rem] text-[#adb5bd] font-black uppercase tracking-widest">Extension Amount (seconds to add)</label>
+                                    <input type="number" name="time_extension_seconds" value="20" min="5" max="300"
+                                        class="w-full bg-[#f8fafc] border border-[#f1f5f9] px-4 py-3 rounded-md font-black text-[#111827] text-sm outline-none focus:border-amber-300 tabular-nums">
+                                    <p class="text-[0.6rem] text-slate-400">Seconds added to the auction timer when triggered.</p>
+                                </div>
+                            </div>
+                            <div class="bg-amber-50 border border-amber-100 rounded-lg px-4 py-3 text-[0.65rem] text-amber-700 font-medium">
+                                <strong>Example:</strong> Trigger=30s, Extend=20s — If someone bids in the last 30 seconds, the timer is extended by 20 more seconds.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </form>
 </div>
+
+<script>
+function syncBidIncrement(select) {
+    const input = document.getElementById('bidIncrementInput');
+    if (select.value === 'custom') {
+        input.focus();
+    } else {
+        input.value = select.value;
+    }
+}
+
+document.getElementById('bidIncrementInput').addEventListener('input', function() {
+    const preset = document.getElementById('bidIncrementPreset');
+    const val = this.value;
+    const match = [...preset.options].find(o => o.value === val);
+    preset.value = match ? val : 'custom';
+});
+</script>
 @endsection
 

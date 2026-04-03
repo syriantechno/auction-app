@@ -1,4 +1,4 @@
-﻿@extends('layouts.app')
+@extends('layouts.app')
 
 @section('title', ($auction->car->year ?? '') . ' ' . ($auction->car->make ?? '') . ' ' . ($auction->car->model ?? '') . ' - UniteCar')
 
@@ -232,7 +232,8 @@
                         <form action="{{ route('auctions.placeBid', $auction) }}" method="POST" id="bid-form">
                             @csrf
                             @php
-                                $nextBid = ($auction->current_price ?? $auction->initial_price) + 500;
+                                $bidIncrement = (float) ($auction->bid_increment ?? 500);
+                                $nextBid = ($auction->current_price ?? $auction->initial_price) + $bidIncrement;
                             @endphp
                             <input type="hidden" name="amount" value="{{ $nextBid }}">
                             
@@ -241,7 +242,10 @@
                                     <i data-lucide="zap" class="w-5 h-5 text-white animate-pulse"></i>
                                     <span class="text-xs uppercase tracking-widest leading-none">Place Quick Bid</span>
                                 </div>
-                                <div class="text-2xl italic tracking-tighter leading-none mt-1">+ $<span id="btn-total-increment">500</span> (Total: $<span id="btn-total-value">{{ number_format($nextBid) }}</span>)</div>
+                                <div class="text-xl italic tracking-tighter leading-none mt-1">
+                                    + $<span id="btn-total-increment">{{ number_format($bidIncrement) }}</span>
+                                    &nbsp;→&nbsp;Total: $<span id="btn-total-value">{{ number_format($nextBid) }}</span>
+                                </div>
                             </button>
                         </form>
                     @else
@@ -475,7 +479,31 @@
 
         const initialPriceValue = Number(displayPrice ? displayPrice.getAttribute('data-price') : 0) || 0;
         let currentPriceValue = initialPriceValue;
-        let nextBidValue = currentPriceValue + 500;
+        let bidIncrement = {{ (float)($auction->bid_increment ?? 500) }}; // from server
+        let nextBidValue = currentPriceValue + bidIncrement;
+
+        // Auction end_at (ISO string) — will be updated on time extension
+        let auctionEndAt = @json($auction->end_at?->toIso8601String());
+        const timerEl = document.querySelector('.auction-timer[data-expires]');
+
+        // Flush timer to new end_at whenever it changes
+        function resetTimerTo(newEndAtIso) {
+            auctionEndAt = newEndAtIso;
+            if (timerEl) timerEl.setAttribute('data-expires', newEndAtIso);
+        }
+
+        // Flash notification for time extension
+        function flashTimeExtended(seconds) {
+            const el = timerEl;
+            if (!el) return;
+            const old = el.className;
+            el.className += ' !text-amber-500 scale-110';
+            const note = document.createElement('span');
+            note.className = 'ml-2 text-[0.6rem] font-black text-amber-500 animate-pulse';
+            note.innerText = `+${seconds}s`;
+            el.parentElement?.appendChild(note);
+            setTimeout(() => { el.className = old; note.remove(); }, 3000);
+        }
 
         function formatMoney(amount) {
             return priceFormatter.format(Math.max(0, Math.round(Number(amount) || 0)));
@@ -485,23 +513,21 @@
             const normalizedAmount = Math.max(0, Math.round(Number(amount) || 0));
 
             currentPriceValue = normalizedAmount;
-            nextBidValue = currentPriceValue + 500;
+            nextBidValue = currentPriceValue + bidIncrement;
 
             if (displayPrice) {
                 displayPrice.innerText = `US $${formatMoney(currentPriceValue)}`;
                 displayPrice.setAttribute('data-price', String(currentPriceValue));
             }
 
-            if (btnTotalValue) {
-                btnTotalValue.innerText = formatMoney(nextBidValue);
-            }
+            if (btnTotalValue) btnTotalValue.innerText = formatMoney(nextBidValue);
+            const incEl = document.getElementById('btn-total-increment');
+            if (incEl) incEl.innerText = formatMoney(bidIncrement);
 
             const bidFormLocal = document.getElementById('bid-form');
             if (bidFormLocal) {
                 const input = bidFormLocal.querySelector('input[name="amount"]');
-                if (input) {
-                    input.value = String(nextBidValue);
-                }
+                if (input) input.value = String(nextBidValue);
             }
         }
 
@@ -516,9 +542,9 @@
                 // --- CALIBRATED LIGHTNING OPTIMISTIC UPDATE ---
                 // WE USE data-price ATTRIBUTE FOR ABSOLUTE ACCURACY
                 const currentPriceOnScreen = currentPriceValue || initialPriceValue;
-                
-                const targetBid = currentPriceOnScreen + 500;
-                const afterTargetBid = targetBid + 500;
+                // Use dynamic increment from server
+                const targetBid    = currentPriceOnScreen + bidIncrement;
+                const afterTargetBid = targetBid + bidIncrement;
                 
                 const optimisticData = {
                     current_price_formatted: formatMoney(targetBid),
@@ -596,7 +622,22 @@
                 bidCountText.innerText = data.bids_count;
             }
 
-            // 2. Update Action Button Total
+            // 2. Update bid increment if server sends new value
+            if (data.bid_increment && data.bid_increment > 0) {
+                bidIncrement = data.bid_increment;
+            }
+
+            // 3. Update timer if time was extended
+            if (data.time_extended && data.new_end_at) {
+                resetTimerTo(data.new_end_at);
+                flashTimeExtended(data.extension_seconds || 0);
+            }
+            // Also update from sync
+            if (!data.time_extended && data.end_at && data.end_at !== auctionEndAt) {
+                resetTimerTo(data.end_at);
+            }
+
+            // 4. Update Action Button Total
             if (btnTotalValue && data.next_bid_amount) {
                 nextBidValue = Math.max(0, Math.round(Number(data.next_bid_amount) || 0));
                 btnTotalValue.innerText = formatMoney(nextBidValue);
@@ -685,16 +726,21 @@
                 .listen('BidPlaced', (e) => {
                     console.log("[Reverb] Instant Sync Received", e);
                     
+                    const nextAmt = e.current_price + (e.bid_increment || bidIncrement);
                     const realtimeData = {
-                        current_price: e.current_price,
-                        current_price_formatted: formatMoney(e.current_price),
-                        next_bid_amount: e.current_price + 500,
-                        bids_count: (parseInt(bidCountText ? bidCountText.innerText : '0') || 0) + 1,
+                        current_price:            e.current_price,
+                        current_price_formatted:  formatMoney(e.current_price),
+                        next_bid_amount:          nextAmt,
+                        bid_increment:            e.bid_increment || bidIncrement,
+                        bids_count:               (parseInt(bidCountText ? bidCountText.innerText : '0') || 0) + 1,
+                        time_extended:            e.time_extended || false,
+                        new_end_at:               e.new_end_at || null,
+                        extension_seconds:        e.extension_seconds || 0,
                         latest_bids: [{
-                            user_name: e.user_name,
+                            user_name:    e.user_name,
                             user_initial: e.user_name.substring(0,1),
-                            amount: `$${formatMoney(e.current_price)}`,
-                            time: 'Just now'
+                            amount:       `$${formatMoney(e.current_price)}`,
+                            time:         'Just now'
                         }]
                     };
                     

@@ -15,9 +15,12 @@ use Illuminate\Database\Eloquent\Model;
  * @property float|null $deposit_amount
  * @property int|null $duration_minutes
  * @property int $bids_count
+ * @property float $bid_increment
+ * @property int $time_extension_threshold
+ * @property int $time_extension_seconds
+ * @property \Illuminate\Support\Carbon|null $end_at
  * @property-read \App\Models\Car $car
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Bid> $bids
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Invoice> $invoices
  * @property-read \App\Models\Lead|null $lead
  */
 class Auction extends Model
@@ -34,12 +37,23 @@ class Auction extends Model
         'deposit_amount',
         'status',
         'duration_minutes',
+        'bid_increment',
+        'time_extension_threshold',
+        'time_extension_seconds',
     ];
 
     protected $casts = [
-        'start_at' => 'datetime',
-        'end_at' => 'datetime',
+        'start_at'                 => 'datetime',
+        'end_at'                   => 'datetime',
+        'bid_increment'            => 'decimal:2',
+        'time_extension_threshold' => 'integer',
+        'time_extension_seconds'   => 'integer',
     ];
+
+    public function invoices()
+    {
+        return $this->hasMany(Invoice::class);
+    }
 
     public function car()
     {

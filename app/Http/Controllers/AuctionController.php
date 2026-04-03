@@ -105,35 +105,61 @@ class AuctionController extends Controller
 
         try {
             $result = \DB::transaction(function () use ($request, $auction) {
+                /** @var Auction $lockedAuction */
                 $lockedAuction = Auction::where('id', $auction->id)->lockForUpdate()->first();
-                
-                $actualCurrent = $lockedAuction->current_price ?? $lockedAuction->initial_price;
-                $minRequired = $actualCurrent + 500;
-                
-                if ($request->amount < $minRequired) {
-                    throw new \Exception('Price updated by another bidder. Current: ' . number_format($actualCurrent));
+
+                // ── Bid Increment Validation ──────────────────────────────
+                $actualCurrent = (float) ($lockedAuction->current_price ?? $lockedAuction->initial_price);
+                $increment     = (float) ($lockedAuction->bid_increment ?? 500);
+                $minRequired   = $actualCurrent + $increment;
+
+                if ((float) $request->amount < $minRequired) {
+                    throw new \Exception(
+                        'Minimum bid is $' . number_format($minRequired) .
+                        ' (current $' . number_format($actualCurrent) .
+                        ' + increment $' . number_format($increment) . ')'
+                    );
                 }
 
+                // ── Time Extension Logic ──────────────────────────────────
+                $timeExtended = false;
+                $newEndAt     = $lockedAuction->end_at;
+
+                if ($lockedAuction->end_at && $lockedAuction->status === 'active') {
+                    $secsLeft  = now()->diffInSeconds($lockedAuction->end_at, false); // positive = future
+                    $threshold = (int) ($lockedAuction->time_extension_threshold ?? 30);
+                    $extension = (int) ($lockedAuction->time_extension_seconds   ?? 20);
+
+                    if ($secsLeft > 0 && $secsLeft <= $threshold) {
+                        $newEndAt = $lockedAuction->end_at->addSeconds($extension);
+                        $lockedAuction->update(['end_at' => $newEndAt]);
+                        $timeExtended = true;
+                    }
+                }
+
+                // ── Create Bid ────────────────────────────────────────────
                 $bid = \App\Models\Bid::create([
                     'auction_id' => $auction->id,
-                    'user_id' => auth()->id(),
-                    'amount' => $request->amount,
-                    'status' => 'active',
+                    'user_id'    => auth()->id(),
+                    'amount'     => $request->amount,
+                    'status'     => 'active',
                 ]);
 
-                // --- TRIGGER REAL-TIME BROADCAST ---
                 event(new \App\Events\BidPlaced($bid));
-                // ------------------------------------
 
                 $lockedAuction->update(['current_price' => $request->amount]);
                 $lockedAuction->loadCount('bids');
 
                 return [
-                    'current_price' => (double) $request->amount,
+                    'current_price'           => (float) $request->amount,
                     'current_price_formatted' => number_format($request->amount),
-                    'next_bid_amount' => (double) ($request->amount + 500),
-                    'next_bid_formatted' => '$' . number_format($request->amount + 500),
-                    'bids_count' => $lockedAuction->bids_count
+                    'next_bid_amount'         => (float) ($request->amount + $increment),
+                    'next_bid_formatted'      => '$' . number_format($request->amount + $increment),
+                    'bid_increment'           => (float) $increment,
+                    'bids_count'              => $lockedAuction->bids_count,
+                    'time_extended'           => $timeExtended,
+                    'new_end_at'              => $newEndAt?->toIso8601String(),
+                    'extension_seconds'       => $timeExtended ? ($lockedAuction->time_extension_seconds ?? 20) : 0,
                 ];
             });
 
@@ -152,7 +178,8 @@ class AuctionController extends Controller
     public function sync(Auction $auction)
     {
         $auction->loadCount('bids');
-        $actualPrice = $auction->current_price ?? $auction->initial_price;
+        $actualPrice = (float) ($auction->current_price ?? $auction->initial_price);
+        $increment   = (float) ($auction->bid_increment ?? 500);
         
         $latestBids = $auction->bids()
             ->latest()
@@ -162,21 +189,26 @@ class AuctionController extends Controller
             ->get()
             ->map(function($bid) {
             return [
-                'user_name' => $bid->user->name,
+                'user_name'    => $bid->user->name,
                 'user_initial' => substr($bid->user->name, 0, 1),
-                'amount' => '$' . number_format($bid->amount),
-                'time' => $bid->created_at->diffForHumans(),
+                'amount'       => '$' . number_format($bid->amount),
+                'time'         => $bid->created_at->diffForHumans(),
             ];
         });
 
         return response()->json([
-            'success' => true,
-            'current_price' => (double) $actualPrice,
-            'current_price_formatted' => number_format($actualPrice),
-            'next_bid_amount' => (double) ($actualPrice + 500),
-            'next_bid_formatted' => '$' . number_format($actualPrice + 500),
-            'bids_count' => $auction->bids_count,
-            'latest_bids' => $latestBids,
+            'success'                  => true,
+            'current_price'            => $actualPrice,
+            'current_price_formatted'  => number_format($actualPrice),
+            'next_bid_amount'          => $actualPrice + $increment,
+            'next_bid_formatted'       => '$' . number_format($actualPrice + $increment),
+            'bid_increment'            => $increment,
+            'bids_count'               => $auction->bids_count,
+            'latest_bids'              => $latestBids,
+            'end_at'                   => $auction->end_at?->toIso8601String(),
+            'status'                   => $auction->status,
+            'time_extension_threshold' => (int) ($auction->time_extension_threshold ?? 30),
+            'time_extension_seconds'   => (int) ($auction->time_extension_seconds   ?? 20),
         ]);
     }
 
