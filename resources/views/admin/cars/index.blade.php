@@ -7,17 +7,17 @@
     <!-- Header: Refined Lean Typography -->
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div class="flex items-center gap-4">
-            <h1 class="text-3xl font-medium text-slate-800 tracking-tighter italic">Fleet Core</h1>
+            <h1 class="text-3xl font-medium text-slate-800 tracking-tighter italic">Vehicles</h1>
             <div class="h-8 w-px bg-slate-200 hidden md:block"></div>
-            <p class="text-[0.65rem] text-slate-500 font-medium uppercase tracking-[0.2em] hidden md:block">Real-time Asset Matrix</p>
+            <p class="text-[0.65rem] text-slate-500 font-medium uppercase tracking-[0.2em] hidden md:block">Vehicle Catalog</p>
         </div>
         <div class="flex items-center gap-3">
              <div class="flex items-center gap-3 bg-white px-5 py-2.5 rounded-lg border border-slate-200 shadow-sm">
-                <span class="text-[0.6rem] font-medium uppercase text-slate-400 tracking-widest">Global Nodes:</span>
+                <span class="text-[0.6rem] font-medium uppercase text-slate-400 tracking-widest">Total Vehicles:</span>
                 <span id="totalCounter" class="text-sm font-medium text-slate-800 tabular-nums">{{ number_format(\App\Models\Car::count()) }}</span>
             </div>
             <button onclick="openCreateModal()" style="background: var(--primary-orange);" class="px-6 h-[44px] text-white rounded-lg font-medium shadow-lg shadow-orange-500/10 hover:scale-[1.02] active:scale-95 transition-all text-[0.65rem] uppercase tracking-widest flex items-center gap-2">
-                <i data-lucide="plus-circle" class="w-4 h-4 text-white/80"></i> Append New Node
+                <i data-lucide="plus-circle" class="w-4 h-4 text-white/80"></i> Add Vehicle
             </button>
         </div>
     </div>
@@ -26,10 +26,10 @@
     <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
         <form id="filterForm" action="{{ route('admin.cars.index') }}" method="GET" class="flex flex-wrap items-end gap-3">
             <div class="flex-1 min-w-[220px]">
-                <label class="text-[0.65rem] font-medium text-slate-600 uppercase tracking-widest mb-1.5 block ml-1">Asset Inspector</label>
+                <label class="text-[0.65rem] font-medium text-slate-600 uppercase tracking-widest mb-1.5 block ml-1">Search</label>
                 <div class="relative">
                     <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2"></i>
-                    <input type="text" name="search" id="searchInput" value="{{ request('search') }}" placeholder="Search nodes..." class="w-full h-[44px] bg-slate-50 border border-slate-300 rounded-md pl-11 pr-4 py-2 text-[0.9rem] font-normal text-slate-700 outline-none focus:bg-white focus:border-orange-500/40 transition-all shadow-sm">
+                    <input type="text" name="search" id="searchInput" value="{{ request('search') }}" placeholder="Search by make or model..." class="w-full h-[44px] bg-slate-50 border border-slate-300 rounded-md pl-11 pr-4 py-2 text-[0.9rem] font-normal text-slate-700 outline-none focus:bg-white focus:border-orange-500/40 transition-all shadow-sm">
                 </div>
             </div>
             <div class="w-48">
@@ -45,10 +45,10 @@
                 </div>
             </div>
             <div class="w-32">
-                <label class="text-[0.65rem] font-medium text-slate-600 uppercase tracking-widest mb-1.5 block ml-1">Production</label>
+                <label class="text-[0.65rem] font-medium text-slate-600 uppercase tracking-widest mb-1.5 block ml-1">Year</label>
                 <div class="relative">
                     <select name="year" id="yearFilter" class="w-full h-[44px] bg-slate-50 border border-slate-300 rounded-md px-4 py-2 text-[0.9rem] font-normal text-slate-700 appearance-none outline-none focus:bg-white focus:border-orange-500/40 transition-all">
-                        <option value="">Any Range</option>
+                        <option value="">All Years</option>
                         @foreach(\App\Models\Car::distinct()->orderBy('year', 'desc')->pluck('year') as $year)
                             <option value="{{ $year }}" {{ request('year') == $year ? 'selected' : '' }}>{{ $year }}</option>
                         @endforeach
@@ -58,7 +58,7 @@
             </div>
             
             <button type="button" id="resetBtn" class="bg-slate-100 h-[44px] border border-slate-300 text-slate-700 rounded-md px-5 py-2 text-[0.65rem] font-medium uppercase tracking-widest hover:bg-slate-200 transition-all flex items-center gap-2 shadow-sm">
-                <i data-lucide="refresh-cw" class="w-4 h-4 text-slate-400"></i> Sync Reset
+                <i data-lucide="refresh-cw" class="w-4 h-4 text-slate-400"></i> Reset
             </button>
             
             <div class="relative flex items-center justify-center bg-slate-800 h-[44px] border border-slate-700 rounded-md px-4 py-2 overflow-hidden min-w-[5rem]">
@@ -66,7 +66,7 @@
                     <div class="w-1.5 h-1.5 bg-[#ff6900] rounded-full animate-bounce"></div>
                     <div class="w-1.5 h-1.5 bg-[#ff6900] rounded-full animate-bounce delay-75"></div>
                 </div>
-                <span id="readyText" class="text-[0.55rem] font-medium uppercase tracking-[0.2em] text-slate-400">Stable Node</span>
+                <span id="readyText" class="text-[0.55rem] font-medium uppercase tracking-[0.2em] text-slate-400">Ready</span>
             </div>
         </form>
     </div>
@@ -77,10 +77,10 @@
             <table class="w-full text-left border-collapse">
                 <thead>
                     <tr class="bg-slate-50 border-b border-slate-200">
-                        <th class="py-3 px-8 text-[0.65rem] text-slate-500 font-medium uppercase tracking-widest w-24 text-center">Unit Node</th>
-                        <th class="py-3 px-6 text-[0.65rem] text-slate-500 font-medium uppercase tracking-widest">Asset Segment Matrix</th>
+                        <th class="py-3 px-8 text-[0.65rem] text-slate-500 font-medium uppercase tracking-widest w-24 text-center">Logo</th>
+                        <th class="py-3 px-6 text-[0.65rem] text-slate-500 font-medium uppercase tracking-widest">Vehicle</th>
                         <th class="py-3 px-6 text-[0.65rem] text-slate-500 font-medium uppercase tracking-widest text-center">Year</th>
-                        <th class="py-3 px-8 text-[0.65rem] text-slate-500 font-medium uppercase tracking-widest text-right">Operations</th>
+                        <th class="py-3 px-8 text-[0.65rem] text-slate-500 font-medium uppercase tracking-widest text-right">Actions</th>
                     </tr>
                 </thead>
                 <tbody id="tableBody" class="divide-y divide-slate-100">
@@ -121,7 +121,7 @@
                                 <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center border border-slate-200 shadow-sm">
                                     <i data-lucide="database" class="w-8 text-slate-200"></i>
                                 </div>
-                                <h3 class="text-xs font-medium text-slate-400 uppercase tracking-widest">Matrix Segment Unresponsive</h3>
+                                <h3 class="text-xs font-medium text-slate-400 uppercase tracking-widest">No vehicles found</h3>
                             </div>
                         </td>
                     </tr>
@@ -146,8 +146,8 @@
     <div class="bg-white w-full max-w-md rounded-lg shadow-2xl border border-slate-200 overflow-hidden animate-in zoom-in-95 duration-200">
         <div class="bg-slate-800 px-8 py-6 text-white/90 flex items-center justify-between">
             <div>
-                <h4 id="modalTitle" class="text-[0.65rem] font-medium uppercase tracking-[0.2em]">Node Update Protocol</h4>
-                <p class="text-[0.55rem] text-white/40 font-normal uppercase mt-1">Vehicle Matrix Asset Registry</p>
+                <h4 id="modalTitle" class="text-[0.65rem] font-medium uppercase tracking-[0.2em]">Add Vehicle</h4>
+                <p class="text-[0.55rem] text-white/40 font-normal uppercase mt-1">Vehicle Catalog</p>
             </div>
             <button onclick="closeCarModal()" class="w-8 h-8 rounded-md bg-white/10 hover:bg-white/20 flex items-center justify-center transition-all border border-white/10">
                 <i data-lucide="x" class="w-4 h-4"></i>
@@ -161,22 +161,22 @@
                 <input type="hidden" id="formMethod" name="_method" value="POST">
                 
                 <div class="space-y-1.5">
-                    <label class="text-[0.65rem] font-medium text-slate-500 uppercase tracking-widest ml-1">Maker Segment</label>
+                    <label class="text-[0.65rem] font-medium text-slate-500 uppercase tracking-widest ml-1">Make</label>
                     <input type="text" id="inputMake" name="make" required class="w-full bg-slate-50 border border-slate-300 rounded-md px-5 py-3.5 text-[0.9rem] font-normal text-slate-700 outline-none focus:bg-white focus:border-orange-500 transition-all shadow-inner">
                 </div>
                 <div class="space-y-1.5">
-                    <label class="text-[0.65rem] font-medium text-slate-500 uppercase tracking-widest ml-1">Asset Model</label>
+                    <label class="text-[0.65rem] font-medium text-slate-500 uppercase tracking-widest ml-1">Model</label>
                     <input type="text" id="inputModel" name="model" required class="w-full bg-slate-50 border border-slate-300 rounded-md px-5 py-3.5 text-[0.9rem] font-normal text-slate-700 outline-none focus:bg-white focus:border-orange-500 transition-all shadow-inner">
                 </div>
                 <div class="space-y-1.5">
-                    <label class="text-[0.65rem] font-medium text-slate-500 uppercase tracking-widest ml-1">Sync Year</label>
+                    <label class="text-[0.65rem] font-medium text-slate-500 uppercase tracking-widest ml-1">Year</label>
                     <input type="number" id="inputYear" name="year" required min="1950" max="{{ now()->year + 1 }}" class="w-full bg-slate-50 border border-slate-300 rounded-md px-5 py-3.5 text-[0.9rem] font-normal text-slate-700 outline-none focus:bg-white focus:border-orange-500 transition-all shadow-inner">
                 </div>
 
                 <div id="modal-error" class="hidden p-4 bg-red-50 border border-red-100 text-red-500 text-[0.7rem] font-medium rounded-md"></div>
 
                 <button type="submit" id="submitBtn" style="background: var(--primary-orange);" class="w-full text-white py-4.5 rounded-lg text-[0.7rem] font-medium uppercase tracking-[0.2em] shadow-xl shadow-orange-500/10 flex items-center justify-center gap-2 transition-all hover:scale-[1.01] active:scale-98">
-                    <i data-lucide="database" class="w-4 h-4 text-white/80"></i> <span id="submitBtnText">Push Node to Matrix</span>
+                    <i data-lucide="save" class="w-4 h-4 text-white/80"></i> <span id="submitBtnText">Save Vehicle</span>
                 </button>
             </form>
         </div>
@@ -193,22 +193,22 @@
                 <i data-lucide="x" class="w-4 h-4"></i>
             </button>
             <div class="absolute bottom-4 left-6">
-                <span id="viewId" class="bg-[#ff6900]/90 text-white px-2 py-0.5 rounded text-[0.5rem] font-medium uppercase tracking-widest">Asset Node Verified</span>
-                <h3 id="viewTitle" class="text-white text-lg font-normal italic mt-1 tracking-tighter">Segment Model</h3>
+                <span id="viewId" class="bg-[#ff6900]/90 text-white px-2 py-0.5 rounded text-[0.5rem] font-medium uppercase tracking-widest">Vehicle</span>
+                <h3 id="viewTitle" class="text-white text-lg font-normal italic mt-1 tracking-tighter">Vehicle Name</h3>
             </div>
         </div>
         <div class="p-6 space-y-6">
             <div class="flex items-center justify-between border-b border-slate-100 pb-3">
                 <div class="flex flex-col">
-                    <span class="text-[0.55rem] font-medium text-slate-400 uppercase tracking-widest">Operational Status</span>
-                    <span class="text-[0.75rem] font-normal text-slate-700 uppercase mt-1 italic">Matrix Stable</span>
+                    <span class="text-[0.55rem] font-medium text-slate-400 uppercase tracking-widest">Status</span>
+                    <span class="text-[0.75rem] font-normal text-slate-700 uppercase mt-1 italic">Active</span>
                 </div>
                 <div class="flex flex-col text-right">
-                    <span class="text-[0.55rem] font-medium text-slate-400 uppercase tracking-widest">Production Year</span>
+                    <span class="text-[0.55rem] font-medium text-slate-400 uppercase tracking-widest">Year</span>
                     <span id="viewYear" class="text-[0.75rem] font-normal text-slate-700 mt-1">2024</span>
                 </div>
             </div>
-            <button onclick="closeViewModal()" class="w-full py-3 bg-slate-800 text-white/90 rounded-md text-[0.65rem] font-medium uppercase tracking-widest hover:bg-slate-700 transition-all">Dismiss Inspector</button>
+            <button onclick="closeViewModal()" class="w-full py-3 bg-slate-800 text-white/90 rounded-md text-[0.65rem] font-medium uppercase tracking-widest hover:bg-slate-700 transition-all">Close</button>
         </div>
     </div>
 </div>
@@ -303,8 +303,8 @@
     });
 
     function openCreateModal() {
-        document.getElementById('modalTitle').innerText = "Register Matrix Segment";
-        document.getElementById('submitBtnText').innerText = "Push Segment Node";
+        document.getElementById('modalTitle').innerText = "Add Vehicle";
+        document.getElementById('submitBtnText').innerText = "Save Vehicle";
         document.getElementById('carId').value = "";
         document.getElementById('formMethod').value = "POST";
         document.getElementById('ajaxCarForm').reset();
@@ -312,8 +312,8 @@
     }
 
     function editCar(id, make, model, year) {
-        document.getElementById('modalTitle').innerText = "Recalibrate Matrix Node";
-        document.getElementById('submitBtnText').innerText = "Apply Segment Delta";
+        document.getElementById('modalTitle').innerText = "Edit Vehicle";
+        document.getElementById('submitBtnText').innerText = "Update Vehicle";
         document.getElementById('carId').value = id;
         document.getElementById('formMethod').value = "PUT";
         document.getElementById('inputMake').value = make;
@@ -325,20 +325,20 @@
     function viewCarDetail(id, make, model, year, img) {
         document.getElementById('viewTitle').innerText = make + ' ' + model;
         document.getElementById('viewYear').innerText = year;
-        document.getElementById('viewId').innerText = 'Asset Log Segment #' + id;
+        document.getElementById('viewId').innerText = 'Vehicle #' + id;
         document.getElementById('viewImg').src = img || '';
         document.getElementById('viewModal').classList.remove('hidden');
     }
 
     async function deleteCar(id) {
         const result = await Swal.fire({
-            title: 'Authorize Purge Protocol?',
-            text: "Permanent removal of segment node #" + id,
+            title: 'Delete this vehicle?',
+            text: "This action cannot be undone. Vehicle #" + id + " will be permanently deleted.",
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#ff4605',
             cancelButtonColor: '#1e293b',
-            confirmButtonText: 'Yes, Purge Node',
+            confirmButtonText: 'Yes, Delete',
             customClass: { popup: 'rounded-lg' }
         });
 
@@ -350,10 +350,10 @@
                 });
                 const data = await res.json();
                 if(data.success) {
-                    window.notify.success(data.message || 'Node Purged');
+                    window.notify.success(data.message || 'Vehicle deleted');
                     syncMatrix();
                 }
-            } catch (err) { window.notify.error("Matrix Purge Protocol Error"); }
+            } catch (err) { window.notify.error("Failed to delete vehicle"); }
         }
     }
 

@@ -21,7 +21,7 @@
         </div>
         <div class="flex items-center gap-3">
             <div class="flex items-center gap-3 bg-white px-5 py-2.5 rounded-lg border border-slate-200 shadow-sm">
-                <span class="text-[0.6rem] font-medium uppercase text-slate-400 tracking-widest">Link Nodes:</span>
+                <span class="text-[0.6rem] font-medium uppercase text-slate-400 tracking-widest">Total Items:</span>
                 <span class="text-sm font-medium text-slate-800 tabular-nums">{{ $menu->items->count() }}</span>
             </div>
             <a href="{{ route('admin.pages.create') }}"
@@ -50,7 +50,7 @@
                         <span class="px-2.5 py-0.5 bg-white border border-slate-200 rounded-full text-[0.6rem] font-medium text-slate-500 tabular-nums">{{ $menu->items->count() }}</span>
                     </div>
                     <div class="flex items-center gap-1.5">
-                        <span class="text-[0.55rem] font-medium text-slate-400 uppercase tracking-widest">Order by drag</span>
+                        <span class="text-[0.55rem] font-medium text-slate-400 uppercase tracking-widest">Drag to reorder</span>
                         <i data-lucide="move" class="w-3.5 h-3.5 text-slate-300"></i>
                     </div>
                 </div>
@@ -211,7 +211,7 @@
             <div class="bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden">
                 <div class="bg-slate-50 border-b border-slate-200 px-6 py-4">
                     <h4 class="text-[0.65rem] font-medium uppercase tracking-[0.2em] text-slate-500">Add Manual Link</h4>
-                    <p class="text-[0.55rem] text-slate-400 font-normal mt-0.5 uppercase tracking-widest">Custom URL segment node</p>
+                    <p class="text-[0.55rem] text-slate-400 font-normal mt-0.5 uppercase tracking-widest">Link to any URL</p>
                 </div>
 
                 <div class="p-6 space-y-4">
@@ -269,7 +269,7 @@
                         <button type="submit"
                                 class="w-full h-[44px] bg-slate-800 text-white/90 rounded-lg text-[0.7rem] font-medium uppercase tracking-[0.2em] shadow-sm flex items-center justify-center gap-2 transition-all hover:scale-[1.01] active:scale-98 hover:bg-slate-700">
                             <i data-lucide="plus-circle" class="w-4 h-4 text-white/70"></i>
-                            Append Node
+                            Add Link
                         </button>
                     </form>
                 </div>

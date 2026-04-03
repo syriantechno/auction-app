@@ -8,9 +8,9 @@
     {{-- Header --}}
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div class="flex items-center gap-4">
-            <h1 class="text-3xl font-medium text-slate-800 tracking-tighter italic">Nav Architect</h1>
+            <h1 class="text-3xl font-medium text-slate-800 tracking-tighter italic">Navigation Menus</h1>
             <div class="h-8 w-px bg-slate-200 hidden md:block"></div>
-            <p class="text-[0.65rem] text-slate-500 font-medium uppercase tracking-[0.2em] hidden md:block">Site-wide Link Infrastructure</p>
+            <p class="text-[0.65rem] text-slate-500 font-medium uppercase tracking-[0.2em] hidden md:block">Navigation Management</p>
         </div>
         <div class="flex items-center gap-3">
             <div class="flex items-center gap-3 bg-white px-5 py-2.5 rounded-lg border border-slate-200 shadow-sm">
@@ -74,12 +74,12 @@
                         @endif
                     </div>
                 @else
-                    <p class="text-[0.65rem] text-slate-400 font-medium italic mb-5">No link nodes — click Customize to add.</p>
+                    <p class="text-[0.65rem] text-slate-400 font-medium italic mb-5">No items yet — click Edit to add links.</p>
                 @endif
 
                 <a href="{{ route('admin.menus.show', $menu) }}"
                    class="block w-full py-3 bg-slate-50 text-slate-500 rounded-md text-center text-[0.65rem] font-medium uppercase tracking-widest border border-slate-200 shadow-sm hover:bg-slate-800 hover:text-white hover:border-slate-800 transition-all">
-                    Customize Links
+                    Edit Menu
                 </a>
             </div>
         </div>
