@@ -3,22 +3,22 @@
 @section('title', 'Menu Builder — ' . $menu->name)
 
 @section('content')
-<div class="max-w-6xl mx-auto space-y-6">
+<div class="space-y-4">
 
     {{-- Header --}}
-    <div class="flex items-center gap-4">
+    <div class="flex items-center gap-3">
         <a href="{{ route('admin.menus.index') }}"
-           class="w-9 h-9 rounded-xl border border-slate-200 bg-white flex items-center justify-center hover:bg-slate-50 transition-all shadow-sm">
+           class="w-8 h-8 rounded-lg border border-slate-200 bg-white flex items-center justify-center hover:bg-slate-50 transition-all shadow-sm shrink-0">
             <i data-lucide="arrow-left" class="w-4 h-4 text-slate-600"></i>
         </a>
-        <div>
-            <div class="text-[0.55rem] font-black uppercase tracking-[0.3em] text-slate-400 mb-0.5">
+        <div class="flex-1 min-w-0">
+            <div class="text-[0.55rem] font-black uppercase tracking-[0.3em] text-slate-400">
                 Menu Builder · {{ $menu->location ?? 'No Location' }}
             </div>
-            <h1 class="text-xl font-black text-slate-900 tracking-tight">{{ $menu->name }}</h1>
+            <h1 class="text-lg font-black text-slate-900 tracking-tight">{{ $menu->name }}</h1>
         </div>
         <a href="{{ route('admin.pages.create') }}"
-           class="ml-auto flex items-center gap-1.5 text-[0.65rem] font-black text-slate-600 bg-white border border-slate-200 px-3 py-1.5 rounded-lg shadow-sm hover:bg-slate-50 transition-all">
+           class="shrink-0 flex items-center gap-1.5 text-[0.65rem] font-black text-slate-600 bg-white border border-slate-200 px-3 py-1.5 rounded-lg shadow-sm hover:bg-slate-50 transition-all">
             <i data-lucide="plus" class="w-3.5 h-3.5"></i> New Page
         </a>
     </div>
@@ -29,10 +29,10 @@
         </div>
     @endif
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 xl:grid-cols-5 gap-4 items-start">
 
-        {{-- ── LEFT: Current Items ── --}}
-        <div class="lg:col-span-2">
+        {{-- ═══ LEFT: Current Items (3/5) ═══ --}}
+        <div class="xl:col-span-3">
             <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
                 <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
                     <div>
@@ -127,8 +127,8 @@
             </div>
         </div>
 
-        {{-- ── RIGHT: Add Item ── --}}
-        <div class="space-y-4">
+        {{-- ═══ RIGHT: Add Item (2/5) ═══ --}}
+        <div class="xl:col-span-2 space-y-4">
 
             {{-- Add by Page --}}
             <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 space-y-4">
