@@ -1,0 +1,44 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+
+@theme {
+    --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+    
+    /* Layout Tokens */
+    --color-body-bg: #9eaab7;
+    --color-card-bg: #ffffff;
+    --color-dark-bg: #111827;
+    
+    --shadow-premium: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+    --radius-premium: 24px;
+}
+
+/* Global Floating Card Design using Tailwind 4 @utility */
+@utility card-floating {
+    @apply bg-white rounded-[24px] p-6 border border-black/2 shadow-sm;
+}
+
+@utility stat-card {
+    @apply card-floating flex flex-col items-center justify-center text-center aspect-square max-w-[140px];
+}
+
+@utility sidebar-premium {
+    @apply w-[260px] bg-white p-7 rounded-[28px] shadow-sm shrink-0 h-fit;
+}
+
+@utility profile-premium {
+    @apply w-[260px] bg-white px-5 py-4 rounded-[20px] shadow-sm flex items-center gap-3 mt-6;
+}
+
+@utility dashboard-layout {
+    @apply grid grid-cols-6 gap-5 w-full;
+}
+
+/* Header Elements */
+@utility search-bar {
+    @apply flex items-center gap-2 bg-[#f8fafbd9] px-4 py-2.5 rounded-2xl w-[320px] border border-transparent focus-within:border-[#5d87ff33] transition-all;
+}

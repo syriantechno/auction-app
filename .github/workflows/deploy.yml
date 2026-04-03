@@ -1,0 +1,54 @@
+name: 🚀 Deploy to Hosting (FTP)
+
+on:
+  push:
+    branches:
+      - main          # يتشغل تلقائياً عند كل push لـ main
+
+jobs:
+  deploy:
+    name: Deploy via FTP
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: ✅ Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🔧 Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, pdo, pdo_mysql, bcmath, json
+
+      - name: 📦 Install Composer Dependencies
+        run: composer install --no-dev --optimize-autoloader --no-interaction
+
+      - name: 🎨 Install Node & Build Assets
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Build Vite assets
+        run: |
+          npm ci
+          npm run build
+
+      - name: 🚀 Deploy via FTP (changed files only)
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          port: 21
+          server-dir: ${{ secrets.FTP_SERVER_DIR }}   # e.g. /public_html/
+          local-dir: ./
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
+            **/vendor/**
+            .env
+            storage/logs/**
+            storage/framework/cache/**
+            storage/framework/sessions/**
+            storage/framework/views/**

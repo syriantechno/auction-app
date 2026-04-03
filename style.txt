@@ -1,0 +1,49 @@
+# Motor Bazar CMS - Design & Architecture Manifesto
+
+## 1. Visual Aesthetic (Elite High-Density)
+- **Backgrounds**: Use `#f8fafc` (slate-50) for workspace; white `bg-white` for content cards.
+- **Color Palette**:
+    - Primary: `#ff6900` (Orange Bazaar) - For highlight CTAs and active states.
+    - Secondary: `#1d293d` (Deep Slate) - For strong buttons and secondary actions.
+- **Radius (Compact Strategy)**: 
+    - **Inputs & Fields**: Use `rounded-md` (6px) strictly.
+    - **Buttons & Chips**: Use `rounded-lg` (8px).
+    - **Cards & Containers**: Use `rounded-lg` (8px) for ALL major boards.
+- **Interaction Elements**:
+    - **MUST** always include a Lucide or SVG icon.
+    - Active states must transition between primary and secondary shades.
+
+## 2. Technical Stack (The "Anti-Flicker" Protocol)
+- **Zero-FOUC Pattern**: 
+    - Always use Blade conditionals `@if($active) ... @endif` for initial `class` definitions.
+    - Use `x-cloak` on all Alpine containers.
+    - Do NOT rely on JS for the first-paint visual state.
+
+- **State Management**: Alpine.js `x-data` at the root wrapper.
+- **Rendering Performance**:
+    - Use `x-cloak` to prevent content flash.
+    - **CRITICAL**: Use static SVGs for sidebar icons instead of Lucide `<i>` tags to eliminate redraw flicker during JS initialization.
+    - Use Blade conditionals in static `class` attributes to pre-render the "Active" state of default tabs.
+- **Data Persistence**: 
+    - All saves must be AJAX-based via `fetch()` with `@submit.prevent`.
+    - Handle both JSON success and validation error arrays.
+
+## 3. Data Hub (Tables & Lists)
+- **Container**: Use `bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden`.
+- **Header**: Use `bg-slate-50 border-b border-slate-200`.
+- **Headings (TH)**: Use `py-4 px-6 text-[0.65rem] text-slate-500 font-black uppercase tracking-[0.2em]`.
+- **Body Rows**:
+    - Use `divide-y divide-slate-100` for divisions.
+    - Hover: `hover:bg-slate-50/50 border-l-4 border-l-transparent hover:border-l-[#ff6900] transition-all duration-300`.
+- **Cells (TD)**: `py-5 px-6`.
+
+## 4. Feedback Loop (Uptime Toast Engine)
+- **Placement**: Fixed `top-10 right-10`.
+- **Styling**: `backdrop-blur-3xl`, `bg-slate-950/95`, `rounded-[2.5rem]`.
+- **Logic**: 4-second timeout, smooth blur-scale transitions.
+- **Feedback Type**: Use `Synchronization Success` or `Integrity Failure` branding.
+
+## 4. Maintenance Principles
+- Never leave placeholders; use valid assets or generated visuals.
+- Maintain the column layout: Sidebar (2 cols) | Content (10 cols).
+- All new tabs must follow the `x-show` pattern with established transitions.
