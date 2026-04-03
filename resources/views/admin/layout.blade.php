@@ -97,14 +97,22 @@
 
     @stack('head')
 
-    {{-- ANTI-FLASH: runs synchronously before first paint to set sidebar state --}}
+    {{-- ANTI-FLASH: runs synchronously before first paint --}}
     <script>
         (function(){
+            // 1. Set sidebar collapsed class immediately
             if (localStorage.getItem('sidebarOpen') === 'false') {
                 document.documentElement.classList.add('sidebar-collapsed');
             }
+            // 2. Hide body until Alpine is ready (prevents all x-show FOUC)
+            document.documentElement.classList.add('alpine-loading');
         })();
     </script>
+    <style>
+        /* Hide page until Alpine initializes — prevents ALL x-show/x-cloak flash */
+        html.alpine-loading body { opacity: 0; }
+        html body { transition: opacity 0.1s ease; }
+    </style>
 </head>
 
 <body class="antialiased text-[#111827] bg-[#e7e7e7]">
@@ -113,8 +121,12 @@
         sidebarOpen: !document.documentElement.classList.contains('sidebar-collapsed'),
         openCRM: {{ request()->routeIs('admin.leads.*') || request()->routeIs('admin.inspections.*') ? 'true' : 'false' }}
     }" x-init="
-        // Add transition class AFTER Alpine init (prevents initial animation)
-        setTimeout(() => document.getElementById('admin-sidebar')?.classList.add('sidebar-ready'), 50);
+        // Remove loading class — page becomes visible after Alpine processes all x-show
+        $nextTick(() => {
+            document.documentElement.classList.remove('alpine-loading');
+            // Enable sidebar transition AFTER initial render
+            setTimeout(() => document.getElementById('admin-sidebar')?.classList.add('sidebar-ready'), 0);
+        });
         $watch('sidebarOpen', v => {
             localStorage.setItem('sidebarOpen', v);
             document.documentElement.classList.toggle('sidebar-collapsed', !v);
