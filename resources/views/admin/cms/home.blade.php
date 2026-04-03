@@ -547,6 +547,21 @@
                             {{-- Headline & Branding --}}
                             <div class="space-y-4">
                                 <p class="text-[0.62rem] font-medium uppercase tracking-[0.2em] text-slate-400 ml-1">Copywriting Hub</p>
+                                {{-- Wizard Step Title Labels --}}
+                                <div class="grid grid-cols-3 gap-3">
+                                    <div>
+                                        <label class="text-[0.5rem] font-medium uppercase tracking-widest text-slate-500 mb-1 block">Step 1 Title (e.g. Select)</label>
+                                        <input type="text" name="lead_form[wizard_w1]" value="{{ old('lead_form.wizard_w1', data_get($page->content, 'lead_form.wizard_w1', 'Select')) }}" class="w-full bg-white border border-slate-200 rounded-md px-3 py-2 text-[0.75rem] font-black text-[#ff6900] outline-none focus:border-[#ff6900] transition-all shadow-sm">
+                                    </div>
+                                    <div>
+                                        <label class="text-[0.5rem] font-medium uppercase tracking-widest text-slate-500 mb-1 block">Step 2 Title (e.g. Customize)</label>
+                                        <input type="text" name="lead_form[wizard_w2]" value="{{ old('lead_form.wizard_w2', data_get($page->content, 'lead_form.wizard_w2', 'Customize')) }}" class="w-full bg-white border border-slate-200 rounded-md px-3 py-2 text-[0.75rem] font-black text-slate-400 outline-none focus:border-blue-500 transition-all shadow-sm">
+                                    </div>
+                                    <div>
+                                        <label class="text-[0.5rem] font-medium uppercase tracking-widest text-slate-500 mb-1 block">Step 3 Title (e.g. Submit)</label>
+                                        <input type="text" name="lead_form[wizard_w3]" value="{{ old('lead_form.wizard_w3', data_get($page->content, 'lead_form.wizard_w3', 'Submit')) }}" class="w-full bg-white border border-slate-200 rounded-md px-3 py-2 text-[0.75rem] font-black text-slate-400 outline-none focus:border-blue-500 transition-all shadow-sm">
+                                    </div>
+                                </div>
                             </div>
                         </div>
 

@@ -187,6 +187,9 @@ class CMSController extends Controller
         if ($request->has('lead_form')) {
             $leadFormInput = $request->input('lead_form', []);
             $content['lead_form'] = [
+                'wizard_w1'    => data_get($leadFormInput, 'wizard_w1', data_get($content, 'lead_form.wizard_w1', 'Select')),
+                'wizard_w2'    => data_get($leadFormInput, 'wizard_w2', data_get($content, 'lead_form.wizard_w2', 'Customize')),
+                'wizard_w3'    => data_get($leadFormInput, 'wizard_w3', data_get($content, 'lead_form.wizard_w3', 'Submit')),
                 'step1' => [
                     'title'        => data_get($leadFormInput, 'step1.title', 'Choose brand, model, and year'),
                     'subtitle'     => data_get($leadFormInput, 'step1.subtitle', 'Pick a brand first. The model list updates automatically.'),
@@ -213,6 +216,7 @@ class CMSController extends Controller
                     'back_label'    => data_get($leadFormInput, 'step3.back_label', 'Back'),
                 ],
             ];
+
         }
         
         // Footer settings
