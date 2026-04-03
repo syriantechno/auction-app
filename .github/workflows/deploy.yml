@@ -1,4 +1,4 @@
-name: Deploy to Hosting (FTP)
+name: Build Assets
 
 on:
   push:
@@ -6,50 +6,27 @@ on:
       - main
 
 jobs:
-  deploy:
-    name: Deploy via FTP
+  build:
+    name: Build Vite Assets
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup PHP 8.3
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.3'
-          extensions: mbstring, pdo, pdo_mysql, bcmath, json
-
-      - name: Install Composer dependencies
-        run: composer install --no-dev --optimize-autoloader --no-interaction
-
       - name: Setup Node 20
         uses: actions/setup-node@v4
         with:
           node-version: '20'
 
-      - name: Build Vite assets
+      - name: Install & Build
         run: |
           npm ci
           npm run build
 
-      - name: Deploy via FTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+      - name: Commit built assets back to repo
+        uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          server: ${{ secrets.FTP_HOST }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          port: 21
-          server-dir: /car.suiteone-erp.com/
-          local-dir: ./
-          exclude: |
-            **/.git*
-            **/.git*/**
-            **/node_modules/**
-            **/vendor/**
-            .env
-            storage/logs/**
-            storage/framework/cache/**
-            storage/framework/sessions/**
-            storage/framework/views/**
-            migrate_log.txt
+          commit_message: "CI: build assets [skip ci]"
+          file_pattern: "public/build/**"
+          push_options: '--force'
