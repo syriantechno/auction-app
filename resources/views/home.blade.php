@@ -38,6 +38,11 @@
             : "background-image: url('{$heroBackgroundImage}'); background-size: cover; background-position: center; background-color: {$heroBackgroundColor};";
     @endphp
 
+    /* ── Anti-FOUC: brand logo size locked before page renders ────────── */
+    .brand-logo-wrapper { width:60px!important; height:60px!important; overflow:hidden!important; flex-shrink:0!important; }
+    .brand-logo { max-width:100%!important; max-height:100%!important; object-fit:contain!important; }
+    .w-14.h-14 > img, .brand-pick img { max-width:56px!important; max-height:56px!important; object-fit:contain!important; }
+
     .search-tab {
         padding: 12px 20px;
         font-size: 0.75rem;
@@ -483,8 +488,8 @@
                                             $brandModels = data_get($catalogModelsByMake ?? [], $brandKey, data_get($catalogModelsByMake ?? [], '__all__', []));
                                         @endphp
                                         <button type="button" class="brand-pick group flex flex-col items-center justify-center gap-2.5 p-3 rounded-lg bg-transparent border border-transparent shadow-none transition-all duration-300 hover:shadow-none hover:bg-transparent hover:border-transparent" data-brand-pick="{{ $brand['name'] }}" data-brand-models='@json($brandModels)'>
-                                            <div class="w-14 h-14 flex items-center justify-center p-0.5 transition-all duration-300 group-hover:scale-105">
-                                                <img src="{{ $brand['logo'] }}" alt="{{ $brand['name'] }}" class="w-full h-full object-contain grayscale opacity-75 transition-all duration-500 group-hover:grayscale-0 group-hover:opacity-100">
+                                            <div class="w-14 h-14 flex items-center justify-center p-0.5 transition-all duration-300 group-hover:scale-105" style="width:3.5rem;height:3.5rem;overflow:hidden;flex-shrink:0">
+                                                <img src="{{ $brand['logo'] }}" alt="{{ $brand['name'] }}" class="w-full h-full object-contain grayscale opacity-75 transition-all duration-500 group-hover:grayscale-0 group-hover:opacity-100" style="max-width:100%;max-height:100%;object-fit:contain">
                                             </div>
                                             <span class="text-[0.58rem] font-black text-slate-500 uppercase tracking-widest group-hover:text-slate-900 transition-colors text-center leading-tight">{{ $brand['name'] }}</span>
                                         </button>
@@ -1198,8 +1203,8 @@
                         }
                     @endphp
                     <a href="{{ route('auctions.index', ['make' => $brand['name']]) }}" class="brand-slide group">
-                        <div class="brand-logo-wrapper">
-                            <img src="{{ $logoPath }}" alt="{{ $brand['name'] }}" class="brand-logo">
+                        <div class="brand-logo-wrapper" style="width:60px;height:60px;overflow:hidden;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                            <img src="{{ $logoPath }}" alt="{{ $brand['name'] }}" class="brand-logo" style="max-width:100%;max-height:100%;object-fit:contain;filter:grayscale(100%) opacity(0.6)">
                         </div>
                         <span class="brand-name">{{ $brand['name'] }}</span>
                     </a>
