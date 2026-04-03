@@ -45,7 +45,7 @@ class DealerController extends Controller
 
         // Auctions the dealer WON (negotiation closed with this dealer)
         $won = Auction::whereHas('negotiation', fn($q) =>
-                $q->where('status', 'closed')->where('winning_user_id', $user->id)
+                $q->where('status', 'closed')->where('winning_bidder_id', $user->id)
             )
             ->with(['car', 'negotiation'])
             ->latest()

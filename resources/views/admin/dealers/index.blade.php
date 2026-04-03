@@ -48,7 +48,7 @@
                 </div>
                 <div class="text-center border-x border-slate-50">
                     <div class="text-lg font-black text-emerald-600 tabular-nums">
-                        {{ \App\Models\Auction::whereHas('negotiation', fn($q) => $q->where('status','closed')->where('winning_user_id', $dealer->id))->count() }}
+                        {{ \App\Models\Auction::whereHas('negotiation', fn($q) => $q->where('status','closed')->where('winning_bidder_id', $dealer->id))->count() }}
                     </div>
                     <div class="text-[0.5rem] font-black text-slate-400 uppercase tracking-widest">Won</div>
                 </div>
