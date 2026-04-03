@@ -1,4 +1,4 @@
-@extends('admin.layout')
+﻿@extends('admin.layout')
 
 @section('title', 'CMS Control Center')
 
@@ -120,7 +120,7 @@
             </ul>
         </div>
     @endif
-    <!-- Header Matrix -->
+    <!-- Header -->
     <div class="px-1 group">
         <div class="flex items-center justify-between">
             <div>
@@ -152,7 +152,7 @@
                         </div>
                         <div>
                             <div class="text-[0.65rem] font-medium uppercase text-slate-900">Navbar</div>
-                            <div class="text-[0.5rem] font-bold uppercase tracking-tighter text-slate-400">Header Matrix</div>
+                            <div class="text-[0.5rem] font-bold uppercase tracking-tighter text-slate-400">Header</div>
                         </div>
                     </button>
 
@@ -675,7 +675,7 @@
                                             <h4 class="text-[0.65rem] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 pb-2">Step 2: Condition & Actions</h4>
                                             <div>
                                                 <label class="text-[0.5rem] font-medium uppercase tracking-widest text-slate-500 mb-1 block">Overall Condition Label</label>
-                                                <input type="text" name="lead_form[step2][condition_label]" value="{{ old('lead_form.step2.condition_label', data_get($page->content, 'lead_form.step2.condition_label', 'Overall Condition Matrix')) }}" class="w-full bg-white border border-slate-200 rounded-md px-3 py-2 text-[0.65rem] font-bold text-slate-700 outline-none focus:border-blue-500">
+                                                <input type="text" name="lead_form[step2][condition_label]" value="{{ old('lead_form.step2.condition_label', data_get($page->content, 'lead_form.step2.condition_label', 'Overall Condition')) }}" class="w-full bg-white border border-slate-200 rounded-md px-3 py-2 text-[0.65rem] font-bold text-slate-700 outline-none focus:border-blue-500">
                                             </div>
                                             <div class="grid grid-cols-2 gap-3">
                                                 <div>
@@ -917,7 +917,7 @@
                             </div>
                             <div>
                                 <h3 class="text-sm font-medium uppercase tracking-widest text-slate-800">Elite Slider Architecture</h3>
-                                <p class="text-[0.6rem] text-slate-400 font-medium uppercase tracking-widest mt-1">Homepage Premium Brand Matrix</p>
+                                <p class="text-[0.6rem] text-slate-400 font-medium uppercase tracking-widest mt-1">Homepage Brands</p>
                             </div>
                         </div>
 

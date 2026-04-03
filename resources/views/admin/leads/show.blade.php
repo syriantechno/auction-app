@@ -1,4 +1,4 @@
-@extends('admin.layout')
+﻿@extends('admin.layout')
 
 @section('title', 'Review Lead Entry')
 
@@ -7,7 +7,7 @@
     <div class="flex justify-between items-center mb-8">
         <div>
             <h1 class="text-3xl font-black text-slate-900 mb-1 tracking-tight">Review Entry: <span class="text-[#FF6900]">#{{ $lead->id }}</span></h1>
-            <p class="text-[0.65rem] text-slate-400 font-black uppercase tracking-[0.3em] leading-none">Operational Matrix Submission Audit</p>
+            <p class="text-[0.65rem] text-slate-400 font-black uppercase tracking-[0.3em] leading-none">Lead Inquiry Details</p>
         </div>
         <div class="flex items-center gap-3">
             <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $lead->car_details['phone'] ?? '') }}" target="_blank" class="px-6 py-3 bg-emerald-600 text-white rounded-md font-black uppercase tracking-widest text-[0.65rem] shadow-lg shadow-emerald-500/20 hover:bg-emerald-700 transition-all flex items-center gap-2">
@@ -29,7 +29,7 @@
         {{-- Left Column: Asset & Profile --}}
         <div class="lg:col-span-8 space-y-8">
             
-            {{-- Elite Spec Matrix --}}
+            {{-- Specs --}}
             <div class="bg-white rounded-lg p-8 shadow-xl border border-slate-100 relative overflow-hidden">
                 <div class="absolute top-0 right-0 p-8 opacity-[0.03] pointer-events-none">
                     <i data-lucide="shield-check" class="w-40 h-40"></i>
@@ -146,7 +146,7 @@
                         <i data-lucide="calendar" class="w-6 h-6"></i>
                     </div>
                     <div>
-                        <h2 class="text-[0.8rem] font-black text-white uppercase tracking-widest">Appointment Matrix</h2>
+                        <h2 class="text-[0.8rem] font-black text-white uppercase tracking-widest">Schedule Inspection</h2>
                         <p class="text-[0.6rem] text-white/30 font-bold uppercase tracking-widest mt-0.5">Scheduled Protocol</p>
                     </div>
                 </div>

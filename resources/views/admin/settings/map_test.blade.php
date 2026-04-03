@@ -1,4 +1,4 @@
-@extends('admin.layout')
+﻿@extends('admin.layout')
 
 @section('title', 'Deep Map Diagnostics')
 @section('page_title', 'Per-Vendor Map Lab')
@@ -14,7 +14,7 @@
                 </div>
                 <div>
                     <h1 class="text-2xl font-black text-slate-900 tracking-tight">Per-Engine Calibration</h1>
-                    <p class="text-[0.65rem] font-bold uppercase tracking-[0.3em] text-slate-400 mt-1">Independent Search & GPS Matrix</p>
+                    <p class="text-[0.65rem] font-bold uppercase tracking-[0.3em] text-slate-400 mt-1">Search & GPS</p>
                 </div>
             </div>
             <div class="flex items-center gap-3">
@@ -40,7 +40,7 @@
             <div class="flex gap-3">
                 <div class="flex-1 relative">
                     <i data-lucide="search" class="w-4.5 h-4.5 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2 transition-colors"></i>
-                    <input type="text" id="googleSearchInput" placeholder="Search Google Matrix..." 
+                    <input type="text" id="googleSearchInput" placeholder="Search Google Maps..." 
                         class="w-full h-12 bg-slate-50 border border-slate-100 rounded-md pl-11 pr-5 text-[0.8rem] font-medium text-slate-700 outline-none focus:bg-white focus:border-orange-500 transition-all shadow-inner">
                 </div>
                 <button onclick="locateGoogle()" class="w-12 h-12 bg-slate-100 border border-slate-200 rounded-md flex items-center justify-center hover:bg-[#ff6900] hover:text-white transition-all text-slate-500 shadow-sm">
@@ -138,7 +138,7 @@
                     return;
                 }
                 osmTimeout = setTimeout(() => {
-                    document.getElementById('osmAddressLine').innerText = '🛰️ Searching Matrix...';
+                    document.getElementById('osmAddressLine').innerText = '🛰️ Searching...';
                     fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=5&q=${encodeURIComponent(query)}`, {
                         headers: {
                             'Accept': 'application/json',
@@ -236,7 +236,7 @@
     });
 
     function reverseGeocodeOSM(lat, lng) {
-        document.getElementById('osmAddressLine').innerText = '🛰️ Decoding Matrix...';
+        document.getElementById('osmAddressLine').innerText = '🛰️ Loading address...';
         fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`, {
             headers: {
                 'Accept': 'application/json',

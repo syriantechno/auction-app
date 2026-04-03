@@ -1,4 +1,4 @@
-<div class="bg-white rounded-[2rem] shadow-xl border border-slate-100 overflow-hidden">
+﻿<div class="bg-white rounded-[2rem] shadow-xl border border-slate-100 overflow-hidden">
     <table class="w-full text-left border-collapse">
         <thead>
             <tr class="bg-slate-50/50 border-b border-slate-100">
@@ -82,7 +82,7 @@
                         <div class="w-20 h-20 bg-white rounded-[2rem] flex items-center justify-center border border-slate-200 shadow-xl">
                             <i data-lucide="gavel" class="w-10 h-10 text-slate-300"></i>
                         </div>
-                        <h3 class="text-[0.7rem] font-black text-slate-500 uppercase tracking-[0.4em]">Matrix Segment Idle</h3>
+                        <h3 class="text-[0.7rem] font-black text-slate-500 uppercase tracking-[0.4em]">No auctions found</h3>
                     </div>
                 </td>
             </tr>

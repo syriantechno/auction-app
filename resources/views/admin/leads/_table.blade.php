@@ -1,4 +1,4 @@
-<div class="bg-white rounded-lg shadow-xl border border-slate-200 overflow-hidden">
+﻿<div class="bg-white rounded-lg shadow-xl border border-slate-200 overflow-hidden">
     <table class="w-full text-left border-collapse">
         <thead>
             <tr class="bg-slate-50 border-b border-slate-200">
@@ -125,7 +125,7 @@
                             <div class="absolute -right-2 -bottom-2 w-8 h-8 bg-[#ff6900] rounded-full flex items-center justify-center text-white text-[0.6rem] font-black border-4 border-slate-50">0</div>
                         </div>
                         <div class="space-y-1">
-                            <h3 class="text-[0.7rem] font-black text-slate-400 uppercase tracking-[0.4em]">Matrix Idle</h3>
+                            <h3 class="text-[0.7rem] font-black text-slate-400 uppercase tracking-[0.4em]">No Results</h3>
                             <p class="text-[0.6rem] text-slate-300 font-bold">Waiting for new incoming lead nodes...</p>
                         </div>
                     </div>

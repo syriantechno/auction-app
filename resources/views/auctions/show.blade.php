@@ -1,4 +1,4 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 
 @section('title', ($auction->car->year ?? '') . ' ' . ($auction->car->make ?? '') . ' ' . ($auction->car->model ?? '') . ' - UniteCar')
 
@@ -261,7 +261,7 @@
         </div>
     </div>
 
-    {{-- Technical Audit Matrix --}}
+    {{-- Technical Details --}}
     @if($auction->car->latestInspection)
     <div class="mt-12 bg-white rounded-[40px] p-10 border border-[#f1f5f9] shadow-sm">
         <div class="flex items-center gap-4 mb-10">
@@ -316,7 +316,7 @@
 
     {{-- Comprehensive Information Layout --}}
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mt-12">
-        {{-- Auction Metadata Matrix --}}
+        {{-- Auction Details --}}
         <div class="lg:col-span-4">
             <div class="floating-card h-full p-8 border-none bg-white">
                 <div class="flex justify-between items-center mb-8">
@@ -351,7 +351,7 @@
             </div>
         </div>
 
-        {{-- Core Technical Matrix --}}
+        {{-- Technical Specs --}}
         <div class="lg:col-span-8">
             <div class="floating-card p-8 bg-white border-none">
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6">

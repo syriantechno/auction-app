@@ -1,6 +1,6 @@
-@extends('admin.layout')
+﻿@extends('admin.layout')
 
-@section('title', 'Manage Auctions Matrix')
+@section('title', 'Manage Auctions')
 
 @section('content')
 <div class="px-1 space-y-5 animate-in fade-in duration-500">
@@ -12,7 +12,7 @@
             </div>
             <div>
                 <h1 class="text-3xl font-black text-[#031629] uppercase italic tracking-tighter">Auction LifeCycle</h1>
-                <p class="text-[0.6rem] text-slate-400 font-black uppercase tracking-[0.25em] mt-1">Matrix Monitoring & Approval Hub</p>
+                <p class="text-[0.6rem] text-slate-400 font-black uppercase tracking-[0.25em] mt-1">Auction Management</p>
             </div>
         </div>
         
@@ -46,7 +46,7 @@
                 <label class="text-[0.6rem] font-black text-slate-400 uppercase tracking-widest mb-2 block ml-1">Lifecycle State</label>
                 <div class="relative">
                     <select name="status" id="statusFilter" class="w-full h-14 bg-slate-50 border border-slate-100 rounded-lg px-5 py-2 text-sm font-bold text-slate-700 appearance-none outline-none focus:bg-white focus:border-orange-500/30 transition-all shadow-inner">
-                        <option value="">All Matrix Realms</option>
+                        <option value="">All Statuses</option>
                         <option value="coming_soon">Coming Soon (Pending)</option>
                         <option value="active">Active Session</option>
                         <option value="paused">Paused Nodes</option>
@@ -62,7 +62,7 @@
         </form>
     </div>
 
-    <!-- High-Performance Matrix Table Container -->
+    <!-- Table -->
     <div id="tableContainer" class="relative">
         @include('admin.auctions._table', ['auctions' => $auctions])
     </div>
@@ -119,7 +119,7 @@
                 container.innerHTML = html;
                 if (typeof lucide !== 'undefined') lucide.createIcons();
                 window.history.pushState({}, '', url.toString());
-            } catch (err) { console.error("Matrix Disruption", err); }
+            } catch (err) { console.error("Sync Error", err); }
             finally {
                 container.style.opacity = '1';
             }

@@ -1,4 +1,4 @@
-@extends('admin.layout')
+﻿@extends('admin.layout')
 
 @section('title', 'Compose New Article')
 
@@ -53,7 +53,7 @@
                         <div class="w-8 h-8 rounded-lg bg-blue-50 text-blue-500 flex items-center justify-center border border-blue-100">
                             <i data-lucide="layers" class="w-4"></i>
                         </div>
-                        <h2 class="text-[0.75rem] font-black text-[#111827] uppercase tracking-wider">Classification Matrix</h2>
+                        <h2 class="text-[0.75rem] font-black text-[#111827] uppercase tracking-wider">Categories</h2>
                     </div>
                     
                     <div class="space-y-4">

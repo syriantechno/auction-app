@@ -1,4 +1,4 @@
-@extends('admin.layout')
+﻿@extends('admin.layout')
 
 @section('title', 'Financial Statement Review')
 
@@ -59,7 +59,7 @@
                 </div>
             </div>
 
-            {{-- Audit Matrix Table --}}
+            {{-- Audit Table --}}
             <div class="space-y-4">
                 <span class="text-[0.65rem] text-[#adb5bd] font-black uppercase tracking-widest">Financial Calculation Ledger</span>
                 <div class="bg-[#fcfdfe] rounded-lg border border-[#f1f5f9] overflow-hidden">

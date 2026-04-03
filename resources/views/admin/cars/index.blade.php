@@ -1,4 +1,4 @@
-@extends('admin.layout')
+﻿@extends('admin.layout')
 
 @section('title', 'Vehicle Asset Inventory')
 
@@ -273,7 +273,7 @@
                 
                 if (typeof lucide !== 'undefined') lucide.createIcons();
                 window.history.pushState({}, '', url.toString());
-            } catch (err) { console.error("Matrix Disruption", err); }
+            } catch (err) { console.error("Sync Error", err); }
             finally {
                 loader.classList.add('hidden'); ready.classList.remove('hidden');
                 rowBody.style.opacity = '1';

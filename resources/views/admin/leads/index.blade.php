@@ -1,4 +1,4 @@
-@extends('admin.layout')
+﻿@extends('admin.layout')
 
 @section('title', 'Leads Management')
 @section('page_title', 'Leads Management')
@@ -16,7 +16,7 @@
         </div>
     </div>
 
-    <!-- Leads Matrix Toolbar (Unified Height h-44px) -->
+    <!-- Leads Toolbar (Unified Height h-44px) -->
     <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
         <form id="filterForm" action="{{ route('admin.leads.index') }}" method="GET" class="flex flex-wrap items-end gap-3">
             <div class="flex-1 min-w-[220px]">
@@ -54,13 +54,13 @@
         </form>
     </div>
 
-    <!-- High-Performance Matrix Table Container -->
+    <!-- Table -->
     <div id="tableContainer" class="relative">
         @include('admin.leads._table', ['leads' => $leads])
     </div>
 </div>
 
-<!-- Modal: Inspector Matrix Assignment (Luxury Edition) -->
+<!-- Modal: Inspection Assignment -->
 <div id="schedulingModal" class="hidden fixed inset-0 z-[110] flex items-center justify-center bg-[#1d293d]/40 backdrop-blur-md transition-all duration-300">
     <div class="bg-[#e7e7e7] w-full max-w-4xl rounded-lg shadow-2xl border border-slate-200 overflow-hidden animate-in zoom-in-95 duration-200">
         <div class="bg-slate-50 px-10 py-8 border-b border-slate-200 relative">
@@ -69,7 +69,7 @@
                     <i data-lucide="calendar-check" class="text-[#ff6900] w-6 h-6"></i>
                 </div>
                 <div>
-                    <h4 class="text-xl font-black text-slate-900 tracking-tight italic">Inspection Matrix Hub</h4>
+                    <h4 class="text-xl font-black text-slate-900 tracking-tight italic">Schedule Inspection</h4>
                     <p class="text-[0.6rem] text-slate-500 font-bold uppercase tracking-[0.2em] mt-1">Assigning Node to Technical Inspector</p>
                 </div>
             </div>
@@ -156,7 +156,7 @@
                     <div class="pt-6 border-t border-slate-100 flex items-center justify-end gap-4">
                         <button type="button" onclick="closeSchedulingModal()" class="px-8 py-4 rounded-lg text-[0.7rem] font-bold uppercase tracking-widest text-slate-400 hover:text-slate-700 transition-all">Abort Assignment</button>
                         <button type="submit" class="bg-slate-800 px-10 py-4 rounded-lg text-[0.7rem] font-bold uppercase tracking-[0.2em] text-white shadow-xl hover:bg-[#1d293d] active:scale-95 transition-all flex items-center gap-3">
-                            <i data-lucide="send" class="w-4 h-4"></i> Commit to Matrix
+                            <i data-lucide="send" class="w-4 h-4"></i> Submit
                         </button>
                     </div>
                 </div>
@@ -215,7 +215,7 @@
                         Lead Intelligence <span class="w-1 h-1 bg-slate-200 rounded-full"></span> 
                         <span id="auditId" class="text-[#FF6900]">#000</span>
                     </h3>
-                    <p class="text-[0.6rem] text-slate-500 font-extrabold uppercase tracking-[0.3em] mt-1">Operational Matrix Interface • Verified Profile</p>
+                    <p class="text-[0.6rem] text-slate-500 font-extrabold uppercase tracking-[0.3em] mt-1">Lead Profile Interface • Verified Profile</p>
                 </div>
             </div>
             <button onclick="closeAuditModal()" class="w-12 h-12 rounded-md bg-white hover:bg-slate-100 border border-slate-200 flex items-center justify-center transition-all group">
@@ -274,7 +274,7 @@
                         </div>
                     </div>
 
-                    <!-- Specs Matrix -->
+                    <!-- Specs -->
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                         <div class="bg-white p-6 rounded-lg border border-slate-200 shadow-sm transition-all hover:bg-slate-50 group">
                             <span class="text-[0.55rem] text-slate-400 font-black uppercase tracking-widest block mb-2">Mileage</span>
@@ -361,7 +361,7 @@
                         <div class="space-y-4">
                             <div class="flex items-center justify-between text-[0.65rem] font-black uppercase tracking-widest text-slate-400">
                                 <span>Registry Node</span>
-                                <span class="text-slate-900">#001-MATRIX</span>
+                                <span class="text-slate-900">#001</span>
                             </div>
                             <div class="flex items-center justify-between text-[0.65rem] font-black uppercase tracking-widest text-slate-400">
                                 <span>Channel Verified</span>
@@ -417,7 +417,7 @@
 </div>
 
 <script>
-    // LEADS MATRIX ENGINE: FRAGMENT SYNC
+    // LEADS ENGINE: SYNC
     let syncMatrix; // Define globally
 
     document.addEventListener('DOMContentLoaded', function() {
@@ -475,7 +475,7 @@
                 if(container) container.innerHTML = html;
                 if (typeof lucide !== 'undefined') lucide.createIcons();
                 window.history.pushState({}, '', url.toString());
-            } catch (err) { console.error("Matrix Disruption", err); }
+            } catch (err) { console.error("Sync Error", err); }
             finally {
                 if(loader) loader.classList.add('hidden'); 
                 if(ready) ready.classList.remove('hidden');
@@ -543,7 +543,7 @@
 
                 document.getElementById('auditModal').classList.remove('hidden');
             }
-        } catch (err) { window.notify.error("Audit Matrix Failed"); }
+        } catch (err) { window.notify.error("Failed to submit"); }
     }
 
     async function confirmLead(id) {
@@ -567,7 +567,7 @@
                 document.getElementById('schedulingModal').classList.remove('hidden');
                 if(window.initBazarPickers) window.initBazarPickers(document.getElementById('schedulingModal'));
             }
-        } catch (err) { window.notify.error("Matrix Access Denied"); }
+        } catch (err) { window.notify.error("Access denied"); }
     }
 
     async function deleteLead(id) {
@@ -612,7 +612,7 @@
             if(data.success) {
                 closeAuditModal();
                 syncMatrix();
-                window.notify.success("Operational Matrix Synchronized");
+                window.notify.success("Updated successfully");
             }
         } catch (err) { window.notify.error("Registry Re-calibration Failed"); }
         finally { btn.disabled = false; }
@@ -641,7 +641,7 @@
                 window.notify.success(data.message);
                 syncMatrix();
             }
-        } catch (err) { window.notify.error("Operational Matrix Sync Failed"); }
+        } catch (err) { window.notify.error("Lead Profile Sync Failed"); }
         finally { btn.disabled = false; }
     });
 

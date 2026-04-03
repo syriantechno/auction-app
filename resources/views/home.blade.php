@@ -1,4 +1,4 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 
 @section('title', 'Motor Bazar - Premium Car Marketplace')
 
@@ -788,7 +788,7 @@
                                 </div>
                             </div>
 
-                            {{-- Right: Data Matrix --}}
+                            {{-- Right: Data --}}
                             <div class="lg:col-span-5 flex flex-col h-full space-y-5">
 
                                 {{-- Appointment Date + Time --}}
@@ -2169,7 +2169,7 @@
 
                     if (!res.ok) {
                         const errorData = await res.json().catch(() => ({}));
-                        console.error('Server Matrix Rejection:', errorData);
+                        console.error('Server Error:', errorData);
                         
                         // Human-readable error list
                         let errorMsg = errorData.message || 'Submission failed';
@@ -2190,7 +2190,7 @@
                                 <div class="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-xl shadow-emerald-500/10">
                                     <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
                                 </div>
-                                <h3 class="text-2xl font-black text-slate-800 mb-2">Lead Matrix Captured</h3>
+                                <h3 class="text-2xl font-black text-slate-800 mb-2">Request Submitted</h3>
                                 <p class="text-slate-500 text-sm">Your data was pushed to the Elite CRM Segment. An operator will respond shortly.</p>
                                 <button onclick="window.location.reload()" class="mt-8 text-[0.65rem] font-bold uppercase tracking-widest text-[#ff6900] border-b-2 border-orange-100 pb-1">Submit New Lead</button>
                             </div>

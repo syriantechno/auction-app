@@ -1,4 +1,4 @@
-@extends('admin.layout')
+﻿@extends('admin.layout')
 
 @section('title', 'Enterprise Overview')
 
@@ -120,7 +120,7 @@
                     <div class="absolute top-0 right-0 w-64 h-64 bg-[#ff6900] blur-[150px] opacity-10"></div>
                     <div class="flex justify-between items-center mb-10 relative z-10">
                         <div>
-                            <span class="text-[0.6rem] font-medium text-[#ff6900]/80 uppercase tracking-[0.4em]">Matrix Analysis</span>
+                            <span class="text-[0.6rem] font-medium text-[#ff6900]/80 uppercase tracking-[0.4em]">Overview</span>
                             <h3 class="text-2xl font-medium text-white/90 tracking-tight mt-1 italic">Transaction Stream</h3>
                         </div>
                         <div class="bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-[0.55rem] text-slate-400 font-medium uppercase tracking-[0.2em]">
@@ -135,7 +135,7 @@
                 <!-- Live Log: Lean Table -->
                 <div class="enterprise-card overflow-hidden bg-white">
                     <div class="px-8 py-5 border-b border-slate-50 flex justify-between items-center bg-slate-50/50">
-                        <h4 class="text-[0.6rem] font-medium text-slate-500 uppercase tracking-[0.2em]">Global Matrix Telemetry</h4>
+                        <h4 class="text-[0.6rem] font-medium text-slate-500 uppercase tracking-[0.2em]">Platform Overview</h4>
                         <div class="flex items-center gap-2">
                             <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
                             <span class="text-[0.55rem] font-medium text-slate-400 uppercase tracking-widest">Live Node</span>

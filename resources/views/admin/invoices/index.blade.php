@@ -1,4 +1,4 @@
-@extends('admin.layout')
+﻿@extends('admin.layout')
 
 @section('title', 'Financial Ledger')
 
@@ -30,7 +30,7 @@
                     <th class="text-[0.6rem] text-[#adb5bd] uppercase py-4 px-6 font-black tracking-widest">Billing ID</th>
                     <th class="text-[0.6rem] text-[#adb5bd] uppercase py-4 px-6 font-black tracking-widest">Target Account</th>
                     <th class="text-[0.6rem] text-[#adb5bd] uppercase py-4 px-6 font-black tracking-widest text-center">Status</th>
-                    <th class="text-[0.6rem] text-[#adb5bd] uppercase py-4 px-6 font-black tracking-widest">Value Matrix</th>
+                    <th class="text-[0.6rem] text-[#adb5bd] uppercase py-4 px-6 font-black tracking-widest">Amount</th>
                     <th class="text-right text-[0.6rem] text-[#adb5bd] uppercase py-4 px-6 font-black tracking-widest">Operation</th>
                 </tr>
             </thead>

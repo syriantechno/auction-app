@@ -1,4 +1,4 @@
-@extends('admin.layout')
+﻿@extends('admin.layout')
 
 @section('title', 'Maps Infrastructure')
 @section('page_title', 'Maps Infrastructure')
@@ -10,7 +10,7 @@
     branchLat: '{{ $branchLat }}',
     branchLng: '{{ $branchLng }}'
 }">
-    <!-- Header Matrix -->
+    <!-- Header -->
     <div class="px-1 group">
         <div class="flex items-center justify-between">
             <div>
@@ -42,7 +42,7 @@
                     </div>
                     <div>
                         <div class="text-[0.75rem] font-black text-slate-900 uppercase">Google Enterprise</div>
-                        <div class="text-[0.6rem] font-bold text-slate-400 uppercase tracking-tighter">Premium Matrix</div>
+                        <div class="text-[0.6rem] font-bold text-slate-400 uppercase tracking-tighter">Premium</div>
                     </div>
                     <template x-if="activeTab === 'google'">
                         <i data-lucide="check-circle-2" class="w-5 h-5 text-[#ff6900] ml-auto"></i>
@@ -107,7 +107,7 @@
                             </div>
                             <div>
                                 <h2 class="text-sm font-black text-slate-800 uppercase tracking-widest">Protocol Authorization</h2>
-                                <p class="text-[0.65rem] font-bold text-slate-400 mt-0.5 uppercase tracking-wider">Enterprise Matrix Key Access</p>
+                                <p class="text-[0.65rem] font-bold text-slate-400 mt-0.5 uppercase tracking-wider">API Key</p>
                             </div>
                         </div>
                     </div>
@@ -115,7 +115,7 @@
                     <div class="space-y-3">
                         <div class="relative">
                             <i data-lucide="shield-check" class="w-5 h-5 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2"></i>
-                            <input type="password" name="google_maps_api_key" x-model="googleKey" id="apiKeyInput" placeholder="Enter Matrix Key (AIzaSy...)" 
+                            <input type="password" name="google_maps_api_key" x-model="googleKey" id="apiKeyInput" placeholder="Enter API Key (AIzaSy...)" 
                                 class="w-full h-14 bg-slate-50 border border-slate-100 rounded-md pl-12 pr-12 text-[0.85rem] font-black text-slate-900 outline-none focus:bg-white focus:border-blue-500 transition-all tracking-widest">
                             <button type="button" onclick="toggleVisibility()" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
                                 <i data-lucide="eye" id="eyeIcon" class="w-5 h-5"></i>
@@ -157,7 +157,7 @@
                         <div class="space-y-2">
                             <h3 class="text-2xl font-black italic tracking-tight">Open Source Protocol</h3>
                             <p class="text-emerald-100 text-[0.75rem] font-bold leading-relaxed max-w-sm">
-                                Switched to **OpenStreetMap** Matrix. No API keys or billing required. Reliability index is currently **Global High**.
+                                Switched to **OpenStreetMap**. No API keys or billing required. Reliability index is currently **Global High**.
                             </p>
                         </div>
                     </div>
@@ -166,7 +166,7 @@
                 <div class="bg-[#1d293d] p-2 rounded-lg overflow-hidden aspect-video relative group border-[6px] border-white shadow-2xl">
                     <div id="osmPreviewMap" class="w-full h-full rounded-lg z-0 bg-slate-800"></div>
                     <div class="absolute top-4 left-4 z-10">
-                        <span class="px-4 py-1.5 bg-emerald-600 rounded-lg text-[0.55rem] font-black text-white uppercase tracking-widest border border-emerald-400 shadow-xl">OSM Matrix Live Preview</span>
+                        <span class="px-4 py-1.5 bg-emerald-600 rounded-lg text-[0.55rem] font-black text-white uppercase tracking-widest border border-emerald-400 shadow-xl">OSM Live Preview</span>
                     </div>
                 </div>
             </div>

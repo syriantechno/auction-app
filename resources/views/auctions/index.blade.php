@@ -1,4 +1,4 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 
 @section('title', 'Browse Auctions - UniteCar')
 
@@ -90,7 +90,7 @@
                         </div>
                     </div>
 
-                    {{-- Pricing Matrix --}}
+                    {{-- Pricing --}}
                     <div class="flex items-center justify-between pt-6 border-t border-gray-50">
                         <div>
                             <span class="text-[0.65rem] text-gray-400 font-black uppercase tracking-widest block mb-1">Current Bid</span>

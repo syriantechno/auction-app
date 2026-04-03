@@ -1,4 +1,4 @@
-@props([
+﻿@props([
     'id', 
     'title', 
     'subtitle', 
@@ -25,7 +25,7 @@
         </div>
     </div>
 
-    <!-- Unified Stats Matrix -->
+    <!-- Unified Statistics -->
     @if(!empty($stats))
     <div class="grid grid-cols-1 md:grid-cols-{{ count($stats) }} gap-4">
         @foreach($stats as $stat)
@@ -47,7 +47,7 @@
         <div class="relative flex-1 max-w-lg group">
             <input id="{{ $id }}-search" type="text" 
                 class="w-full bg-slate-50 border border-slate-100 rounded-lg pl-11 pr-4 py-2.5 text-sm font-semibold outline-none focus:bg-white focus:border-orange-500/20 transition-all duration-300" 
-                placeholder="Search matrix assets...">
+                placeholder="Search...">
             <i data-lucide="zap" class="w-4 h-4 text-slate-300 absolute left-4 top-1/2 -translate-y-1/2 group-focus-within:text-[#ff6900] transition-colors"></i>
         </div>
         
@@ -162,7 +162,7 @@
                         </div>
                     </div>
                     <div class="flex flex-col items-center gap-2">
-                        <span class="text-[0.6rem] font-black uppercase tracking-[0.5em] text-slate-300 animate-pulse">Syncing Matrix Node</span>
+                        <span class="text-[0.6rem] font-black uppercase tracking-[0.5em] text-slate-300 animate-pulse">Loading...</span>
                         <div class="h-1 w-32 bg-slate-100 rounded-full overflow-hidden shadow-inner">
                             <div class="h-full bg-gradient-to-r from-orange-400 to-[#ff4605] animate-[loading-bar_2s_infinite]"></div>
                         </div>
@@ -174,7 +174,7 @@
                 if (typeof lucide !== 'undefined') { lucide.createIcons(); }
             },
             ajaxError: function(error) {
-                console.error("Matrix Sync Error:", error);
+                console.error("Sync Error:", error);
             }
         });
 

@@ -1,4 +1,4 @@
-@extends('admin.layout')
+﻿@extends('admin.layout')
 
 @section('title', 'Master Inventory Catalog')
 
@@ -21,7 +21,7 @@
 
 <x-admin.data-matrix 
     id="catalog"
-    title="Fleet Matrix"
+    title="Vehicle Catalog"
     subtitle="Enterprise Fleet Core Distribution"
     :apiRoute="route('admin.cars.catalog.api')"
     createButtonText="Append Car Row"
