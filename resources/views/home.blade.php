@@ -297,11 +297,6 @@
 @endphp
 
 @section('content')
-    {{-- 🔴 TEST BANNER - DELETE AFTER CONFIRMING DEPLOY --}}
-    <div style="background:#dc2626;color:#fff;text-align:center;padding:16px;font-size:18px;font-weight:900;letter-spacing:2px;position:relative;z-index:9999;">
-        🚀 AUTO-DEPLOY WORKS! — {{ now()->format('H:i:s d/m/Y') }}
-    </div>
-    {{-- END TEST BANNER --}}
     <div class="home-page">
     {{-- High-Performance Elite Dashboard (Advanced 3-Layer Layout) --}}
 
