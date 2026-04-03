@@ -4,50 +4,62 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Bid;
+use App\Models\Auction;
+use App\Models\Negotiation;
 use Illuminate\Http\Request;
 
 class DealerProfileController extends Controller
 {
-    /**
-     * Show the dealer's public profile with all auctions they've bid on.
-     */
     public function show(Request $request, User $dealer)
     {
-        // All auctions the dealer has bid on (unique auctions, latest bid per auction)
-        $auctionIds = Bid::where('user_id', $dealer->id)
-            ->distinct()
-            ->pluck('auction_id');
-
-        $auctions = \App\Models\Auction::whereIn('id', $auctionIds)
+        // Tab 1: Active / Participating auctions (dealer has bids, auction not yet closed)
+        $participating = Auction::whereHas('bids', fn($q) => $q->where('user_id', $dealer->id))
+            ->whereIn('status', ['active', 'scheduled', 'pending', 'coming_soon'])
             ->with([
                 'car',
-                'bids' => fn ($q) => $q->where('user_id', $dealer->id)->orderByDesc('amount'),
+                'bids' => fn($q) => $q->where('user_id', $dealer->id)->orderByDesc('amount'),
             ])
-            ->withCount('bids')
-            ->withMax(['bids as dealer_highest_bid' => fn ($q) => $q->where('user_id', $dealer->id)], 'amount')
-            ->orderByDesc('created_at')
-            ->paginate(12);
+            ->withMax(['bids as top_bid' => fn($q) => $q], 'amount')
+            ->latest()
+            ->get()
+            ->map(function ($auction) use ($dealer) {
+                $userBid             = $auction->bids->first();
+                $globalTop           = Bid::where('auction_id', $auction->id)->max('amount');
+                $auction->user_bid   = $userBid?->amount ?? 0;
+                $auction->top_bid    = $globalTop ?? 0;
+                $auction->is_leading = $userBid && (float)$userBid->amount >= (float)$globalTop;
+                return $auction;
+            });
+
+        // Tab 2: Won auctions (negotiation accepted with this dealer)
+        $won = Auction::whereHas('negotiation', fn($q) =>
+                $q->whereIn('status', ['accepted', 'closed'])
+                  ->where('winning_bidder_id', $dealer->id)
+            )
+            ->with(['car', 'negotiation', 'invoices'])
+            ->latest()
+            ->get();
 
         // Stats
-        $totalBids      = Bid::where('user_id', $dealer->id)->count();
-        $avgBid         = Bid::where('user_id', $dealer->id)->avg('amount') ?? 0;
-        $auctionsWon    = \App\Models\Negotiation::where('winning_bidder_id', $dealer->id)
-                            ->whereIn('status', ['accepted'])->count();
-        $totalSpent     = \App\Models\Negotiation::where('winning_bidder_id', $dealer->id)
-                            ->whereIn('status', ['accepted'])
+        $totalBids    = Bid::where('user_id', $dealer->id)->count();
+        $avgBid       = Bid::where('user_id', $dealer->id)->avg('amount') ?? 0;
+        $totalSpent   = Negotiation::where('winning_bidder_id', $dealer->id)
+                            ->whereIn('status', ['accepted', 'closed'])
                             ->sum('highest_bid');
-        $activeBids     = Bid::where('user_id', $dealer->id)
-                            ->whereHas('auction', fn ($q) => $q->where('status', 'active'))
-                            ->distinct('auction_id')->count('auction_id');
+        $highestBid   = Bid::where('user_id', $dealer->id)->max('amount') ?? 0;
+        $winRate      = $participating->count() + $won->count() > 0
+                            ? round($won->count() / ($participating->count() + $won->count()) * 100)
+                            : 0;
 
         return view('dealer.profile', compact(
             'dealer',
-            'auctions',
+            'participating',
+            'won',
             'totalBids',
             'avgBid',
-            'auctionsWon',
             'totalSpent',
-            'activeBids'
+            'highestBid',
+            'winRate'
         ));
     }
 }

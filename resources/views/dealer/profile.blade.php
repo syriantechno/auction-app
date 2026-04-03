@@ -1,420 +1,411 @@
 @extends('layouts.app')
-
 @section('title', $dealer->name . ' — Dealer Profile · Motor Bazar')
 
 @section('head')
 <style>
-    /* ── HERO HEADER ─────────────────────────── */
+    /* ── HERO ────────────────────────────────────── */
     .profile-hero {
-        background: linear-gradient(135deg, #0f1117 0%, #1a1d26 50%, #0f1117 100%);
-        position: relative;
-        overflow: hidden;
+        background: linear-gradient(135deg, #0a0d14 0%, #1a1d26 50%, #0a0d14 100%);
+        position: relative; overflow: hidden;
     }
     .profile-hero::before {
-        content: '';
-        position: absolute; inset: 0;
-        background: radial-gradient(ellipse 70% 60% at 60% 50%, rgba(255,70,5,0.12) 0%, transparent 70%);
-        pointer-events: none;
+        content: ''; position: absolute; inset: 0;
+        background: radial-gradient(ellipse 80% 60% at 65% 50%, rgba(255,105,0,0.13) 0%, transparent 70%);
     }
-    .profile-hero .grid-lines {
-        position: absolute; inset: 0;
+    .hero-grid {
+        position: absolute; inset: 0; pointer-events: none;
         background-image:
-            linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+            linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
         background-size: 40px 40px;
-        pointer-events: none;
     }
 
-    /* ── AVATAR ───────────────────────────────── */
-    .dealer-avatar {
-        width: 100px; height: 100px;
-        border-radius: 50%;
-        border: 3px solid rgba(255,70,5,0.5);
-        box-shadow: 0 0 0 6px rgba(255,70,5,0.1), 0 20px 40px rgba(0,0,0,0.4);
-        object-fit: cover;
-        background: #1e2330;
-        display: flex; align-items: center; justify-content: center;
-        font-size: 2rem; font-weight: 900; color: #ff4605;
-        flex-shrink: 0;
+    /* ── TABS ────────────────────────────────────── */
+    .tab-btn { transition: all 0.25s ease; }
+    .tab-btn.active {
+        background: #1d293d; color: white;
+        box-shadow: 0 8px 24px rgba(29,41,61,0.18);
     }
+    .tab-btn:not(.active) {
+        background: white; color: #64748b;
+        border: 1.5px solid #e2e8f0;
+    }
+    .tab-btn:not(.active):hover { border-color: #ff6900; color: #ff6900; }
 
-    /* ── STAT CARD ────────────────────────────── */
-    .stat-card {
-        background: rgba(255,255,255,0.04);
-        border: 1px solid rgba(255,255,255,0.07);
-        border-radius: 16px;
-        padding: 20px 24px;
-        transition: all 0.3s ease;
-        backdrop-filter: blur(8px);
-    }
-    .stat-card:hover {
-        background: rgba(255,70,5,0.07);
-        border-color: rgba(255,70,5,0.25);
-        transform: translateY(-2px);
-    }
-
-    /* ── AUCTION CARDS ───────────────────────── */
-    .auction-card {
+    /* ── AUCTION CARD (Task-style horizontal) ──── */
+    .deal-card {
         background: white;
-        border-radius: 24px;
-        overflow: hidden;
         border: 1px solid #f1f5f9;
-        box-shadow: 0 4px 24px rgba(0,0,0,0.06);
-        transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-        position: relative;
+        border-radius: 2rem;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        transition: all 0.4s cubic-bezier(0.4,0,0.2,1);
     }
-    .auction-card:hover {
-        transform: translateY(-6px);
-        box-shadow: 0 20px 48px rgba(0,0,0,0.12);
-        border-color: #ff4605;
+    @media (min-width: 768px) { .deal-card { flex-direction: row; } }
+    .deal-card:hover {
+        box-shadow: 0 24px 60px rgba(255,105,0,0.08);
+        transform: translateY(-3px);
     }
-    .auction-card .car-img {
-        width: 100%; height: 200px;
-        object-fit: cover;
-        background: linear-gradient(135deg, #f8fafc, #e8edf5);
+    .deal-card.won-card {
+        border-color: #d1fae5;
+    }
+    .deal-card.won-card:hover {
+        box-shadow: 0 24px 60px rgba(16,185,129,0.08);
+    }
+
+    /* ── CAR VISUAL PANEL ────────────────────────── */
+    .car-panel {
+        width: 100%; flex-shrink: 0;
+        position: relative; overflow: hidden;
+        background: #1d293d;
+        min-height: 180px;
+    }
+    @media (min-width: 768px) { .car-panel { width: 220px; } }
+    .car-panel img.car-bg {
+        width: 100%; height: 100%; object-fit: cover;
+        opacity: 0.65; filter: brightness(1.1) saturate(1.1);
+        transition: transform 0.7s ease;
+    }
+    .deal-card:hover .car-bg { transform: scale(1.1); }
+    .brand-logo-wrap {
+        position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 2;
         transition: transform 0.5s ease;
     }
-    .auction-card:hover .car-img { transform: scale(1.04); }
-    .car-img-wrap { overflow: hidden; position: relative; height: 200px; }
+    .deal-card:hover .brand-logo-wrap { transform: scale(1.18); }
+    .brand-logo-inner {
+        width: 80px; height: 80px; border-radius: 50%;
+        background: rgba(255,255,255,0.82);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255,255,255,0.4);
+        box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+        display: flex; align-items: center; justify-content: center; padding: 16px;
+    }
+    .car-ref {
+        position: absolute; bottom: 16px; left: 16px; right: 16px; z-index: 3;
+        background: rgba(29,41,61,0.6);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 8px; padding: 10px 12px;
+    }
 
-    .status-badge {
-        position: absolute; top: 14px; left: 14px;
+    /* ── STATUS BADGE ────────────────────────────── */
+    .status-badge-abs {
+        position: absolute; top: 14px; left: 14px; z-index: 3;
         padding: 5px 12px; border-radius: 999px;
-        font-size: 0.6rem; font-weight: 900;
-        text-transform: uppercase; letter-spacing: 0.12em;
-    }
-    .badge-active   { background: rgba(16,185,129,0.1); color: #059669; border: 1px solid rgba(16,185,129,0.25); }
-    .badge-closed   { background: rgba(100,116,139,0.08); color: #64748b; border: 1px solid rgba(100,116,139,0.15); }
-    .badge-won      { background: rgba(255,70,5,0.1); color: #ff4605; border: 1px solid rgba(255,70,5,0.25); }
-    .badge-coming   { background: rgba(251,191,36,0.1); color: #d97706; border: 1px solid rgba(251,191,36,0.25); }
-
-    /* ── MY BID RIBBON ───────────────────────── */
-    .my-bid-ribbon {
-        background: linear-gradient(90deg, #ff4605, #ff6900);
-        color: white;
-        font-size: 0.6rem; font-weight: 900;
-        text-transform: uppercase; letter-spacing: 0.1em;
-        padding: 8px 16px;
-        display: flex; justify-content: space-between; align-items: center;
+        font-size: 0.55rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.14em;
     }
 
-    /* ── FILTER PILLS ────────────────────────── */
-    .filter-pill {
-        padding: 8px 20px; border-radius: 999px;
-        font-weight: 700; font-size: 0.78rem;
-        cursor: pointer; transition: all 0.2s ease;
-        border: 1.5px solid #e2e8f0;
-        color: #64748b; background: white;
-    }
-    .filter-pill.active, .filter-pill:hover {
-        background: #ff4605; color: white; border-color: #ff4605;
-    }
-
-    /* ── EMPTY STATE ─────────────────────────── */
-    .empty-state {
-        padding: 80px 20px; text-align: center;
-    }
-
-    /* ── SCROLL FADE-IN ──────────────────────── */
-    @keyframes fadeUp {
-        from { opacity: 0; transform: translateY(24px); }
-        to   { opacity: 1; transform: translateY(0); }
-    }
-    .fade-up { animation: fadeUp 0.6s ease both; }
-    .fade-up:nth-child(1) { animation-delay: 0.05s; }
-    .fade-up:nth-child(2) { animation-delay: 0.12s; }
-    .fade-up:nth-child(3) { animation-delay: 0.19s; }
-    .fade-up:nth-child(4) { animation-delay: 0.26s; }
-    .fade-up:nth-child(5) { animation-delay: 0.33s; }
-    .fade-up:nth-child(6) { animation-delay: 0.40s; }
+    /* ── FADE UP ─────────────────────────────────── */
+    @keyframes fadeUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+    .fade-up { animation: fadeUp 0.55s ease both; }
+    .fade-up:nth-child(1) { animation-delay:0.04s; }
+    .fade-up:nth-child(2) { animation-delay:0.10s; }
+    .fade-up:nth-child(3) { animation-delay:0.16s; }
+    .fade-up:nth-child(4) { animation-delay:0.22s; }
 </style>
 @endsection
 
 @section('content')
 
-{{-- ══════════════════════════════════════════════════════════
-     HERO: Dealer Header
-═══════════════════════════════════════════════════════════ --}}
-<div class="profile-hero pt-28 pb-16 px-6">
-    <div class="grid-lines"></div>
+{{-- ══ HERO ═════════════════════════════════════════════════════ --}}
+<div class="profile-hero pt-32 pb-16 px-6">
+    <div class="hero-grid"></div>
     <div class="max-w-6xl mx-auto relative z-10">
 
-        {{-- Back Link --}}
-        <a href="{{ url()->previous() }}" class="inline-flex items-center gap-2 text-white/40 hover:text-white text-xs font-bold uppercase tracking-widest mb-8 transition-colors">
-            <i data-lucide="arrow-left" class="w-3.5"></i> Back
+        <a href="{{ url()->previous() }}" class="inline-flex items-center gap-2 text-white/40 hover:text-white text-xs font-black uppercase tracking-widest mb-10 transition-colors">
+            <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i> Back
         </a>
 
-        <div class="flex flex-col md:flex-row items-start md:items-center gap-8">
+        <div class="flex flex-col lg:flex-row items-start lg:items-center gap-10">
+
             {{-- Avatar --}}
-            <div class="dealer-avatar flex-shrink-0">
-                {{ strtoupper(substr($dealer->name, 0, 2)) }}
+            <div class="w-24 h-24 rounded-2xl border-2 border-[#ff6900]/40 shadow-2xl shadow-black/40 bg-[#ff6900]/10 flex items-center justify-center flex-shrink-0">
+                <span class="text-3xl font-black text-[#ff6900] uppercase italic">{{ strtoupper(substr($dealer->name,0,2)) }}</span>
             </div>
 
-            {{-- Info --}}
+            {{-- Name & Info --}}
             <div class="flex-1">
                 <div class="flex flex-wrap items-center gap-3 mb-2">
-                    <h1 class="text-3xl md:text-4xl font-black text-white tracking-tight">{{ $dealer->name }}</h1>
-                    @if($auctionsWon > 0)
-                    <span class="px-3 py-1 bg-[#ff4605]/15 text-[#ff6900] border border-[#ff4605]/30 rounded-full text-[0.6rem] font-black uppercase tracking-widest">
-                        Verified Buyer
+                    <h1 class="text-4xl font-black text-white uppercase italic tracking-tighter leading-none">{{ $dealer->name }}</h1>
+                    @if($won->count() > 0)
+                    <span class="px-3 py-1.5 bg-[#ff6900]/15 border border-[#ff6900]/30 text-[#ff6900] rounded-full text-[0.55rem] font-black uppercase tracking-widest">
+                        ✦ Verified Buyer
                     </span>
                     @endif
                 </div>
-                <p class="text-white/40 text-sm font-semibold">Member since {{ $dealer->created_at->format('M Y') }}</p>
-                <p class="text-white/25 text-xs mt-1 font-medium">{{ $dealer->email }}</p>
+                <p class="text-white/40 text-sm font-bold mb-1">Member since {{ $dealer->created_at->format('M Y') }}</p>
+                @if(auth()->check() && auth()->id() === $dealer->id)
+                <p class="text-white/20 text-xs font-medium">{{ $dealer->email }}</p>
+                @endif
 
-                {{-- Quick Stats Row --}}
-                <div class="flex flex-wrap gap-6 mt-5">
+                {{-- Quick stat pills --}}
+                <div class="flex flex-wrap items-center gap-6 mt-6">
+                    @foreach([
+                        ['v' => number_format($totalBids),       'l' => 'Total Bids',    'c' => 'text-white'],
+                        ['v' => $won->count(),                   'l' => 'Auctions Won',  'c' => 'text-[#ff6900]'],
+                        ['v' => $participating->count(),          'l' => 'Active Bids',   'c' => 'text-emerald-400'],
+                        ['v' => $winRate . '%',                   'l' => 'Win Rate',      'c' => 'text-sky-400'],
+                        ['v' => '$' . number_format($highestBid), 'l' => 'Top Bid',       'c' => 'text-white'],
+                    ] as $i => $s)
+                    @if($i > 0)<div class="w-px h-8 bg-white/10"></div>@endif
                     <div class="text-center">
-                        <div class="text-2xl font-black text-white">{{ number_format($totalBids) }}</div>
-                        <div class="text-[0.6rem] text-white/40 uppercase tracking-widest font-bold">Total Bids</div>
+                        <div class="text-2xl font-black {{ $s['c'] }} tabular-nums">{{ $s['v'] }}</div>
+                        <div class="text-[0.55rem] font-black text-white/35 uppercase tracking-widest mt-0.5">{{ $s['l'] }}</div>
                     </div>
-                    <div class="w-px bg-white/10 self-stretch"></div>
-                    <div class="text-center">
-                        <div class="text-2xl font-black text-[#ff4605]">{{ number_format($auctionsWon) }}</div>
-                        <div class="text-[0.6rem] text-white/40 uppercase tracking-widest font-bold">Won</div>
-                    </div>
-                    <div class="w-px bg-white/10 self-stretch"></div>
-                    <div class="text-center">
-                        <div class="text-2xl font-black text-emerald-400">{{ $activeBids }}</div>
-                        <div class="text-[0.6rem] text-white/40 uppercase tracking-widest font-bold">Active Bids</div>
-                    </div>
-                    @if($totalSpent > 0)
-                    <div class="w-px bg-white/10 self-stretch"></div>
-                    <div class="text-center">
-                        <div class="text-2xl font-black text-white">${{ number_format($totalSpent) }}</div>
-                        <div class="text-[0.6rem] text-white/40 uppercase tracking-widest font-bold">Total Spent</div>
-                    </div>
-                    @endif
+                    @endforeach
                 </div>
             </div>
 
-            {{-- Stat Cards --}}
-            <div class="grid grid-cols-2 gap-3 md:w-64 flex-shrink-0">
-                <div class="stat-card col-span-2">
-                    <div class="text-[0.55rem] text-white/30 uppercase tracking-widest font-bold mb-1">Auctions Participated</div>
-                    <div class="text-3xl font-black text-white">{{ $auctions->total() }}</div>
+            {{-- Right stat cards --}}
+            <div class="grid grid-cols-2 gap-3 lg:w-60 flex-shrink-0">
+                <div class="col-span-2 bg-white/5 border border-white/8 rounded-2xl p-5 backdrop-blur-sm">
+                    <div class="text-[0.5rem] text-white/30 uppercase tracking-widest font-black mb-1">Total Participated</div>
+                    <div class="text-3xl font-black text-white tabular-nums">{{ $participating->count() + $won->count() }}</div>
                 </div>
-                <div class="stat-card">
-                    <div class="text-[0.55rem] text-white/30 uppercase tracking-widest font-bold mb-1">Win Rate</div>
-                    <div class="text-xl font-black text-[#ff4605]">
-                        {{ $auctions->total() > 0 ? round($auctionsWon / $auctions->total() * 100) : 0 }}%
-                    </div>
+                <div class="bg-white/5 border border-white/8 rounded-2xl p-4 backdrop-blur-sm">
+                    <div class="text-[0.5rem] text-white/30 uppercase tracking-widest font-black mb-1">Avg. Bid</div>
+                    <div class="text-lg font-black text-white">${{ number_format($avgBid) }}</div>
                 </div>
-                <div class="stat-card">
-                    <div class="text-[0.55rem] text-white/30 uppercase tracking-widest font-bold mb-1">Avg. Bid</div>
-                    <div class="text-xl font-black text-white">
-                        @if($totalBids > 0)
-                            ${{ number_format($avgBid) }}
-                        @else N/A @endif
-                    </div>
+                <div class="bg-white/5 border border-white/8 rounded-2xl p-4 backdrop-blur-sm">
+                    <div class="text-[0.5rem] text-white/30 uppercase tracking-widest font-black mb-1">Spent</div>
+                    <div class="text-lg font-black text-[#ff6900]">${{ number_format($totalSpent) }}</div>
                 </div>
             </div>
+
         </div>
     </div>
 </div>
 
-{{-- ══════════════════════════════════════════════════════════
-     AUCTION HISTORY
-═══════════════════════════════════════════════════════════ --}}
-<div class="bg-[#f5f7fb] min-h-screen py-12 px-6">
+{{-- ══ CONTENT AREA ═══════════════════════════════════════════════ --}}
+<div class="bg-[#f0f2f7] min-h-screen py-12 px-6" x-data="{ tab: 'participating' }">
     <div class="max-w-6xl mx-auto">
 
-        {{-- Section Header --}}
-        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-            <div>
-                <h2 class="text-2xl font-black text-[#111827]">Auction History</h2>
-                <p class="text-sm text-gray-400 font-semibold mt-1">All auctions {{ $dealer->name }} has participated in</p>
-            </div>
-
-            {{-- Filter Pills --}}
-            <div class="flex flex-wrap gap-2" id="filter-pills">
-                <button class="filter-pill active" data-filter="all">All ({{ $auctions->total() }})</button>
-                <button class="filter-pill" data-filter="active">Live</button>
-                <button class="filter-pill" data-filter="closed">Closed</button>
-                <button class="filter-pill" data-filter="coming_soon">Coming Soon</button>
-            </div>
+        {{-- Tab Switcher --}}
+        <div class="flex flex-wrap items-center gap-3 mb-8">
+            <button @click="tab = 'participating'"
+                :class="{ 'active': tab === 'participating' }"
+                class="tab-btn px-6 py-3 rounded-xl font-black text-[0.65rem] uppercase tracking-widest flex items-center gap-2.5">
+                <i data-lucide="activity" class="w-4 h-4"></i>
+                Active Auctions
+                <span class="ml-1 bg-[#ff6900]/20 text-[#ff6900] rounded-full px-2 py-0.5 text-[0.55rem]">{{ $participating->count() }}</span>
+            </button>
+            <button @click="tab = 'won'"
+                :class="{ 'active': tab === 'won' }"
+                class="tab-btn px-6 py-3 rounded-xl font-black text-[0.65rem] uppercase tracking-widest flex items-center gap-2.5">
+                <i data-lucide="trophy" class="w-4 h-4"></i>
+                Won Auctions
+                <span class="ml-1 bg-emerald-100 text-emerald-700 rounded-full px-2 py-0.5 text-[0.55rem]">{{ $won->count() }}</span>
+            </button>
         </div>
 
-        {{-- Auction Grid --}}
-        @if($auctions->count() > 0)
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="auctions-grid">
-            @foreach($auctions as $auction)
-            @php
-                $car          = $auction->car;
-                $imgUrl       = $car->image_url ?? null;
-                $dealerBid    = $auction->dealer_highest_bid ?? 0;
-                $isWinner     = ($auction->negotiation?->winning_bidder_id ?? null) === $dealer->id
-                                && $auction->negotiation?->status === 'accepted';
-                $isHighest    = (float)$auction->current_price === (float)$dealerBid && $dealerBid > 0;
-                $statusLabel  = match($auction->status) {
-                    'active'      => 'Live',
-                    'closed','deal_approved','sold' => 'Closed',
-                    'coming_soon' => 'Coming Soon',
-                    default       => ucfirst($auction->status),
-                };
-                $badgeClass   = match($auction->status) {
-                    'active'      => 'badge-active',
-                    'coming_soon' => 'badge-coming',
-                    default       => $isWinner ? 'badge-won' : 'badge-closed',
-                };
-            @endphp
-            <div class="auction-card fade-up" data-status="{{ $auction->status }}">
-                {{-- Image --}}
-                <div class="car-img-wrap">
-                    @if($imgUrl)
-                        <img src="{{ $imgUrl }}" alt="{{ $car->make }} {{ $car->model }}" class="car-img">
-                    @else
-                        <div class="car-img flex items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200">
-                            <i data-lucide="car" class="w-16 h-16 text-slate-300"></i>
+        {{-- ── TAB 1: ACTIVE PARTICIPATING ──────────────────────── --}}
+        <div x-show="tab === 'participating'" x-cloak>
+            <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                @forelse($participating as $auction)
+                @php
+                    $car = $auction->car;
+                    $rawMake = strtolower($car?->make ?? 'generic');
+                    $makeSlug = \Illuminate\Support\Str::slug($rawMake);
+                    $searchPaths = ["images/brands/{$makeSlug}.svg","images/brands/{$makeSlug}.png"];
+                    if (str_contains($rawMake,'mercedes')) $searchPaths[] = "images/brands/mercedes.svg";
+                    $finalLogo = null;
+                    foreach ($searchPaths as $p) { if (file_exists(public_path($p))) { $finalLogo = $p; break; } }
+                    $carImg = $car?->image_url ?? asset('images/cars/car-silver.png');
+                @endphp
+                <div class="deal-card fade-up {{ $auction->is_leading ? '' : '' }}">
+
+                    {{-- Car Panel --}}
+                    <div class="car-panel">
+                        <img src="{{ $carImg }}" alt="{{ $car?->make }}" class="car-bg absolute inset-0">
+                        <div class="brand-logo-wrap">
+                            <div class="brand-logo-inner">
+                                @if($finalLogo)
+                                    <img src="{{ asset($finalLogo) }}" class="w-full h-full object-contain">
+                                @else
+                                    <i data-lucide="car-front" class="w-10 h-10 text-[#ff6900] opacity-80"></i>
+                                @endif
+                            </div>
                         </div>
-                    @endif
-                    {{-- Status Badge --}}
-                    <span class="status-badge {{ $badgeClass }}">
-                        @if($isWinner) 🏆 Won · {{ $statusLabel }}
-                        @elseif($isHighest && $auction->status === 'active') 🔥 Leading
-                        @else {{ $statusLabel }} @endif
-                    </span>
-                    {{-- Ref Code --}}
-                    @if($auction->reference_code)
-                    <span class="absolute top-14 left-14 text-[0.5rem] font-black text-white/70 bg-black/30 px-2 py-0.5 rounded-full backdrop-blur-sm">
-                        {{ $auction->reference_code }}
-                    </span>
-                    @endif
-                </div>
-
-                {{-- My Bid Ribbon --}}
-                @if($dealerBid > 0)
-                <div class="my-bid-ribbon">
-                    <span>My Highest Bid</span>
-                    <span class="text-base font-black">${{ number_format($dealerBid) }}</span>
-                </div>
-                @endif
-
-                {{-- Card Body --}}
-                <div class="p-5">
-                    <div class="mb-3">
-                        <h3 class="text-[1rem] font-black text-[#111827] leading-tight">
-                            {{ $car->year }} {{ $car->make }} {{ $car->model }}
-                        </h3>
-                        <p class="text-[0.65rem] text-gray-400 font-bold uppercase tracking-widest mt-0.5">
-                            {{ $car->trim ?? '' }} {{ $car->color ?? '' }}
-                        </p>
-                    </div>
-
-                    {{-- Price Row --}}
-                    <div class="flex justify-between items-end mb-4">
-                        <div>
-                            <div class="text-[0.55rem] text-gray-400 uppercase tracking-widest font-bold mb-0.5">Current Price</div>
-                            <div class="text-xl font-black text-[#111827]">${{ number_format($auction->current_price ?? $auction->initial_price) }}</div>
-                        </div>
-                        <div class="text-right">
-                            <div class="text-[0.55rem] text-gray-400 uppercase tracking-widest font-bold mb-0.5">Total Bids</div>
-                            <div class="text-xl font-black text-[#111827]">{{ $auction->bids_count }}</div>
-                        </div>
-                    </div>
-
-                    {{-- Timer (if active) --}}
-                    @if($auction->status === 'active' && $auction->end_at)
-                    <div class="flex items-center gap-2 bg-red-50 text-red-600 rounded-lg px-3 py-2 mb-4">
-                        <i data-lucide="clock" class="w-3.5 flex-shrink-0"></i>
-                        <span class="text-[0.65rem] font-black tabular-nums auction-countdown" data-expires="{{ $auction->end_at->toIso8601String() }}">
-                            Calculating...
-                        </span>
-                    </div>
-                    @elseif($auction->status === 'coming_soon' && $auction->start_at)
-                    <div class="flex items-center gap-2 bg-amber-50 text-amber-600 rounded-lg px-3 py-2 mb-4">
-                        <i data-lucide="calendar" class="w-3.5 flex-shrink-0"></i>
-                        <span class="text-[0.65rem] font-black">Opens {{ $auction->start_at->format('M d, H:i') }}</span>
-                    </div>
-                    @else
-                    <div class="h-2 mb-4"></div>
-                    @endif
-
-                    {{-- CTA --}}
-                    <a href="{{ route('auctions.show', $auction) }}"
-                       class="w-full flex items-center justify-center gap-2 py-3 rounded-xl font-black text-sm transition-all
-                              {{ $auction->status === 'active'
-                                  ? 'bg-[#ff4605] text-white hover:bg-[#e03d04] shadow-lg shadow-orange-500/25 hover:shadow-orange-500/40'
-                                  : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-100' }}">
-                        @if($auction->status === 'active')
-                            <i data-lucide="zap" class="w-4"></i> Bid Now
+                        {{-- Badge --}}
+                        @if($auction->is_leading)
+                        <span class="status-badge-abs bg-emerald-500 text-white shadow-lg shadow-emerald-500/40">⚡ Leading</span>
                         @else
-                            <i data-lucide="eye" class="w-4"></i> View Auction
+                        <span class="status-badge-abs bg-amber-400 text-white">⚠ Outbid</span>
                         @endif
+                        {{-- Ref --}}
+                        <div class="car-ref">
+                            <div class="text-[0.45rem] text-white/40 font-black uppercase tracking-widest mb-0.5">Auction Ref</div>
+                            <div class="text-xs font-black text-white font-mono">{{ $auction->reference_code }}</div>
+                        </div>
+                    </div>
+
+                    {{-- Info Panel --}}
+                    <div class="flex-1 p-6 flex flex-col justify-between gap-5">
+                        <div>
+                            <div class="flex items-start justify-between mb-3">
+                                <div>
+                                    <h3 class="text-xl font-black text-[#031629] leading-none uppercase italic">
+                                        {{ $car?->make }} <span class="text-[#ff6900]">{{ $car?->model }}</span>
+                                    </h3>
+                                    <p class="text-[0.62rem] font-bold text-slate-400 mt-1.5 uppercase tracking-wide">{{ $car?->year }} · {{ ucfirst($auction->status) }}</p>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-[0.45rem] text-slate-400 font-black uppercase tracking-widest">My Bid</div>
+                                    <div class="text-xl font-black text-[#031629] tabular-nums">${{ number_format($auction->user_bid) }}</div>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-4 pt-3 border-t border-slate-100">
+                                <div>
+                                    <div class="text-[0.45rem] font-black text-slate-400 uppercase tracking-widest mb-1">Top Bid</div>
+                                    <div class="flex items-center gap-1.5">
+                                        <i data-lucide="trending-up" class="w-3 h-3 {{ $auction->is_leading ? 'text-emerald-500' : 'text-red-500' }}"></i>
+                                        <span class="text-[0.8rem] font-black {{ $auction->is_leading ? 'text-emerald-600' : 'text-red-500' }}">${{ number_format($auction->top_bid) }}</span>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="text-[0.45rem] font-black text-slate-400 uppercase tracking-widest mb-1">Ends</div>
+                                    <div class="flex items-center gap-1.5">
+                                        <i data-lucide="clock" class="w-3 h-3 text-[#ff6900]"></i>
+                                        <span class="text-[0.72rem] font-bold text-[#031629] uppercase italic tracking-tighter">
+                                            {{ $auction->end_time ? \Carbon\Carbon::parse($auction->end_time)->format('d M @ g:ia') : 'TBD' }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-3">
+                            <a href="{{ route('auctions.show', $auction) }}"
+                               class="flex-1 h-12 bg-[#1d293d] hover:bg-[#ff6900] rounded-xl flex items-center justify-center gap-2 text-white text-[0.6rem] font-black uppercase tracking-widest transition-all hover:scale-[1.02] shadow-lg shadow-slate-900/10">
+                                <i data-lucide="zap" class="w-4 h-4 text-orange-400"></i>
+                                {{ $auction->status === 'active' ? 'Bid Now' : 'View Auction' }}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                @empty
+                <div class="col-span-2 py-24 bg-white rounded-[2.5rem] border-2 border-dashed border-slate-200 flex flex-col items-center justify-center gap-6 text-center">
+                    <div class="w-20 h-20 rounded-full bg-slate-50 flex items-center justify-center">
+                        <i data-lucide="activity" class="w-10 h-10 text-slate-200"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-black text-[#031629] uppercase italic">No Active Bids</h3>
+                        <p class="text-slate-400 font-bold text-xs uppercase tracking-widest mt-3">No ongoing auction activity</p>
+                    </div>
+                    <a href="{{ route('auctions.index') }}" class="px-8 py-3 bg-[#1d293d] text-white text-[0.65rem] font-black uppercase tracking-widest rounded-full hover:bg-[#ff6900] transition-all">
+                        Browse Auctions
                     </a>
                 </div>
+                @endforelse
             </div>
-            @endforeach
         </div>
 
-        {{-- Pagination --}}
-        @if($auctions->hasPages())
-        <div class="mt-12 flex justify-center">
-            {{ $auctions->links() }}
-        </div>
-        @endif
+        {{-- ── TAB 2: WON AUCTIONS ──────────────────────────────── --}}
+        <div x-show="tab === 'won'" x-cloak>
+            <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                @forelse($won as $auction)
+                @php
+                    $car = $auction->car;
+                    $rawMake = strtolower($car?->make ?? 'generic');
+                    $makeSlug = \Illuminate\Support\Str::slug($rawMake);
+                    $searchPaths = ["images/brands/{$makeSlug}.svg","images/brands/{$makeSlug}.png"];
+                    if (str_contains($rawMake,'mercedes')) $searchPaths[] = "images/brands/mercedes.svg";
+                    $finalLogo = null;
+                    foreach ($searchPaths as $p) { if (file_exists(public_path($p))) { $finalLogo = $p; break; } }
+                    $carImg = $car?->image_url ?? asset('images/cars/car-silver.png');
+                    $finalPrice = $auction->negotiation?->highest_bid ?? 0;
+                    $inv = $auction->invoices?->first();
+                @endphp
+                <div class="deal-card won-card fade-up">
 
-        @else
-        {{-- Empty State --}}
-        <div class="empty-state">
-            <div class="w-20 h-20 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-6">
-                <i data-lucide="gavel" class="w-9 h-9 text-slate-300"></i>
+                    {{-- Car Panel (green tint) --}}
+                    <div class="car-panel" style="background:#031629;">
+                        <img src="{{ $carImg }}" alt="{{ $car?->make }}" class="car-bg absolute inset-0" style="opacity:0.55;">
+                        <div class="brand-logo-wrap">
+                            <div class="brand-logo-inner" style="background:rgba(255,255,255,0.88);">
+                                @if($finalLogo)
+                                    <img src="{{ asset($finalLogo) }}" class="w-full h-full object-contain">
+                                @else
+                                    <i data-lucide="car-front" class="w-10 h-10 text-emerald-500 opacity-80"></i>
+                                @endif
+                            </div>
+                        </div>
+                        {{-- Trophy Badge --}}
+                        <span class="status-badge-abs bg-emerald-500 text-white shadow-lg shadow-emerald-500/40 flex items-center gap-1">
+                            🏆 Won
+                        </span>
+                        <div class="car-ref">
+                            <div class="text-[0.45rem] text-white/40 font-black uppercase tracking-widest mb-0.5">Ref</div>
+                            <div class="text-xs font-black text-white font-mono">{{ $auction->reference_code }}</div>
+                        </div>
+                    </div>
+
+                    {{-- Info Panel --}}
+                    <div class="flex-1 p-6 flex flex-col justify-between gap-5">
+                        <div>
+                            <div class="flex items-start justify-between mb-3">
+                                <div>
+                                    <h3 class="text-xl font-black text-[#031629] leading-none uppercase italic">
+                                        {{ $car?->make }} <span class="text-emerald-600">{{ $car?->model }}</span>
+                                    </h3>
+                                    <p class="text-[0.62rem] font-bold text-slate-400 mt-1.5 uppercase tracking-wide">{{ $car?->year }} Production</p>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-[0.45rem] text-slate-400 font-black uppercase tracking-widest">Final Price</div>
+                                    <div class="text-xl font-black text-emerald-600 tabular-nums">${{ number_format($finalPrice) }}</div>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-4 pt-3 border-t border-slate-100">
+                                <div>
+                                    <div class="text-[0.45rem] font-black text-slate-400 uppercase tracking-widest mb-1">Won On</div>
+                                    <div class="flex items-center gap-1.5">
+                                        <i data-lucide="calendar-check" class="w-3 h-3 text-emerald-500"></i>
+                                        <span class="text-[0.72rem] font-bold text-[#031629]">{{ $auction->negotiation?->updated_at?->format('d M Y') ?? 'N/A' }}</span>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="text-[0.45rem] font-black text-slate-400 uppercase tracking-widest mb-1">Invoice</div>
+                                    @php
+                                        $sc = ['paid'=>'bg-emerald-100 text-emerald-700','partial'=>'bg-blue-100 text-blue-700','pending'=>'bg-amber-100 text-amber-700'];
+                                        $ic = $sc[$inv?->status] ?? 'bg-slate-100 text-slate-500';
+                                    @endphp
+                                    <span class="px-2 py-0.5 rounded-full text-[0.5rem] font-black uppercase tracking-widest {{ $ic }}">{{ ucfirst($inv?->status ?? 'No Invoice') }}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <a href="{{ route('auctions.show', $auction) }}"
+                           class="h-12 bg-[#031629] hover:bg-emerald-700 rounded-xl flex items-center justify-center gap-2 text-white text-[0.6rem] font-black uppercase tracking-widest transition-all hover:scale-[1.02] shadow-lg shadow-slate-900/10">
+                            <i data-lucide="eye" class="w-4 h-4 text-emerald-400"></i> View Details
+                        </a>
+                    </div>
+                </div>
+                @empty
+                <div class="col-span-2 py-24 bg-white rounded-[2.5rem] border-2 border-dashed border-slate-200 flex flex-col items-center justify-center gap-6 text-center">
+                    <div class="w-20 h-20 rounded-full bg-slate-50 flex items-center justify-center">
+                        <i data-lucide="trophy" class="w-10 h-10 text-slate-200"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-black text-[#031629] uppercase italic">No Wins Yet</h3>
+                        <p class="text-slate-400 font-bold text-xs uppercase tracking-widest mt-3">Start bidding to win your first auction</p>
+                    </div>
+                    <a href="{{ route('auctions.index') }}" class="px-8 py-3 bg-[#031629] text-white text-[0.65rem] font-black uppercase tracking-widest rounded-full hover:bg-[#ff6900] transition-all">
+                        Browse Auctions
+                    </a>
+                </div>
+                @endforelse
             </div>
-            <h3 class="text-xl font-black text-[#111827] mb-2">No Auctions Yet</h3>
-            <p class="text-sm text-gray-400 font-semibold max-w-sm mx-auto">
-                {{ $dealer->name }} hasn't participated in any auctions yet.
-            </p>
-            <a href="{{ route('auctions.index') }}" class="mt-6 inline-flex items-center gap-2 px-6 py-3 bg-[#ff4605] text-white rounded-xl font-black text-sm hover:bg-[#e03d04] transition-all shadow-lg shadow-orange-500/25">
-                <i data-lucide="search" class="w-4"></i> Browse Auctions
-            </a>
         </div>
-        @endif
 
     </div>
 </div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    lucide.createIcons();
-
-    // ── Countdown Timers ──────────────────────────────
-    function runCountdowns() {
-        document.querySelectorAll('.auction-countdown[data-expires]').forEach(el => {
-            const expires = new Date(el.dataset.expires).getTime();
-            function tick() {
-                const diff = expires - Date.now();
-                if (diff <= 0) { el.textContent = 'Ended'; return; }
-                const h = Math.floor(diff / 3600000);
-                const m = Math.floor((diff % 3600000) / 60000);
-                const s = Math.floor((diff % 60000) / 1000);
-                el.textContent = (h > 0 ? h + 'h ' : '') + String(m).padStart(2,'0') + 'm ' + String(s).padStart(2,'0') + 's left';
-                setTimeout(tick, 1000);
-            }
-            tick();
-        });
-    }
-    runCountdowns();
-
-    // ── Filter Pills ──────────────────────────────────
-    const pills = document.querySelectorAll('.filter-pill');
-    const cards = document.querySelectorAll('.auction-card[data-status]');
-
-    pills.forEach(pill => {
-        pill.addEventListener('click', () => {
-            pills.forEach(p => p.classList.remove('active'));
-            pill.classList.add('active');
-
-            const filter = pill.dataset.filter;
-            cards.forEach(card => {
-                const st = card.dataset.status;
-                const show = filter === 'all'
-                    || (filter === 'closed' && ['closed','deal_approved','sold'].includes(st))
-                    || (filter === st);
-                card.style.display = show ? '' : 'none';
-            });
-        });
-    });
+    if (typeof lucide !== 'undefined') lucide.createIcons();
 });
 </script>
 @endsection
