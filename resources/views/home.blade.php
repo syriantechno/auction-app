@@ -960,7 +960,7 @@
             @endphp
 
             {{-- Section Heading --}}
-            <div class="mt-14 mb-12 text-center">
+            <div class="mt-6 mb-8 text-center">
                 <h3 class="text-2xl lg:text-3xl font-black text-[#031629] tracking-tight">{{ $badgesTitle }}</h3>
             </div>
 
