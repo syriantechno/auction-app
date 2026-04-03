@@ -84,6 +84,8 @@
             @apply rounded-md border-slate-200 transition-all focus:border-[#ff6900] focus:ring-4 focus:ring-orange-500/5;
         }
     </style>
+
+    @stack('head')
 </head>
 
 <body class="antialiased text-[#111827] bg-[#e7e7e7]">

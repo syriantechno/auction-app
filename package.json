@@ -18,6 +18,7 @@
     },
     "dependencies": {
         "chart.js": "^4.5.1",
+        "jodit": "^4.12.2",
         "lucide": "^1.7.0",
         "quill": "^2.0.3"
     }

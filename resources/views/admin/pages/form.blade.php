@@ -2,6 +2,12 @@
 
 @section('title', isset($page) ? 'Edit Page' : 'New Page')
 
+@push('head')
+{{-- Jodit WYSIWYG Editor --}}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jodit/4.2.25/jodit.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jodit/4.2.25/jodit.min.js"></script>
+@endpush
+
 @section('content')
 <div class="max-w-5xl mx-auto space-y-6">
 
@@ -78,11 +84,12 @@
                 <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 space-y-4">
                     <div class="text-[0.6rem] font-black uppercase tracking-widest text-slate-400 flex items-center gap-2">
                         <div class="w-4 h-px bg-slate-300"></div> Page Content
+                        <span class="bg-emerald-100 text-emerald-600 text-[0.45rem] font-black uppercase tracking-widest px-2 py-0.5 rounded-full">Rich Editor</span>
                     </div>
-                    <textarea name="content" id="pageContent" rows="18"
-                              class="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 font-mono text-sm text-slate-700 outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100 transition-all resize-none"
-                              placeholder="Write HTML or plain text content for this page...">{{ old('content', $page->content ?? '') }}</textarea>
-                    <p class="text-[0.6rem] text-slate-400">Supports full HTML markup. Use semantic tags for best SEO.</p>
+                    {{-- Jodit attaches to this textarea --}}
+                    <textarea name="content" id="pageContent"
+                              class="w-full">{{ old('content', $page->content ?? '') }}</textarea>
+                    <p class="text-[0.6rem] text-slate-400">Full-featured rich text editor — supports images, tables, colors, lists, and raw HTML mode.</p>
                 </div>
 
                 {{-- SEO --}}
@@ -282,6 +289,49 @@
     // Init: if a menu is pre-selected
     if (menuSel?.value) {
         parentWrapper.style.display = 'block';
+    }
+
+    // ── Jodit WYSIWYG Editor ──────────────────────────────────────────
+    if (typeof Jodit !== 'undefined') {
+        const editor = Jodit.make('#pageContent', {
+            height: 560,
+            language: 'auto',
+            direction: 'ltr',
+            toolbarAdaptive: false,
+            toolbarSticky: true,
+            spellcheck: true,
+            showCharsCounter: true,
+            showWordsCounter: true,
+            showXPathInStatusbar: false,
+            allowResizeTags: ['img', 'table'],
+            buttons: [
+                'undo', 'redo', '|',
+                'bold', 'italic', 'underline', 'strikethrough', '|',
+                'superscript', 'subscript', '|',
+                'align', '|',
+                'ul', 'ol', 'outdent', 'indent', '|',
+                'font', 'fontsize', 'brush', 'paragraph', '|',
+                'image', 'video', 'table', 'link', '|',
+                'hr', 'eraser', 'copyformat', '|',
+                'fullsize', 'selectall', 'print', '|',
+                'source'
+            ],
+            uploader: { insertImageAsBase64URI: true },
+            style: {
+                font: '14px / 1.7 "Plus Jakarta Sans", sans-serif',
+            },
+            colors: {
+                greens:  ['#1a7f37','#218838','#28a745','#48c774','#a8f0b8'],
+                blues:   ['#0d47a1','#1565c0','#1976d2','#2196f3','#90caf9'],
+                oranges: ['#ff4605','#ff6900','#ffa000','#ffb300','#ffe082'],
+                greys:   ['#212529','#495057','#6c757d','#adb5bd','#dee2e6'],
+            },
+        });
+
+        // Sync Jodit content to textarea before form submit
+        document.getElementById('pageForm')?.addEventListener('submit', function() {
+            document.getElementById('pageContent').value = editor.value;
+        });
     }
 })();
 </script>

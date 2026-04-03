@@ -1,6 +1,0 @@
-<?php $__env->startSection('title', 'Create Page'); ?>
-<?php $__env->startSection('content'); ?>
-    <?php echo $__env->make('admin.pages.form', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
-<?php $__env->stopSection(); ?>
-
-<?php echo $__env->make('admin.layout', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH D:\auction_app\resources\views/admin/pages/create.blade.php ENDPATH**/ ?>
