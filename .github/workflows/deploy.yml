@@ -1,9 +1,9 @@
-name: 🚀 Deploy to Hosting (FTP)
+name: Deploy to Hosting (FTP)
 
 on:
   push:
     branches:
-      - main          # يتشغل تلقائياً عند كل push لـ main
+      - main
 
 jobs:
   deploy:
@@ -11,19 +11,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: ✅ Checkout code
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: 🔧 Setup PHP
+      - name: Setup PHP 8.3
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.3'
           extensions: mbstring, pdo, pdo_mysql, bcmath, json
 
-      - name: 📦 Install Composer Dependencies
+      - name: Install Composer dependencies
         run: composer install --no-dev --optimize-autoloader --no-interaction
 
-      - name: 🎨 Install Node & Build Assets
+      - name: Setup Node 20
         uses: actions/setup-node@v4
         with:
           node-version: '20'
@@ -33,22 +33,23 @@ jobs:
           npm ci
           npm run build
 
-      - name: 🚀 Deploy via FTP (changed files only)
+      - name: Deploy via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.FTP_HOST }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           port: 21
-          server-dir: /car.suiteone-erp.com/    # ← subdomain root folder
+          server-dir: /car.suiteone-erp.com/
           local-dir: ./
           exclude: |
             **/.git*
             **/.git*/**
             **/node_modules/**
+            **/vendor/**
             .env
             storage/logs/**
             storage/framework/cache/**
             storage/framework/sessions/**
             storage/framework/views/**
-
+            migrate_log.txt
