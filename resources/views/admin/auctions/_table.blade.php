@@ -85,6 +85,7 @@
                         </span>
                         @endif
 
+                        @if(!in_array($auction->status, ['active','sold','deal_approved']))
                         <button onclick="approveAuction({{ $auction->id }})" title="Go Live" class="h-10 px-4 rounded-md bg-emerald-500 text-white flex items-center justify-center gap-2 hover:bg-emerald-600 transition-all shadow-lg shadow-emerald-500/20 text-[0.6rem] font-black uppercase tracking-widest scale-100 hover:scale-105">
                             <i data-lucide="zap" class="w-3.5 h-3.5"></i> Go Live
                         </button>
