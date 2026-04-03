@@ -980,10 +980,14 @@
                 @endphp
                 <div class="group flex flex-col items-center text-center px-8 py-6 cursor-default">
 
-                    {{-- Large Icon — bounces on hover, NO filter to avoid z-index issues --}}
-                    <div class="w-20 h-20 mb-5 flex items-center justify-center"
-                         style="color: {{ $bColor }};">
-                        <i data-lucide="{{ $bIcon }}" class="w-12 h-12 transition-all duration-300 group-hover:-translate-y-2 group-hover:scale-110" style="stroke-width: 1.5;"></i>
+                    {{-- Large Icon with Color Glow on Hover --}}
+                    <div class="relative w-20 h-20 mb-5 flex items-center justify-center">
+                        {{-- Glow background (no filter - uses bg blur instead) --}}
+                        <div class="absolute inset-0 rounded-full opacity-0 group-hover:opacity-30 transition-all duration-500 blur-xl"
+                             style="background-color: {{ $bColor }};"></div>
+                        {{-- Icon --}}
+                        <i data-lucide="{{ $bIcon }}" class="relative w-12 h-12 transition-all duration-300 group-hover:-translate-y-2 group-hover:scale-110"
+                           style="stroke-width: 1.5; color: {{ $bColor }};"></i>
                     </div>
 
                     {{-- Label --}}
