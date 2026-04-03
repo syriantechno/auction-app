@@ -402,7 +402,7 @@
     {{-- Sell Car Wizard: Independent Glass Card --}}
     <section class="relative z-40 -mt-[19rem] px-6 lg:px-12 pb-16">
         <div class="mx-auto max-w-[1440px]">
-            <div class="sell-wizard-card rounded-[1rem] border border-white/70 bg-white/65 backdrop-blur-2xl shadow-[0_40px_120px_-45px_rgba(15,23,42,0.35)] p-6 lg:p-8 overflow-visible">
+            <div class="sell-wizard-card relative z-10 rounded-[1rem] border border-white/70 bg-white/65 backdrop-blur-2xl shadow-[0_40px_120px_-45px_rgba(15,23,42,0.35)] p-6 lg:p-8 overflow-visible">
                 <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-4 mb-8">
                     <div>
                         <span class="text-bazar-500 font-black uppercase tracking-[0.35em] text-[0.62rem] mb-3 block">Sell Your Car</span>
@@ -424,11 +424,11 @@
                     <p class="text-sm text-slate-500 max-w-2xl">{{ data_get($page?->content, 'lead_form.step1.subtitle', 'Pick a brand first. The model list updates automatically from the catalog.') }}</p>
                 </div>
 
-                <form action="{{ route('sell-car-lead') }}" method="POST" id="sellCarWizard" data-start-step="{{ $wizardStartStep }}" class="relative z-50">
+                <form action="{{ route('sell-car-lead') }}" method="POST" id="sellCarWizard" data-start-step="{{ $wizardStartStep }}" class="relative">
                     @csrf
 
                     {{-- Step 1: Brand, Model, Year --}}
-                    <div data-step="1" class="space-y-8">
+                    <div data-step="1" class="space-y-4">
                         @php
                             // 1. Selection List: Always ALL Brands from catalog (70+)
                             $brandSelectBrands = collect($catalogMakesWithLogos ?? [])
@@ -965,7 +965,7 @@
             </div>
 
             {{-- Badges Grid --}}
-            <div class="grid grid-cols-2 xl:grid-cols-4 relative" style="isolation: isolate; z-index: 0;">
+            <div class="grid grid-cols-2 xl:grid-cols-4 relative">
                 {{-- Gradient separator lines --}}
                 <div class="hidden xl:block absolute top-[10%] bottom-[10%] left-1/4 w-px" style="background: linear-gradient(to bottom, transparent, #cbd5e1, transparent);"></div>
                 <div class="hidden xl:block absolute top-[10%] bottom-[10%] left-2/4 w-px" style="background: linear-gradient(to bottom, transparent, #cbd5e1, transparent);"></div>
