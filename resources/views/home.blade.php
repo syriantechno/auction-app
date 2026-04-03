@@ -424,7 +424,7 @@
                     <p class="text-sm text-slate-500 max-w-2xl">{{ data_get($page?->content, 'lead_form.step1.subtitle', 'Pick a brand first. The model list updates automatically from the catalog.') }}</p>
                 </div>
 
-                <form action="{{ route('sell-car-lead') }}" method="POST" id="sellCarWizard" data-start-step="{{ $wizardStartStep }}" class="relative z-10">
+                <form action="{{ route('sell-car-lead') }}" method="POST" id="sellCarWizard" data-start-step="{{ $wizardStartStep }}" class="relative z-50">
                     @csrf
 
                     {{-- Step 1: Brand, Model, Year --}}
@@ -965,7 +965,7 @@
             </div>
 
             {{-- Badges Grid --}}
-            <div class="grid grid-cols-2 xl:grid-cols-4 divide-x divide-slate-200/80">
+            <div class="grid grid-cols-2 xl:grid-cols-4 divide-x divide-slate-200/80 relative z-0">
                 @foreach($trustBadges as $i => $badge)
                 @php
                     $bColor = data_get($badge, 'color', '#333');
