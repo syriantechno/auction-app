@@ -77,7 +77,7 @@ Route::prefix('admin')->middleware(['auth'])->name('admin.')->group(function () 
     });
 
     // ── Finance System ─────────────────────────────────────────────
-    Route::prefix('finance')->name('admin.finance.')->group(function () {
+    Route::prefix('finance')->name('finance.')->group(function () {
         Route::get('/',                                           [\App\Http\Controllers\Admin\FinanceController::class, 'dashboard'])->name('dashboard');
         Route::get('/invoices',                                   [\App\Http\Controllers\Admin\FinanceController::class, 'invoices'])->name('invoices');
         Route::get('/invoices/{invoice}',                         [\App\Http\Controllers\Admin\FinanceController::class, 'showInvoice'])->name('invoice.show');
