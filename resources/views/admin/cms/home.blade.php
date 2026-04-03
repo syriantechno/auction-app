@@ -1088,8 +1088,15 @@
                 <!-- ==================== FOOTER TAB ==================== -->
                 <div x-show="activeTab === 'footer'" x-cloak x-transition>
 
+                    <!-- Data for Alpine (safe script context) -->
+                    <script>
+                        window.__footerLinks = @json(data_get($page->content, 'footer.quick_links', [['label'=>'Home','url'=>'/'],['label'=>'Browse Auctions','url'=>'/auctions'],['label'=>'How it Works','url'=>'/how-it-works'],['label'=>'Sell Your Car','url'=>'#']]));
+                        window.__footerPages = @json(data_get($page->content, 'footer.pages', []));
+                    </script>
+
                     <!-- Header Banner -->
                     <div class="bg-indigo-600 p-8 rounded-xl text-white shadow-xl mb-6 relative overflow-hidden">
+
                         <div class="absolute right-0 top-0 h-full w-2 bg-indigo-400 opacity-50"></div>
                         <div class="flex items-center gap-6">
                             <div class="w-16 h-16 bg-white/10 rounded-xl flex items-center justify-center border border-white/20">
@@ -1192,11 +1199,8 @@
                         <!-- Right: Quick Links + Pages -->
                         <div class="space-y-5">
                             <!-- Quick Links manager -->
-                            <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5" x-data="{
-                                links: @js(data_get($page->content, 'footer.quick_links', [['label'=>'Home','url'=>'/'],['label'=>'Browse Auctions','url'=>'/auctions'],['label'=>'How it Works','url'=>'/how-it-works'],['label'=>'Sell Your Car','url'=>'#']])),
-                                addLink() { this.links.push({label:'',url:''}); },
-                                removeLink(i) { this.links.splice(i,1); }
-                            }">
+                            <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5"
+                                 x-data="{ links: window.__footerLinks, addLink() { this.links.push({label:'',url:''}); }, removeLink(i) { this.links.splice(i,1); } }">
                                 <div class="flex items-center justify-between mb-4">
                                     <div class="text-[0.6rem] font-black uppercase tracking-widest text-indigo-500 flex items-center gap-2">
                                         <div class="w-4 h-px bg-indigo-300"></div> Quick Links
@@ -1222,11 +1226,8 @@
                             </div>
 
                             <!-- Internal Pages (for future page builder) -->
-                            <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5" x-data="{
-                                pages: @js(data_get($page->content, 'footer.pages', [])),
-                                addPage() { this.pages.push({label:'',url:''}); },
-                                removePage(i) { this.pages.splice(i,1); }
-                            }">
+                            <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5"
+                                 x-data="{ pages: window.__footerPages, addPage() { this.pages.push({label:'',url:''}); }, removePage(i) { this.pages.splice(i,1); } }">
                                 <div class="flex items-center justify-between mb-2">
                                     <div class="text-[0.6rem] font-black uppercase tracking-widest text-indigo-500 flex items-center gap-2">
                                         <div class="w-4 h-px bg-indigo-300"></div> Internal Pages
