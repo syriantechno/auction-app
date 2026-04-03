@@ -297,8 +297,15 @@
 ?>
 
 <?php $__env->startSection('content'); ?>
+    
+    <div style="background:#dc2626;color:#fff;text-align:center;padding:16px;font-size:18px;font-weight:900;letter-spacing:2px;position:relative;z-index:9999;">
+        🚀 AUTO-DEPLOY WORKS! — <?php echo e(now()->format('H:i:s d/m/Y')); ?>
+
+    </div>
+    
     <div class="home-page">
     
+
     <?php
         $heroMode = data_get($page->content, 'hero.background_mode', 'image');
         $heroBg = data_get($page->content, 'hero.background_image', '/images/hero-bg.png');
