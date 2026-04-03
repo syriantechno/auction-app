@@ -10,8 +10,12 @@ use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
-    public function showLogin()
+    public function showLogin(Request $request)
     {
+        // Store intended redirect (from ?redirect= query param or referer)
+        if ($request->filled('redirect')) {
+            session()->put('url.intended', $request->query('redirect'));
+        }
         return view('auth.login');
     }
 
@@ -24,11 +28,13 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-            return redirect()->intended('/');
+            // Redirect to profile if no specific intended URL
+            $defaultRedirect = route('dealer.profile', Auth::id());
+            return redirect()->intended($defaultRedirect);
         }
 
         return back()->withErrors([
-            'email' => 'بيانات الدخول غير صحيحة',
+            'email' => 'Invalid email or password.',
         ]);
     }
 

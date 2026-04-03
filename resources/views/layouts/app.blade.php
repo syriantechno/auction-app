@@ -186,6 +186,9 @@
                                 <div class="text-sm font-black text-deep-900 truncate">{{ auth()->user()->name }}</div>
                                 <div class="text-[0.6rem] text-gray-400 font-bold uppercase mt-0.5 tracking-widest">Premium Member</div>
                             </div>
+                            <a href="{{ route('dealer.profile', auth()->id()) }}" class="flex items-center gap-3 px-4 py-3 rounded-md text-xs font-bold text-gray-600 hover:bg-orange-50 hover:text-[#ff6900] transition-colors">
+                                <i data-lucide="user-circle" class="w-4"></i> My Profile
+                            </a>
                             <a href="{{ route('user.bids') }}" class="flex items-center gap-3 px-4 py-3 rounded-md text-xs font-bold text-gray-600 hover:bg-gray-50">
                                 <i data-lucide="gavel" class="w-4"></i> My Bids
                             </a>
@@ -203,7 +206,13 @@
                         </div>
                     </div>
                 @else
-                    <a href="{{ route('login') }}" class="text-[0.85rem] font-bold text-deep-900 border-b-2 border-transparent hover:border-bazar-500 transition-all pb-1 hidden sm:block">Login</a>
+                    <a href="{{ route('login') }}" class="text-[0.85rem] font-bold text-deep-900 border-b-2 border-transparent hover:border-[#ff6900] hover:text-[#ff6900] transition-all pb-1 hidden sm:block">Login</a>
+                    {{-- My Profile CTA for guests --}}
+                    <a href="{{ route('login', ['redirect' => request()->url()]) }}"
+                       class="flex items-center gap-2 px-4 py-2 bg-[#1d293d] hover:bg-[#ff6900] text-white text-[0.72rem] font-black uppercase tracking-widest rounded-lg transition-all shadow-md hover:shadow-orange-500/25 group">
+                        <i data-lucide="user-circle" class="w-4 h-4 group-hover:scale-110 transition-transform"></i>
+                        <span>My Profile</span>
+                    </a>
                     <a href="#" class="btn-bazar flex items-center gap-2">
                         <i data-lucide="plus" class="w-4 h-4"></i>
                         <span>Sell My Car</span>
