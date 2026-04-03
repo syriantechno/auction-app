@@ -948,23 +948,44 @@
                 </form>
             </div>
 
-            <div class="mt-10 grid grid-cols-2 xl:grid-cols-4 gap-6">
+            {{-- Trust Badges: Premium Design --}}
+            @php
+                $trustBadges = data_get($page?->content, 'trust_badges', [
+                    ['label' => 'Guaranteed Purchase',    'icon' => 'shield-check', 'color' => '#ff4605', 'bg_color' => '#fff7ed'],
+                    ['label' => 'No Costs. No Obligation','icon' => 'wallet',       'color' => '#031629', 'bg_color' => '#f1f5f9'],
+                    ['label' => 'Quick and Easy',         'icon' => 'zap',          'color' => '#3b82f6', 'bg_color' => '#eff6ff'],
+                    ['label' => 'Fast and Secure',        'icon' => 'lock',         'color' => '#334155', 'bg_color' => '#f1f5f9'],
+                ]);
+            @endphp
+            <div class="mt-10 grid grid-cols-2 xl:grid-cols-4 gap-4">
+                @foreach($trustBadges as $i => $badge)
                 @php
-                    $trustBadges = data_get($page?->content, 'trust_badges', [
-                        ['label' => 'Guaranteed Purchase',    'icon' => 'shield-check', 'color' => '#ff4605', 'bg_color' => '#fff7ed'],
-                        ['label' => 'No Costs. No Obligation','icon' => 'wallet',       'color' => '#031629', 'bg_color' => '#f1f5f9'],
-                        ['label' => 'Quick and Easy',         'icon' => 'zap',          'color' => '#3b82f6', 'bg_color' => '#eff6ff'],
-                        ['label' => 'Fast and Secure',        'icon' => 'lock',         'color' => '#334155', 'bg_color' => '#f1f5f9'],
-                    ]);
+                    $bColor = data_get($badge, 'color', '#333');
+                    $bBg    = data_get($badge, 'bg_color', '#f1f5f9');
+                    $bIcon  = data_get($badge, 'icon', 'star');
+                    $bLabel = data_get($badge, 'label', '');
                 @endphp
-                @foreach($trustBadges as $badge)
-                    <div class="flex items-center gap-3">
-                        <div class="w-11 h-11 rounded-lg flex items-center justify-center shrink-0"
-                             style="background-color: {{ data_get($badge, 'bg_color', '#f1f5f9') }}; color: {{ data_get($badge, 'color', '#333') }}">
-                            <i data-lucide="{{ data_get($badge, 'icon', 'star') }}" class="w-5 h-5"></i>
-                        </div>
-                        <p class="text-sm font-black text-slate-900 leading-tight">{{ data_get($badge, 'label', '') }}</p>
+                <div class="trust-badge-card group relative bg-white/70 backdrop-blur-sm border border-white/80 rounded-2xl p-5 shadow-[0_4px_24px_-8px_rgba(0,0,0,0.08)] hover:shadow-[0_12px_40px_-12px_rgba(0,0,0,0.15)] hover:-translate-y-1 transition-all duration-300 overflow-hidden cursor-default">
+                    {{-- Subtle glow bg --}}
+                    <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none rounded-2xl"
+                         style="background: radial-gradient(circle at 30% 50%, {{ $bBg }}cc 0%, transparent 70%)"></div>
+
+                    {{-- Number badge --}}
+                    <span class="absolute top-3 right-3 text-[0.45rem] font-black text-slate-300 uppercase tracking-widest">0{{ $i+1 }}</span>
+
+                    {{-- Icon --}}
+                    <div class="relative w-12 h-12 rounded-xl mb-4 flex items-center justify-center transition-transform duration-300 group-hover:scale-110"
+                         style="background-color: {{ $bBg }}; color: {{ $bColor }}; box-shadow: 0 4px 14px -4px {{ $bBg }}">
+                        <i data-lucide="{{ $bIcon }}" class="w-5 h-5"></i>
                     </div>
+
+                    {{-- Label --}}
+                    <p class="text-[0.78rem] font-black text-slate-900 leading-snug tracking-tight">{{ $bLabel }}</p>
+
+                    {{-- Bottom accent line --}}
+                    <div class="absolute bottom-0 left-0 h-[3px] w-0 group-hover:w-full transition-all duration-500 rounded-b-2xl"
+                         style="background: linear-gradient(90deg, {{ $bColor }}, {{ $bBg }})"></div>
+                </div>
                 @endforeach
             </div>
 
