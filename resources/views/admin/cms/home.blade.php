@@ -1193,7 +1193,7 @@
                         <div class="space-y-5">
                             <!-- Quick Links manager -->
                             <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5" x-data="{
-                                links: {{ json_encode(data_get($page->content, 'footer.quick_links', [['label'=>'Home','url'=>'/'],['label'=>'Browse Auctions','url'=>'/auctions'],['label'=>'How it Works','url'=>'/how-it-works'],['label'=>'Sell Your Car','url'=>'#']])) }},
+                                links: @js(data_get($page->content, 'footer.quick_links', [['label'=>'Home','url'=>'/'],['label'=>'Browse Auctions','url'=>'/auctions'],['label'=>'How it Works','url'=>'/how-it-works'],['label'=>'Sell Your Car','url'=>'#']])),
                                 addLink() { this.links.push({label:'',url:''}); },
                                 removeLink(i) { this.links.splice(i,1); }
                             }">
@@ -1223,7 +1223,7 @@
 
                             <!-- Internal Pages (for future page builder) -->
                             <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5" x-data="{
-                                pages: {{ json_encode(data_get($page->content, 'footer.pages', [])) }},
+                                pages: @js(data_get($page->content, 'footer.pages', [])),
                                 addPage() { this.pages.push({label:'',url:''}); },
                                 removePage(i) { this.pages.splice(i,1); }
                             }">
