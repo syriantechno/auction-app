@@ -3,6 +3,8 @@
 @section('title', 'Motor Bazar - Premium Car Marketplace')
 
 @section('head')
+{{-- Anti-FOUC: hide page until styled. Runs synchronously (no defer/async) --}}
+<script>document.documentElement.classList.add('fouc-guard');</script>
 <style>
     @php
         $page = $page ?? null;
@@ -38,10 +40,8 @@
             : "background-image: url('{$heroBackgroundImage}'); background-size: cover; background-position: center; background-color: {$heroBackgroundColor};";
     @endphp
 
-    /* ── Anti-FOUC: brand logo size locked before page renders ────────── */
-    .brand-logo-wrapper { width:60px!important; height:60px!important; overflow:hidden!important; flex-shrink:0!important; }
-    .brand-logo { max-width:100%!important; max-height:100%!important; object-fit:contain!important; }
-    .w-14.h-14 > img, .brand-pick img { max-width:56px!important; max-height:56px!important; object-fit:contain!important; }
+    /* ── Anti-FOUC: hide page until CSS ready ── */
+    html.fouc-guard { opacity: 0 !important; }
 
     .search-tab {
         padding: 12px 20px;
@@ -2667,6 +2667,15 @@
             renderDrums();
         })();
 
+    </script>
+
+    <script>
+        /* ── FOUC reveal: called after all scripts load ── */
+        (function revealPage() {
+            var html = document.documentElement;
+            html.style.transition = 'opacity 80ms ease';
+            html.classList.remove('fouc-guard');
+        })();
     </script>
 @endsection
 
