@@ -103,6 +103,8 @@ class SettingsController extends Controller
             SystemSetting::set($field, $request->input($field, '0'));
         }
 
+        \Illuminate\Support\Facades\Cache::forget('system_settings_global');
+
         if ($request->wantsJson()) {
             return response()->json(['message' => 'Notification settings saved successfully ✓']);
         }
@@ -166,6 +168,10 @@ class SettingsController extends Controller
             if ($old && Storage::disk('public')->exists($old)) Storage::disk('public')->delete($old);
             SystemSetting::set('site_favicon', $request->file('site_favicon')->store('branding', 'public'));
         }
+
+        \Illuminate\Support\Facades\Cache::forget('system_settings_global');
+        \Illuminate\Support\Facades\Cache::forget('menu_nav_header');
+        \Illuminate\Support\Facades\Cache::forget('menu_nav_footer');
 
         if ($request->wantsJson()) {
             return response()->json(['message' => 'General settings saved successfully ✓']);
@@ -322,6 +328,8 @@ class SettingsController extends Controller
         SystemSetting::set('auction_auto_close',         $request->input('auction_auto_close') === '1' ? '1' : '0');
         SystemSetting::set('global_bid_feed_admin_only', $request->input('global_bid_feed_admin_only') === '1' ? '1' : '0');
 
+        \Illuminate\Support\Facades\Cache::forget('system_settings_global');
+
         if ($request->wantsJson()) {
             return response()->json(['message' => 'Auction settings saved successfully ✓']);
         }
@@ -370,6 +378,8 @@ class SettingsController extends Controller
             SystemSetting::set($field, $request->input($field, ''));
         }
 
+        \Illuminate\Support\Facades\Cache::forget('system_settings_global');
+
         return back()->with('success', 'Communication settings saved successfully.');
     }
 
@@ -399,6 +409,28 @@ class SettingsController extends Controller
         } catch (\Throwable $e) {
             Log::error('[Test Email] ' . $e->getMessage());
             return response()->json(['message' => 'Failed: ' . $e->getMessage()], 500);
+        }
+    }
+
+    /** Test SMTP connection only — no email sent */
+    public function testConnection(Request $request)
+    {
+        $this->applyMailConfig();
+
+        try {
+            $transport = Mail::getSymfonyTransport();
+            
+            if ($transport instanceof \Symfony\Component\Mailer\Transport\Smtp\EsmtpTransport) {
+                // Force a STARTTLS or connection check
+                $transport->stop(); 
+                $transport->start();
+                return response()->json(['message' => 'Connection successful! Your SMTP settings are correct. ✓']);
+            }
+
+            return response()->json(['message' => 'Connection tested, but transport is not SMTP. Check logs.']);
+        } catch (\Throwable $e) {
+            Log::error('[SMTP Test] ' . $e->getMessage());
+            return response()->json(['message' => 'Connection failed: ' . $e->getMessage()], 500);
         }
     }
 
@@ -436,6 +468,15 @@ class SettingsController extends Controller
         foreach ($map as $configKey => $settingKey) {
             $value = SystemSetting::get($settingKey);
             if ($value) Config::set("mail.mailers.smtp.{$configKey}", $value);
+        }
+
+        // For Laravel 9/10/11+ (Symfony Mailer), port 465 usually needs 'smtps' scheme
+        $port = (int) SystemSetting::get('mail_port');
+        $enc  = strtolower(SystemSetting::get('mail_encryption', ''));
+        if ($port === 465 || $enc === 'ssl') {
+            Config::set('mail.mailers.smtp.scheme', 'smtps');
+        } else {
+            Config::set('mail.mailers.smtp.scheme', null);
         }
 
         if ($from = SystemSetting::get('mail_from_address')) {

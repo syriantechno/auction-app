@@ -129,32 +129,36 @@ Route::prefix('admin')->middleware(['auth'])->name('admin.')->group(function () 
     Route::get('/pages/{menu}/menu-items', [\App\Http\Controllers\Admin\PageController::class, 'menuItems'])->name('pages.menu-items');
     Route::resource('/pages', \App\Http\Controllers\Admin\PageController::class)->names('pages');
 
-    // System Settings
-    Route::get('/settings/hub',                [\App\Http\Controllers\Admin\SettingsController::class, 'settingsHub'])->name('settings.hub');
-    Route::post('/settings/hub',               [\App\Http\Controllers\Admin\SettingsController::class, 'saveGeneralSettings'])->name('settings.general.save');
-    Route::post('/settings/notifications',     [\App\Http\Controllers\Admin\SettingsController::class, 'saveNotificationSettings'])->name('settings.notifications.save');
-    Route::get('/settings/logo', [\App\Http\Controllers\Admin\SettingsController::class, 'logo'])->name('settings.logo');
-    Route::post('/settings/logo', [\App\Http\Controllers\Admin\SettingsController::class, 'updateLogo'])->name('settings.logo.update');
-    Route::get('/settings/google-maps', [\App\Http\Controllers\Admin\SettingsController::class, 'googleMaps'])->name('settings.google-maps');
-    Route::post('/settings/google-maps', [\App\Http\Controllers\Admin\SettingsController::class, 'updateGoogleMaps'])->name('settings.google-maps.update');
-    Route::get('/settings/map-test', [\App\Http\Controllers\Admin\SettingsController::class, 'mapTest'])->name('settings.map-test');
-    Route::get('/settings/inspection-fields', [\App\Http\Controllers\Admin\SettingsController::class, 'inspectionFields'])->name('settings.inspection-fields');
-    Route::post('/settings/inspection-fields', [\App\Http\Controllers\Admin\SettingsController::class, 'updateInspectionFields'])->name('settings.inspection-fields.update');
+    // System Settings — Hub (single entry point)
+    Route::get('/settings/hub',  [\App\Http\Controllers\Admin\SettingsController::class, 'settingsHub'])->name('settings.hub');
+    Route::post('/settings/hub', [\App\Http\Controllers\Admin\SettingsController::class, 'saveGeneralSettings'])->name('settings.general.save');
+    Route::post('/settings/notifications', [\App\Http\Controllers\Admin\SettingsController::class, 'saveNotificationSettings'])->name('settings.notifications.save');
+
+    // Redirects — old standalone pages now live inside hub
+    Route::get('/settings/logo',              fn() => redirect()->route('admin.settings.hub'))->name('settings.logo');
+    Route::get('/settings/google-maps',       fn() => redirect()->route('admin.settings.hub'))->name('settings.google-maps');
+    Route::get('/settings/map-test',          fn() => redirect()->route('admin.settings.hub'))->name('settings.map-test');
+    Route::get('/settings/inspection-fields', fn() => redirect()->route('admin.settings.hub'))->name('settings.inspection-fields');
+    Route::get('/settings/auctions',          fn() => redirect()->route('admin.settings.hub'))->name('settings.auctions');
+    Route::get('/settings/communication',     fn() => redirect()->route('admin.settings.hub'))->name('settings.communication');
+
+    // POST routes kept — hub forms post to these
+    Route::post('/settings/logo',                [\App\Http\Controllers\Admin\SettingsController::class, 'updateLogo'])->name('settings.logo.update');
+    Route::post('/settings/google-maps',         [\App\Http\Controllers\Admin\SettingsController::class, 'updateGoogleMaps'])->name('settings.google-maps.update');
+    Route::post('/settings/inspection-fields',   [\App\Http\Controllers\Admin\SettingsController::class, 'updateInspectionFields'])->name('settings.inspection-fields.update');
+    Route::post('/settings/auctions',            [\App\Http\Controllers\Admin\SettingsController::class, 'updateAuctionSettings'])->name('settings.auctions.update');
+    Route::post('/settings/communication',       [\App\Http\Controllers\Admin\SettingsController::class, 'updateCommunicationSettings'])->name('settings.communication.update');
+    Route::post('/settings/communication/test-email',    [\App\Http\Controllers\Admin\SettingsController::class, 'testEmail'])->name('settings.communication.test-email');
+    Route::post('/settings/communication/test-smtp',     [\App\Http\Controllers\Admin\SettingsController::class, 'testConnection'])->name('settings.smtp.test');
+    Route::post('/settings/communication/test-whatsapp', [\App\Http\Controllers\Admin\SettingsController::class, 'testWhatsApp'])->name('settings.communication.test-whatsapp');
     Route::get('/settings/toast-showcase', fn() => view('admin.settings.toast_showcase'))->name('settings.toast-showcase');
-    Route::get('/settings/auctions', [\App\Http\Controllers\Admin\SettingsController::class, 'auctionSettings'])->name('settings.auctions');
-    Route::post('/settings/auctions', [\App\Http\Controllers\Admin\SettingsController::class, 'updateAuctionSettings'])->name('settings.auctions.update');
+
 
     // Notification Center API
-    Route::get('/notifications',          [\App\Http\Controllers\Admin\NotificationController::class, 'index'])->name('notifications.index');
-    Route::post('/notifications/read-all',[\App\Http\Controllers\Admin\NotificationController::class, 'markAllRead'])->name('notifications.read-all');
+    Route::get('/notifications',           [\App\Http\Controllers\Admin\NotificationController::class, 'index'])->name('notifications.index');
+    Route::post('/notifications/read-all', [\App\Http\Controllers\Admin\NotificationController::class, 'markAllRead'])->name('notifications.read-all');
     Route::post('/notifications/{id}/read',[\App\Http\Controllers\Admin\NotificationController::class, 'markRead'])->name('notifications.read');
-    Route::get('/notifications/count',    [\App\Http\Controllers\Admin\NotificationController::class, 'unreadCount'])->name('notifications.count');
-
-    // Communication Settings (Email + WhatsApp)
-    Route::get('/settings/communication',  [\App\Http\Controllers\Admin\SettingsController::class, 'communicationSettings'])->name('settings.communication');
-    Route::post('/settings/communication', [\App\Http\Controllers\Admin\SettingsController::class, 'updateCommunicationSettings'])->name('settings.communication.update');
-    Route::post('/settings/communication/test-email',    [\App\Http\Controllers\Admin\SettingsController::class, 'testEmail'])->name('settings.communication.test-email');
-    Route::post('/settings/communication/test-whatsapp', [\App\Http\Controllers\Admin\SettingsController::class, 'testWhatsApp'])->name('settings.communication.test-whatsapp');
+    Route::get('/notifications/count',     [\App\Http\Controllers\Admin\NotificationController::class, 'unreadCount'])->name('notifications.count');
 
     // Modern Test Dashboard
     Route::get('/test-dashboard', [DashboardController::class, 'showTestDashboard'])->name('test-dashboard');
