@@ -42,17 +42,39 @@
                 </td>
                 <td class="py-5 px-6 text-center">
                     @php
-                        $statusStyles = [
-                            'coming_soon' => 'bg-amber-50 text-amber-600 border-amber-100 shadow-amber-500/10',
-                            'active' => 'bg-emerald-50 text-emerald-600 border-emerald-100 shadow-emerald-500/10 animate-pulse-subtle',
-                            'closed' => 'bg-slate-100 text-slate-400 border-slate-200',
-                            'paused' => 'bg-red-50 text-red-500 border-red-100',
-                        ];
-                        $style = $statusStyles[$auction->status] ?? 'bg-slate-50 text-slate-500 border-slate-100';
+                        // Smart status: if DB says active but end_at passed → treat as finished
+                        $isExpired = $auction->status === 'active' && $auction->end_at && $auction->end_at->isPast();
+                        $displayStatus = $isExpired ? 'finished' : $auction->status;
                     @endphp
-                    <span class="inline-flex px-4 py-1 rounded-full text-[0.55rem] font-black uppercase tracking-[0.2em] border shadow-sm {{ $style }}">
-                        {{ str_replace('_', ' ', $auction->status) }}
-                    </span>
+
+                    @if($displayStatus === 'active')
+                        <span class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-[0.55rem] font-black uppercase tracking-[0.2em] border bg-emerald-50 text-emerald-600 border-emerald-200 shadow-sm shadow-emerald-500/10">
+                            <span class="relative flex h-2 w-2">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                            </span>
+                            Live
+                        </span>
+                    @elseif($displayStatus === 'coming_soon')
+                        <span class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-[0.55rem] font-black uppercase tracking-[0.2em] border bg-amber-50 text-amber-600 border-amber-200 shadow-sm">
+                            <span class="h-2 w-2 rounded-full bg-amber-400 inline-block"></span>
+                            Coming Soon
+                        </span>
+                    @elseif($displayStatus === 'finished')
+                        <span class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-[0.55rem] font-black uppercase tracking-[0.2em] border bg-red-50 text-red-500 border-red-200 shadow-sm">
+                            <span class="h-2 w-2 rounded-full bg-red-400 inline-block"></span>
+                            Finished
+                        </span>
+                    @elseif($displayStatus === 'paused')
+                        <span class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-[0.55rem] font-black uppercase tracking-[0.2em] border bg-yellow-50 text-yellow-600 border-yellow-200 shadow-sm">
+                            <span class="h-2 w-2 rounded-full bg-yellow-400 inline-block"></span>
+                            Paused
+                        </span>
+                    @else
+                        <span class="inline-flex px-4 py-1.5 rounded-full text-[0.55rem] font-black uppercase tracking-[0.2em] border bg-slate-100 text-slate-400 border-slate-200">
+                            {{ str_replace('_', ' ', $auction->status) }}
+                        </span>
+                    @endif
                 </td>
                 <td class="py-5 px-6 text-center">
                     <div class="flex flex-col">
@@ -65,13 +87,16 @@
                         <div class="flex items-center gap-2 text-[0.65rem] text-slate-500 font-bold uppercase italic">
                             <i data-lucide="play" class="w-3 h-3 text-emerald-500"></i> {{ $auction->start_at->format('M d, H:i') }}
                         </div>
-                        <div class="flex items-center gap-2 text-[0.65rem] text-slate-400 font-bold uppercase italic">
-                            <i data-lucide="clock" class="w-3 h-3 text-red-400"></i> {{ $auction->end_at->format('M d, H:i') }}
+                        <div class="flex items-center gap-2 text-[0.65rem] {{ $auction->end_at->isPast() ? 'text-red-400' : 'text-slate-400' }} font-bold uppercase italic">
+                            <i data-lucide="clock" class="w-3 h-3 {{ $auction->end_at->isPast() ? 'text-red-500' : 'text-red-400' }}"></i> {{ $auction->end_at->format('M d, H:i') }}
+                            @if($auction->end_at->isPast()) <span class="text-red-400 font-black">• Expired</span> @endif
                         </div>
                     </div>
                 </td>
                 <td class="py-5 px-8 text-right">
                     <div class="flex items-center justify-end gap-3">
+
+                        {{-- Negotiate: closed auctions --}}
                         @if($auction->status === 'closed')
                         <button onclick="startNegotiation({{ $auction->id }})" title="Start Negotiation"
                             class="h-10 px-4 rounded-md bg-purple-600 text-white flex items-center gap-2 hover:bg-purple-700 transition-all shadow-lg text-[0.6rem] font-black uppercase tracking-widest">
@@ -85,17 +110,27 @@
                         </span>
                         @endif
 
-                        @if(!in_array($auction->status, ['active','sold','deal_approved']))
-                        <button onclick="approveAuction({{ $auction->id }})" title="Go Live" class="h-10 px-4 rounded-md bg-emerald-500 text-white flex items-center justify-center gap-2 hover:bg-emerald-600 transition-all shadow-lg shadow-emerald-500/20 text-[0.6rem] font-black uppercase tracking-widest scale-100 hover:scale-105">
+                        {{-- Go Live: coming_soon + paused --}}
+                        @if(in_array($auction->status, ['coming_soon', 'paused']))
+                        <button onclick="approveAuction({{ $auction->id }})" title="Go Live"
+                            class="h-10 px-4 rounded-md bg-emerald-500 text-white flex items-center gap-2 hover:bg-emerald-600 transition-all shadow-lg text-[0.6rem] font-black uppercase tracking-widest">
                             <i data-lucide="zap" class="w-3.5 h-3.5"></i> Go Live
                         </button>
                         @endif
 
-                        <a href="{{ route('admin.auctions.edit', $auction) }}" title="Recalibrate" class="w-10 h-10 rounded-md bg-white text-slate-400 flex items-center justify-center hover:bg-[#1d293d] hover:text-white transition-all shadow-sm border border-slate-100">
-                            <i data-lucide="settings-2" class="w-4.5 h-4.5"></i>
+                        {{-- Relaunch: expired active auctions --}}
+                        @if($isExpired)
+                        <button onclick="approveAuction({{ $auction->id }})" title="Relaunch Auction"
+                            class="h-10 px-4 rounded-md bg-[#ff6900] text-white flex items-center gap-2 hover:bg-orange-600 transition-all shadow-lg text-[0.6rem] font-black uppercase tracking-widest">
+                            <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i> Relaunch
+                        </button>
+                        @endif
+
+                        <a href="{{ route('admin.auctions.edit', $auction) }}" title="Edit" class="w-10 h-10 rounded-md bg-white text-slate-400 flex items-center justify-center hover:bg-[#1d293d] hover:text-white transition-all shadow-sm border border-slate-100">
+                            <i data-lucide="settings-2" class="w-4 h-4"></i>
                         </a>
-                        <button onclick="purgeAuction({{ $auction->id }})" title="Purge Node" class="w-10 h-10 rounded-md bg-white text-red-400 flex items-center justify-center hover:bg-red-500 hover:text-white transition-all shadow-sm border border-slate-100">
-                            <i data-lucide="trash-2" class="w-4.5 h-4.5"></i>
+                        <button onclick="purgeAuction({{ $auction->id }})" title="Delete" class="w-10 h-10 rounded-md bg-white text-red-400 flex items-center justify-center hover:bg-red-500 hover:text-white transition-all shadow-sm border border-slate-100">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
                         </button>
                     </div>
                 </td>

@@ -9,9 +9,15 @@ use App\Models\Lead;
 use App\Models\Car;
 use App\Models\CarModel;
 use App\Models\CMS\Page;
+use App\Models\SystemSetting;
 use App\Models\User;
+use App\Mail\LeadConfirmation;
+use App\Notifications\NewLeadReceived;
+use App\Services\WhatsAppService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Schema;
 
 class HomeController extends Controller
@@ -272,7 +278,7 @@ class HomeController extends Controller
             'home_address'     => ['nullable', 'string', 'max:500'],
         ]);
 
-        Lead::create([
+        $lead = Lead::create([
             'user_id' => $request->user()?->id,
             'car_details' => [
                 'source' => 'home_sell_wizard',
@@ -305,6 +311,47 @@ class HomeController extends Controller
                 $validated['inspection_time'] ?? 'N/A'
             ),
         ]);
+
+        // ── Notify all admins ─────────────────────────────────
+        User::where('role', 'admin')
+            ->orWhereIn('email', ['admin@motorbazar.ae', 'admin@automazad.com'])
+            ->get()
+            ->each(fn($admin) => $admin->notify(new NewLeadReceived($lead)));
+
+        // ── Send confirmation email to lead ───────────────────
+        $leadEmail = data_get($lead->car_details, 'email');
+        if ($leadEmail && filter_var($leadEmail, FILTER_VALIDATE_EMAIL)) {
+            try {
+                Mail::to($leadEmail)->send(new LeadConfirmation($lead));
+            } catch (\Throwable $e) {
+                Log::error('[Email] Lead confirmation failed: ' . $e->getMessage());
+            }
+        }
+
+        // ── Send WhatsApp confirmation to lead ────────────────
+        $leadPhone = data_get($lead->car_details, 'phone');
+        if ($leadPhone) {
+            try {
+                $whatsappTemplate = SystemSetting::get(
+                    'whatsapp_lead_template',
+                    "Hello {name}! 👋\n\nYour Motor Bazar request has been received.\n\n🚗 Vehicle: {year} {make} {model}\n📅 Inspection: {date} at {time}\n🔖 Ref: #{ref}\n\nOur team will contact you shortly. Thank you!"
+                );
+
+                $message = strtr($whatsappTemplate, [
+                    '{name}'  => data_get($lead->car_details, 'name', 'Client'),
+                    '{make}'  => data_get($lead->car_details, 'make', ''),
+                    '{model}' => data_get($lead->car_details, 'model', ''),
+                    '{year}'  => data_get($lead->car_details, 'year', ''),
+                    '{date}'  => data_get($lead->car_details, 'inspection_date', 'TBD'),
+                    '{time}'  => data_get($lead->car_details, 'inspection_time', 'TBD'),
+                    '{ref}'   => str_pad($lead->id, 6, '0', STR_PAD_LEFT),
+                ]);
+
+                app(WhatsAppService::class)->send($leadPhone, $message);
+            } catch (\Throwable $e) {
+                Log::error('[WhatsApp] Lead message failed: ' . $e->getMessage());
+            }
+        }
 
         if ($request->ajax()) {
             return response()->json([

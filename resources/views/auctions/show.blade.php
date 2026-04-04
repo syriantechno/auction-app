@@ -130,7 +130,7 @@
             @if($auction->status === 'coming_soon')
                 <span class="px-6 py-2 bg-[#ff6900] text-white rounded-lg text-[0.7rem] font-black uppercase tracking-[0.2em] shadow-xl shadow-orange-500/20 animate-pulse">Coming Soon</span>
             @elseif($auction->status === 'active')
-                <span class="px-6 py-2 bg-emerald-500 text-white rounded-lg text-[0.7rem] font-black uppercase tracking-[0.2em] shadow-xl shadow-emerald-500/20">Live Auction</span>
+                <span data-auction-status class="px-6 py-2 bg-emerald-500 text-white rounded-lg text-[0.7rem] font-black uppercase tracking-[0.2em] shadow-xl shadow-emerald-500/20">Live Auction</span>
             @endif
         </div>
     </div>
@@ -200,21 +200,29 @@
                     </div>
                 </div>
 
-                {{-- Real-time Bidding Feed --}}
+                {{-- Real-time Bidding Feed — Admin Only --}}
+                @php
+                    $bidFeedAdminOnly = \App\Models\SystemSetting::get('global_bid_feed_admin_only', '1') === '1';
+                    $showBidFeed = !$bidFeedAdminOnly || (auth()->check() && auth()->user()->role === 'admin');
+                @endphp
+                @if($showBidFeed)
                 <div class="mt-8 bg-gray-50/50 rounded-lg p-6 border border-dashed border-gray-100">
                     <div class="flex items-center gap-2 mb-4">
                         <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span>
                         <span class="text-[0.6rem] font-black text-[#2a3547] uppercase tracking-widest">Global Bid Feed</span>
+                        @if(auth()->user()?->role === 'admin')
+                            <span class="ml-auto text-[0.5rem] font-black uppercase tracking-widest bg-orange-100 text-[#ff6900] px-2 py-0.5 rounded-full">Admin View</span>
+                        @endif
                     </div>
                     <div class="space-y-3 max-h-[200px] overflow-y-auto pr-2 custom-scroll" id="global-bid-feed">
                         @forelse($auction->bids->take(5) as $bid)
                         <div class="flex justify-between items-center bg-white p-3 rounded-md shadow-sm border border-black/5">
                             <div class="flex items-center gap-3">
-                                <a href="{{ route('dealer.profile', $bid->user) }}" class="w-7 h-7 rounded-lg bg-zinc-900 text-white flex items-center justify-center font-bold text-[0.6rem] hover:bg-[#ff4605] transition-colors">
+                                <div class="w-7 h-7 rounded-lg bg-zinc-900 text-white flex items-center justify-center font-bold text-[0.6rem]">
                                     {{ substr($bid->user->name, 0, 1) }}
-                                </a>
+                                </div>
                                 <div>
-                                    <a href="{{ route('dealer.profile', $bid->user) }}" class="text-[0.7rem] font-black text-[#111827] hover:text-[#ff4605] transition-colors">{{ $bid->user->name }}</a>
+                                    <div class="text-[0.7rem] font-black text-[#111827]">{{ $bid->user->name }}</div>
                                     <div class="text-[0.55rem] text-gray-400 font-bold tabular-nums">{{ $bid->created_at->diffForHumans() }}</div>
                                 </div>
                             </div>
@@ -225,6 +233,7 @@
                         @endforelse
                     </div>
                 </div>
+                @endif
 
                 <div class="mt-12">
                     @if($auction->status === 'active')
@@ -712,39 +721,49 @@
 
             if (echoConnection) {
                 echoConnection.bind('state_change', ({ current }) => {
-                    if (current === 'connected') {
-                        stopAuctionSyncFallback();
-                    }
-
-                    if (current === 'disconnected' || current === 'unavailable' || current === 'failed') {
-                        startAuctionSyncFallback();
-                    }
+                    if (current === 'connected') stopAuctionSyncFallback();
+                    if (['disconnected','unavailable','failed'].includes(current)) startAuctionSyncFallback();
                 });
             }
 
             window.Echo.channel('auction.' + {{ $auction->id }})
-                .listen('BidPlaced', (e) => {
-                    console.log("[Reverb] Instant Sync Received", e);
-                    
-                    const nextAmt = e.current_price + (e.bid_increment || bidIncrement);
-                    const realtimeData = {
-                        current_price:            e.current_price,
-                        current_price_formatted:  formatMoney(e.current_price),
-                        next_bid_amount:          nextAmt,
-                        bid_increment:            e.bid_increment || bidIncrement,
-                        bids_count:               (parseInt(bidCountText ? bidCountText.innerText : '0') || 0) + 1,
-                        time_extended:            e.time_extended || false,
-                        new_end_at:               e.new_end_at || null,
-                        extension_seconds:        e.extension_seconds || 0,
+                // ── Bid placed (real-time price + feed) ──
+                .listen('.bid.placed', (e) => {
+                    console.log('[Reverb] BidPlaced', e);
+                    const nextAmt = e.current_price + bidIncrement;
+                    syncUI({
+                        current_price:           e.current_price,
+                        current_price_formatted: formatMoney(e.current_price),
+                        next_bid_amount:         nextAmt,
+                        bids_count:              e.bids_count,
+                        end_at:                  e.end_at,
                         latest_bids: [{
-                            user_name:    e.user_name,
-                            user_initial: e.user_name.substring(0,1),
-                            amount:       `$${formatMoney(e.current_price)}`,
-                            time:         'Just now'
+                            user_name:    e.bidder_name,
+                            user_initial: e.bidder_initial,
+                            amount:       e.bid_amount,
+                            time:         e.bid_time
                         }]
-                    };
-                    
-                    syncUI(realtimeData);
+                    });
+                })
+                // ── Auction status / timer updated ──
+                .listen('.auction.updated', (e) => {
+                    console.log('[Reverb] AuctionUpdated', e);
+                    syncUI({
+                        current_price: e.current_price,
+                        bids_count:    e.bids_count,
+                        end_at:        e.end_at,
+                    });
+                    // Update status badge if auction finished
+                    if (e.status && e.status !== 'active') {
+                        const badge = document.querySelector('[data-auction-status]');
+                        if (badge) {
+                            badge.textContent = e.status === 'coming_soon' ? 'Coming Soon' : 'Ended';
+                            badge.className = badge.className.replace(/bg-\w+-\d+/g, 'bg-red-500');
+                        }
+                        // Disable bid button
+                        const btn = document.getElementById('bid-submit-btn');
+                        if (btn) { btn.disabled = true; btn.style.opacity = '0.4'; }
+                    }
                 });
 
             if (!echoConnection || echoConnection.state !== 'connected') {

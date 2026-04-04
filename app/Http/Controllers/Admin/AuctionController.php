@@ -95,10 +95,16 @@ class AuctionController extends Controller
     public function update(Request $request, Auction $auction)
     {
         $validated = $request->validate([
-            'start_at' => 'required|date',
-            'end_at' => 'required|date|after:start_at',
-            'status' => 'required|in:coming_soon,active,paused,closed',
+            'start_at'                 => 'required|date',
+            'end_at'                   => 'required|date|after:start_at',
+            'status'                   => 'required|in:coming_soon,active,paused,closed',
+            'anti_snipe_enabled'       => 'nullable|boolean',
+            'time_extension_threshold' => 'nullable|integer|min:5|max:120',
+            'time_extension_seconds'   => 'nullable|integer|min:5|max:120',
         ]);
+
+        // Checkbox treatment: if anti_snipe_enabled not in request (unchecked), treat as false
+        $validated['anti_snipe_enabled'] = $request->has('anti_snipe_enabled') && $request->input('anti_snipe_enabled') == '1';
 
         $auction->update($validated);
 
@@ -134,6 +140,9 @@ class AuctionController extends Controller
 
         // Ensure ref code exists when going live
         $refCode = ReferenceCodeService::assignTo($auction);
+
+        // Broadcast real-time status change
+        event(new \App\Events\AuctionUpdated($auction->fresh()));
 
         if (request()->ajax()) {
             return response()->json([

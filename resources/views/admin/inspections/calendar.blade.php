@@ -141,9 +141,12 @@
 </style>
 
 <script>
+    function closeAuditModal() { document.getElementById('eventModal').classList.add('hidden'); }
+
     document.addEventListener('DOMContentLoaded', function() {
         var calendarEl = document.getElementById('calendar');
         const tooltip = document.getElementById('hoverTooltip');
+        const eventModal = document.getElementById('eventModal');
         
         var calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'dayGridMonth',
@@ -153,6 +156,25 @@
                 right: 'dayGridMonth,timeGridWeek'
             },
             events: @json($events),
+            eventClick: function(info) {
+                const event = info.event;
+                const props = event.extendedProps;
+                
+                document.getElementById('modalTitle').innerText = event.title;
+                document.getElementById('modalClient').innerText = props.client;
+                document.getElementById('modalPhone').innerText = props.phone;
+                document.getElementById('modalLoc').innerText = props.location;
+                document.getElementById('modalInspector').innerText = props.inspector;
+                document.getElementById('modalAsset').innerText = `${props.year} ${props.make} ${props.model}`;
+                document.getElementById('modalVin').innerText = props.vin;
+                document.getElementById('modalMileage').innerText = props.mileage + ' KM';
+                document.getElementById('modalDateTime').innerText = event.start.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' }) + ' ' + event.start.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                
+                const btn = document.getElementById('modalActionBtn');
+                btn.href = `/admin/inspections/create?lead_id=${props.lead_id}`;
+
+                eventModal.classList.remove('hidden');
+            },
             eventMouseEnter: function(info) {
                 const event = info.event;
                 const props = event.extendedProps;
@@ -165,7 +187,6 @@
 
                 tooltip.classList.remove('hidden');
                 
-                // Position logic
                 const rect = info.el.getBoundingClientRect();
                 tooltip.style.left = (rect.right + 10) + 'px';
                 tooltip.style.top = (rect.top - 10) + 'px';
@@ -177,12 +198,121 @@
                 const color = info.event.backgroundColor;
                 if(color) {
                     info.el.style.backgroundColor = color;
-                    info.el.style.border = 'none';
+                    info.el.style.borderLeft = `4px solid ${info.event.extendedProps.borderColor || 'rgba(0,0,0,0.1)'}`;
                 }
             }
         });
         calendar.render();
     });
+
+    function closeEventModal() { document.getElementById('eventModal').classList.add('hidden'); }
 </script>
+
+<!-- Fix #7: Event Detail Modal -->
+<div id="eventModal" class="hidden fixed inset-0 z-[170] flex items-center justify-center bg-[#1d293d]/50 backdrop-blur-xl p-4 transition-all duration-300">
+    <div class="bg-[#f8fafc] w-full max-w-xl rounded-[2.5rem] shadow-2xl border border-white/20 overflow-hidden animate-in zoom-in-95 duration-300">
+        <div class="p-8 border-b border-slate-100 flex items-center justify-between bg-white">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 rounded-2xl bg-orange-50 border border-orange-100 flex items-center justify-center">
+                    <i data-lucide="shield-alert" class="w-6 h-6 text-[#ff6900]"></i>
+                </div>
+                <div>
+                    <h3 id="modalTitle" class="text-xl font-black text-[#031629] uppercase italic leading-none">...</h3>
+                    <p id="modalDateTime" class="text-[0.65rem] text-slate-400 font-bold uppercase tracking-widest mt-2">...</p>
+                </div>
+            </div>
+            <button onclick="closeEventModal()" class="w-12 h-12 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-400 hover:text-red-500 transition-all">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+        </div>
+        
+        <div class="p-10 space-y-8">
+            <div class="grid grid-cols-2 gap-8">
+                <div class="space-y-1">
+                    <span class="text-[0.6rem] font-black text-slate-400 uppercase tracking-widest block">Client Identity</span>
+                    <p id="modalClient" class="text-sm font-black text-slate-900 italic">...</p>
+                    <p id="modalPhone" class="text-[0.7rem] font-mono text-slate-500">...</p>
+                </div>
+                <div class="space-y-1">
+                    <span class="text-[0.6rem] font-black text-slate-400 uppercase tracking-widest block">Assigned Auditor</span>
+                    <p id="modalInspector" class="text-sm font-black text-[#ff6900] italic">...</p>
+                </div>
+            </div>
+
+            <div class="bg-white border border-slate-100 rounded-3xl p-6 space-y-4 shadow-sm">
+                <div class="flex justify-between items-center text-xs">
+                    <span class="font-bold text-slate-400 uppercase tracking-tighter">Target Asset</span>
+                    <span id="modalAsset" class="font-black text-slate-900 italic uppercase">...</span>
+                </div>
+                <div class="flex justify-between items-center text-xs border-t border-slate-50 pt-4">
+                    <span class="font-bold text-slate-400 uppercase tracking-tighter">VIN Reference</span>
+                    <span id="modalVin" class="font-mono text-slate-700 bg-slate-50 px-2 py-0.5 rounded">...</span>
+                </div>
+                <div class="flex justify-between items-center text-xs border-t border-slate-50 pt-4">
+                    <span class="font-bold text-slate-400 uppercase tracking-tighter">Odometer Display</span>
+                    <span id="modalMileage" class="font-black text-emerald-600 italic">...</span>
+                </div>
+            </div>
+
+            {{-- Location Display --}}
+            <div class="flex items-center gap-3 p-4 bg-orange-50/50 border border-orange-100 rounded-2xl">
+                <i data-lucide="map-pin" class="w-4 h-4 text-[#ff6900] shrink-0"></i>
+                <span id="modalLoc" class="text-[0.7rem] font-bold text-slate-700 italic"></span>
+            </div>
+
+            {{-- ── Schedule Inputs ────────────────────────── --}}
+            <div class="bg-slate-50/80 border border-slate-100 rounded-3xl p-6 space-y-5">
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="w-7 h-7 rounded-lg bg-[#1d293d] flex items-center justify-center shrink-0">
+                        <i data-lucide="calendar-check" class="w-3.5 h-3.5 text-[#ff6900]"></i>
+                    </div>
+                    <span class="text-[0.65rem] font-black text-slate-500 uppercase tracking-widest italic">Schedule Override / Confirm</span>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    {{-- Date Picker --}}
+                    <div class="space-y-2">
+                        <label class="text-[0.65rem] font-black uppercase text-slate-500 tracking-widest ml-1">Confirmed Date</label>
+                        <div class="relative">
+                            <i data-lucide="calendar" class="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-[#ff6900] pointer-events-none"></i>
+                            <input type="text" id="cal_sched_date" 
+                                   class="w-full h-[52px] bg-white border-2 border-slate-100 rounded-xl pl-11 pr-4 text-[0.85rem] font-bold text-slate-700 bazar-date cursor-pointer outline-none focus:border-orange-400 transition-all shadow-sm"
+                                   placeholder="Select date...">
+                        </div>
+                    </div>
+
+                    {{-- Time Picker --}}
+                    <div class="space-y-2">
+                        <label class="text-[0.65rem] font-black uppercase text-slate-500 tracking-widest ml-1">Verified Time Slot</label>
+                        <div class="relative">
+                            <i data-lucide="clock" class="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-[#ff6900] pointer-events-none"></i>
+                            <input type="text" id="cal_sched_time"
+                                   class="w-full h-[52px] bg-white border-2 border-slate-100 rounded-xl pl-11 pr-4 text-[0.85rem] font-bold text-slate-700 bazar-time cursor-pointer outline-none focus:border-orange-400 transition-all shadow-sm"
+                                   placeholder="Select time...">
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Location Field--}}
+                <div class="space-y-2">
+                    <label class="text-[0.65rem] font-black uppercase text-slate-500 tracking-widest ml-1">Inspection Location</label>
+                    <div class="relative">
+                        <i data-lucide="map-pin" class="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-[#ff6900] pointer-events-none"></i>
+                        <input type="text" id="cal_location"
+                               class="w-full h-[52px] bg-white border-2 border-slate-100 rounded-xl pl-11 pr-4 text-[0.85rem] font-bold text-slate-700 outline-none focus:border-orange-400 transition-all shadow-sm"
+                               placeholder="Override or confirm location...">
+                    </div>
+                </div>
+            </div>
+
+            <div class="pt-2 flex gap-4">
+                <a id="modalActionBtn" href="#" class="flex-1 bg-[#1d293d] text-white h-16 rounded-2xl flex items-center justify-center gap-3 text-[0.7rem] font-black uppercase tracking-[0.2em] shadow-xl hover:bg-black transition-all">
+                    <i data-lucide="zap" class="w-4 h-4 text-[#ff6900]"></i>
+                    Proceed to Audit
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
 

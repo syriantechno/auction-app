@@ -127,7 +127,7 @@
                             <span class="text-[0.55rem] font-black text-slate-400 uppercase tracking-widest block">Schedule</span>
                             <div class="flex items-center gap-2">
                                 <i data-lucide="clock" class="w-3.5 h-3.5 text-[#ff6900]"></i>
-                                <span class="text-[0.8rem] font-bold text-[#031629] uppercase italic tracking-tighter">{{ $details['inspection_date'] ?? 'TBD' }} @ {{ $details['inspection_time'] ?? 'TBD' }}</span>
+                                <span class="text-[0.8rem] font-bold text-[#031629] uppercase italic tracking-tighter">{{ $details['inspection_date'] ? \Carbon\Carbon::parse($details['inspection_date'])->format('d-m-Y') : 'TBD' }} @ {{ $details['inspection_time'] ?? 'TBD' }}</span>
                             </div>
                         </div>
                     </div>
@@ -140,10 +140,10 @@
                         Call Contact
                     </a>
                     
-                    <a href="https://www.google.com/maps/search/?api=1&query={{ urlencode($details['location'] ?? '') }}" target="_blank"
-                        class="h-14 w-14 shrink-0 bg-slate-50 border border-slate-100 rounded-lg flex items-center justify-center text-slate-400 hover:text-[#ff6900] hover:border-orange-500/30 transition-all">
+                    <button onclick="openMapModal('{{ addslashes($details['location'] ?? 'Dubai') }}')"
+                        class="h-14 w-14 shrink-0 bg-slate-50 border border-slate-100 rounded-lg flex items-center justify-center text-slate-400 hover:text-[#ff6900] hover:border-orange-500/30 transition-all active:scale-95">
                         <i data-lucide="navigation" class="w-5 h-5"></i>
-                    </a>
+                    </button>
 
                     <a href="{{ route('admin.inspections.create', ['car_id' => $task->car_id, 'lead_id' => $task->id]) }}" 
                         class="flex-1 h-14 bg-[#1d293d] hover:bg-orange-600 rounded-lg flex items-center justify-center gap-3 text-white text-[0.7rem] font-black uppercase tracking-[0.2em] shadow-xl shadow-slate-900/10 transition-all hover:scale-[1.02]">
@@ -169,5 +169,51 @@
         @endforelse
     </div>
 </div>
+
+<!-- Fix #9: Location Modal -->
+<div id="mapModal" class="hidden fixed inset-0 z-[120] flex items-center justify-center bg-[#1d293d]/50 backdrop-blur-xl p-4 transition-all duration-500">
+    <div class="bg-white w-full max-w-4xl rounded-[2.5rem] shadow-2xl border border-white/20 overflow-hidden animate-in zoom-in-95 duration-300">
+        <div class="p-8 border-b border-slate-50 flex items-center justify-between bg-slate-50/50">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 rounded-2xl bg-white shadow-sm border border-slate-100 flex items-center justify-center">
+                    <i data-lucide="map" class="w-6 h-6 text-[#ff6900]"></i>
+                </div>
+                <div>
+                    <h3 class="text-lg font-black text-[#031629] uppercase italic leading-none">Intelligence <span class="text-[#ff6900]">Location</span></h3>
+                    <p id="modalAddress" class="text-[0.65rem] text-slate-400 font-bold uppercase tracking-widest mt-2">Checking coordinates...</p>
+                </div>
+            </div>
+            <button onclick="closeMapModal()" class="w-12 h-12 rounded-xl bg-white border border-slate-100 flex items-center justify-center text-slate-400 hover:text-red-500 transition-all">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+        </div>
+        <div id="modalMapContainer" class="h-[500px] w-full bg-slate-100 relative">
+            <!-- Map will load here -->
+        </div>
+    </div>
+</div>
+
+<script>
+    function openMapModal(address) {
+        const modal = document.getElementById('mapModal');
+        const container = document.getElementById('modalMapContainer');
+        const addressEl = document.getElementById('modalAddress');
+        
+        addressEl.innerText = address;
+        modal.classList.remove('hidden');
+        
+        const googleKey = '{{ config('services.google_maps.key') }}'; // Or use window variable
+        
+        container.innerHTML = `<iframe width="100%" height="100%" frameborder="0" style="border:0" 
+            src="https://www.google.com/maps/embed/v1/place?key=${googleKey}&q=${encodeURIComponent(address)}" allowfullscreen></iframe>`;
+        
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+    }
+
+    function closeMapModal() {
+        document.getElementById('mapModal').classList.add('hidden');
+        document.getElementById('modalMapContainer').innerHTML = '';
+    }
+</script>
 @endsection
 

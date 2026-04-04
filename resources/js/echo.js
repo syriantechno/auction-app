@@ -15,8 +15,9 @@ if (reverbKey && reverbHost) {
         wsHost: reverbHost,
         wsPort: reverbPort,
         wssPort: reverbPort,
-        forceTLS: reverbScheme === 'https',
-        enabledTransports: ['ws', 'wss'],
+        forceTLS: false,
+        disableStats: true,
+        enabledTransports: ['ws'],
     });
 } else {
     window.Echo = null;

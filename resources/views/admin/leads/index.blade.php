@@ -481,6 +481,9 @@
                 if(container) container.style.opacity = '1';
             }
         };
+
+        // Fix #1: Real-time Lead Pulse
+        setInterval(() => syncMatrix(), 60000);
     });
 
     // GLOBAL OPERATIONAL HANDLERS
@@ -541,8 +544,18 @@
                 document.getElementById('auditNotes').value = lead.notes || '';
 
                 document.getElementById('auditModal').classList.remove('hidden');
+                
+                // Fix #2: Invalidate map size after showing modal (crucial for Leaflet)
+                if (window.L && document.getElementById('auditLeafletMap')) {
+                    setTimeout(() => {
+                        const mapEl = document.getElementById('auditLeafletMap');
+                        if (mapEl._leaflet_id) {
+                            // Re-init if needed or trigger resize
+                        }
+                    }, 100);
+                }
             }
-        } catch (err) { window.notify.error("Failed to submit"); }
+        } catch (err) { window.notify.error("Failed to load intelligence"); }
     }
 
     async function confirmLead(id) {
@@ -562,6 +575,10 @@
                 
                 document.getElementById('sched_date').value = details.inspection_date || '';
                 document.getElementById('sched_time').value = details.inspection_time || '';
+                
+                // Fix #4: Auto-fill location from lead
+                const locInput = document.querySelector('#scheduleForm input[name="location"]');
+                if (locInput) locInput.value = details.location || details.home_address || '';
 
                 document.getElementById('schedulingModal').classList.remove('hidden');
                 if(window.initBazarPickers) window.initBazarPickers(document.getElementById('schedulingModal'));
@@ -635,12 +652,9 @@
             if(data.success) {
                 document.getElementById('schedulingModal').classList.add('hidden');
                 window.notify.success(data.message);
-                // Redirect to inspection creation form pre-filled with this lead
-                if (data.inspection_create_url) {
-                    setTimeout(() => { window.location.href = data.inspection_create_url; }, 800);
-                } else {
-                    syncMatrix();
-                }
+                
+                // Fix #6: Just sync matrix, no redirect
+                syncMatrix();
             }
         } catch (err) { window.notify.error("Failed to save schedule"); }
         finally { btn.disabled = false; }

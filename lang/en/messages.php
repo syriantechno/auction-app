@@ -96,7 +96,7 @@ return [
     'leads' => 'Leads',
     'lead_operator' => 'Lead Operator',
     'asset_segment_interest' => 'Asset Segment Interest',
-    'contact' => 'Contact',
+    'contact_leads'  => 'Contact',
     'phone' => 'Phone',
     'whatsapp' => 'WhatsApp',
     'valuation' => 'Valuation',
@@ -110,7 +110,7 @@ return [
     'inspection_scheduled' => 'Inspection Scheduled',
     
     // Inspection Tasks
-    'field_tasks' => 'Field Tasks',
+    'inspection_field_tasks' => 'Field Tasks',
     'mission_protocol_active' => 'Mission Protocol Active',
     'task_id' => 'Task ID',
     'awaiting_onsite' => 'Awaiting Onsite',
@@ -130,16 +130,16 @@ return [
     'edit' => 'Edit',
     'delete' => 'Delete',
     'save' => 'Save',
-    'cancel' => 'Cancel',
+    'cancel_action' => 'Cancel',
     'submit' => 'Submit',
     'view' => 'View',
     'actions' => 'Actions',
     'status' => 'Status',
     'date' => 'Date',
-    'time' => 'Time',
+    'time_label' => 'Time',
     'name' => 'Name',
     'email' => 'Email',
-    'location' => 'Location',
+    'location_label' => 'Location',
     'notes' => 'Notes',
     'yes' => 'Yes',
     'no' => 'No',
@@ -156,4 +156,37 @@ return [
     'secure_payment' => 'Secure Payment',
     'verified_cars' => 'Verified Cars',
     'secure_bidding' => 'Secure Bidding',
+
+    // Auction Settings Page
+    'auction_settings'                => 'Auction Settings',
+    'auction_settings_subtitle'       => 'Global settings applied to all auctions on the platform',
+    'auction_settings_saved'          => 'Auction settings saved successfully.',
+
+    // Anti-Snipe
+    'anti_snipe_title'                => 'Anti-Sniping Protection',
+    'anti_snipe_subtitle'             => 'Automatically extend auction time when a bid is placed in the final seconds',
+    'anti_snipe_enabled'              => 'Enabled',
+    'anti_snipe_disabled'             => 'Disabled',
+    'anti_snipe_trigger_at'           => 'Trigger Extension When',
+    'anti_snipe_add_duration'         => 'Time to Add',
+    'anti_snipe_info'                 => 'If a bid is placed with less than :threshold seconds remaining, :extension seconds will be added automatically.',
+    'seconds_remaining'               => 'seconds remaining',
+
+    // Bid Settings
+    'bid_settings_title'              => 'Bidding Settings',
+    'bid_settings_subtitle'           => 'Default values applied when creating a new auction',
+    'default_bid_increment'           => 'Minimum Bid Increment ($)',
+    'default_deposit'                 => 'Default Deposit Amount ($)',
+
+    // General Settings
+    'general_settings_title'          => 'General Settings',
+    'auction_auto_close_label'        => 'Auto-Close Expired Auctions',
+    'auction_auto_close_desc'         => 'Automatically close auctions when time runs out and send real-time notifications',
+    'bid_feed_admin_only_label'       => 'Hide Global Bid Feed from Dealers',
+    'bid_feed_admin_only_desc'        => 'The Global Bid Feed section is visible only to admins and hidden from dealers and regular users',
+
+    // Common
+    'save_settings'                   => 'Save Settings',
+    'global_settings_link'            => 'Global Settings →',
+    'anti_snipe_global_note'          => 'Anti-Sniping settings are managed in the global Auction Settings page.',
 ];

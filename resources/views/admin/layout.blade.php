@@ -334,6 +334,21 @@
                                 <span x-show="sidebarOpen" x-cloak>Maps Config</span>
                             </a>
                         </li>
+                        <li>
+                            <a href="{{ route('admin.settings.inspection-fields') }}" class="sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-medium {{ request()->routeIs('admin.settings.inspection-fields') ? 'text-slate-800 bg-slate-50 border border-slate-100 shadow-sm' : 'text-slate-500 hover:bg-slate-50' }}">
+                                <span x-show="sidebarOpen" x-cloak>Audit Field Builder</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin.settings.auctions') }}" class="sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-medium {{ request()->routeIs('admin.settings.auctions') ? 'text-slate-800 bg-slate-50 border border-slate-100 shadow-sm' : 'text-slate-500 hover:bg-slate-50' }}">
+                                <span x-show="sidebarOpen" x-cloak>Auction Settings</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin.settings.communication') }}" class="sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-medium {{ request()->routeIs('admin.settings.communication') ? 'text-slate-800 bg-slate-50 border border-slate-100 shadow-sm' : 'text-slate-500 hover:bg-slate-50' }}">
+                                <span x-show="sidebarOpen" x-cloak>Email &amp; WhatsApp</span>
+                            </a>
+                        </li>
                     </ul>
                 </div>
 
@@ -380,6 +395,45 @@
                 </div>
 
                 <div class="flex items-center gap-6">
+
+                    {{-- ── Notification Center Bell ── --}}
+                    <div class="relative" id="notif-wrapper">
+                        <button id="notif-bell" onclick="toggleNotifPanel()"
+                                class="relative w-10 h-10 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-500 hover:bg-[#1d293d] hover:text-white hover:border-[#1d293d] transition-all">
+                            <i data-lucide="bell" class="w-4 h-4"></i>
+                            <span id="notif-badge"
+                                  class="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] rounded-full bg-[#ff6900] text-white text-[0.5rem] font-black flex items-center justify-center px-1 hidden animate-bounce">0</span>
+                        </button>
+
+                        {{-- Notification Panel --}}
+                        <div id="notif-panel"
+                             class="hidden absolute top-[calc(100%+12px)] right-0 w-96 bg-white rounded-[1.5rem] shadow-2xl border border-slate-100 overflow-hidden z-50">
+                            {{-- Header --}}
+                            <div class="flex items-center justify-between px-6 py-4 border-b border-slate-50">
+                                <div>
+                                    <div class="text-[0.7rem] font-black uppercase tracking-widest text-[#031629]">Notification Center</div>
+                                    <div class="text-[0.55rem] text-slate-400 font-bold mt-0.5" id="notif-count-label">Loading...</div>
+                                </div>
+                                <button onclick="markAllRead()"
+                                        class="px-3 py-1.5 bg-slate-50 rounded-lg text-[0.6rem] font-black uppercase tracking-widest text-slate-500 hover:bg-[#1d293d] hover:text-white transition-all">
+                                    Mark all read
+                                </button>
+                            </div>
+
+                            {{-- List --}}
+                            <div id="notif-list" class="max-h-[400px] overflow-y-auto divide-y divide-slate-50">
+                                <div class="py-12 text-center text-[0.65rem] font-black uppercase tracking-widest text-slate-300">
+                                    Loading...
+                                </div>
+                            </div>
+
+                            {{-- Footer --}}
+                            <div class="px-6 py-3 border-t border-slate-50 text-center">
+                                <span class="text-[0.55rem] font-black uppercase tracking-widest text-slate-300">Auto-refreshes every 15 seconds</span>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="flex items-center gap-3 pl-6 border-l border-slate-100">
                         <div class="text-right">
                             <p class="text-[0.75rem] font-bold text-slate-800 leading-none italic">{{ Auth::user()->name ?? 'Operator' }}</p>
@@ -439,9 +493,182 @@
         };
     </script>
 
+    {{-- ══════════════════════════════════════
+         NOTIFICATION CENTER SYSTEM
+    ══════════════════════════════════════ --}}
+    <script>
+    (function() {
+        const CSRF = document.querySelector('meta[name="csrf-token"]')?.content ?? '';
+        const API  = {
+            list:    '{{ route("admin.notifications.index") }}',
+            count:   '{{ route("admin.notifications.count") }}',
+            readAll: '{{ route("admin.notifications.read-all") }}',
+            read: (id) => '{{ url("admin/notifications") }}/' + id + '/read',
+        };
+        const FETCH_OPTS = { credentials: 'same-origin', headers: { 'Accept': 'application/json' } };
+
+        let panelOpen = false;
+        let audioCtx  = null;
+
+        // ── Server-side initial count (no fetch needed on first load) ──
+        @auth
+        let lastCount = {{ auth()->user()->unreadNotifications()->count() }};
+        @else
+        let lastCount = 0;
+        @endauth
+
+        // ── Tone alert ──
+        function playAlertTone() {
+            try {
+                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
+                osc.connect(gain); gain.connect(audioCtx.destination);
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(880, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(440, audioCtx.currentTime + 0.25);
+                gain.gain.setValueAtTime(0.25, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.5);
+                osc.start(audioCtx.currentTime);
+                osc.stop(audioCtx.currentTime + 0.5);
+            } catch(e) {}
+        }
+
+        // ── Badge ──
+        function setBadge(count) {
+            const badge = document.getElementById('notif-badge');
+            const label = document.getElementById('notif-count-label');
+            if (!badge) return;
+            if (count > 0) {
+                badge.textContent = count > 99 ? '99+' : count;
+                badge.classList.remove('hidden');
+            } else {
+                badge.textContent = '0';
+                badge.classList.add('hidden');
+            }
+            if (label) label.textContent = count > 0
+                ? `${count} unread notification${count !== 1 ? 's' : ''}`
+                : 'All caught up!';
+        }
+
+        // ── Render one notification row ──
+        function renderItem(n) {
+            const icons  = { 'user-round-plus': '👤', 'gavel': '🔨', 'bell': '🔔', 'dollar-sign': '💰' };
+            const colors = { 'orange': 'bg-orange-50 text-orange-500', 'emerald': 'bg-emerald-50 text-emerald-500' };
+            const icon  = icons[n.icon]  ?? '🔔';
+            const color = colors[n.color] ?? 'bg-slate-50 text-slate-500';
+            const unreadDot = !n.read ? '<span class="w-2 h-2 rounded-full bg-[#ff6900] flex-shrink-0"></span>' : '';
+            const safeUrl = (n.url && n.url !== 'undefined' && n.url !== 'null') ? n.url : '#';
+            return `<div class="flex gap-4 px-6 py-4 hover:bg-slate-50/70 transition-all cursor-pointer ${n.read ? 'opacity-60' : ''}"
+                         onclick="window.readAndGo('${n.id}', '${safeUrl}')">
+                <div class="w-9 h-9 rounded-xl ${color} flex items-center justify-center text-base flex-shrink-0">${icon}</div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-2">
+                        <span class="text-[0.7rem] font-black text-[#031629]">${n.title}</span>
+                        ${unreadDot}
+                    </div>
+                    <p class="text-[0.65rem] text-slate-500 font-medium leading-snug mt-0.5">${n.message}</p>
+                    <span class="text-[0.55rem] text-slate-300 font-bold uppercase tracking-widest">${n.created_at}</span>
+                </div>
+            </div>`;
+        }
+
+        // ── Show toast ──
+        function showNotifToast(n) {
+            if (typeof Toastify === 'undefined') return;
+            const safeUrl = (n.url && n.url !== 'undefined') ? n.url : null;
+            Toastify({
+                text: `🔔 ${n.title}\n${n.message.substring(0, 70)}`,
+                duration: 6000,
+                gravity: 'top',
+                position: 'right',
+                style: {
+                    background: 'linear-gradient(135deg,#1d293d,#031629)',
+                    borderRadius: '1rem',
+                    fontSize: '0.75rem',
+                    fontWeight: '700',
+                    boxShadow: '0 20px 60px -20px rgba(0,0,0,0.5)',
+                    maxWidth: '360px',
+                    whiteSpace: 'pre-line',
+                },
+                onClick: () => { if (safeUrl) window.location.href = safeUrl; }
+            }).showToast();
+        }
+
+        // ── Fetch full notification list ──
+        async function loadNotifications() {
+            try {
+                const res  = await fetch(API.list, FETCH_OPTS);
+                if (!res.ok) { console.warn('[Notif] API returned', res.status); return; }
+                const data = await res.json();
+                const newCount = data.unread_count ?? 0;
+
+                // Alert only when count INCREASES (new notification while on page)
+                if (newCount > lastCount) {
+                    playAlertTone();
+                    const newest = (data.notifications ?? []).find(n => !n.read);
+                    if (newest) showNotifToast(newest);
+                }
+
+                lastCount = newCount;
+                setBadge(newCount);
+
+                // Render list if panel is open
+                const list = document.getElementById('notif-list');
+                if (list && panelOpen) {
+                    if (!data.notifications?.length) {
+                        list.innerHTML = '<div class="py-12 text-center text-[0.65rem] font-black uppercase tracking-widest text-slate-300">No notifications yet.</div>';
+                    } else {
+                        list.innerHTML = data.notifications.map(renderItem).join('');
+                    }
+                }
+            } catch(e) {
+                console.warn('[Notif] Fetch error:', e.message);
+            }
+        }
+
+        // ── Toggle panel ──
+        window.toggleNotifPanel = function() {
+            const panel = document.getElementById('notif-panel');
+            if (!panel) return;
+            panelOpen = !panelOpen;
+            panel.classList.toggle('hidden', !panelOpen);
+            if (panelOpen) loadNotifications();
+        };
+
+        // ── Mark read & navigate ──
+        window.readAndGo = function(id, url) {
+            fetch(API.read(id), {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: { 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' }
+            }).then(() => loadNotifications()).catch(() => {});
+            if (url && url !== '#') window.location.href = url;
+        };
+
+        // ── Mark all read ──
+        window.markAllRead = function() {
+            fetch(API.readAll, {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: { 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' }
+            }).then(() => { lastCount = 0; setBadge(0); loadNotifications(); }).catch(() => {});
+        };
+
+        // ── Close on outside click ──
+        document.addEventListener('click', (e) => {
+            const wrapper = document.getElementById('notif-wrapper');
+            if (wrapper && !wrapper.contains(e.target) && panelOpen) {
+                panelOpen = false;
+                document.getElementById('notif-panel')?.classList.add('hidden');
+            }
+        });
+    })();
+    </script>
+
     <style>
         .custom-scrollbar::-webkit-scrollbar { width: 5px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
     </style>
+    @stack('scripts')
 </body>
 </html>

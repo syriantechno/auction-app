@@ -134,6 +134,22 @@ Route::prefix('admin')->middleware(['auth'])->name('admin.')->group(function () 
     Route::get('/settings/google-maps', [\App\Http\Controllers\Admin\SettingsController::class, 'googleMaps'])->name('settings.google-maps');
     Route::post('/settings/google-maps', [\App\Http\Controllers\Admin\SettingsController::class, 'updateGoogleMaps'])->name('settings.google-maps.update');
     Route::get('/settings/map-test', [\App\Http\Controllers\Admin\SettingsController::class, 'mapTest'])->name('settings.map-test');
+    Route::get('/settings/inspection-fields', [\App\Http\Controllers\Admin\SettingsController::class, 'inspectionFields'])->name('settings.inspection-fields');
+    Route::post('/settings/inspection-fields', [\App\Http\Controllers\Admin\SettingsController::class, 'updateInspectionFields'])->name('settings.inspection-fields.update');
+    Route::get('/settings/auctions', [\App\Http\Controllers\Admin\SettingsController::class, 'auctionSettings'])->name('settings.auctions');
+    Route::post('/settings/auctions', [\App\Http\Controllers\Admin\SettingsController::class, 'updateAuctionSettings'])->name('settings.auctions.update');
+
+    // Notification Center API
+    Route::get('/notifications',          [\App\Http\Controllers\Admin\NotificationController::class, 'index'])->name('notifications.index');
+    Route::post('/notifications/read-all',[\App\Http\Controllers\Admin\NotificationController::class, 'markAllRead'])->name('notifications.read-all');
+    Route::post('/notifications/{id}/read',[\App\Http\Controllers\Admin\NotificationController::class, 'markRead'])->name('notifications.read');
+    Route::get('/notifications/count',    [\App\Http\Controllers\Admin\NotificationController::class, 'unreadCount'])->name('notifications.count');
+
+    // Communication Settings (Email + WhatsApp)
+    Route::get('/settings/communication',  [\App\Http\Controllers\Admin\SettingsController::class, 'communicationSettings'])->name('settings.communication');
+    Route::post('/settings/communication', [\App\Http\Controllers\Admin\SettingsController::class, 'updateCommunicationSettings'])->name('settings.communication.update');
+    Route::post('/settings/communication/test-email',    [\App\Http\Controllers\Admin\SettingsController::class, 'testEmail'])->name('settings.communication.test-email');
+    Route::post('/settings/communication/test-whatsapp', [\App\Http\Controllers\Admin\SettingsController::class, 'testWhatsApp'])->name('settings.communication.test-whatsapp');
 
     // Modern Test Dashboard
     Route::get('/test-dashboard', [DashboardController::class, 'showTestDashboard'])->name('test-dashboard');

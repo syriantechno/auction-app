@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int|null $duration_minutes
  * @property int $bids_count
  * @property float $bid_increment
+ * @property bool $anti_snipe_enabled
  * @property int $time_extension_threshold
  * @property int $time_extension_seconds
  * @property \Illuminate\Support\Carbon|null $end_at
@@ -38,6 +39,7 @@ class Auction extends Model
         'status',
         'duration_minutes',
         'bid_increment',
+        'anti_snipe_enabled',
         'time_extension_threshold',
         'time_extension_seconds',
     ];
@@ -46,6 +48,7 @@ class Auction extends Model
         'start_at'                 => 'datetime',
         'end_at'                   => 'datetime',
         'bid_increment'            => 'decimal:2',
+        'anti_snipe_enabled'       => 'boolean',
         'time_extension_threshold' => 'integer',
         'time_extension_seconds'   => 'integer',
     ];

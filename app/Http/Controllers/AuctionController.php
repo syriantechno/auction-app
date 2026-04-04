@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Auction;
+use App\Models\User;
+use App\Notifications\NewBidPlaced;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
 
@@ -121,14 +123,16 @@ class AuctionController extends Controller
                     );
                 }
 
-                // ── Time Extension Logic ──────────────────────────────────
+                // ── Time Extension Logic (reads from Global System Settings) ──
                 $timeExtended = false;
                 $newEndAt     = $lockedAuction->end_at;
 
-                if ($lockedAuction->end_at && $lockedAuction->status === 'active') {
-                    $secsLeft  = now()->diffInSeconds($lockedAuction->end_at, false); // positive = future
-                    $threshold = (int) ($lockedAuction->time_extension_threshold ?? 30);
-                    $extension = (int) ($lockedAuction->time_extension_seconds   ?? 20);
+                $antiSnipeEnabled = \App\Models\SystemSetting::get('anti_snipe_enabled', '1') === '1';
+
+                if ($antiSnipeEnabled && $lockedAuction->end_at && $lockedAuction->status === 'active') {
+                    $secsLeft  = now()->diffInSeconds($lockedAuction->end_at, false);
+                    $threshold = (int) \App\Models\SystemSetting::get('time_extension_threshold', 30);
+                    $extension = (int) \App\Models\SystemSetting::get('time_extension_seconds', 20);
 
                     if ($secsLeft > 0 && $secsLeft <= $threshold) {
                         $newEndAt = $lockedAuction->end_at->addSeconds($extension);
@@ -145,10 +149,19 @@ class AuctionController extends Controller
                     'status'     => 'active',
                 ]);
 
-                event(new \App\Events\BidPlaced($bid));
-
+                // Update price FIRST so events carry the correct value
                 $lockedAuction->update(['current_price' => $request->amount]);
-                $lockedAuction->loadCount('bids');
+                $lockedAuction->refresh()->loadCount('bids');
+
+                // Broadcast real-time events
+                event(new \App\Events\BidPlaced($bid, $lockedAuction));
+                event(new \App\Events\AuctionUpdated($lockedAuction));
+
+                // Notify all admins
+                User::where('role', 'admin')
+                    ->orWhereIn('email', ['admin@motorbazar.ae', 'admin@automazad.com'])
+                    ->get()
+                    ->each(fn($admin) => $admin->notify(new NewBidPlaced($bid, $lockedAuction)));
 
                 return [
                     'current_price'           => (float) $request->amount,

@@ -1,4 +1,4 @@
-﻿@extends('layouts.app')
+@extends('layouts.app')
 
 @section('title', 'Motor Bazar - Premium Car Marketplace')
 
@@ -1324,6 +1324,90 @@
          BAZAR TOAST NOTIFICATION SYSTEM
          Replaces native alert() with premium UI
     â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• --}}
+    {{-- ══════════════════════════════════════════
+         LIVE AUCTION SHOWCASE SECTION
+    ══════════════════════════════════════════ --}}
+    @if($featuredAuctions->isNotEmpty())
+    <section class="py-24 px-6 lg:px-12 bg-white" id="live-auctions">
+        <div class="mx-auto max-w-[1440px]">
+            <div class="flex items-end justify-between mb-12">
+                <div>
+                    <span class="text-[0.65rem] font-black uppercase tracking-[0.35em] text-[#ff6900] block mb-3">Live Now</span>
+                    <h2 class="text-4xl lg:text-5xl font-black text-[#031629] tracking-tighter leading-none">
+                        Active <span class="text-[#ff6900]">Auctions</span>
+                    </h2>
+                    <p class="text-slate-400 font-bold text-sm mt-3">Real-time bidding — prices update live</p>
+                </div>
+                <a href="{{ route('auctions.index') }}" class="hidden lg:flex items-center gap-2 px-6 py-3 bg-[#1d293d] text-white rounded-xl font-black text-[0.7rem] uppercase tracking-widest hover:bg-black transition-all">
+                    View All <i data-lucide="arrow-right" class="w-4 h-4 text-[#ff6900]"></i>
+                </a>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                @foreach($featuredAuctions as $fa)
+                @php
+                    $faImgs = optional($fa->car)->photos;
+                    $faImg = is_string($faImgs) ? (json_decode($faImgs, true)[0] ?? null) : ($faImgs[0] ?? null);
+                    $faImageUrl = $faImg ? asset('storage/' . $faImg) : '/images/cars/navy-mclaren.png';
+                    $isLive = $fa->status === 'active';
+                    $faPrice = $fa->current_price ?? $fa->initial_price;
+                @endphp
+                <a href="{{ route('auctions.show', $fa) }}" class="group block bg-white rounded-[2rem] overflow-hidden border border-slate-100 shadow-xl hover:shadow-2xl hover:-translate-y-2 transition-all duration-500">
+                    <div class="relative h-56 bg-slate-50 overflow-hidden">
+                        <img src="{{ $faImageUrl }}" alt="{{ optional($fa->car)->make }} {{ optional($fa->car)->model }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                        <div class="absolute top-4 left-4">
+                            @if($isLive)
+                                <span class="flex items-center gap-1.5 px-3 py-1.5 bg-white rounded-full text-[0.6rem] font-black uppercase tracking-widest text-emerald-600 shadow-lg">
+                                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Live Now
+                                </span>
+                            @else
+                                <span class="flex items-center gap-1.5 px-3 py-1.5 bg-white rounded-full text-[0.6rem] font-black uppercase tracking-widest text-[#ff6900] shadow-lg">
+                                    <span class="w-2 h-2 rounded-full bg-[#ff6900] animate-pulse"></span> Coming Soon
+                                </span>
+                            @endif
+                        </div>
+                        <div class="absolute top-4 right-4">
+                            <span class="px-3 py-1.5 bg-[#1d293d]/90 text-white rounded-full text-[0.6rem] font-black tracking-widest backdrop-blur-sm">
+                                {{ $fa->bids_count }} Bids
+                            </span>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="text-[0.6rem] font-black uppercase tracking-widest text-slate-400 mb-1">
+                            {{ optional($fa->car)->year }} · Ref: {{ $fa->reference_code }}
+                        </div>
+                        <h3 class="text-xl font-black text-[#031629] tracking-tight leading-tight mb-4">
+                            {{ optional($fa->car)->make }} {{ optional($fa->car)->model }}
+                        </h3>
+                        <div class="flex items-end justify-between">
+                            <div>
+                                <div class="text-[0.6rem] font-black uppercase text-slate-400 tracking-widest mb-1">{{ $isLive ? 'Current Bid' : 'Starting Price' }}</div>
+                                <div class="text-2xl font-black text-[#031629]">${{ number_format($faPrice, 0) }}</div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-[0.6rem] font-black uppercase text-slate-400 tracking-widest mb-1">{{ $isLive ? 'Ends In' : 'Opens In' }}</div>
+                                <div class="text-sm font-black text-[#ff6900] tabular-nums auction-timer"
+                                     data-expires="{{ $isLive ? $fa->end_at?->toIso8601String() : $fa->start_at?->toIso8601String() }}">--:--:--</div>
+                            </div>
+                        </div>
+                        <div class="mt-4 pt-4 border-t border-slate-50 flex items-center justify-between">
+                            <span class="text-[0.6rem] font-black text-slate-400 uppercase tracking-widest">+${{ number_format($fa->bid_increment ?? 500, 0) }} increment</span>
+                            <span class="flex items-center gap-1 text-[0.65rem] font-black text-[#ff6900] uppercase tracking-widest group-hover:gap-2 transition-all">
+                                {{ $isLive ? 'Bid Now' : 'View Details' }} <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                            </span>
+                        </div>
+                    </div>
+                </a>
+                @endforeach
+            </div>
+            <div class="mt-8 text-center lg:hidden">
+                <a href="{{ route('auctions.index') }}" class="inline-flex items-center gap-2 px-8 py-4 bg-[#1d293d] text-white rounded-xl font-black text-[0.7rem] uppercase tracking-widest">
+                    View All <i data-lucide="arrow-right" class="w-4 h-4 text-[#ff6900]"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+    @endif
+
     <div id="bazarToastContainer" class="fixed top-6 left-1/2 -translate-x-1/2 z-[9999] flex flex-col gap-3 items-center pointer-events-none" style="min-width:320px;max-width:480px;"></div>
 
     <script>

@@ -26,9 +26,11 @@ class User extends Authenticatable
         return $this->hasMany(Bid::class);
     }
 
-    public function isAdmin()
+    public function isAdmin(): bool
     {
-        return $this->email === 'admin@automazad.com';
+        return $this->role === 'admin'
+            || $this->email === 'admin@motorbazar.ae'
+            || $this->email === 'admin@automazad.com';
     }
 
     protected function casts(): array

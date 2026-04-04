@@ -11,6 +11,7 @@ use App\Services\ReferenceCodeService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use Carbon\Carbon;
 
 class InspectionController extends Controller
 {
@@ -96,14 +97,45 @@ class InspectionController extends Controller
             $lead = \App\Models\Lead::find($request->lead_id);
             if ($lead) {
                 $details = $lead->car_details ?? [];
-                $validated['scheduled_date'] = $details['inspection_date'] ?? null;
-                $validated['scheduled_time'] = $details['inspection_time'] ?? null;
+                
+                $date = $details['inspection_date'] ?? null;
+                $time = $details['inspection_time'] ?? null;
+                
+                $validated['scheduled_date'] = $date ? Carbon::parse($date)->format('Y-m-d') : null;
+                $validated['scheduled_time'] = $time ? Carbon::parse($time)->format('H:i:s') : null;
                 $validated['location']       = $details['location'] ?? null;
-                $validated['inspector_id']   = $details['inspector_id'] ?? Auth::id();
+                $validated['inspector_id']   = $details['instructor_id'] ?? $details['inspector_id'] ?? Auth::id();
             }
         }
 
-        $report = InspectionReport::create($validated);
+        // Process Settings-Driven Custom Fields
+        $configFields = json_decode(\App\Models\SystemSetting::get('inspection_fields', '[]'), true) ?: [];
+        $checklist = [];
+        foreach ($configFields as $cf) {
+            $fid = $cf['id'];
+            if ($cf['type'] === 'image' && $request->hasFile("custom_field_img.{$fid}")) {
+                $path = $request->file("custom_field_img.{$fid}")->store('inspections/custom', 'public');
+                $checklist[] = ['id' => $fid, 'label' => $cf['label'], 'type' => 'image', 'value' => asset('storage/' . $path)];
+            } elseif ($cf['type'] === 'checkbox') {
+                $checklist[] = ['id' => $fid, 'label' => $cf['label'], 'type' => 'checkbox', 'value' => $request->has("custom_field.{$fid}") ? true : false];
+            } else {
+                $val = $request->input("custom_field.{$fid}");
+                if ($val !== null) {
+                    $checklist[] = ['id' => $fid, 'label' => $cf['label'], 'type' => $cf['type'], 'value' => $val];
+                }
+            }
+        }
+        $validated['detailed_checklists'] = $checklist;
+
+        // CRITICAL: Use updateOrCreate to prevent duplicate reports per lead (Fix #Critical)
+        $matchKeys = ['lead_id' => $request->input('lead_id'), 'car_id' => $validated['car_id']];
+        if (!$matchKeys['lead_id']) {
+            // No lead — just create normally
+            $report = InspectionReport::create($validated);
+        } else {
+            // With lead — ensure only ONE report per lead, overwrite if exists
+            $report = InspectionReport::updateOrCreate($matchKeys, $validated);
+        }
 
         // Update Car Status
         $car = Car::find($validated['car_id']);
@@ -152,40 +184,48 @@ class InspectionController extends Controller
             $start = null;
             if ($date && $time) {
                 try {
-                    // Normalize "02 Apr 2026 04:30 PM" to standard ISO
-                    $start = \Carbon\Carbon::createFromFormat('d M Y h:i A', $date . ' ' . $time)->toIso8601String();
-                } catch (\Exception $e) {}
+                    $start = \Carbon\Carbon::parse($date . ' ' . $time)->toIso8601String();
+                } catch (\Exception $e) {
+                    try {
+                        $start = \Carbon\Carbon::createFromFormat('d M Y h:i A', $date . ' ' . $time)->toIso8601String();
+                    } catch (\Exception $ex) {}
+                }
             }
 
-            $inspector = \App\Models\User::find($details['inspector_id'] ?? 0);
+            $inspector = \App\Models\User::find($details['instructor_id'] ?? $details['inspector_id'] ?? 0);
 
-            // Palette: High-Voltage Solid Operational Colors
             $colors = [
-                ['bg' => '#4f46e5', 'border' => '#3730a3', 'text' => '#ffffff'], // Indigo Solid
-                ['bg' => '#10b981', 'border' => '#065f46', 'text' => '#ffffff'], // Emerald Solid
-                ['bg' => '#f97316', 'border' => '#9a3412', 'text' => '#ffffff'], // Orange Solid
-                ['bg' => '#3b82f6', 'border' => '#1e40af', 'text' => '#ffffff'], // Blue Solid
-                ['bg' => '#d946ef', 'border' => '#86198f', 'text' => '#ffffff'], // Pink Solid
+                ['bg' => '#4f46e5', 'border' => '#3730a3', 'text' => '#ffffff'], 
+                ['bg' => '#10b981', 'border' => '#065f46', 'text' => '#ffffff'], 
+                ['bg' => '#f97316', 'border' => '#9a3412', 'text' => '#ffffff'], 
+                ['bg' => '#3b82f6', 'border' => '#1e40af', 'text' => '#ffffff'], 
+                ['bg' => '#d946ef', 'border' => '#86198f', 'text' => '#ffffff'], 
             ];
             $c = $colors[$lead->id % 5];
 
             return [
                 'id' => $lead->id,
                 'title' => ($details['make'] ?? '') . ' ' . ($details['model'] ?? ''),
-                'start' => $start,
-                'allDay' => false,
+                'start' => $start ?: $date,
+                'allDay' => !$start,
                 'extendedProps' => [
-                    'client' => $details['name'] ?? 'Guest',
-                    'location' => $details['location'] ?? 'Not Specified',
-                    'inspector' => $inspector ? $inspector->name : 'Unassigned',
-                    'phone' => $details['phone'] ?? '',
+                    'lead_id'   => $lead->id,
+                    'client'    => $details['name'] ?? 'Guest Agent',
+                    'phone'     => $details['phone'] ?? 'N/A',
+                    'inspector' => $inspector ? $inspector->name : 'System Auditor',
+                    'location'  => $details['location'] ?? $details['home_address'] ?? 'HQ Hub',
+                    'vin'       => $details['vin'] ?? 'MB-'.str_pad($lead->id, 5, '0', STR_PAD_LEFT),
+                    'year'      => $details['year'] ?? 'N/A',
+                    'mileage'   => $details['mileage'] ?? 'N/A',
+                    'make'      => $details['make'] ?? 'Unknown',
+                    'model'     => $details['model'] ?? 'Asset',
                     'borderColor' => $c['border']
                 ],
                 'backgroundColor' => $c['bg'],
                 'textColor' => $c['text'],
                 'borderColor' => 'transparent'
             ];
-        })->filter(fn($e) => $e['start'] !== null)->values();
+        });
 
         return view('admin.inspections.calendar', compact('events'));
     }
@@ -206,7 +246,13 @@ class InspectionController extends Controller
 
     public function destroy(InspectionReport $report)
     {
+        \Log::info("Archiving Inspection Report #{$report->id} triggered by " . auth()->user()->name);
+        $id = $report->id;
         $report->delete();
+        
+        if (request()->ajax()) {
+            return response()->json(['success' => true, 'message' => "Report #{$id} archived forever."]);
+        }
         return redirect()->route('admin.inspections.index')->with('success', 'Report archived.');
     }
 

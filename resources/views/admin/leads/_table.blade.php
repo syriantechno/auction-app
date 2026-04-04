@@ -1,4 +1,4 @@
-﻿<div class="bg-white rounded-lg shadow-xl border border-slate-200 overflow-hidden">
+<div class="bg-white rounded-lg shadow-xl border border-slate-200 overflow-hidden">
     <table class="w-full text-left border-collapse">
         <thead>
             <tr class="bg-slate-50 border-b border-slate-200">
@@ -21,10 +21,24 @@
                 if(is_numeric($mileage)) $mileage = number_format($mileage) . ' KM';
                 
                 $condition = $details['condition'] ?? 'N/A';
-                $appDate = $details['inspection_date'] ?? 'TBD';
+                
+                // Numeric Date Formatting (Fix #8)
+                $rawDate = $details['inspection_date'] ?? null;
+                $appDate = $rawDate ? \Carbon\Carbon::parse($rawDate)->format('d-m-Y') : 'TBD';
+                
                 $appTime = $details['inspection_time'] ?? '';
                 $isHome = ($details['inspection_type'] ?? 'branch') === 'home';
                 $address = $details['home_address'] ?? 'Hub Branch';
+
+                // Brand Logo Logic (Fix #3)
+                $rawMake = strtolower($details['make'] ?? 'generic');
+                $makeSlug = \Illuminate\Support\Str::slug($rawMake);
+                $searchPaths = ["images/brands/{$makeSlug}.svg", "images/brands/{$makeSlug}.png"];
+                if (str_contains($rawMake, 'mercedes')) $searchPaths[] = "images/brands/mercedes.svg";
+                $finalLogo = null;
+                foreach ($searchPaths as $path) {
+                    if (file_exists(public_path($path))) { $finalLogo = $path; break; }
+                }
             @endphp
             <tr class="group hover:bg-slate-50/50 transition-all duration-300 border-l-4 border-l-transparent hover:border-l-[#FF6900]">
                 <td class="py-5 px-8 text-center text-slate-300 text-[0.65rem] font-mono group-hover:text-slate-900 transition-colors">#{{ $lead->id }}</td>
@@ -40,10 +54,18 @@
                     </div>
                 </td>
                 <td class="py-5 px-6">
-                    <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-3">
+                        {{-- Brand Logo --}}
+                        <div class="w-10 h-10 rounded-lg bg-slate-50 border border-slate-100 flex items-center justify-center p-1.5 shrink-0">
+                            @if($finalLogo)
+                                <img src="{{ asset($finalLogo) }}" class="w-full h-full object-contain opacity-60">
+                            @else
+                                <i data-lucide="car-front" class="w-5 h-5 text-slate-300"></i>
+                            @endif
+                        </div>
                         <div class="flex flex-col">
-                            <span class="text-[0.85rem] font-black text-slate-900 tracking-tighter">{{ $details['year'] ?? '' }} {{ $details['make'] ?? 'Unknown' }}</span>
-                            <span class="text-[0.7rem] text-slate-500 font-bold italic">{{ $details['model'] ?? 'N/A' }}</span>
+                            <span class="text-[0.85rem] font-black text-slate-900 tracking-tighter uppercase">{{ $details['make'] ?? 'Unknown' }}</span>
+                            <span class="text-[0.65rem] text-slate-500 font-bold">{{ $details['year'] ?? '' }} {{ $details['model'] ?? 'N/A' }}</span>
                         </div>
                     </div>
                 </td>
