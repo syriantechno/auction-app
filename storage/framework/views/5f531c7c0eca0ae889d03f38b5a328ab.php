@@ -1,8 +1,7 @@
-@extends('admin.layout')
-@section('title', 'Settings Hub')
-@section('page_title', 'Settings Hub')
+<?php $__env->startSection('title', 'Settings Hub'); ?>
+<?php $__env->startSection('page_title', 'Settings Hub'); ?>
 
-@section('content')
+<?php $__env->startSection('content'); ?>
 <div class="px-1 pb-20" x-data="{ activeTab: 'tab1', isSaving: false, toast: { show: false, message: '', type: 'success' },
     showToast(msg, type = 'success') {
         this.toast.show = true; this.toast.message = msg; this.toast.type = type;
@@ -22,7 +21,7 @@
     }
 }">
 
-    {{-- Toast --}}
+    
     <div x-show="toast.show"
          x-transition:enter="transition ease-out duration-300"
          x-transition:enter-start="opacity-0 translate-x-8"
@@ -39,7 +38,7 @@
         <p class="text-[0.8rem] font-bold" x-text="toast.message"></p>
     </div>
 
-    {{-- Header --}}
+    
     <div class="flex items-center justify-between mb-6">
         <div>
             <h1 class="text-2xl font-medium text-slate-900 tracking-tight">Settings Hub</h1>
@@ -49,12 +48,12 @@
 
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
 
-        {{-- ══ Left Nav Column ══ --}}
+        
         <div class="lg:col-span-2">
             <div class="bg-white p-2 rounded-lg border border-slate-200 shadow-sm space-y-1 sticky top-4">
                 <p class="text-[0.55rem] font-medium uppercase tracking-widest text-slate-400 mb-1 px-3 py-2">Configuration Tabs</p>
 
-                @php
+                <?php
                 $tabs = [
                     1  => ['label' => 'General',    'sub' => 'App Settings',  'color' => 'orange'],
                     2  => ['label' => 'Roles',       'sub' => 'Permissions',   'color' => 'orange'],
@@ -82,46 +81,45 @@
                     'amber'   => ['active' => 'bg-amber-50 border-amber-200 text-amber-600',     'icon' => 'text-amber-500'],
                     'slate'   => ['active' => 'bg-slate-100 border-slate-300 text-slate-900',    'icon' => 'text-slate-600'],
                 ];
-                @endphp
+                ?>
 
-                @foreach($tabs as $num => $tab)
-                @php
+                <?php $__currentLoopData = $tabs; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $num => $tab): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                <?php
                     $c = $colorMap[$tab['color']];
                     $tabId = 'tab' . $num;
-                @endphp
+                ?>
                 <button type="button"
-                    @click="activeTab = '{{ $tabId }}'"
-                    :class="activeTab === '{{ $tabId }}'
-                        ? '{{ $c['active'] }}'
+                    @click="activeTab = '<?php echo e($tabId); ?>'"
+                    :class="activeTab === '<?php echo e($tabId); ?>'
+                        ? '<?php echo e($c['active']); ?>'
                         : 'bg-transparent border-transparent text-slate-400 grayscale opacity-60 hover:bg-slate-50 hover:border-slate-100 hover:grayscale-0 hover:opacity-100'"
                     class="w-full flex items-center gap-2 p-2.5 rounded-lg border-2 transition-all duration-300 text-left active:scale-[0.98] group">
                     <div class="w-8 h-8 rounded-lg bg-white border border-slate-200 flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow flex-shrink-0">
                         <span class="text-[0.6rem] font-black"
-                              :class="activeTab === '{{ $tabId }}' ? '{{ $c['icon'] }}' : 'text-slate-400'">
-                            {{ str_pad($num, 2, '0', STR_PAD_LEFT) }}
+                              :class="activeTab === '<?php echo e($tabId); ?>' ? '<?php echo e($c['icon']); ?>' : 'text-slate-400'">
+                            <?php echo e(str_pad($num, 2, '0', STR_PAD_LEFT)); ?>
+
                         </span>
                     </div>
                     <div class="min-w-0">
-                        <div class="text-[0.65rem] font-medium uppercase text-slate-900 truncate">{{ $tab['label'] }}</div>
-                        <div class="text-[0.5rem] font-bold uppercase tracking-tighter text-slate-400">{{ $tab['sub'] }}</div>
+                        <div class="text-[0.65rem] font-medium uppercase text-slate-900 truncate"><?php echo e($tab['label']); ?></div>
+                        <div class="text-[0.5rem] font-bold uppercase tracking-tighter text-slate-400"><?php echo e($tab['sub']); ?></div>
                     </div>
                 </button>
-                @endforeach
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </div>
         </div>
 
-        {{-- ══ Right Content Column ══ --}}
+        
         <div class="lg:col-span-10 space-y-4">
 
-            {{-- ═══════════════════════════════════
-                 TAB 01 — GENERAL SETTINGS
-            ════════════════════════════════════ --}}
+            
             <div x-show="activeTab === 'tab1'" x-cloak x-transition>
-                <form @submit.prevent="saveGeneral" action="{{ route('admin.settings.general.save') }}" method="POST" enctype="multipart/form-data">
-                @csrf
+                <form @submit.prevent="saveGeneral" action="<?php echo e(route('admin.settings.general.save')); ?>" method="POST" enctype="multipart/form-data">
+                <?php echo csrf_field(); ?>
                 <div class="space-y-5">
 
-                    {{-- ── Section A: Brand Identity ── --}}
+                    
                     <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
                         <div class="flex items-center gap-3 px-6 py-4 border-b border-slate-50 bg-slate-50/50">
                             <div class="w-9 h-9 rounded-xl bg-[#ff6900]/10 flex items-center justify-center">
@@ -134,36 +132,36 @@
                         </div>
                         <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
 
-                            {{-- Site Name --}}
+                            
                             <div>
                                 <label class="block text-[0.6rem] font-black uppercase tracking-widest text-slate-500 mb-2">Site Name</label>
                                 <input type="text" name="site_name"
-                                    value="{{ old('site_name', $settings['site_name'] ?? 'Motor Bazar') }}"
+                                    value="<?php echo e(old('site_name', $settings['site_name'] ?? 'Motor Bazar')); ?>"
                                     placeholder="Motor Bazar"
                                     class="w-full px-4 py-3 text-sm font-semibold border border-slate-200 rounded-xl focus:border-[#ff6900] focus:ring-4 focus:ring-orange-500/5 outline-none transition-all">
                                 <p class="text-[0.58rem] text-slate-400 mt-1.5 font-medium">Appears in browser tab, emails, and header</p>
                             </div>
 
-                            {{-- Tagline --}}
+                            
                             <div>
                                 <label class="block text-[0.6rem] font-black uppercase tracking-widest text-slate-500 mb-2">Tagline / Slogan</label>
                                 <input type="text" name="site_tagline"
-                                    value="{{ old('site_tagline', $settings['site_tagline'] ?? '') }}"
+                                    value="<?php echo e(old('site_tagline', $settings['site_tagline'] ?? '')); ?>"
                                     placeholder="UAE's Premium Auto Auction"
                                     class="w-full px-4 py-3 text-sm font-semibold border border-slate-200 rounded-xl focus:border-[#ff6900] focus:ring-4 focus:ring-orange-500/5 outline-none transition-all">
                             </div>
 
-                            {{-- Site Logo --}}
+                            
                             <div>
                                 <label class="block text-[0.6rem] font-black uppercase tracking-widest text-slate-500 mb-2">Site Logo</label>
                                 <div class="flex items-center gap-4">
-                                    @if(!empty($settings['site_logo']))
-                                    <img src="{{ asset('storage/' . $settings['site_logo']) }}" class="h-12 w-auto rounded-lg border border-slate-200 p-1 bg-white shadow-sm">
-                                    @else
+                                    <?php if(!empty($settings['site_logo'])): ?>
+                                    <img src="<?php echo e(asset('storage/' . $settings['site_logo'])); ?>" class="h-12 w-auto rounded-lg border border-slate-200 p-1 bg-white shadow-sm">
+                                    <?php else: ?>
                                     <div class="h-12 w-20 rounded-lg border-2 border-dashed border-slate-200 flex items-center justify-center bg-slate-50">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-slate-300"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
                                     </div>
-                                    @endif
+                                    <?php endif; ?>
                                     <div class="flex-1">
                                         <input type="file" name="site_logo" accept="image/*"
                                             class="w-full text-[0.65rem] font-medium text-slate-500 file:mr-3 file:rounded-lg file:border-0 file:bg-[#031629] file:px-3 file:py-2 file:text-[0.6rem] file:text-white file:font-bold file:uppercase cursor-pointer">
@@ -172,17 +170,17 @@
                                 </div>
                             </div>
 
-                            {{-- Favicon --}}
+                            
                             <div>
                                 <label class="block text-[0.6rem] font-black uppercase tracking-widest text-slate-500 mb-2">Favicon</label>
                                 <div class="flex items-center gap-4">
-                                    @if(!empty($settings['site_favicon']))
-                                    <img src="{{ asset('storage/' . $settings['site_favicon']) }}" class="h-10 w-10 rounded-lg border border-slate-200 p-1 bg-white shadow-sm">
-                                    @else
+                                    <?php if(!empty($settings['site_favicon'])): ?>
+                                    <img src="<?php echo e(asset('storage/' . $settings['site_favicon'])); ?>" class="h-10 w-10 rounded-lg border border-slate-200 p-1 bg-white shadow-sm">
+                                    <?php else: ?>
                                     <div class="h-10 w-10 rounded-lg border-2 border-dashed border-slate-200 flex items-center justify-center bg-slate-50">
                                         <span class="text-[0.55rem] font-black text-slate-300">ICO</span>
                                     </div>
-                                    @endif
+                                    <?php endif; ?>
                                     <div class="flex-1">
                                         <input type="file" name="site_favicon" accept="image/*"
                                             class="w-full text-[0.65rem] font-medium text-slate-500 file:mr-3 file:rounded-lg file:border-0 file:bg-slate-700 file:px-3 file:py-2 file:text-[0.6rem] file:text-white file:font-bold file:uppercase cursor-pointer">
@@ -194,7 +192,7 @@
                         </div>
                     </div>
 
-                    {{-- ── Section B: Contact & Location ── --}}
+                    
                     <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
                         <div class="flex items-center gap-3 px-6 py-4 border-b border-slate-50 bg-slate-50/50">
                             <div class="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center">
@@ -210,7 +208,7 @@
                             <div>
                                 <label class="block text-[0.6rem] font-black uppercase tracking-widest text-slate-500 mb-2">Phone Number</label>
                                 <input type="text" name="contact_phone"
-                                    value="{{ old('contact_phone', $settings['contact_phone'] ?? '') }}"
+                                    value="<?php echo e(old('contact_phone', $settings['contact_phone'] ?? '')); ?>"
                                     placeholder="+971 XX XXX XXXX"
                                     class="w-full px-4 py-3 text-sm font-semibold border border-slate-200 rounded-xl focus:border-blue-400 focus:ring-4 focus:ring-blue-500/5 outline-none transition-all">
                             </div>
@@ -218,7 +216,7 @@
                             <div>
                                 <label class="block text-[0.6rem] font-black uppercase tracking-widest text-slate-500 mb-2">Email Address</label>
                                 <input type="email" name="contact_email"
-                                    value="{{ old('contact_email', $settings['contact_email'] ?? '') }}"
+                                    value="<?php echo e(old('contact_email', $settings['contact_email'] ?? '')); ?>"
                                     placeholder="info@motorbazar.ae"
                                     class="w-full px-4 py-3 text-sm font-semibold border border-slate-200 rounded-xl focus:border-blue-400 focus:ring-4 focus:ring-blue-500/5 outline-none transition-all">
                             </div>
@@ -226,7 +224,7 @@
                             <div class="md:col-span-2">
                                 <label class="block text-[0.6rem] font-black uppercase tracking-widest text-slate-500 mb-2">Business Address</label>
                                 <input type="text" name="contact_address"
-                                    value="{{ old('contact_address', $settings['contact_address'] ?? '') }}"
+                                    value="<?php echo e(old('contact_address', $settings['contact_address'] ?? '')); ?>"
                                     placeholder="Hub Al Quoz, SZR, Exit 40, Dubai - UAE"
                                     class="w-full px-4 py-3 text-sm font-semibold border border-slate-200 rounded-xl focus:border-blue-400 focus:ring-4 focus:ring-blue-500/5 outline-none transition-all">
                             </div>
@@ -234,7 +232,7 @@
                             <div>
                                 <label class="block text-[0.6rem] font-black uppercase tracking-widest text-slate-500 mb-2">WhatsApp Number</label>
                                 <input type="text" name="contact_whatsapp"
-                                    value="{{ old('contact_whatsapp', $settings['contact_whatsapp'] ?? '') }}"
+                                    value="<?php echo e(old('contact_whatsapp', $settings['contact_whatsapp'] ?? '')); ?>"
                                     placeholder="+971 XX XXX XXXX"
                                     class="w-full px-4 py-3 text-sm font-semibold border border-slate-200 rounded-xl focus:border-[#25D366] focus:ring-4 focus:ring-green-500/5 outline-none transition-all">
                             </div>
@@ -242,7 +240,7 @@
                             <div>
                                 <label class="block text-[0.6rem] font-black uppercase tracking-widest text-slate-500 mb-2">Support Hours</label>
                                 <input type="text" name="support_hours"
-                                    value="{{ old('support_hours', $settings['support_hours'] ?? '') }}"
+                                    value="<?php echo e(old('support_hours', $settings['support_hours'] ?? '')); ?>"
                                     placeholder="Mon–Sat, 9:00 AM – 6:00 PM"
                                     class="w-full px-4 py-3 text-sm font-semibold border border-slate-200 rounded-xl focus:border-blue-400 focus:ring-4 focus:ring-blue-500/5 outline-none transition-all">
                             </div>
@@ -250,7 +248,7 @@
                         </div>
                     </div>
 
-                    {{-- ── Section C: Regional Settings ── --}}
+                    
                     <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
                         <div class="flex items-center gap-3 px-6 py-4 border-b border-slate-50 bg-slate-50/50">
                             <div class="w-9 h-9 rounded-xl bg-emerald-50 flex items-center justify-center">
@@ -262,7 +260,7 @@
                             </div>
                         </div>
 
-                        @php
+                        <?php
                             $allCurrencies   = \App\Helpers\CurrencyHelper::all();
                             $currentCurrency = $settings['site_currency'] ?? 'AED';
                             $currentTimezone = $settings['site_timezone'] ?? 'Asia/Dubai';
@@ -328,55 +326,55 @@
                                 'D, d M Y'=> 'Day, DD Mon YYYY — e.g. ' . date('D, d M Y'),
                                 'j F Y'   => 'DD Month YYYY — e.g. ' . date('j F Y'),
                             ];
-                        @endphp
+                        ?>
                         <div class="p-6 space-y-5">
 
-                            {{-- Row 1: Language + Date Format --}}
+                            
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                                 <div>
                                     <label class="block text-[0.6rem] font-black uppercase tracking-widest text-slate-500 mb-2">Default Language</label>
                                     <select name="site_language" class="w-full px-4 py-3 text-sm font-semibold border border-slate-200 rounded-xl focus:border-emerald-400 focus:ring-4 focus:ring-emerald-500/5 outline-none transition-all bg-white">
-                                        <option value="en" {{ ($settings['site_language'] ?? 'en') === 'en' ? 'selected' : '' }}>🇬🇧 English</option>
-                                        <option value="ar" {{ ($settings['site_language'] ?? 'en') === 'ar' ? 'selected' : '' }}>🇦🇪 Arabic (العربية)</option>
-                                        <option value="fr" {{ ($settings['site_language'] ?? 'en') === 'fr' ? 'selected' : '' }}>🇫🇷 French (Français)</option>
-                                        <option value="tr" {{ ($settings['site_language'] ?? 'en') === 'tr' ? 'selected' : '' }}>🇹🇷 Turkish (Türkçe)</option>
-                                        <option value="ur" {{ ($settings['site_language'] ?? 'en') === 'ur' ? 'selected' : '' }}>🇵🇰 Urdu (اردو)</option>
+                                        <option value="en" <?php echo e(($settings['site_language'] ?? 'en') === 'en' ? 'selected' : ''); ?>>🇬🇧 English</option>
+                                        <option value="ar" <?php echo e(($settings['site_language'] ?? 'en') === 'ar' ? 'selected' : ''); ?>>🇦🇪 Arabic (العربية)</option>
+                                        <option value="fr" <?php echo e(($settings['site_language'] ?? 'en') === 'fr' ? 'selected' : ''); ?>>🇫🇷 French (Français)</option>
+                                        <option value="tr" <?php echo e(($settings['site_language'] ?? 'en') === 'tr' ? 'selected' : ''); ?>>🇹🇷 Turkish (Türkçe)</option>
+                                        <option value="ur" <?php echo e(($settings['site_language'] ?? 'en') === 'ur' ? 'selected' : ''); ?>>🇵🇰 Urdu (اردو)</option>
                                     </select>
                                 </div>
                                 <div>
                                     <label class="block text-[0.6rem] font-black uppercase tracking-widest text-slate-500 mb-2">Date Format</label>
                                     <select name="date_format" class="w-full px-4 py-3 text-sm font-semibold border border-slate-200 rounded-xl focus:border-emerald-400 focus:ring-4 focus:ring-emerald-500/5 outline-none transition-all bg-white">
-                                        @foreach($dateFormats as $fmt => $display)
-                                        <option value="{{ $fmt }}" {{ ($settings['date_format'] ?? 'd/m/Y') === $fmt ? 'selected' : '' }}>{{ $display }}</option>
-                                        @endforeach
+                                        <?php $__currentLoopData = $dateFormats; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $fmt => $display): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                        <option value="<?php echo e($fmt); ?>" <?php echo e(($settings['date_format'] ?? 'd/m/Y') === $fmt ? 'selected' : ''); ?>><?php echo e($display); ?></option>
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                     </select>
                                 </div>
                             </div>
 
-                            {{-- Row 2: Currency (left) + Timezone (right) --}}
-                            @php $currentSymbol = $allCurrencies[$currentCurrency]['symbol'] ?? $currentCurrency; @endphp
+                            
+                            <?php $currentSymbol = $allCurrencies[$currentCurrency]['symbol'] ?? $currentCurrency; ?>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-5 items-start"
-                                 x-data="{ sym: '{{ $currentSymbol }}', pos: '{{ $settings['currency_position'] ?? 'before' }}' }">
+                                 x-data="{ sym: '<?php echo e($currentSymbol); ?>', pos: '<?php echo e($settings['currency_position'] ?? 'before'); ?>' }">
 
-                                {{-- Currency --}}
+                                
                                 <div class="space-y-2">
                                     <label class="block text-[0.6rem] font-black uppercase tracking-widest text-slate-500 mb-2">Currency</label>
                                     <select name="site_currency"
                                         @change="sym = $event.target.selectedOptions[0].dataset.sym"
                                         class="w-full px-4 py-3 text-sm font-semibold border border-slate-200 rounded-xl focus:border-emerald-400 focus:ring-4 focus:ring-emerald-500/5 outline-none transition-all bg-white">
-                                        @foreach($allCurrencies as $code => $cur)
-                                        <option value="{{ $code }}" data-sym="{{ $cur['symbol'] }}" {{ $currentCurrency === $code ? 'selected' : '' }}>
-                                            {{ $cur['flag'] }} {{ $code }} — {{ $cur['name'] }} ({{ $cur['symbol'] }})
+                                        <?php $__currentLoopData = $allCurrencies; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $code => $cur): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                        <option value="<?php echo e($code); ?>" data-sym="<?php echo e($cur['symbol']); ?>" <?php echo e($currentCurrency === $code ? 'selected' : ''); ?>>
+                                            <?php echo e($cur['flag']); ?> <?php echo e($code); ?> — <?php echo e($cur['name']); ?> (<?php echo e($cur['symbol']); ?>)
                                         </option>
-                                        @endforeach
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                     </select>
-                                    {{-- Live preview --}}
+                                    
                                     <div class="px-4 py-2.5 bg-emerald-50 border border-emerald-100 rounded-xl flex items-center gap-2">
                                         <span class="text-[0.6rem] font-black text-emerald-500 uppercase tracking-widest">Preview:</span>
                                         <span class="text-sm font-black text-[#031629]"
                                               x-text="pos === 'before' ? sym + ' 12,500' : '12,500 ' + sym"></span>
                                     </div>
-                                    {{-- Position toggle --}}
+                                    
                                     <div>
                                         <p class="text-[0.58rem] font-black text-slate-400 uppercase tracking-widest mb-1.5">Symbol Position</p>
                                         <div class="flex gap-2">
@@ -394,29 +392,29 @@
                                     </div>
                                 </div>
 
-                                {{-- Timezone --}}
+                                
                                 <div class="space-y-2">
                                     <label class="block text-[0.6rem] font-black uppercase tracking-widest text-slate-500 mb-2">Timezone</label>
                                     <select name="site_timezone" class="w-full px-4 py-3 text-sm font-semibold border border-slate-200 rounded-xl focus:border-emerald-400 focus:ring-4 focus:ring-emerald-500/5 outline-none transition-all bg-white">
-                                        @foreach($timezones as $tz => $label)
-                                            @if($label === null)
-                                                <option disabled class="text-slate-400 bg-slate-50">{{ $tz }}</option>
-                                            @else
-                                                <option value="{{ $tz }}" {{ $currentTimezone === $tz ? 'selected' : '' }}>{{ $label }}</option>
-                                            @endif
-                                        @endforeach
+                                        <?php $__currentLoopData = $timezones; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $tz => $label): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                            <?php if($label === null): ?>
+                                                <option disabled class="text-slate-400 bg-slate-50"><?php echo e($tz); ?></option>
+                                            <?php else: ?>
+                                                <option value="<?php echo e($tz); ?>" <?php echo e($currentTimezone === $tz ? 'selected' : ''); ?>><?php echo e($label); ?></option>
+                                            <?php endif; ?>
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                     </select>
                                     <p class="text-[0.6rem] text-slate-400 font-medium">
-                                        🕐 Current time: <strong class="text-slate-600">{{ $tzLabel }}</strong>
+                                        🕐 Current time: <strong class="text-slate-600"><?php echo e($tzLabel); ?></strong>
                                     </p>
                                 </div>
 
                             </div>
                         </div>
-                    </div>{{-- end Regional Settings --}}
+                    </div>
 
 
-                    {{-- ── Section D: Social Media Links ── --}}
+                    
                     <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
                         <div class="flex items-center gap-3 px-6 py-4 border-b border-slate-50 bg-slate-50/50">
                             <div class="w-9 h-9 rounded-xl bg-violet-50 flex items-center justify-center">
@@ -432,7 +430,7 @@
                             </div>
                         </div>
 
-                        @php
+                        <?php
                         $socials = [
                             ['key' => 'instagram', 'label' => 'Instagram',   'placeholder' => 'https://instagram.com/motorbazar',         'color' => '#e1306c', 'icon' => '<path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>'],
                             ['key' => 'facebook',  'label' => 'Facebook',    'placeholder' => 'https://facebook.com/motorbazar',          'color' => '#1877f2', 'icon' => '<path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>'],
@@ -442,51 +440,53 @@
                             ['key' => 'linkedin',  'label' => 'LinkedIn',    'placeholder' => 'https://linkedin.com/company/motorbazar',  'color' => '#0a66c2', 'icon' => '<path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>'],
                             ['key' => 'whatsapp',  'label' => 'WhatsApp',    'placeholder' => 'https://wa.me/971XXXXXXXX',                'color' => '#25d366', 'icon' => '<path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>'],
                         ];
-                        @endphp
+                        ?>
 
                         <div class="divide-y divide-slate-50">
-                            @foreach($socials as $s)
-                            @php
+                            <?php $__currentLoopData = $socials; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $s): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <?php
                                 $fieldKey    = 'social_' . $s['key'];
                                 $navKey      = 'social_' . $s['key'] . '_show_nav';
                                 $footerKey   = 'social_' . $s['key'] . '_show_footer';
                                 $showNav     = $settings[$navKey]    ?? '0';
                                 $showFooter  = $settings[$footerKey] ?? ($s['key'] === 'facebook' || $s['key'] === 'instagram' || $s['key'] === 'youtube' || $s['key'] === 'whatsapp' ? '1' : '0');
-                            @endphp
+                            ?>
                             <div class="flex items-center gap-4 px-6 py-3.5">
-                                {{-- Icon --}}
-                                <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style="background: {{ $s['color'] }}18; color: {{ $s['color'] }}">
-                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">{!! $s['icon'] !!}</svg>
+                                
+                                <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style="background: <?php echo e($s['color']); ?>18; color: <?php echo e($s['color']); ?>">
+                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><?php echo $s['icon']; ?></svg>
                                 </div>
 
-                                {{-- Label --}}
-                                <span class="text-[0.68rem] font-black text-[#031629] uppercase tracking-wide w-20 flex-shrink-0">{{ $s['label'] }}</span>
+                                
+                                <span class="text-[0.68rem] font-black text-[#031629] uppercase tracking-wide w-20 flex-shrink-0"><?php echo e($s['label']); ?></span>
 
-                                {{-- URL Input --}}
-                                <input type="url" name="{{ $fieldKey }}"
-                                    value="{{ old($fieldKey, $settings[$fieldKey] ?? '') }}"
-                                    placeholder="{{ $s['placeholder'] }}"
+                                
+                                <input type="url" name="<?php echo e($fieldKey); ?>"
+                                    value="<?php echo e(old($fieldKey, $settings[$fieldKey] ?? '')); ?>"
+                                    placeholder="<?php echo e($s['placeholder']); ?>"
                                     class="flex-1 min-w-0 px-3 py-2 text-[0.75rem] font-medium border border-slate-200 rounded-lg focus:border-violet-400 focus:ring-2 focus:ring-violet-500/10 outline-none transition-all">
 
-                                {{-- Nav Toggle --}}
+                                
                                 <label class="relative flex-shrink-0 cursor-pointer" title="Show in Navbar">
-                                    <input type="checkbox" name="{{ $navKey }}" value="1" {{ $showNav === '1' ? 'checked' : '' }}
+                                    <input type="checkbox" name="<?php echo e($navKey); ?>" value="1" <?php echo e($showNav === '1' ? 'checked' : ''); ?>
+
                                            class="sr-only peer">
                                     <div class="w-10 h-5 bg-slate-200 rounded-full peer peer-checked:bg-[#031629] transition-all
                                                 after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all
                                                 peer-checked:after:translate-x-5"></div>
                                 </label>
 
-                                {{-- Footer Toggle --}}
+                                
                                 <label class="relative flex-shrink-0 cursor-pointer" title="Show in Footer">
-                                    <input type="checkbox" name="{{ $footerKey }}" value="1" {{ $showFooter === '1' ? 'checked' : '' }}
+                                    <input type="checkbox" name="<?php echo e($footerKey); ?>" value="1" <?php echo e($showFooter === '1' ? 'checked' : ''); ?>
+
                                            class="sr-only peer">
                                     <div class="w-10 h-5 bg-slate-200 rounded-full peer peer-checked:bg-[#ff6900] transition-all
                                                 after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all
                                                 peer-checked:after:translate-x-5"></div>
                                 </label>
                             </div>
-                            @endforeach
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         </div>
 
                         <div class="px-6 py-3 bg-slate-50/80 border-t border-slate-100 flex items-center gap-6 text-[0.58rem] font-bold text-slate-400 uppercase tracking-widest">
@@ -496,7 +496,7 @@
                         </div>
                     </div>
 
-                    {{-- ── Section E: Site Status ── --}}
+                    
                     <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
                         <div class="flex items-center gap-3 px-6 py-4 border-b border-slate-50 bg-slate-50/50">
                             <div class="w-9 h-9 rounded-xl bg-amber-50 flex items-center justify-center">
@@ -513,15 +513,15 @@
                             <div>
                                 <label class="block text-[0.6rem] font-black uppercase tracking-widest text-slate-500 mb-3">Maintenance Mode</label>
                                 <div class="flex gap-3">
-                                    <label class="flex-1 flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all {{ ($settings['maintenance_mode'] ?? '0') === '0' ? 'border-emerald-400 bg-emerald-50' : 'border-slate-200' }}">
-                                        <input type="radio" name="maintenance_mode" value="0" {{ ($settings['maintenance_mode'] ?? '0') === '0' ? 'checked' : '' }} class="accent-emerald-500">
+                                    <label class="flex-1 flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all <?php echo e(($settings['maintenance_mode'] ?? '0') === '0' ? 'border-emerald-400 bg-emerald-50' : 'border-slate-200'); ?>">
+                                        <input type="radio" name="maintenance_mode" value="0" <?php echo e(($settings['maintenance_mode'] ?? '0') === '0' ? 'checked' : ''); ?> class="accent-emerald-500">
                                         <div>
                                             <div class="text-[0.7rem] font-black text-emerald-700">🟢 Live</div>
                                             <div class="text-[0.55rem] text-slate-400 font-medium">Site is accessible</div>
                                         </div>
                                     </label>
-                                    <label class="flex-1 flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all {{ ($settings['maintenance_mode'] ?? '0') === '1' ? 'border-amber-400 bg-amber-50' : 'border-slate-200' }}">
-                                        <input type="radio" name="maintenance_mode" value="1" {{ ($settings['maintenance_mode'] ?? '0') === '1' ? 'checked' : '' }} class="accent-amber-500">
+                                    <label class="flex-1 flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all <?php echo e(($settings['maintenance_mode'] ?? '0') === '1' ? 'border-amber-400 bg-amber-50' : 'border-slate-200'); ?>">
+                                        <input type="radio" name="maintenance_mode" value="1" <?php echo e(($settings['maintenance_mode'] ?? '0') === '1' ? 'checked' : ''); ?> class="accent-amber-500">
                                         <div>
                                             <div class="text-[0.7rem] font-black text-amber-700">🔧 Maintenance</div>
                                             <div class="text-[0.55rem] text-slate-400 font-medium">Show maintenance page</div>
@@ -534,13 +534,13 @@
                                 <label class="block text-[0.6rem] font-black uppercase tracking-widest text-slate-500 mb-2">Maintenance Message</label>
                                 <textarea name="maintenance_message" rows="3"
                                     placeholder="We'll be back shortly. Thank you for your patience."
-                                    class="w-full px-4 py-3 text-sm font-medium border border-slate-200 rounded-xl focus:border-amber-400 focus:ring-4 focus:ring-amber-500/5 outline-none transition-all resize-none">{{ old('maintenance_message', $settings['maintenance_message'] ?? '') }}</textarea>
+                                    class="w-full px-4 py-3 text-sm font-medium border border-slate-200 rounded-xl focus:border-amber-400 focus:ring-4 focus:ring-amber-500/5 outline-none transition-all resize-none"><?php echo e(old('maintenance_message', $settings['maintenance_message'] ?? '')); ?></textarea>
                             </div>
 
                         </div>
                     </div>
 
-                    {{-- Save Button --}}
+                    
                     <div class="flex items-center justify-end gap-3 pt-2">
                         <button type="submit" :disabled="isSaving"
                             class="flex items-center gap-2.5 px-8 py-3 text-[0.72rem] font-black uppercase tracking-widest text-white bg-[#031629] rounded-xl hover:bg-[#ff6900] transition-all shadow-md disabled:opacity-50">
@@ -558,9 +558,7 @@
                 </form>
             </div>
 
-            {{-- ═══════════════════════════════════
-                 TAB 02 — ROLES & PERMISSIONS
-            ════════════════════════════════════ --}}
+            
             <div x-show="activeTab === 'tab2'" x-cloak x-transition
                  x-data="{
                     roleModal: false,
@@ -641,7 +639,7 @@
                     }
                  }">
 
-                {{-- Toast — Uptime Toast Engine style --}}
+                
                 <div x-show="roleToast" x-cloak
                      x-transition:enter="transition ease-out duration-300"
                      x-transition:enter-start="opacity-0 scale-90 blur-sm"
@@ -659,23 +657,23 @@
                     </div>
                 </div>
 
-                {{-- ── AJAX Edit Modal ── --}}
+                
                 <div x-show="roleModal" x-cloak
                      class="fixed inset-0 z-[9999] flex items-center justify-center p-6"
                      @keydown.escape.window="roleModal = false">
 
-                    {{-- Backdrop --}}
+                    
                     <div class="absolute inset-0 bg-[#031629]/50 backdrop-blur-sm" @click="roleModal = false"></div>
 
-                    {{-- Modal Panel — Lead Intelligence Style --}}
+                    
                     <div class="relative bg-white rounded-2xl overflow-hidden shadow-2xl w-full max-w-4xl flex flex-col z-10"
                          style="max-height: calc(100vh - 64px);"
                          @click.stop>
 
-                        {{-- ── Header (Lead Intelligence Pattern) ── --}}
+                        
                         <div class="flex items-center justify-between px-6 py-4 bg-white border-b border-slate-200">
                             <div class="flex items-center gap-4">
-                                {{-- Icon Box --}}
+                                
                                 <div class="w-10 h-10 rounded-lg border border-slate-200 flex items-center justify-center bg-white flex-shrink-0">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1d293d" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/></svg>
                                 </div>
@@ -706,10 +704,10 @@
                             </div>
                         </div>
 
-                        {{-- ── Body (Gray Background) ── --}}
+                        
                         <div class="flex-1 overflow-y-auto bg-[#f0f2f5] p-4">
 
-                            {{-- Loading --}}
+                            
                             <div x-show="loadingRole" class="flex items-center justify-center py-16">
                                 <div class="flex items-center gap-2.5 bg-white rounded-xl px-6 py-4 shadow-sm border border-slate-200">
                                     <svg class="w-5 h-5 animate-spin text-[#ff6900]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
@@ -717,7 +715,7 @@
                                 </div>
                             </div>
 
-                            {{-- Super Admin Notice --}}
+                            
                             <template x-if="!loadingRole && editRole.isSuperAdmin">
                                 <div class="bg-white border border-orange-200 rounded-xl px-5 py-4 flex items-center gap-3 mb-4 shadow-sm">
                                     <div class="w-9 h-9 rounded-lg bg-orange-50 border border-orange-200 flex items-center justify-center flex-shrink-0">
@@ -730,23 +728,23 @@
                                 </div>
                             </template>
 
-                            {{-- Permission Cards Grid --}}
+                            
                             <div x-show="!loadingRole">
-                                @php
+                                <?php
                                 $groupIcons = [
                                     'dashboard'=>'📊','leads'=>'📋','inspections'=>'🔍','cars'=>'🚗',
                                     'auctions'=>'🔨','stock'=>'📦','dealers'=>'🤝','finance'=>'💰',
                                     'cms'=>'📝','posts'=>'📰','pages'=>'📄','menus'=>'☰',
                                     'seo'=>'🎯','settings'=>'⚙️','notifications'=>'🔔','roles'=>'🛡️','users'=>'👥',
                                 ];
-                                @endphp
-                                <script>window._roleGroupIcons = @json($groupIcons);</script>
+                                ?>
+                                <script>window._roleGroupIcons = <?php echo json_encode($groupIcons, 15, 512) ?>;</script>
 
                                 <div class="grid grid-cols-3 gap-3">
                                     <template x-for="(perms, group) in permGroups" :key="group">
                                         <div class="bg-white rounded-xl border border-slate-200 overflow-hidden hover:shadow-md hover:border-slate-300 transition-all">
 
-                                            {{-- Card Header — Label style like Lead modal --}}
+                                            
                                             <div class="px-4 pt-3 pb-2 border-b border-slate-100">
                                                 <div class="flex items-center justify-between">
                                                     <div class="flex items-center gap-1.5">
@@ -763,7 +761,7 @@
                                                 </div>
                                             </div>
 
-                                            {{-- Permission Pills --}}
+                                            
                                             <div class="p-3 flex flex-wrap gap-1.5">
                                                 <template x-for="perm in perms" :key="perm">
                                                     <label :class="checkedPerms.includes(perm)
@@ -788,7 +786,7 @@
                             </div>
                         </div>
 
-                        {{-- ── Footer ── --}}
+                        
                         <div x-show="!loadingRole" class="px-6 py-4 bg-white border-t border-slate-200 flex items-center justify-between">
                             <button type="button" @click="roleModal = false"
                                     class="px-5 py-2 text-[0.6rem] font-black uppercase tracking-widest text-slate-500 border border-slate-200 rounded-lg hover:bg-slate-50 transition-all">
@@ -809,7 +807,7 @@
 
                 <div class="space-y-5">
 
-                    {{-- Role Cards --}}
+                    
                     <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
                         <div class="flex items-center justify-between px-6 py-4 border-b border-slate-50 bg-slate-50/50">
                             <div class="flex items-center gap-3">
@@ -818,17 +816,17 @@
                                 </div>
                                 <div>
                                     <div class="text-[0.72rem] font-black text-[#031629] uppercase tracking-wide">System Roles</div>
-                                    <div class="text-[0.6rem] text-slate-400 font-medium">{{ $roles->count() }} roles · {{ $roles->sum('permissions_count') }} total permissions</div>
+                                    <div class="text-[0.6rem] text-slate-400 font-medium"><?php echo e($roles->count()); ?> roles · <?php echo e($roles->sum('permissions_count')); ?> total permissions</div>
                                 </div>
                             </div>
-                            <a href="{{ route('admin.roles.create') }}"
+                            <a href="<?php echo e(route('admin.roles.create')); ?>"
                                class="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#031629] text-[0.65rem] font-black uppercase tracking-widest text-white hover:bg-[#ff6900] transition-all">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                                 New Role
                             </a>
                         </div>
                         <div class="p-5 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-                            @php
+                            <?php
                             $roleColors = [
                                 'super-admin'     => ['bg' => 'bg-[#ff6900]',   'badge' => 'bg-orange-100 text-orange-700', 'icon' => '👑'],
                                 'admin'           => ['bg' => 'bg-[#031629]',   'badge' => 'bg-slate-100 text-slate-700',  'icon' => '🛡️'],
@@ -836,59 +834,59 @@
                                 'dealer'          => ['bg' => 'bg-emerald-600', 'badge' => 'bg-emerald-50 text-emerald-700','icon' => '🤝'],
                                 'finance-manager' => ['bg' => 'bg-violet-600',  'badge' => 'bg-violet-50 text-violet-700', 'icon' => '💰'],
                             ];
-                            @endphp
-                            @foreach($roles as $role)
-                            @php $rc = $roleColors[$role->name] ?? ['bg' => 'bg-slate-600', 'badge' => 'bg-slate-100 text-slate-600', 'icon' => '⚙️']; @endphp
+                            ?>
+                            <?php $__currentLoopData = $roles; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $role): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <?php $rc = $roleColors[$role->name] ?? ['bg' => 'bg-slate-600', 'badge' => 'bg-slate-100 text-slate-600', 'icon' => '⚙️']; ?>
                             <div class="rounded-xl border border-slate-100 overflow-hidden hover:shadow-md transition-all">
-                                <div class="{{ $rc['bg'] }} px-4 py-3.5 flex items-center justify-between">
+                                <div class="<?php echo e($rc['bg']); ?> px-4 py-3.5 flex items-center justify-between">
                                     <div class="flex items-center gap-2">
-                                        <span class="text-lg">{{ $rc['icon'] }}</span>
+                                        <span class="text-lg"><?php echo e($rc['icon']); ?></span>
                                         <div>
-                                            <div class="text-white text-[0.72rem] font-black uppercase tracking-wide">{{ str_replace('-', ' ', $role->name) }}</div>
-                                            <div class="text-white/60 text-[0.55rem] font-bold uppercase">{{ $role->users_count }} {{ Str::plural('user', $role->users_count) }}</div>
+                                            <div class="text-white text-[0.72rem] font-black uppercase tracking-wide"><?php echo e(str_replace('-', ' ', $role->name)); ?></div>
+                                            <div class="text-white/60 text-[0.55rem] font-bold uppercase"><?php echo e($role->users_count); ?> <?php echo e(Str::plural('user', $role->users_count)); ?></div>
                                         </div>
                                     </div>
                                     <div class="text-right">
-                                        <div class="text-white text-xl font-black" id="perm-count-{{ $role->id }}">{{ $role->permissions_count }}</div>
+                                        <div class="text-white text-xl font-black" id="perm-count-<?php echo e($role->id); ?>"><?php echo e($role->permissions_count); ?></div>
                                         <div class="text-white/50 text-[0.5rem] font-bold uppercase">perms</div>
                                     </div>
                                 </div>
                                 <div class="px-4 py-3 bg-white">
                                     <div class="flex flex-wrap gap-1 min-h-[40px]">
-                                        @foreach($role->permissions->take(6) as $p)
-                                        <span class="px-1.5 py-0.5 text-[0.5rem] font-black uppercase {{ $rc['badge'] }} rounded-full">{{ str_replace('.', ' ', $p->name) }}</span>
-                                        @endforeach
-                                        @if($role->permissions_count > 6)
-                                        <span class="px-1.5 py-0.5 text-[0.5rem] font-bold text-slate-400 bg-slate-50 rounded-full">+{{ $role->permissions_count - 6 }} more</span>
-                                        @endif
+                                        <?php $__currentLoopData = $role->permissions->take(6); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $p): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                        <span class="px-1.5 py-0.5 text-[0.5rem] font-black uppercase <?php echo e($rc['badge']); ?> rounded-full"><?php echo e(str_replace('.', ' ', $p->name)); ?></span>
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                        <?php if($role->permissions_count > 6): ?>
+                                        <span class="px-1.5 py-0.5 text-[0.5rem] font-bold text-slate-400 bg-slate-50 rounded-full">+<?php echo e($role->permissions_count - 6); ?> more</span>
+                                        <?php endif; ?>
                                     </div>
                                 </div>
                                 <div class="px-4 pb-3 bg-white flex items-center justify-between border-t border-slate-50 pt-3">
-                                    {{-- ← AJAX Modal trigger instead of page link --}}
-                                    <button type="button" @click="openEdit({{ $role->id }})"
+                                    
+                                    <button type="button" @click="openEdit(<?php echo e($role->id); ?>)"
                                             class="text-[0.6rem] font-black uppercase tracking-widest text-slate-500 hover:text-[#031629] flex items-center gap-1 transition-all group">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
                                         Edit Permissions
                                     </button>
-                                    @if(!in_array($role->name, ['super-admin','admin']))
-                                    <form action="{{ route('admin.roles.destroy', $role) }}" method="POST"
-                                          onsubmit="return confirm('Delete {{ $role->name }}?')">
-                                        @csrf @method('DELETE')
+                                    <?php if(!in_array($role->name, ['super-admin','admin'])): ?>
+                                    <form action="<?php echo e(route('admin.roles.destroy', $role)); ?>" method="POST"
+                                          onsubmit="return confirm('Delete <?php echo e($role->name); ?>?')">
+                                        <?php echo csrf_field(); ?> <?php echo method_field('DELETE'); ?>
                                         <button class="text-[0.6rem] font-black uppercase text-red-400 hover:text-red-600 transition-all flex items-center gap-1">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/></svg>
                                             Delete
                                         </button>
                                     </form>
-                                    @else
+                                    <?php else: ?>
                                     <span class="text-[0.55rem] text-slate-300 font-bold uppercase italic">Protected</span>
-                                    @endif
+                                    <?php endif; ?>
                                 </div>
                             </div>
-                            @endforeach
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         </div>
                     </div>
 
-                    {{-- User Assignments --}}
+                    
 
                     <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
                         <div class="flex items-center gap-3 px-6 py-4 border-b border-slate-50 bg-slate-50/50">
@@ -911,8 +909,8 @@
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-slate-50">
-                                    @foreach($users as $user)
-                                    @php
+                                    <?php $__currentLoopData = $users; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $user): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <?php
                                     $roleBadges = [
                                         'super-admin'     => 'bg-[#ff6900] text-white',
                                         'admin'           => 'bg-[#031629] text-white',
@@ -920,40 +918,43 @@
                                         'dealer'          => 'bg-emerald-600 text-white',
                                         'finance-manager' => 'bg-violet-600 text-white',
                                     ];
-                                    @endphp
+                                    ?>
                                     <tr class="hover:bg-slate-50/50 transition-all">
                                         <td class="px-5 py-3">
                                             <div class="flex items-center gap-2.5">
                                                 <div class="w-8 h-8 rounded-lg bg-[#031629] flex items-center justify-center text-white text-xs font-black shadow-sm">
-                                                    {{ strtoupper(substr($user->name, 0, 1)) }}
+                                                    <?php echo e(strtoupper(substr($user->name, 0, 1))); ?>
+
                                                 </div>
-                                                <span class="text-[0.75rem] font-black text-[#031629]">{{ $user->name }}</span>
+                                                <span class="text-[0.75rem] font-black text-[#031629]"><?php echo e($user->name); ?></span>
                                             </div>
                                         </td>
                                         <td class="px-5 py-3">
-                                            <span class="text-[0.7rem] text-slate-500 font-medium">{{ $user->email }}</span>
+                                            <span class="text-[0.7rem] text-slate-500 font-medium"><?php echo e($user->email); ?></span>
                                         </td>
                                         <td class="px-5 py-3">
                                             <div class="flex flex-wrap gap-1">
-                                                @forelse($user->roles as $r)
-                                                <span class="px-2 py-0.5 text-[0.58rem] font-black uppercase rounded-full {{ $roleBadges[$r->name] ?? 'bg-slate-600 text-white' }}">
-                                                    {{ str_replace('-', ' ', $r->name) }}
+                                                <?php $__empty_1 = true; $__currentLoopData = $user->roles; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $r): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                                                <span class="px-2 py-0.5 text-[0.58rem] font-black uppercase rounded-full <?php echo e($roleBadges[$r->name] ?? 'bg-slate-600 text-white'); ?>">
+                                                    <?php echo e(str_replace('-', ' ', $r->name)); ?>
+
                                                 </span>
-                                                @empty
+                                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                                                 <span class="px-2 py-0.5 text-[0.58rem] font-bold text-slate-400 bg-slate-100 rounded-full">No Role</span>
-                                                @endforelse
+                                                <?php endif; ?>
                                             </div>
                                         </td>
                                         <td class="px-5 py-3">
-                                            <form action="{{ route('admin.roles.assign', $user) }}" method="POST" class="flex items-center gap-2">
-                                                @csrf
+                                            <form action="<?php echo e(route('admin.roles.assign', $user)); ?>" method="POST" class="flex items-center gap-2">
+                                                <?php echo csrf_field(); ?>
                                                 <select name="role"
                                                     class="text-[0.7rem] font-semibold border border-slate-200 rounded-lg px-3 py-1.5 focus:border-[#ff6900] focus:ring-2 focus:ring-orange-500/10 outline-none bg-white">
-                                                    @foreach($roles as $role)
-                                                    <option value="{{ $role->name }}" {{ $user->hasRole($role->name) ? 'selected' : '' }}>
-                                                        {{ str_replace('-', ' ', ucwords($role->name)) }}
+                                                    <?php $__currentLoopData = $roles; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $role): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                    <option value="<?php echo e($role->name); ?>" <?php echo e($user->hasRole($role->name) ? 'selected' : ''); ?>>
+                                                        <?php echo e(str_replace('-', ' ', ucwords($role->name))); ?>
+
                                                     </option>
-                                                    @endforeach
+                                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                                 </select>
                                                 <button type="submit"
                                                     class="px-3 py-1.5 text-[0.6rem] font-black uppercase tracking-widest bg-[#031629] text-white rounded-lg hover:bg-[#ff6900] transition-all">
@@ -962,23 +963,22 @@
                                             </form>
                                         </td>
                                     </tr>
-                                    @endforeach
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                 </tbody>
                             </table>
                         </div>
-                        @if($users->hasPages())
+                        <?php if($users->hasPages()): ?>
                         <div class="px-6 py-4 border-t border-slate-50">
-                            {{ $users->links() }}
+                            <?php echo e($users->links()); ?>
+
                         </div>
-                        @endif
+                        <?php endif; ?>
                     </div>
 
                 </div>
             </div>
 
-            {{-- ═══════════════════════════════════
-                 TAB 03 — NOTIFICATION SETTINGS
-            ════════════════════════════════════ --}}
+            
             <div x-show="activeTab === 'tab3'" x-cloak x-transition
                  x-data="{
                     isSavingNotif: false,
@@ -991,11 +991,11 @@
                         this.isSavingNotif = false;
                     }
                  }">
-                <form @submit.prevent="saveNotif" action="{{ route('admin.settings.notifications.save') }}" method="POST">
-                @csrf
+                <form @submit.prevent="saveNotif" action="<?php echo e(route('admin.settings.notifications.save')); ?>" method="POST">
+                <?php echo csrf_field(); ?>
                 <div class="space-y-5">
 
-                    {{-- ─── In-App Bell Notifications ─── --}}
+                    
                     <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
                         <div class="flex items-center gap-3 px-6 py-4 border-b border-slate-50 bg-slate-50/50">
                             <div class="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center">
@@ -1008,31 +1008,31 @@
                         </div>
                         <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
 
-                            {{-- Polling Interval --}}
+                            
                             <div>
                                 <label class="block text-[0.6rem] font-black uppercase tracking-widest text-slate-500 mb-3">Polling Interval</label>
                                 <div class="flex gap-2">
-                                    @foreach([15 => '15s', 30 => '30s', 60 => '1m', 120 => '2m'] as $val => $label)
-                                    <label class="flex-1 flex flex-col items-center gap-1 p-3 rounded-xl border-2 cursor-pointer transition-all {{ ($notifSettings['notif_polling_interval'] ?? '15') == $val ? 'border-blue-400 bg-blue-50' : 'border-slate-200 hover:border-blue-200' }}">
-                                        <input type="radio" name="notif_polling_interval" value="{{ $val }}" {{ ($notifSettings['notif_polling_interval'] ?? '15') == $val ? 'checked' : '' }} class="accent-blue-500">
-                                        <span class="text-[0.7rem] font-black text-slate-700">{{ $label }}</span>
+                                    <?php $__currentLoopData = [15 => '15s', 30 => '30s', 60 => '1m', 120 => '2m']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $val => $label): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <label class="flex-1 flex flex-col items-center gap-1 p-3 rounded-xl border-2 cursor-pointer transition-all <?php echo e(($notifSettings['notif_polling_interval'] ?? '15') == $val ? 'border-blue-400 bg-blue-50' : 'border-slate-200 hover:border-blue-200'); ?>">
+                                        <input type="radio" name="notif_polling_interval" value="<?php echo e($val); ?>" <?php echo e(($notifSettings['notif_polling_interval'] ?? '15') == $val ? 'checked' : ''); ?> class="accent-blue-500">
+                                        <span class="text-[0.7rem] font-black text-slate-700"><?php echo e($label); ?></span>
                                     </label>
-                                    @endforeach
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                 </div>
                                 <p class="text-[0.58rem] text-slate-400 mt-2 font-medium">How often the admin panel checks for new notifications</p>
                             </div>
 
-                            {{-- Sound & Toast --}}
+                            
                             <div class="space-y-4">
                                 <div>
                                     <label class="block text-[0.6rem] font-black uppercase tracking-widest text-slate-500 mb-2">Sound Alert</label>
                                     <div class="flex gap-2">
-                                        <label class="flex-1 flex items-center gap-2 px-4 py-3 rounded-xl border-2 cursor-pointer transition-all {{ ($notifSettings['notif_sound'] ?? '1') == '1' ? 'border-blue-400 bg-blue-50' : 'border-slate-200' }}">
-                                            <input type="radio" name="notif_sound" value="1" {{ ($notifSettings['notif_sound'] ?? '1') == '1' ? 'checked' : '' }} class="accent-blue-500">
+                                        <label class="flex-1 flex items-center gap-2 px-4 py-3 rounded-xl border-2 cursor-pointer transition-all <?php echo e(($notifSettings['notif_sound'] ?? '1') == '1' ? 'border-blue-400 bg-blue-50' : 'border-slate-200'); ?>">
+                                            <input type="radio" name="notif_sound" value="1" <?php echo e(($notifSettings['notif_sound'] ?? '1') == '1' ? 'checked' : ''); ?> class="accent-blue-500">
                                             <span class="text-[0.68rem] font-bold text-slate-700">🔔 Enabled</span>
                                         </label>
-                                        <label class="flex-1 flex items-center gap-2 px-4 py-3 rounded-xl border-2 cursor-pointer transition-all {{ ($notifSettings['notif_sound'] ?? '1') == '0' ? 'border-slate-400 bg-slate-50' : 'border-slate-200' }}">
-                                            <input type="radio" name="notif_sound" value="0" {{ ($notifSettings['notif_sound'] ?? '1') == '0' ? 'checked' : '' }} class="accent-slate-500">
+                                        <label class="flex-1 flex items-center gap-2 px-4 py-3 rounded-xl border-2 cursor-pointer transition-all <?php echo e(($notifSettings['notif_sound'] ?? '1') == '0' ? 'border-slate-400 bg-slate-50' : 'border-slate-200'); ?>">
+                                            <input type="radio" name="notif_sound" value="0" <?php echo e(($notifSettings['notif_sound'] ?? '1') == '0' ? 'checked' : ''); ?> class="accent-slate-500">
                                             <span class="text-[0.68rem] font-bold text-slate-700">🔕 Disabled</span>
                                         </label>
                                     </div>
@@ -1040,34 +1040,34 @@
                                 <div>
                                     <label class="block text-[0.6rem] font-black uppercase tracking-widest text-slate-500 mb-2">Toast Notification</label>
                                     <div class="flex gap-2">
-                                        <label class="flex-1 flex items-center gap-2 px-4 py-3 rounded-xl border-2 cursor-pointer transition-all {{ ($notifSettings['notif_toast'] ?? '1') == '1' ? 'border-blue-400 bg-blue-50' : 'border-slate-200' }}">
-                                            <input type="radio" name="notif_toast" value="1" {{ ($notifSettings['notif_toast'] ?? '1') == '1' ? 'checked' : '' }} class="accent-blue-500">
+                                        <label class="flex-1 flex items-center gap-2 px-4 py-3 rounded-xl border-2 cursor-pointer transition-all <?php echo e(($notifSettings['notif_toast'] ?? '1') == '1' ? 'border-blue-400 bg-blue-50' : 'border-slate-200'); ?>">
+                                            <input type="radio" name="notif_toast" value="1" <?php echo e(($notifSettings['notif_toast'] ?? '1') == '1' ? 'checked' : ''); ?> class="accent-blue-500">
                                             <span class="text-[0.68rem] font-bold text-slate-700">✅ Show</span>
                                         </label>
-                                        <label class="flex-1 flex items-center gap-2 px-4 py-3 rounded-xl border-2 cursor-pointer transition-all {{ ($notifSettings['notif_toast'] ?? '1') == '0' ? 'border-slate-400 bg-slate-50' : 'border-slate-200' }}">
-                                            <input type="radio" name="notif_toast" value="0" {{ ($notifSettings['notif_toast'] ?? '1') == '0' ? 'checked' : '' }} class="accent-slate-500">
+                                        <label class="flex-1 flex items-center gap-2 px-4 py-3 rounded-xl border-2 cursor-pointer transition-all <?php echo e(($notifSettings['notif_toast'] ?? '1') == '0' ? 'border-slate-400 bg-slate-50' : 'border-slate-200'); ?>">
+                                            <input type="radio" name="notif_toast" value="0" <?php echo e(($notifSettings['notif_toast'] ?? '1') == '0' ? 'checked' : ''); ?> class="accent-slate-500">
                                             <span class="text-[0.68rem] font-bold text-slate-700">❌ Hide</span>
                                         </label>
                                     </div>
                                 </div>
                             </div>
 
-                            {{-- Retention --}}
+                            
                             <div>
                                 <label class="block text-[0.6rem] font-black uppercase tracking-widest text-slate-500 mb-2">Auto-Delete Read Notifications After</label>
                                 <select name="notif_retention_days"
                                     class="w-full px-4 py-3 text-sm font-semibold border border-slate-200 rounded-xl focus:border-blue-400 focus:ring-4 focus:ring-blue-500/5 outline-none transition-all bg-white">
-                                    @foreach([7 => '7 days', 14 => '14 days', 30 => '30 days', 60 => '60 days', 0 => 'Never'] as $days => $label)
-                                    <option value="{{ $days }}" {{ ($notifSettings['notif_retention_days'] ?? '30') == $days ? 'selected' : '' }}>{{ $label }}</option>
-                                    @endforeach
+                                    <?php $__currentLoopData = [7 => '7 days', 14 => '14 days', 30 => '30 days', 60 => '60 days', 0 => 'Never']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $days => $label): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <option value="<?php echo e($days); ?>" <?php echo e(($notifSettings['notif_retention_days'] ?? '30') == $days ? 'selected' : ''); ?>><?php echo e($label); ?></option>
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                 </select>
                             </div>
 
-                            {{-- Admin Email for notifications --}}
+                            
                             <div>
                                 <label class="block text-[0.6rem] font-black uppercase tracking-widest text-slate-500 mb-2">Admin Notification Email</label>
                                 <input type="email" name="notif_admin_email"
-                                    value="{{ old('notif_admin_email', $notifSettings['notif_admin_email'] ?? '') }}"
+                                    value="<?php echo e(old('notif_admin_email', $notifSettings['notif_admin_email'] ?? '')); ?>"
                                     placeholder="admin@motorbazar.ae"
                                     class="w-full px-4 py-3 text-sm font-semibold border border-slate-200 rounded-xl focus:border-blue-400 focus:ring-4 focus:ring-blue-500/5 outline-none transition-all">
                                 <p class="text-[0.58rem] text-slate-400 mt-1.5 font-medium">Email that receives admin alert emails (separate by comma for multiple)</p>
@@ -1076,7 +1076,7 @@
                         </div>
                     </div>
 
-                    {{-- ─── Trigger Events ─── --}}
+                    
                     <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
                         <div class="flex items-center gap-3 px-6 py-4 border-b border-slate-50 bg-slate-50/50">
                             <div class="w-9 h-9 rounded-xl bg-[#ff6900]/10 flex items-center justify-center">
@@ -1089,7 +1089,7 @@
                         </div>
                         <div class="p-6">
                             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                                @php
+                                <?php
                                 $events = [
                                     'notif_event_new_lead'        => ['label' => 'New Lead Submitted',    'icon' => '📋', 'desc' => 'Sell Your Car form',      'channels' => ['bell','email','whatsapp']],
                                     'notif_event_new_bid'         => ['label' => 'New Bid Placed',         'icon' => '🔨', 'desc' => 'Auction bid placed',       'channels' => ['bell','email']],
@@ -1101,34 +1101,35 @@
                                     'notif_event_low_stock'       => ['label' => 'Stock Alert',            'icon' => '📦', 'desc' => 'Inventory below threshold','channels' => ['bell','email']],
                                     'notif_event_payment'         => ['label' => 'Payment Received',       'icon' => '💰', 'desc' => 'Invoice paid',             'channels' => ['bell','email']],
                                 ];
-                                @endphp
-                                @foreach($events as $key => $ev)
-                                <div class="p-4 rounded-xl border-2 {{ ($notifSettings[$key] ?? '1') == '1' ? 'border-[#ff6900]/30 bg-orange-50/40' : 'border-slate-100' }} transition-all">
+                                ?>
+                                <?php $__currentLoopData = $events; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $ev): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <div class="p-4 rounded-xl border-2 <?php echo e(($notifSettings[$key] ?? '1') == '1' ? 'border-[#ff6900]/30 bg-orange-50/40' : 'border-slate-100'); ?> transition-all">
                                     <label class="flex items-start gap-3 cursor-pointer">
-                                        <input type="checkbox" name="{{ $key }}" value="1"
-                                               {{ ($notifSettings[$key] ?? '1') == '1' ? 'checked' : '' }}
+                                        <input type="checkbox" name="<?php echo e($key); ?>" value="1"
+                                               <?php echo e(($notifSettings[$key] ?? '1') == '1' ? 'checked' : ''); ?>
+
                                                class="mt-0.5 w-4 h-4 rounded accent-[#ff6900]">
                                         <div class="flex-1 min-w-0">
                                             <div class="flex items-center gap-1.5 mb-1">
-                                                <span class="text-sm">{{ $ev['icon'] }}</span>
-                                                <span class="text-[0.68rem] font-black text-[#031629] uppercase tracking-wide">{{ $ev['label'] }}</span>
+                                                <span class="text-sm"><?php echo e($ev['icon']); ?></span>
+                                                <span class="text-[0.68rem] font-black text-[#031629] uppercase tracking-wide"><?php echo e($ev['label']); ?></span>
                                             </div>
-                                            <div class="text-[0.58rem] text-slate-400 font-medium mb-2">{{ $ev['desc'] }}</div>
+                                            <div class="text-[0.58rem] text-slate-400 font-medium mb-2"><?php echo e($ev['desc']); ?></div>
                                             <div class="flex flex-wrap gap-1">
-                                                @foreach($ev['channels'] as $ch)
-                                                @php $chColors = ['bell' => 'bg-blue-100 text-blue-600', 'email' => 'bg-emerald-100 text-emerald-600', 'whatsapp' => 'bg-green-100 text-green-700']; @endphp
-                                                <span class="px-1.5 py-0.5 text-[0.5rem] font-black uppercase rounded-full {{ $chColors[$ch] ?? 'bg-slate-100 text-slate-500' }}">{{ $ch }}</span>
-                                                @endforeach
+                                                <?php $__currentLoopData = $ev['channels']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $ch): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                <?php $chColors = ['bell' => 'bg-blue-100 text-blue-600', 'email' => 'bg-emerald-100 text-emerald-600', 'whatsapp' => 'bg-green-100 text-green-700']; ?>
+                                                <span class="px-1.5 py-0.5 text-[0.5rem] font-black uppercase rounded-full <?php echo e($chColors[$ch] ?? 'bg-slate-100 text-slate-500'); ?>"><?php echo e($ch); ?></span>
+                                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                             </div>
                                         </div>
                                     </label>
                                 </div>
-                                @endforeach
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </div>
                         </div>
                     </div>
 
-                    {{-- ─── Channel Settings ─── --}}
+                    
                     <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
                         <div class="flex items-center gap-3 px-6 py-4 border-b border-slate-50 bg-slate-50/50">
                             <div class="w-9 h-9 rounded-xl bg-emerald-50 flex items-center justify-center">
@@ -1141,38 +1142,38 @@
                         </div>
                         <div class="p-6 grid grid-cols-1 md:grid-cols-3 gap-4">
 
-                            @php
+                            <?php
                             $channels = [
                                 'notif_channel_bell'      => ['label' => 'In-App Bell',  'icon' => '🔔', 'desc' => 'Admin panel notifications center', 'color' => 'blue'],
                                 'notif_channel_email'     => ['label' => 'Email',         'icon' => '📧', 'desc' => 'SMTP email alerts to admin',       'color' => 'emerald'],
                                 'notif_channel_whatsapp'  => ['label' => 'WhatsApp',      'icon' => '💬', 'desc' => 'WhatsApp API messages',             'color' => 'green'],
                             ];
                             $channelBorders = ['blue' => 'border-blue-400 bg-blue-50', 'emerald' => 'border-emerald-400 bg-emerald-50', 'green' => 'border-green-400 bg-green-50'];
-                            @endphp
+                            ?>
 
-                            @foreach($channels as $key => $ch)
-                            <div class="p-5 rounded-xl border-2 {{ ($notifSettings[$key] ?? '1') == '1' ? $channelBorders[$ch['color']] : 'border-slate-200 bg-white' }} transition-all">
+                            <?php $__currentLoopData = $channels; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $ch): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <div class="p-5 rounded-xl border-2 <?php echo e(($notifSettings[$key] ?? '1') == '1' ? $channelBorders[$ch['color']] : 'border-slate-200 bg-white'); ?> transition-all">
                                 <div class="flex items-center justify-between mb-3">
                                     <div class="flex items-center gap-2">
-                                        <span class="text-xl">{{ $ch['icon'] }}</span>
-                                        <div class="text-[0.72rem] font-black text-[#031629] uppercase">{{ $ch['label'] }}</div>
+                                        <span class="text-xl"><?php echo e($ch['icon']); ?></span>
+                                        <div class="text-[0.72rem] font-black text-[#031629] uppercase"><?php echo e($ch['label']); ?></div>
                                     </div>
                                     <label class="relative inline-flex items-center cursor-pointer">
-                                        <input type="hidden" name="{{ $key }}" value="0">
-                                        <input type="checkbox" name="{{ $key }}" value="1"
+                                        <input type="hidden" name="<?php echo e($key); ?>" value="0">
+                                        <input type="checkbox" name="<?php echo e($key); ?>" value="1"
                                                class="sr-only peer"
-                                               {{ ($notifSettings[$key] ?? '1') == '1' ? 'checked' : '' }}>
+                                               <?php echo e(($notifSettings[$key] ?? '1') == '1' ? 'checked' : ''); ?>>
                                         <div class="w-10 h-5 bg-slate-200 rounded-full peer peer-checked:bg-[#ff6900] transition-colors duration-300 after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-5"></div>
                                     </label>
                                 </div>
-                                <p class="text-[0.6rem] text-slate-400 font-medium">{{ $ch['desc'] }}</p>
+                                <p class="text-[0.6rem] text-slate-400 font-medium"><?php echo e($ch['desc']); ?></p>
                             </div>
-                            @endforeach
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 
                         </div>
                     </div>
 
-                    {{-- Save Button --}}
+                    
                     <div class="flex items-center justify-end gap-3 pt-2">
                         <button type="submit" :disabled="isSavingNotif"
                             class="flex items-center gap-2.5 px-8 py-3 text-[0.72rem] font-black uppercase tracking-widest text-white bg-[#031629] rounded-xl hover:bg-blue-600 transition-all shadow-md disabled:opacity-50">
@@ -1190,26 +1191,24 @@
                 </form>
             </div>
 
-            {{-- ═══════════════════════════════════
-                 TAB 04 — EMAIL SETTINGS
-            ════════════════════════════════════ --}}
+            
             <div x-show="activeTab === 'tab4'" x-cloak x-transition
                  x-data="{ isSaving: false, testEmail: '', testing: false, connecting: false,
                     async save(e) { this.isSaving = true; const fd = new FormData(e.target); const r = await fetch(e.target.action, {method:'POST',body:fd,headers:{'X-CSRF-TOKEN':document.querySelector('meta[name=csrf-token]').content,'X-Requested-With':'XMLHttpRequest','Accept':'application/json'}}); const d = await r.json(); $dispatch('show-toast',{message:d.message,type:r.ok?'success':'error'}); this.isSaving=false; },
-                    async test() { this.testing=true; const r = await fetch('{{ route('admin.settings.communication.test-email') }}',{method:'POST',body:JSON.stringify({email:this.testEmail}),headers:{'X-CSRF-TOKEN':document.querySelector('meta[name=csrf-token]').content,'Content-Type':'application/json','Accept':'application/json'}}); const d = await r.json(); $dispatch('show-toast',{message:d.message,type:r.ok?'success':'error'}); this.testing=false; },
+                    async test() { this.testing=true; const r = await fetch('<?php echo e(route('admin.settings.communication.test-email')); ?>',{method:'POST',body:JSON.stringify({email:this.testEmail}),headers:{'X-CSRF-TOKEN':document.querySelector('meta[name=csrf-token]').content,'Content-Type':'application/json','Accept':'application/json'}}); const d = await r.json(); $dispatch('show-toast',{message:d.message,type:r.ok?'success':'error'}); this.testing=false; },
                     async connect() { 
                         this.connecting=true; 
-                        const r = await fetch('{{ route('admin.settings.smtp.test') }}',{method:'POST',headers:{'X-CSRF-TOKEN':document.querySelector('meta[name=csrf-token]').content,'Accept':'application/json'}}); 
+                        const r = await fetch('<?php echo e(route('admin.settings.smtp.test')); ?>',{method:'POST',headers:{'X-CSRF-TOKEN':document.querySelector('meta[name=csrf-token]').content,'Accept':'application/json'}}); 
                         const d = await r.json(); 
                         $dispatch('show-toast',{message:d.message,type:r.ok?'success':'error'}); 
                         this.connecting=false; 
                     }
                  }">
-                <form @submit.prevent="save" action="{{ route('admin.settings.communication.update') }}" method="POST">
-                @csrf
+                <form @submit.prevent="save" action="<?php echo e(route('admin.settings.communication.update')); ?>" method="POST">
+                <?php echo csrf_field(); ?>
                 <div class="space-y-5">
 
-                    {{-- SMTP Config --}}
+                    
                     <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
                         <div class="flex items-center gap-3 px-6 py-4 border-b border-slate-50 bg-slate-50/50">
                             <div class="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center">
@@ -1222,38 +1221,38 @@
                         </div>
                         <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-5">
 
-                            @php $smtpFields = [
+                            <?php $smtpFields = [
                                 ['mail_host',        'SMTP Host',        'smtp.gmail.com',          'text',     'md:col-span-1'],
                                 ['mail_port',        'SMTP Port',        '587',                     'number',   'md:col-span-1'],
                                 ['mail_username',    'Username / Email', 'you@gmail.com',           'email',    'md:col-span-1'],
                                 ['mail_password',    'Password / App Key','',                       'password', 'md:col-span-1'],
                                 ['mail_from_address','From Address',     'no-reply@motorbazar.ae',  'email',    'md:col-span-1'],
                                 ['mail_from_name',   'From Name',        'Motor Bazar',             'text',     'md:col-span-1'],
-                            ]; @endphp
+                            ]; ?>
 
-                            @foreach($smtpFields as [$key, $label, $ph, $type, $span])
-                            <div class="{{ $span }}">
-                                <label class="block text-[0.6rem] font-black uppercase tracking-widest text-slate-500 mb-2">{{ $label }}</label>
-                                <input type="{{ $type }}" name="{{ $key }}"
-                                    value="{{ $type !== 'password' ? ($commSettings[$key] ?? '') : (!empty($commSettings[$key]) ? '********' : '') }}"
-                                    @if($type === 'password') x-on:focus="if($el.value === '********') $el.value = ''" @endif
-                                    placeholder="{{ $ph }}"
+                            <?php $__currentLoopData = $smtpFields; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as [$key, $label, $ph, $type, $span]): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <div class="<?php echo e($span); ?>">
+                                <label class="block text-[0.6rem] font-black uppercase tracking-widest text-slate-500 mb-2"><?php echo e($label); ?></label>
+                                <input type="<?php echo e($type); ?>" name="<?php echo e($key); ?>"
+                                    value="<?php echo e($type !== 'password' ? ($commSettings[$key] ?? '') : (!empty($commSettings[$key]) ? '********' : '')); ?>"
+                                    <?php if($type === 'password'): ?> x-on:focus="if($el.value === '********') $el.value = ''" <?php endif; ?>
+                                    placeholder="<?php echo e($ph); ?>"
                                     class="w-full px-4 py-3 text-sm font-semibold border border-slate-200 rounded-xl focus:border-blue-400 focus:ring-4 focus:ring-blue-500/5 outline-none transition-all">
                             </div>
-                            @endforeach
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 
-                            {{-- Encryption --}}
+                            
                             <div>
                                 <label class="block text-[0.6rem] font-black uppercase tracking-widest text-slate-500 mb-2">Encryption</label>
                                 <select name="mail_encryption"
                                     class="w-full px-4 py-3 text-sm font-semibold border border-slate-200 rounded-xl focus:border-blue-400 focus:ring-4 focus:ring-blue-500/5 outline-none transition-all bg-white">
-                                    @foreach(['tls' => 'TLS (Recommended)', 'ssl' => 'SSL', 'none' => 'None'] as $v => $l)
-                                    <option value="{{ $v }}" {{ ($commSettings['mail_encryption'] ?? 'tls') === $v ? 'selected' : '' }}>{{ $l }}</option>
-                                    @endforeach
+                                    <?php $__currentLoopData = ['tls' => 'TLS (Recommended)', 'ssl' => 'SSL', 'none' => 'None']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $v => $l): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <option value="<?php echo e($v); ?>" <?php echo e(($commSettings['mail_encryption'] ?? 'tls') === $v ? 'selected' : ''); ?>><?php echo e($l); ?></option>
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                 </select>
                             </div>
 
-                            {{-- Test Email --}}
+                            
                             <div>
                                 <label class="block text-[0.6rem] font-black uppercase tracking-widest text-slate-500 mb-2">Send Test Email To</label>
                                 <div class="flex gap-2">
@@ -1269,7 +1268,7 @@
                         </div>
                     </div>
 
-                    {{-- Email Templates --}}
+                    
                     <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
                         <div class="flex items-center gap-3 px-6 py-4 border-b border-slate-50 bg-slate-50/50">
                             <div class="w-9 h-9 rounded-xl bg-indigo-50 flex items-center justify-center">
@@ -1284,49 +1283,49 @@
 
                             <div class="bg-slate-50 rounded-xl px-4 py-3 text-[0.6rem] font-bold text-slate-500 border border-slate-100">
                                 <span class="text-slate-700 font-black">Available variables: </span>
-                                @foreach(['{name}','{make}','{model}','{year}','{date}','{time}','{ref}','{amount}'] as $v)
-                                <span class="text-[#ff6900] ml-1">{{ $v }}</span>
-                                @endforeach
+                                <?php $__currentLoopData = ['{name}','{make}','{model}','{year}','{date}','{time}','{ref}','{amount}']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $v): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <span class="text-[#ff6900] ml-1"><?php echo e($v); ?></span>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </div>
 
-                            @php
+                            <?php
                             $emailTemplates = [
                                 ['subject_key' => 'email_lead_subject',   'body_key' => 'email_lead_body',   'label' => 'New Lead Confirmation', 'desc' => 'Sent to client after submitting Sell Your Car form', 'default_subject' => 'We received your request — Motor Bazar', 'default_body' => ''],
                                 ['subject_key' => 'email_insp_subject',   'body_key' => 'email_insp_body',   'label' => 'Inspection Reminder',   'desc' => 'Sent 24h before scheduled inspection',             'default_subject' => 'Your inspection is tomorrow — Motor Bazar', 'default_body' => ''],
                                 ['subject_key' => 'email_auction_subject', 'body_key' => 'email_auction_body','label' => 'Auction Result',         'desc' => 'Sent when auction ends (winner or all bidders)',     'default_subject' => 'Auction Result — Motor Bazar',             'default_body' => ''],
                                 ['subject_key' => 'email_welcome_subject', 'body_key' => 'email_welcome_body','label' => 'Welcome / Registration', 'desc' => 'Sent when a new user registers',                    'default_subject' => 'Welcome to Motor Bazar!',                  'default_body' => ''],
                             ];
-                            @endphp
+                            ?>
 
-                            @foreach($emailTemplates as $tmpl)
+                            <?php $__currentLoopData = $emailTemplates; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $tmpl): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                             <div class="border border-slate-100 rounded-xl overflow-hidden">
                                 <div class="px-5 py-3 bg-slate-50/80 border-b border-slate-100">
-                                    <div class="text-[0.68rem] font-black text-[#031629] uppercase tracking-wide">{{ $tmpl['label'] }}</div>
-                                    <div class="text-[0.58rem] text-slate-400 font-medium">{{ $tmpl['desc'] }}</div>
+                                    <div class="text-[0.68rem] font-black text-[#031629] uppercase tracking-wide"><?php echo e($tmpl['label']); ?></div>
+                                    <div class="text-[0.58rem] text-slate-400 font-medium"><?php echo e($tmpl['desc']); ?></div>
                                 </div>
                                 <div class="p-5 space-y-3">
                                     <div>
                                         <label class="block text-[0.58rem] font-black uppercase tracking-widest text-slate-400 mb-1.5">Subject Line</label>
-                                        <input type="text" name="{{ $tmpl['subject_key'] }}"
-                                            value="{{ $commSettings[$tmpl['subject_key']] ?? $tmpl['default_subject'] }}"
+                                        <input type="text" name="<?php echo e($tmpl['subject_key']); ?>"
+                                            value="<?php echo e($commSettings[$tmpl['subject_key']] ?? $tmpl['default_subject']); ?>"
                                             class="w-full px-4 py-2.5 text-sm font-semibold border border-slate-200 rounded-xl focus:border-blue-400 focus:ring-4 focus:ring-blue-500/5 outline-none transition-all">
                                     </div>
                                     <div>
                                         <label class="block text-[0.58rem] font-black uppercase tracking-widest text-slate-400 mb-1.5">Message Body <span class="text-slate-300 normal-case">(leave empty to use default branded template)</span></label>
-                                        <textarea name="{{ $tmpl['body_key'] }}" rows="4"
+                                        <textarea name="<?php echo e($tmpl['body_key']); ?>" rows="4"
                                             placeholder="Optional custom body text..."
-                                            class="w-full px-4 py-3 text-sm font-medium border border-slate-200 rounded-xl focus:border-blue-400 focus:ring-4 focus:ring-blue-500/5 outline-none transition-all resize-none">{{ $commSettings[$tmpl['body_key']] ?? '' }}</textarea>
+                                            class="w-full px-4 py-3 text-sm font-medium border border-slate-200 rounded-xl focus:border-blue-400 focus:ring-4 focus:ring-blue-500/5 outline-none transition-all resize-none"><?php echo e($commSettings[$tmpl['body_key']] ?? ''); ?></textarea>
                                     </div>
                                 </div>
                             </div>
-                            @endforeach
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 
                         </div>
                     </div>
 
-                    {{-- Save --}}
+                    
                     <div class="flex items-center justify-end gap-4 pt-4 border-t border-slate-50">
-                        {{-- Test Connect Button --}}
+                        
                         <button type="button" @click="connect()" :disabled="connecting"
                             class="flex items-center gap-2.5 px-6 py-3 text-[0.72rem] font-black uppercase tracking-widest text-[#031629] bg-white border-2 border-slate-200 rounded-xl hover:border-blue-400 hover:text-blue-600 transition-all shadow-sm disabled:opacity-50">
                             <template x-if="!connecting">
@@ -1350,19 +1349,17 @@
                 </form>
             </div>
 
-            {{-- ═══════════════════════════════════
-                 TAB 05 — WHATSAPP SETTINGS
-            ════════════════════════════════════ --}}
+            
             <div x-show="activeTab === 'tab5'" x-cloak x-transition
                  x-data="{ isSaving: false, waTestNum: '', testing: false,
                     async save(e) { this.isSaving=true; const fd=new FormData(e.target); const r=await fetch(e.target.action,{method:'POST',body:fd,headers:{'X-CSRF-TOKEN':document.querySelector('meta[name=csrf-token]').content,'X-Requested-With':'XMLHttpRequest','Accept':'application/json'}}); const d=await r.json(); $dispatch('show-toast',{message:d.message,type:r.ok?'success':'error'}); this.isSaving=false; },
-                    async test() { this.testing=true; const r=await fetch('{{ route('admin.settings.communication.test-whatsapp') }}',{method:'POST',body:JSON.stringify({phone:this.waTestNum}),headers:{'X-CSRF-TOKEN':document.querySelector('meta[name=csrf-token]').content,'Content-Type':'application/json','Accept':'application/json'}}); const d=await r.json(); $dispatch('show-toast',{message:d.message,type:r.ok?'success':'error'}); this.testing=false; }
+                    async test() { this.testing=true; const r=await fetch('<?php echo e(route('admin.settings.communication.test-whatsapp')); ?>',{method:'POST',body:JSON.stringify({phone:this.waTestNum}),headers:{'X-CSRF-TOKEN':document.querySelector('meta[name=csrf-token]').content,'Content-Type':'application/json','Accept':'application/json'}}); const d=await r.json(); $dispatch('show-toast',{message:d.message,type:r.ok?'success':'error'}); this.testing=false; }
                  }">
-                <form @submit.prevent="save" action="{{ route('admin.settings.communication.update') }}" method="POST">
-                @csrf
+                <form @submit.prevent="save" action="<?php echo e(route('admin.settings.communication.update')); ?>" method="POST">
+                <?php echo csrf_field(); ?>
                 <div class="space-y-5">
 
-                    {{-- API Config --}}
+                    
                     <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
                         <div class="flex items-center gap-3 px-6 py-4 border-b border-slate-50 bg-slate-50/50">
                             <div class="w-9 h-9 rounded-xl bg-green-50 flex items-center justify-center">
@@ -1375,39 +1372,39 @@
                         </div>
                         <div class="p-6 space-y-5">
 
-                            {{-- Provider --}}
+                            
                             <div>
                                 <label class="block text-[0.6rem] font-black uppercase tracking-widest text-slate-500 mb-3">Provider</label>
                                 <div class="grid grid-cols-3 gap-3">
-                                    @foreach(['twilio' => ['Twilio','border-blue-300 bg-blue-50 text-blue-700'], 'meta' => ['Meta / WhatsApp Business','border-green-300 bg-green-50 text-green-700'], 'generic' => ['Custom HTTP API','border-slate-200 bg-slate-50 text-slate-700']] as $pv => $pd)
-                                    <label class="flex items-center gap-3 p-3 rounded-xl border-2 cursor-pointer {{ $pd[1] }} transition-all">
-                                        <input type="radio" name="whatsapp_provider" value="{{ $pv }}" {{ ($commSettings['whatsapp_provider'] ?? 'twilio') === $pv ? 'checked' : '' }} class="accent-emerald-500">
-                                        <span class="text-[0.65rem] font-black uppercase">{{ $pd[0] }}</span>
+                                    <?php $__currentLoopData = ['twilio' => ['Twilio','border-blue-300 bg-blue-50 text-blue-700'], 'meta' => ['Meta / WhatsApp Business','border-green-300 bg-green-50 text-green-700'], 'generic' => ['Custom HTTP API','border-slate-200 bg-slate-50 text-slate-700']]; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $pv => $pd): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <label class="flex items-center gap-3 p-3 rounded-xl border-2 cursor-pointer <?php echo e($pd[1]); ?> transition-all">
+                                        <input type="radio" name="whatsapp_provider" value="<?php echo e($pv); ?>" <?php echo e(($commSettings['whatsapp_provider'] ?? 'twilio') === $pv ? 'checked' : ''); ?> class="accent-emerald-500">
+                                        <span class="text-[0.65rem] font-black uppercase"><?php echo e($pd[0]); ?></span>
                                     </label>
-                                    @endforeach
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                 </div>
                             </div>
 
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                                @php $waFields = [
+                                <?php $waFields = [
                                     ['whatsapp_api_url',    'API URL / Endpoint',      'https://api.twilio.com/...',    'url',  'md:col-span-2'],
                                     ['whatsapp_api_key',    'API Key / Account SID',   'ACxxxxxxxxxxxxxxx',            'text', 'md:col-span-1'],
                                     ['whatsapp_api_secret', 'API Secret / Auth Token', '(leave blank to keep current)','text', 'md:col-span-1'],
                                     ['whatsapp_from',       'From Number',             'whatsapp:+14155238886',        'text', 'md:col-span-1'],
-                                ]; @endphp
+                                ]; ?>
 
-                                @foreach($waFields as [$key, $label, $ph, $type, $span])
-                                <div class="{{ $span }}">
-                                    <label class="block text-[0.6rem] font-black uppercase tracking-widest text-slate-500 mb-2">{{ $label }}</label>
-                                    <input type="{{ $type }}" name="{{ $key }}"
-                                        value="{{ $key !== 'whatsapp_api_secret' ? ($commSettings[$key] ?? '') : (!empty($commSettings[$key]) ? '********' : '') }}"
-                                        @if($key === 'whatsapp_api_secret') x-on:focus="if($el.value === '********') $el.value = ''" @endif
-                                        placeholder="{{ $ph }}"
+                                <?php $__currentLoopData = $waFields; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as [$key, $label, $ph, $type, $span]): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <div class="<?php echo e($span); ?>">
+                                    <label class="block text-[0.6rem] font-black uppercase tracking-widest text-slate-500 mb-2"><?php echo e($label); ?></label>
+                                    <input type="<?php echo e($type); ?>" name="<?php echo e($key); ?>"
+                                        value="<?php echo e($key !== 'whatsapp_api_secret' ? ($commSettings[$key] ?? '') : (!empty($commSettings[$key]) ? '********' : '')); ?>"
+                                        <?php if($key === 'whatsapp_api_secret'): ?> x-on:focus="if($el.value === '********') $el.value = ''" <?php endif; ?>
+                                        placeholder="<?php echo e($ph); ?>"
                                         class="w-full px-4 py-3 text-sm font-semibold border border-slate-200 rounded-xl focus:border-green-400 focus:ring-4 focus:ring-green-500/5 outline-none transition-all">
                                 </div>
-                                @endforeach
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 
-                                {{-- Test --}}
+                                
                                 <div class="md:col-span-1">
                                     <label class="block text-[0.6rem] font-black uppercase tracking-widest text-slate-500 mb-2">Send Test Message To</label>
                                     <div class="flex gap-2">
@@ -1423,7 +1420,7 @@
                         </div>
                     </div>
 
-                    {{-- WhatsApp Templates --}}
+                    
                     <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
                         <div class="flex items-center gap-3 px-6 py-4 border-b border-slate-50 bg-slate-50/50">
                             <div class="w-9 h-9 rounded-xl bg-emerald-50 flex items-center justify-center">
@@ -1438,12 +1435,12 @@
 
                             <div class="bg-slate-50 rounded-xl px-4 py-3 text-[0.6rem] font-bold text-slate-500 border border-slate-100">
                                 <span class="text-slate-700 font-black">Variables: </span>
-                                @foreach(['{name}','{make}','{model}','{year}','{date}','{time}','{ref}','{amount}'] as $v)
-                                <span class="text-[#ff6900] ml-1">{{ $v }}</span>
-                                @endforeach
+                                <?php $__currentLoopData = ['{name}','{make}','{model}','{year}','{date}','{time}','{ref}','{amount}']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $v): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <span class="text-[#ff6900] ml-1"><?php echo e($v); ?></span>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </div>
 
-                            @php
+                            <?php
                             $waTemplates = [
                                 ['key' => 'whatsapp_lead_template',    'label' => 'New Lead Confirmation',    'desc' => 'Sent after Sell Your Car form submitted',
                                  'default' => "Hello {name}! 👋\n\nYour Motor Bazar request has been received.\n\n🚗 Vehicle: {year} {make} {model}\n📅 Inspection: {date} at {time}\n🔖 Ref: #{ref}\n\nOur team will contact you shortly. Thank you!"],
@@ -1454,28 +1451,28 @@
                                 ['key' => 'whatsapp_welcome',          'label' => 'Welcome / Registration',   'desc' => 'Sent when a new account is created',
                                  'default' => "Welcome to Motor Bazar, {name}! 🎉\n\nYour account has been created.\nExplore our live auctions and premium vehicles.\n\nMotor Bazar Team"],
                             ];
-                            @endphp
+                            ?>
 
-                            @foreach($waTemplates as $tmpl)
+                            <?php $__currentLoopData = $waTemplates; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $tmpl): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                             <div class="border border-slate-100 rounded-xl overflow-hidden">
                                 <div class="px-5 py-3 bg-slate-50/80 border-b border-slate-100">
                                     <div class="flex items-center gap-2">
-                                        <span class="text-[0.68rem] font-black text-[#031629] uppercase tracking-wide">{{ $tmpl['label'] }}</span>
+                                        <span class="text-[0.68rem] font-black text-[#031629] uppercase tracking-wide"><?php echo e($tmpl['label']); ?></span>
                                         <span class="text-[0.55rem] px-2 py-0.5 bg-green-100 text-green-700 rounded-full font-bold uppercase">WhatsApp</span>
                                     </div>
-                                    <div class="text-[0.58rem] text-slate-400 font-medium">{{ $tmpl['desc'] }}</div>
+                                    <div class="text-[0.58rem] text-slate-400 font-medium"><?php echo e($tmpl['desc']); ?></div>
                                 </div>
                                 <div class="p-5">
-                                    <textarea name="{{ $tmpl['key'] }}" rows="5"
-                                        class="w-full px-4 py-3 text-sm font-mono border border-slate-200 rounded-xl focus:border-green-400 focus:ring-4 focus:ring-green-500/5 outline-none transition-all resize-none">{{ $commSettings[$tmpl['key']] ?? $tmpl['default'] }}</textarea>
+                                    <textarea name="<?php echo e($tmpl['key']); ?>" rows="5"
+                                        class="w-full px-4 py-3 text-sm font-mono border border-slate-200 rounded-xl focus:border-green-400 focus:ring-4 focus:ring-green-500/5 outline-none transition-all resize-none"><?php echo e($commSettings[$tmpl['key']] ?? $tmpl['default']); ?></textarea>
                                 </div>
                             </div>
-                            @endforeach
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 
                         </div>
                     </div>
 
-                    {{-- Save --}}
+                    
                     <div class="flex justify-end pt-2">
                         <button type="submit" :disabled="isSaving"
                             class="flex items-center gap-2.5 px-8 py-3 text-[0.72rem] font-black uppercase tracking-widest text-white bg-[#031629] rounded-xl hover:bg-green-700 transition-all shadow-md disabled:opacity-50">
@@ -1489,14 +1486,12 @@
                 </form>
             </div>
 
-            {{-- ═══════════════════════════════════
-                 TAB 06 — AUCTION SETTINGS
-            ════════════════════════════════════ --}}
+            
             <div x-show="activeTab === 'tab6'" x-cloak x-transition
                  x-data="{
                     isSaving: false,
-                    threshold: {{ $auctionSettings['time_extension_threshold'] ?? 30 }},
-                    extension: {{ $auctionSettings['time_extension_seconds'] ?? 20 }},
+                    threshold: <?php echo e($auctionSettings['time_extension_threshold'] ?? 30); ?>,
+                    extension: <?php echo e($auctionSettings['time_extension_seconds'] ?? 20); ?>,
                     async save(e) {
                         this.isSaving = true;
                         const fd = new FormData(e.target);
@@ -1506,11 +1501,11 @@
                         this.isSaving = false;
                     }
                  }">
-                <form @submit.prevent="save" action="{{ route('admin.settings.auctions.update') }}" method="POST">
-                @csrf
+                <form @submit.prevent="save" action="<?php echo e(route('admin.settings.auctions.update')); ?>" method="POST">
+                <?php echo csrf_field(); ?>
                 <div class="space-y-5">
 
-                    {{-- ─── Anti-Sniping ─── --}}
+                    
                     <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
                         <div class="flex items-center justify-between px-6 py-4 border-b border-slate-50 bg-slate-50/50">
                             <div class="flex items-center gap-3">
@@ -1522,18 +1517,18 @@
                                     <div class="text-[0.6rem] text-slate-400 font-medium">Extend auction time when a bid is placed near the deadline</div>
                                 </div>
                             </div>
-                            {{-- Toggle --}}
+                            
                             <label class="relative inline-flex items-center cursor-pointer gap-3">
                                 <input type="hidden" name="anti_snipe_enabled" value="0">
                                 <input type="checkbox" name="anti_snipe_enabled" value="1" class="sr-only peer"
-                                       {{ ($auctionSettings['anti_snipe_enabled'] ?? '1') == '1' ? 'checked' : '' }}>
+                                       <?php echo e(($auctionSettings['anti_snipe_enabled'] ?? '1') == '1' ? 'checked' : ''); ?>>
                                 <div class="w-12 h-6 bg-slate-200 rounded-full peer peer-checked:bg-violet-500 transition-colors duration-300 after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-6 relative"></div>
                                 <span class="text-[0.65rem] font-black text-slate-500 uppercase">Anti-Snipe</span>
                             </label>
                         </div>
                         <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-8">
 
-                            {{-- Threshold slider --}}
+                            
                             <div class="space-y-3">
                                 <div class="flex items-center justify-between">
                                     <label class="text-[0.6rem] font-black uppercase tracking-widest text-slate-500">Trigger Threshold</label>
@@ -1549,7 +1544,7 @@
                                 <p class="text-[0.58rem] text-slate-400 font-medium">If a bid arrives within this many seconds of the end time</p>
                             </div>
 
-                            {{-- Extension slider --}}
+                            
                             <div class="space-y-3">
                                 <div class="flex items-center justify-between">
                                     <label class="text-[0.6rem] font-black uppercase tracking-widest text-slate-500">Time Added</label>
@@ -1565,7 +1560,7 @@
                                 <p class="text-[0.58rem] text-slate-400 font-medium">Seconds added to the timer automatically</p>
                             </div>
 
-                            {{-- Preview Banner --}}
+                            
                             <div class="md:col-span-2 bg-violet-50/60 rounded-xl px-5 py-3.5 flex items-center gap-2 border border-violet-100">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2.5" class="flex-shrink-0"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
                                 <p class="text-[0.68rem] text-slate-600 font-semibold">
@@ -1580,7 +1575,7 @@
                         </div>
                     </div>
 
-                    {{-- ─── Bidding Rules ─── --}}
+                    
                     <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
                         <div class="flex items-center gap-3 px-6 py-4 border-b border-slate-50 bg-slate-50/50">
                             <div class="w-9 h-9 rounded-xl bg-[#ff6900]/10 flex items-center justify-center">
@@ -1598,7 +1593,7 @@
                                 <div class="relative">
                                     <span class="absolute left-4 top-1/2 -translate-y-1/2 text-[0.7rem] font-black text-slate-400">AED</span>
                                     <input type="number" name="default_bid_increment"
-                                           value="{{ $auctionSettings['default_bid_increment'] ?? 500 }}"
+                                           value="<?php echo e($auctionSettings['default_bid_increment'] ?? 500); ?>"
                                            min="1" step="50"
                                            class="w-full pl-14 pr-4 py-3.5 text-lg font-black border border-slate-200 rounded-xl focus:border-[#ff6900] focus:ring-4 focus:ring-orange-500/5 outline-none transition-all">
                                 </div>
@@ -1610,7 +1605,7 @@
                                 <div class="relative">
                                     <span class="absolute left-4 top-1/2 -translate-y-1/2 text-[0.7rem] font-black text-slate-400">AED</span>
                                     <input type="number" name="default_deposit"
-                                           value="{{ $auctionSettings['default_deposit'] ?? 500 }}"
+                                           value="<?php echo e($auctionSettings['default_deposit'] ?? 500); ?>"
                                            min="0" step="50"
                                            class="w-full pl-14 pr-4 py-3.5 text-lg font-black border border-slate-200 rounded-xl focus:border-[#ff6900] focus:ring-4 focus:ring-orange-500/5 outline-none transition-all">
                                 </div>
@@ -1620,7 +1615,7 @@
                         </div>
                     </div>
 
-                    {{-- ─── Auction Behaviour ─── --}}
+                    
                     <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
                         <div class="flex items-center gap-3 px-6 py-4 border-b border-slate-50 bg-slate-50/50">
                             <div class="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center">
@@ -1633,7 +1628,7 @@
                         </div>
                         <div class="divide-y divide-slate-50">
 
-                            {{-- Auto-Close --}}
+                            
                             <div class="flex items-center justify-between px-6 py-4">
                                 <div>
                                     <div class="text-[0.75rem] font-black text-[#031629]">Auto-Close Auctions</div>
@@ -1642,12 +1637,12 @@
                                 <label class="relative inline-flex items-center cursor-pointer">
                                     <input type="hidden" name="auction_auto_close" value="0">
                                     <input type="checkbox" name="auction_auto_close" value="1" class="sr-only peer"
-                                           {{ ($auctionSettings['auction_auto_close'] ?? '1') == '1' ? 'checked' : '' }}>
+                                           <?php echo e(($auctionSettings['auction_auto_close'] ?? '1') == '1' ? 'checked' : ''); ?>>
                                     <div class="w-12 h-6 bg-slate-200 rounded-full peer peer-checked:bg-emerald-500 transition-colors duration-300 after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-6 relative"></div>
                                 </label>
                             </div>
 
-                            {{-- Bid Feed Admin Only --}}
+                            
                             <div class="flex items-center justify-between px-6 py-4">
                                 <div>
                                     <div class="text-[0.75rem] font-black text-[#031629]">Bid Feed — Admin Only</div>
@@ -1656,7 +1651,7 @@
                                 <label class="relative inline-flex items-center cursor-pointer">
                                     <input type="hidden" name="global_bid_feed_admin_only" value="0">
                                     <input type="checkbox" name="global_bid_feed_admin_only" value="1" class="sr-only peer"
-                                           {{ ($auctionSettings['global_bid_feed_admin_only'] ?? '1') == '1' ? 'checked' : '' }}>
+                                           <?php echo e(($auctionSettings['global_bid_feed_admin_only'] ?? '1') == '1' ? 'checked' : ''); ?>>
                                     <div class="w-12 h-6 bg-slate-200 rounded-full peer peer-checked:bg-blue-500 transition-colors duration-300 after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-6 relative"></div>
                                 </label>
                             </div>
@@ -1664,7 +1659,7 @@
                         </div>
                     </div>
 
-                    {{-- Save --}}
+                    
                     <div class="flex justify-end pt-2">
                         <button type="submit" :disabled="isSaving"
                             class="flex items-center gap-2.5 px-8 py-3 text-[0.72rem] font-black uppercase tracking-widest text-white bg-[#031629] rounded-xl hover:bg-[#ff6900] transition-all shadow-md disabled:opacity-50">
@@ -1678,9 +1673,7 @@
                 </form>
             </div>
 
-            {{-- ═══════════════════════════════════
-                 TAB 07 — INSPECTION FIELD BUILDER
-            ════════════════════════════════════ --}}
+            
             <div x-show="activeTab === 'tab7'" x-cloak x-transition>
                 <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
                     <div class="flex items-center justify-between px-6 py-4 border-b border-slate-50 bg-slate-50/50">
@@ -1693,58 +1686,56 @@
                                 <div class="text-[0.6rem] text-slate-400 font-medium">Configure fields shown on the audit/inspection form</div>
                             </div>
                         </div>
-                        <a href="{{ route('admin.settings.inspection-fields') }}"
+                        <a href="<?php echo e(route('admin.settings.inspection-fields')); ?>"
                            class="flex items-center gap-2 px-4 py-2.5 bg-violet-600 text-white text-[0.65rem] font-black uppercase tracking-widest rounded-xl hover:bg-violet-700 transition-all shadow-sm">
                             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
                             Open Full Builder
                         </a>
                     </div>
                     <div class="p-8">
-                        @php $fields = json_decode(\App\Models\SystemSetting::get('inspection_fields', '[]'), true) ?: []; @endphp
-                        @if(count($fields))
+                        <?php $fields = json_decode(\App\Models\SystemSetting::get('inspection_fields', '[]'), true) ?: []; ?>
+                        <?php if(count($fields)): ?>
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mb-6">
-                            @foreach($fields as $f)
-                            @php $typeColors = ['text' => 'bg-blue-50 text-blue-600 border-blue-100', 'textarea' => 'bg-violet-50 text-violet-600 border-violet-100', 'image' => 'bg-orange-50 text-[#ff6900] border-orange-100', 'checkbox' => 'bg-emerald-50 text-emerald-600 border-emerald-100']; @endphp
+                            <?php $__currentLoopData = $fields; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $f): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <?php $typeColors = ['text' => 'bg-blue-50 text-blue-600 border-blue-100', 'textarea' => 'bg-violet-50 text-violet-600 border-violet-100', 'image' => 'bg-orange-50 text-[#ff6900] border-orange-100', 'checkbox' => 'bg-emerald-50 text-emerald-600 border-emerald-100']; ?>
                             <div class="flex items-center gap-3 p-3 rounded-xl border border-slate-100 bg-slate-50/50">
-                                <span class="px-2 py-0.5 text-[0.55rem] font-black uppercase rounded-md border {{ $typeColors[$f['type']] ?? 'bg-slate-100 text-slate-500' }}">{{ $f['type'] }}</span>
-                                <span class="text-[0.7rem] font-bold text-[#031629] flex-1 truncate">{{ $f['label'] }}</span>
-                                @if(!empty($f['required']))<span class="text-[#ff6900] text-xs">*</span>@endif
+                                <span class="px-2 py-0.5 text-[0.55rem] font-black uppercase rounded-md border <?php echo e($typeColors[$f['type']] ?? 'bg-slate-100 text-slate-500'); ?>"><?php echo e($f['type']); ?></span>
+                                <span class="text-[0.7rem] font-bold text-[#031629] flex-1 truncate"><?php echo e($f['label']); ?></span>
+                                <?php if(!empty($f['required'])): ?><span class="text-[#ff6900] text-xs">*</span><?php endif; ?>
                             </div>
-                            @endforeach
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         </div>
                         <div class="flex items-center justify-between px-4 py-3 bg-violet-50 rounded-xl border border-violet-100">
-                            <span class="text-[0.68rem] font-bold text-violet-700">{{ count($fields) }} field(s) configured</span>
-                            <a href="{{ route('admin.settings.inspection-fields') }}" class="text-[0.65rem] font-black text-violet-600 hover:text-violet-800 underline underline-offset-2">Edit in Full Builder →</a>
+                            <span class="text-[0.68rem] font-bold text-violet-700"><?php echo e(count($fields)); ?> field(s) configured</span>
+                            <a href="<?php echo e(route('admin.settings.inspection-fields')); ?>" class="text-[0.65rem] font-black text-violet-600 hover:text-violet-800 underline underline-offset-2">Edit in Full Builder →</a>
                         </div>
-                        @else
+                        <?php else: ?>
                         <div class="flex flex-col items-center justify-center py-20 text-center">
                             <div class="w-16 h-16 rounded-2xl bg-violet-50 border-2 border-dashed border-violet-200 flex items-center justify-center mb-4">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2" class="opacity-50"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
                             </div>
                             <p class="text-[0.75rem] font-black text-slate-500 uppercase tracking-wide mb-2">No Fields Configured</p>
                             <p class="text-[0.65rem] text-slate-400 mb-4">Open the full builder to add inspection form fields</p>
-                            <a href="{{ route('admin.settings.inspection-fields') }}"
+                            <a href="<?php echo e(route('admin.settings.inspection-fields')); ?>"
                                class="px-6 py-3 bg-violet-600 text-white text-[0.65rem] font-black uppercase tracking-widest rounded-xl hover:bg-violet-700 transition-all">
                                 Open Field Builder
                             </a>
                         </div>
-                        @endif
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>
 
-            {{-- ═══════════════════════════════════
-                 TAB 08 — MAPS & LOCATION
-            ════════════════════════════════════ --}}
+            
             <div x-show="activeTab === 'tab8'" x-cloak x-transition
                  x-data="{ isSaving: false,
                     async save(e) { this.isSaving=true; const fd=new FormData(e.target); const r=await fetch(e.target.action,{method:'POST',body:fd,headers:{'X-CSRF-TOKEN':document.querySelector('meta[name=csrf-token]').content,'X-Requested-With':'XMLHttpRequest','Accept':'application/json'}}); const d=await r.json(); $dispatch('show-toast',{message:d.message??'Saved!',type:r.ok?'success':'error'}); this.isSaving=false; }
                  }">
-                <form @submit.prevent="save" action="{{ route('admin.settings.google-maps.update') }}" method="POST">
-                @csrf
+                <form @submit.prevent="save" action="<?php echo e(route('admin.settings.google-maps.update')); ?>" method="POST">
+                <?php echo csrf_field(); ?>
                 <div class="space-y-5">
 
-                    {{-- Map Provider --}}
+                    
                     <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
                         <div class="flex items-center gap-3 px-6 py-4 border-b border-slate-50 bg-slate-50/50">
                             <div class="w-9 h-9 rounded-xl bg-violet-50 flex items-center justify-center">
@@ -1754,19 +1745,19 @@
                                 <div class="text-[0.72rem] font-black text-[#031629] uppercase tracking-wide">Map Provider</div>
                                 <div class="text-[0.6rem] text-slate-400 font-medium">Select active mapping engine</div>
                             </div>
-                            <a href="{{ route('admin.settings.google-maps') }}" class="ml-auto text-[0.6rem] font-black text-slate-400 hover:text-violet-600 underline underline-offset-2">Full Settings →</a>
+                            <a href="<?php echo e(route('admin.settings.google-maps')); ?>" class="ml-auto text-[0.6rem] font-black text-slate-400 hover:text-violet-600 underline underline-offset-2">Full Settings →</a>
                         </div>
                         <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-                            @php $currentProvider = \App\Models\SystemSetting::get('google_maps_provider', 'google'); @endphp
-                            <label class="flex items-center gap-4 p-4 rounded-xl border-2 cursor-pointer {{ $currentProvider === 'google' ? 'border-[#ff6900] bg-orange-50' : 'border-slate-200' }} transition-all">
-                                <input type="radio" name="google_maps_provider" value="google" {{ $currentProvider === 'google' ? 'checked' : '' }} class="accent-[#ff6900]">
+                            <?php $currentProvider = \App\Models\SystemSetting::get('google_maps_provider', 'google'); ?>
+                            <label class="flex items-center gap-4 p-4 rounded-xl border-2 cursor-pointer <?php echo e($currentProvider === 'google' ? 'border-[#ff6900] bg-orange-50' : 'border-slate-200'); ?> transition-all">
+                                <input type="radio" name="google_maps_provider" value="google" <?php echo e($currentProvider === 'google' ? 'checked' : ''); ?> class="accent-[#ff6900]">
                                 <div>
                                     <div class="text-[0.72rem] font-black text-[#031629] uppercase">Google Maps</div>
                                     <div class="text-[0.58rem] text-slate-400 font-medium">Premium · Requires API Key</div>
                                 </div>
                             </label>
-                            <label class="flex items-center gap-4 p-4 rounded-xl border-2 cursor-pointer {{ $currentProvider === 'osm' ? 'border-emerald-400 bg-emerald-50' : 'border-slate-200' }} transition-all">
-                                <input type="radio" name="google_maps_provider" value="osm" {{ $currentProvider === 'osm' ? 'checked' : '' }} class="accent-emerald-500">
+                            <label class="flex items-center gap-4 p-4 rounded-xl border-2 cursor-pointer <?php echo e($currentProvider === 'osm' ? 'border-emerald-400 bg-emerald-50' : 'border-slate-200'); ?> transition-all">
+                                <input type="radio" name="google_maps_provider" value="osm" <?php echo e($currentProvider === 'osm' ? 'checked' : ''); ?> class="accent-emerald-500">
                                 <div>
                                     <div class="text-[0.72rem] font-black text-emerald-700 uppercase">OpenStreetMap</div>
                                     <div class="text-[0.58rem] text-slate-400 font-medium">Free · No API Key needed</div>
@@ -1775,7 +1766,7 @@
                         </div>
                     </div>
 
-                    {{-- Google API Key --}}
+                    
                     <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
                         <div class="flex items-center gap-3 px-6 py-4 border-b border-slate-50 bg-slate-50/50">
                             <div class="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center">
@@ -1788,13 +1779,13 @@
                         </div>
                         <div class="p-6">
                             <input type="password" name="google_maps_api_key"
-                                   value="{{ \App\Models\SystemSetting::get('google_maps_api_key') }}"
+                                   value="<?php echo e(\App\Models\SystemSetting::get('google_maps_api_key')); ?>"
                                    placeholder="AIzaSy..."
                                    class="w-full px-4 py-3 text-sm font-mono border border-slate-200 rounded-xl focus:border-blue-400 focus:ring-4 focus:ring-blue-500/5 outline-none transition-all">
                         </div>
                     </div>
 
-                    {{-- Branch Location --}}
+                    
                     <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
                         <div class="flex items-center gap-3 px-6 py-4 border-b border-slate-50 bg-slate-50/50">
                             <div class="w-9 h-9 rounded-xl bg-[#ff6900]/10 flex items-center justify-center">
@@ -1808,24 +1799,24 @@
                         <div class="p-6 grid grid-cols-1 md:grid-cols-3 gap-5">
                             <div class="md:col-span-1">
                                 <label class="block text-[0.6rem] font-black uppercase tracking-widest text-slate-500 mb-2">Branch Name</label>
-                                <input type="text" name="branch_name" value="{{ \App\Models\SystemSetting::get('branch_name', 'Motor Bazar HQ') }}"
+                                <input type="text" name="branch_name" value="<?php echo e(\App\Models\SystemSetting::get('branch_name', 'Motor Bazar HQ')); ?>"
                                     class="w-full px-4 py-3 text-sm font-semibold border border-slate-200 rounded-xl focus:border-[#ff6900] focus:ring-4 focus:ring-orange-500/5 outline-none transition-all">
                             </div>
                             <div>
                                 <label class="block text-[0.6rem] font-black uppercase tracking-widest text-slate-500 mb-2">Latitude</label>
-                                <input type="text" name="branch_lat" value="{{ \App\Models\SystemSetting::get('branch_lat', '24.4539') }}"
+                                <input type="text" name="branch_lat" value="<?php echo e(\App\Models\SystemSetting::get('branch_lat', '24.4539')); ?>"
                                     class="w-full px-4 py-3 text-sm font-mono border border-slate-200 rounded-xl focus:border-[#ff6900] focus:ring-4 focus:ring-orange-500/5 outline-none transition-all">
                             </div>
                             <div>
                                 <label class="block text-[0.6rem] font-black uppercase tracking-widest text-slate-500 mb-2">Longitude</label>
-                                <input type="text" name="branch_lng" value="{{ \App\Models\SystemSetting::get('branch_lng', '54.3773') }}"
+                                <input type="text" name="branch_lng" value="<?php echo e(\App\Models\SystemSetting::get('branch_lng', '54.3773')); ?>"
                                     class="w-full px-4 py-3 text-sm font-mono border border-slate-200 rounded-xl focus:border-[#ff6900] focus:ring-4 focus:ring-orange-500/5 outline-none transition-all">
                             </div>
                             <p class="md:col-span-3 text-[0.58rem] text-slate-400 font-medium -mt-2">Get coordinates from <a href="https://maps.google.com" target="_blank" class="text-blue-500 underline">Google Maps</a> — right-click your location → copy coordinates</p>
                         </div>
                     </div>
 
-                    {{-- Save --}}
+                    
                     <div class="flex justify-end pt-2">
                         <button type="submit" :disabled="isSaving"
                             class="flex items-center gap-2.5 px-8 py-3 text-[0.72rem] font-black uppercase tracking-widest text-white bg-[#031629] rounded-xl hover:bg-violet-600 transition-all shadow-md disabled:opacity-50">
@@ -1839,9 +1830,7 @@
                 </form>
             </div>
 
-            {{-- ═══════════════════════════════════
-                 TAB 09 — SEO SETTINGS
-            ════════════════════════════════════ --}}
+            
             <div x-show="activeTab === 'tab9'" x-cloak x-transition>
                 <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
                     <div class="flex items-center justify-between px-6 py-4 border-b border-slate-50 bg-slate-50/50">
@@ -1854,30 +1843,30 @@
                                 <div class="text-[0.6rem] text-slate-400 font-medium">Meta tags, Open Graph, sitemaps, and analytics</div>
                             </div>
                         </div>
-                        <a href="{{ route('admin.seo.dashboard') }}"
+                        <a href="<?php echo e(route('admin.seo.dashboard')); ?>"
                            class="flex items-center gap-2 px-4 py-2.5 bg-rose-600 text-white text-[0.65rem] font-black uppercase tracking-widest rounded-xl hover:bg-rose-700 transition-all shadow-sm">
                             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
                             Open SEO Dashboard
                         </a>
                     </div>
                     <div class="p-8">
-                        @php
+                        <?php
                         $seoStats = [
                             ['label' => 'SEO Dashboard', 'desc' => 'Full meta tags, Open Graph, canonical, structured data', 'route' => 'admin.seo.dashboard', 'icon' => '🔍', 'color' => 'bg-rose-50 border-rose-100'],
                             ['label' => 'Global SEO Settings', 'desc' => 'Default meta, sitemap, robots.txt, analytics tracking', 'route' => 'admin.seo.settings', 'icon' => '⚙️', 'color' => 'bg-slate-50 border-slate-100'],
                         ];
-                        @endphp
+                        ?>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                            @foreach($seoStats as $card)
-                            <a href="{{ route($card['route']) }}" class="group flex items-start gap-4 p-5 rounded-2xl border-2 {{ $card['color'] }} hover:border-rose-300 transition-all">
-                                <span class="text-2xl">{{ $card['icon'] }}</span>
+                            <?php $__currentLoopData = $seoStats; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $card): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <a href="<?php echo e(route($card['route'])); ?>" class="group flex items-start gap-4 p-5 rounded-2xl border-2 <?php echo e($card['color']); ?> hover:border-rose-300 transition-all">
+                                <span class="text-2xl"><?php echo e($card['icon']); ?></span>
                                 <div>
-                                    <div class="text-[0.75rem] font-black text-[#031629] uppercase tracking-wide group-hover:text-rose-600 transition-colors">{{ $card['label'] }}</div>
-                                    <div class="text-[0.62rem] text-slate-400 font-medium mt-0.5">{{ $card['desc'] }}</div>
+                                    <div class="text-[0.75rem] font-black text-[#031629] uppercase tracking-wide group-hover:text-rose-600 transition-colors"><?php echo e($card['label']); ?></div>
+                                    <div class="text-[0.62rem] text-slate-400 font-medium mt-0.5"><?php echo e($card['desc']); ?></div>
                                 </div>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="ml-auto mt-1 text-slate-300 group-hover:text-rose-400 transition-colors flex-shrink-0"><path d="m9 18 6-6-6-6"/></svg>
                             </a>
-                            @endforeach
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         </div>
                         <div class="bg-rose-50/60 border border-rose-100 rounded-xl px-5 py-4 text-[0.65rem] text-rose-700 font-semibold">
                             💡 SEO Intelligence is a full dedicated module. Click the buttons above or use the <strong>SEO Intelligence</strong> link in the sidebar to access all SEO tools.
@@ -1886,22 +1875,20 @@
                 </div>
             </div>
 
-            {{-- ═══════════════════════════════════
-                 TABS 10–15 — PLACEHOLDERS
-            ════════════════════════════════════ --}}
-            @foreach($tabs as $num => $tab)
-            @if($num <= 9) @continue @endif
+            
+            <?php $__currentLoopData = $tabs; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $num => $tab): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+            <?php if($num <= 9): ?> <?php continue; ?> <?php endif; ?>
 
-            @php $tabId = 'tab' . $num; @endphp
-            <div x-show="activeTab === '{{ $tabId }}'" x-cloak x-transition>
+            <?php $tabId = 'tab' . $num; ?>
+            <div x-show="activeTab === '<?php echo e($tabId); ?>'" x-cloak x-transition>
                 <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
                     <div class="flex items-center gap-4 px-8 py-6 border-b border-slate-50">
                         <div class="w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center shadow-sm flex-shrink-0">
-                            <span class="text-[1rem] font-black text-slate-600">{{ str_pad($num, 2, '0', STR_PAD_LEFT) }}</span>
+                            <span class="text-[1rem] font-black text-slate-600"><?php echo e(str_pad($num, 2, '0', STR_PAD_LEFT)); ?></span>
                         </div>
                         <div>
-                            <h3 class="text-[0.9rem] font-black text-[#031629] uppercase tracking-wide">{{ $tab['label'] }}</h3>
-                            <p class="text-[0.6rem] text-slate-400 font-bold uppercase tracking-widest mt-0.5">Configuration Section {{ $num }} of 15</p>
+                            <h3 class="text-[0.9rem] font-black text-[#031629] uppercase tracking-wide"><?php echo e($tab['label']); ?></h3>
+                            <p class="text-[0.6rem] text-slate-400 font-bold uppercase tracking-widest mt-0.5">Configuration Section <?php echo e($num); ?> of 15</p>
                         </div>
                         <div class="ml-auto">
                             <span class="px-3 py-1.5 text-[0.55rem] font-black uppercase tracking-widest bg-slate-100 text-slate-400 rounded-full">🚧 Coming Soon</span>
@@ -1909,19 +1896,21 @@
                     </div>
                     <div class="flex flex-col items-center justify-center py-24 px-8 text-center">
                         <div class="w-20 h-20 rounded-2xl bg-slate-50 border-2 border-dashed border-slate-200 flex items-center justify-center mb-6">
-                            <span class="text-3xl font-black text-slate-300">{{ str_pad($num, 2, '0', STR_PAD_LEFT) }}</span>
+                            <span class="text-3xl font-black text-slate-300"><?php echo e(str_pad($num, 2, '0', STR_PAD_LEFT)); ?></span>
                         </div>
-                        <h4 class="text-[0.85rem] font-black text-[#031629] uppercase tracking-wide mb-2">هذا هو التاب رقم {{ $num }}</h4>
+                        <h4 class="text-[0.85rem] font-black text-[#031629] uppercase tracking-wide mb-2">هذا هو التاب رقم <?php echo e($num); ?></h4>
                         <p class="text-[0.7rem] text-slate-400 font-medium max-w-sm leading-relaxed">
-                            المحتوى الخاص بـ Tab {{ str_pad($num, 2, '0', STR_PAD_LEFT) }} سيُضاف هنا لاحقاً.
-                            <span class="text-slate-300 text-[0.6rem] mt-1 block">Section {{ $num }} / 15 — Settings Hub</span>
+                            المحتوى الخاص بـ Tab <?php echo e(str_pad($num, 2, '0', STR_PAD_LEFT)); ?> سيُضاف هنا لاحقاً.
+                            <span class="text-slate-300 text-[0.6rem] mt-1 block">Section <?php echo e($num); ?> / 15 — Settings Hub</span>
                         </p>
                     </div>
                 </div>
             </div>
-            @endforeach
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 
         </div>
     </div>
 </div>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('admin.layout', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH D:\auction_app\resources\views/admin/settings/hub.blade.php ENDPATH**/ ?>

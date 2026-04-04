@@ -371,9 +371,12 @@ class SettingsController extends Controller
         ];
 
         foreach ($fields as $field) {
-            // Don't overwrite password if left blank
-            if (in_array($field, ['mail_password', 'whatsapp_api_secret']) && $request->input($field) === '') {
-                continue;
+            // Don't overwrite password if left blank OR if it's the UI placeholder '********'
+            if (in_array($field, ['mail_password', 'whatsapp_api_secret'])) {
+                $val = $request->input($field);
+                if ($val === '' || $val === '********') {
+                    continue;
+                }
             }
             SystemSetting::set($field, $request->input($field, ''));
         }
