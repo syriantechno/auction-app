@@ -15,6 +15,165 @@ use Illuminate\Support\Facades\Storage;
 
 class SettingsController extends Controller
 {
+    public function settingsHub()
+    {
+        $socialKeys = ['instagram','facebook','tiktok','youtube','x','linkedin','whatsapp'];
+        $socialSettingKeys = [];
+        foreach ($socialKeys as $sk) {
+            $socialSettingKeys[] = 'social_' . $sk;
+            $socialSettingKeys[] = 'social_' . $sk . '_show_nav';
+            $socialSettingKeys[] = 'social_' . $sk . '_show_footer';
+        }
+
+        $keys = array_merge([
+            'site_name', 'site_tagline', 'site_logo', 'site_favicon',
+            'contact_phone', 'contact_email', 'contact_address', 'contact_whatsapp', 'support_hours',
+            'site_language', 'site_currency', 'site_timezone', 'currency_position', 'date_format',
+            'maintenance_mode', 'maintenance_message',
+        ], $socialSettingKeys);
+
+        $settings = [];
+        foreach ($keys as $key) {
+            $settings[$key] = SystemSetting::get($key);
+        }
+
+        // Tab 02 — Roles & Permissions
+        $roles    = \Spatie\Permission\Models\Role::withCount(['users', 'permissions'])->with('permissions')->orderBy('name')->get();
+        $allPerms = \Spatie\Permission\Models\Permission::orderBy('name')->get()->groupBy(fn($p) => explode('.', $p->name)[0]);
+        $users    = \App\Models\User::with('roles')->orderBy('name')->paginate(15);
+
+        // Tab 03 — Notification Settings
+        $notifKeys = [
+            'notif_polling_interval', 'notif_sound', 'notif_toast', 'notif_retention_days', 'notif_admin_email',
+            'notif_channel_bell', 'notif_channel_email', 'notif_channel_whatsapp',
+            'notif_event_new_lead', 'notif_event_new_bid', 'notif_event_auction_ended',
+            'notif_event_inspection', 'notif_event_lead_confirmed', 'notif_event_new_user',
+            'notif_event_bid_won', 'notif_event_low_stock', 'notif_event_payment',
+        ];
+        $notifSettings = [];
+        foreach ($notifKeys as $key) {
+            $notifSettings[$key] = SystemSetting::get($key);
+        }
+
+        // Tab 04/05 — Email & WhatsApp (Communication)
+        $commKeys = [
+            'mail_host', 'mail_port', 'mail_username', 'mail_from_address', 'mail_from_name', 'mail_encryption',
+            'email_lead_subject', 'email_lead_body',
+            'email_insp_subject', 'email_insp_body',
+            'email_auction_subject', 'email_auction_body',
+            'email_welcome_subject', 'email_welcome_body',
+            'whatsapp_provider', 'whatsapp_api_url', 'whatsapp_api_key', 'whatsapp_from',
+            'whatsapp_lead_template', 'whatsapp_insp_reminder', 'whatsapp_auction_won', 'whatsapp_welcome',
+        ];
+        $commSettings = [];
+        foreach ($commKeys as $key) {
+            $commSettings[$key] = SystemSetting::get($key);
+        }
+
+        // Tab 06 — Auction Settings
+        $auctionKeys = [
+            'anti_snipe_enabled', 'time_extension_threshold', 'time_extension_seconds',
+            'default_bid_increment', 'default_deposit',
+            'auction_auto_close', 'global_bid_feed_admin_only',
+        ];
+        $auctionSettings = [];
+        foreach ($auctionKeys as $key) {
+            $auctionSettings[$key] = SystemSetting::get($key);
+        }
+
+        return view('admin.settings.hub', compact(
+            'settings', 'roles', 'allPerms', 'users',
+            'notifSettings', 'commSettings', 'auctionSettings'
+        ));
+    }
+
+
+
+    public function saveNotificationSettings(Request $request)
+    {
+        $fields = [
+            'notif_polling_interval', 'notif_sound', 'notif_toast', 'notif_retention_days', 'notif_admin_email',
+            'notif_channel_bell', 'notif_channel_email', 'notif_channel_whatsapp',
+            'notif_event_new_lead', 'notif_event_new_bid', 'notif_event_auction_ended',
+            'notif_event_inspection', 'notif_event_lead_confirmed', 'notif_event_new_user',
+            'notif_event_bid_won', 'notif_event_low_stock', 'notif_event_payment',
+        ];
+
+        foreach ($fields as $field) {
+            SystemSetting::set($field, $request->input($field, '0'));
+        }
+
+        if ($request->wantsJson()) {
+            return response()->json(['message' => 'Notification settings saved successfully ✓']);
+        }
+
+        return back()->with('success', 'Notification settings saved.');
+    }
+
+
+    public function saveGeneralSettings(Request $request)
+    {
+        $request->validate([
+            'site_name'           => 'required|string|max:80',
+            'site_tagline'        => 'nullable|string|max:160',
+            'site_logo'           => 'nullable|image|mimes:jpeg,png,jpg,svg,webp|max:2048',
+            'site_favicon'        => 'nullable|image|mimes:jpeg,png,jpg,ico,svg|max:512',
+            'contact_phone'       => 'nullable|string|max:30',
+            'contact_email'       => 'nullable|email|max:100',
+            'contact_address'     => 'nullable|string|max:255',
+            'contact_whatsapp'    => 'nullable|string|max:30',
+            'support_hours'       => 'nullable|string|max:100',
+            'site_language'       => 'nullable|in:en,ar,fr,tr,ur',
+            'site_currency'       => 'nullable|string|max:10',
+            'site_timezone'       => 'nullable|string|max:60',
+            'currency_position'   => 'nullable|in:before,after',
+            'date_format'         => 'nullable|string|max:20',
+            'maintenance_mode'    => 'nullable|in:0,1',
+            'maintenance_message' => 'nullable|string|max:500',
+        ]);
+
+        // Basic text fields
+        $textFields = [
+            'site_name', 'site_tagline', 'contact_phone', 'contact_email',
+            'contact_address', 'contact_whatsapp', 'support_hours',
+            'site_language', 'site_currency', 'site_timezone', 'currency_position', 'date_format',
+            'maintenance_mode', 'maintenance_message',
+        ];
+        foreach ($textFields as $field) {
+            SystemSetting::set($field, $request->input($field, ''));
+        }
+
+        // Social media links + visibility toggles
+        $socialPlatforms = ['instagram', 'facebook', 'tiktok', 'youtube', 'x', 'linkedin', 'whatsapp'];
+        foreach ($socialPlatforms as $platform) {
+            SystemSetting::set('social_' . $platform, $request->input('social_' . $platform, ''));
+            // Checkbox: present with value='1' if checked, absent entirely if unchecked
+            SystemSetting::set('social_' . $platform . '_show_nav',    $request->has('social_' . $platform . '_show_nav')    ? '1' : '0');
+            SystemSetting::set('social_' . $platform . '_show_footer',  $request->has('social_' . $platform . '_show_footer')  ? '1' : '0');
+        }
+
+
+        // Logo upload
+        if ($request->hasFile('site_logo')) {
+            $old = SystemSetting::get('site_logo');
+            if ($old && Storage::disk('public')->exists($old)) Storage::disk('public')->delete($old);
+            SystemSetting::set('site_logo', $request->file('site_logo')->store('branding', 'public'));
+        }
+
+        // Favicon upload
+        if ($request->hasFile('site_favicon')) {
+            $old = SystemSetting::get('site_favicon');
+            if ($old && Storage::disk('public')->exists($old)) Storage::disk('public')->delete($old);
+            SystemSetting::set('site_favicon', $request->file('site_favicon')->store('branding', 'public'));
+        }
+
+        if ($request->wantsJson()) {
+            return response()->json(['message' => 'General settings saved successfully ✓']);
+        }
+
+        return back()->with('success', 'General settings saved.');
+    }
+
     public function logo()
     {
         $logo = SystemSetting::get('site_logo');
@@ -89,7 +248,12 @@ class SettingsController extends Controller
         SystemSetting::set('branch_lat', $request->input('branch_lat'));
         SystemSetting::set('branch_lng', $request->input('branch_lng'));
 
+        if ($request->wantsJson()) {
+            return response()->json(['message' => 'Maps settings saved successfully ✓']);
+        }
+
         return back()->with('success', 'Maps information updated successfully!');
+
     }
 
     public function mapTest()
@@ -150,16 +314,21 @@ class SettingsController extends Controller
             'default_deposit'          => 'required|integer|min:0',
         ]);
 
-        SystemSetting::set('anti_snipe_enabled',        $request->has('anti_snipe_enabled') ? '1' : '0');
-        SystemSetting::set('time_extension_threshold',  $request->input('time_extension_threshold'));
-        SystemSetting::set('time_extension_seconds',    $request->input('time_extension_seconds'));
-        SystemSetting::set('default_bid_increment',     $request->input('default_bid_increment'));
-        SystemSetting::set('default_deposit',           $request->input('default_deposit'));
-        SystemSetting::set('auction_auto_close',        $request->has('auction_auto_close') ? '1' : '0');
-        SystemSetting::set('global_bid_feed_admin_only', $request->has('global_bid_feed_admin_only') ? '1' : '0');
+        SystemSetting::set('anti_snipe_enabled',         $request->input('anti_snipe_enabled') === '1' ? '1' : '0');
+        SystemSetting::set('time_extension_threshold',   $request->input('time_extension_threshold'));
+        SystemSetting::set('time_extension_seconds',     $request->input('time_extension_seconds'));
+        SystemSetting::set('default_bid_increment',      $request->input('default_bid_increment'));
+        SystemSetting::set('default_deposit',            $request->input('default_deposit'));
+        SystemSetting::set('auction_auto_close',         $request->input('auction_auto_close') === '1' ? '1' : '0');
+        SystemSetting::set('global_bid_feed_admin_only', $request->input('global_bid_feed_admin_only') === '1' ? '1' : '0');
+
+        if ($request->wantsJson()) {
+            return response()->json(['message' => 'Auction settings saved successfully ✓']);
+        }
 
         return back()->with('success', __('messages.auction_settings_saved'));
     }
+
 
     // ──────────────────────────────────────────────────
     // Communication Settings (Email + WhatsApp)

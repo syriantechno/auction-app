@@ -115,6 +115,7 @@ Route::prefix('admin')->middleware(['auth'])->name('admin.')->group(function () 
 
     // Editorial Blog
     Route::resource('/posts', \App\Http\Controllers\Admin\PostController::class)->names('posts');
+    Route::resource('/categories', \App\Http\Controllers\Admin\CategoryController::class)->names('categories')->only(['index','store','update','destroy']);
 
     // Navigation Menus
     Route::get('/menus', [\App\Http\Controllers\Admin\MenuController::class, 'index'])->name('menus.index');
@@ -129,6 +130,9 @@ Route::prefix('admin')->middleware(['auth'])->name('admin.')->group(function () 
     Route::resource('/pages', \App\Http\Controllers\Admin\PageController::class)->names('pages');
 
     // System Settings
+    Route::get('/settings/hub',                [\App\Http\Controllers\Admin\SettingsController::class, 'settingsHub'])->name('settings.hub');
+    Route::post('/settings/hub',               [\App\Http\Controllers\Admin\SettingsController::class, 'saveGeneralSettings'])->name('settings.general.save');
+    Route::post('/settings/notifications',     [\App\Http\Controllers\Admin\SettingsController::class, 'saveNotificationSettings'])->name('settings.notifications.save');
     Route::get('/settings/logo', [\App\Http\Controllers\Admin\SettingsController::class, 'logo'])->name('settings.logo');
     Route::post('/settings/logo', [\App\Http\Controllers\Admin\SettingsController::class, 'updateLogo'])->name('settings.logo.update');
     Route::get('/settings/google-maps', [\App\Http\Controllers\Admin\SettingsController::class, 'googleMaps'])->name('settings.google-maps');
@@ -136,6 +140,7 @@ Route::prefix('admin')->middleware(['auth'])->name('admin.')->group(function () 
     Route::get('/settings/map-test', [\App\Http\Controllers\Admin\SettingsController::class, 'mapTest'])->name('settings.map-test');
     Route::get('/settings/inspection-fields', [\App\Http\Controllers\Admin\SettingsController::class, 'inspectionFields'])->name('settings.inspection-fields');
     Route::post('/settings/inspection-fields', [\App\Http\Controllers\Admin\SettingsController::class, 'updateInspectionFields'])->name('settings.inspection-fields.update');
+    Route::get('/settings/toast-showcase', fn() => view('admin.settings.toast_showcase'))->name('settings.toast-showcase');
     Route::get('/settings/auctions', [\App\Http\Controllers\Admin\SettingsController::class, 'auctionSettings'])->name('settings.auctions');
     Route::post('/settings/auctions', [\App\Http\Controllers\Admin\SettingsController::class, 'updateAuctionSettings'])->name('settings.auctions.update');
 
@@ -153,7 +158,18 @@ Route::prefix('admin')->middleware(['auth'])->name('admin.')->group(function () 
 
     // Modern Test Dashboard
     Route::get('/test-dashboard', [DashboardController::class, 'showTestDashboard'])->name('test-dashboard');
-    Route::post('/car-catalog', [DashboardController::class, 'storeCatalogEntry'])->name('car-catalog.store');
+
+
+    // ── Roles & Permissions Management ──────────────────────────
+    Route::get('/roles',                        [\App\Http\Controllers\Admin\RoleController::class, 'index'])->name('roles.index');
+    Route::get('/roles/create',                 [\App\Http\Controllers\Admin\RoleController::class, 'create'])->name('roles.create');
+    Route::post('/roles',                       [\App\Http\Controllers\Admin\RoleController::class, 'store'])->name('roles.store');
+    Route::get('/roles/{role}/edit',            [\App\Http\Controllers\Admin\RoleController::class, 'edit'])->name('roles.edit');
+    Route::put('/roles/{role}',                 [\App\Http\Controllers\Admin\RoleController::class, 'update'])->name('roles.update');
+    Route::delete('/roles/{role}',              [\App\Http\Controllers\Admin\RoleController::class, 'destroy'])->name('roles.destroy');
+    Route::get('/roles/users',                  [\App\Http\Controllers\Admin\RoleController::class, 'users'])->name('roles.users');
+    Route::post('/roles/users/{user}/assign',   [\App\Http\Controllers\Admin\RoleController::class, 'assignRole'])->name('roles.assign');
+    Route::post('/roles/users/{user}/remove',   [\App\Http\Controllers\Admin\RoleController::class, 'removeRole'])->name('roles.remove');
 });
 
 Route::get('/auctions', [AuctionController::class, 'index'])->name('auctions.index');
@@ -192,6 +208,10 @@ Route::get('/login-test', function () {
 // Dealer Public Profile
 Route::get('/dealer/{dealer}', [\App\Http\Controllers\DealerProfileController::class, 'show'])
     ->name('dealer.profile');
+
+// Public Blog
+Route::get('/blog', [\App\Http\Controllers\BlogController::class, 'index'])->name('blog.index');
+Route::get('/blog/{slug}', [\App\Http\Controllers\BlogController::class, 'show'])->name('blog.show');
 
 // Dynamic Pages (Catch-all)
 Route::get('/{slug}', [PageController::class, 'show'])->name('page.show');

@@ -1,49 +1,194 @@
-# Motor Bazar CMS - Design & Architecture Manifesto
+# Motor Bazar CMS — Design & Architecture Manifesto
+# ══════════════════════════════════════════════════
+# This is the SINGLE SOURCE OF TRUTH for all UI decisions.
+# Any new page, modal, or component MUST follow these rules.
 
-## 1. Visual Aesthetic (Elite High-Density)
-- **Backgrounds**: Use `#f8fafc` (slate-50) for workspace; white `bg-white` for content cards.
-- **Color Palette**:
-    - Primary: `#ff6900` (Orange Bazaar) - For highlight CTAs and active states.
-    - Secondary: `#1d293d` (Deep Slate) - For strong buttons and secondary actions.
-- **Radius (Compact Strategy)**: 
-    - **Inputs & Fields**: Use `rounded-md` (6px) strictly.
-    - **Buttons & Chips**: Use `rounded-lg` (8px).
-    - **Cards & Containers**: Use `rounded-lg` (8px) for ALL major boards.
-- **Interaction Elements**:
-    - **MUST** always include a Lucide or SVG icon.
-    - Active states must transition between primary and secondary shades.
+## 1. Color Palette
+- **Primary Orange**: `#ff6900`  → CTAs, active pills, links, highlights
+- **Deep Slate**: `#1d293d`      → Buttons (secondary), headers, strong text
+- **Body Text**: `#031629`       → Main titles only
+- **Page Background**: `#f8fafc` (slate-50)
+- **Content Area (inside cards)**: `#f0f2f5` → body of modals, preview zones
+- **Card Background**: `bg-white`
+- **Border**: `border-slate-200`
+- **Divider**: `divide-slate-100`
 
-## 2. Technical Stack (The "Anti-Flicker" Protocol)
-- **Zero-FOUC Pattern**: 
-    - Always use Blade conditionals `@if($active) ... @endif` for initial `class` definitions.
-    - Use `x-cloak` on all Alpine containers.
-    - Do NOT rely on JS for the first-paint visual state.
+## 2. Border Radius (Strict)
+- **Inputs & Fields**: `rounded-md` (6px)
+- **Pills / Badges / Tags**: `rounded-md` (6px)
+- **Buttons**: `rounded-lg` (8px)
+- **Cards / Panels / Table containers**: `rounded-xl` (12px)
+- **Modals**: `rounded-2xl` (16px) + `overflow-hidden`
+- **Page-level Hero Icons**: `rounded-2xl` or `rounded-xl`
+- ❌ NEVER use `rounded-[2.5rem]` or `rounded-3xl` for new pages
 
-- **State Management**: Alpine.js `x-data` at the root wrapper.
-- **Rendering Performance**:
-    - Use `x-cloak` to prevent content flash.
-    - **CRITICAL**: Use static SVGs for sidebar icons instead of Lucide `<i>` tags to eliminate redraw flicker during JS initialization.
-    - Use Blade conditionals in static `class` attributes to pre-render the "Active" state of default tabs.
-- **Data Persistence**: 
-    - All saves must be AJAX-based via `fetch()` with `@submit.prevent`.
-    - Handle both JSON success and validation error arrays.
+## 3. Typography
+- **Page Title (H1)**: `text-4xl font-black text-[#031629] uppercase italic tracking-tighter`
+- **Section Labels**: `text-[0.6rem] font-black uppercase tracking-[0.18em] text-slate-400`
+- **Table TH**: `text-[0.65rem] font-black uppercase tracking-[0.2em] text-slate-500`
+- **Card Subtitle**: `text-[0.58rem] font-semibold uppercase tracking-widest text-slate-400`
+- **Body Value**: `text-sm font-bold text-[#1d293d]`
+- **Active/Orange label**: `text-[#ff6900]`
+- Google Font: Inter or similar → load from layout
 
-## 3. Data Hub (Tables & Lists)
-- **Container**: Use `bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden`.
-- **Header**: Use `bg-slate-50 border-b border-slate-200`.
-- **Headings (TH)**: Use `py-4 px-6 text-[0.65rem] text-slate-500 font-black uppercase tracking-[0.2em]`.
-- **Body Rows**:
-    - Use `divide-y divide-slate-100` for divisions.
-    - Hover: `hover:bg-slate-50/50 border-l-4 border-l-transparent hover:border-l-[#ff6900] transition-all duration-300`.
-- **Cells (TD)**: `py-5 px-6`.
+## 4. Page Layout Pattern (Standard)
+```
+┌─ Page Wrapper: pb-20 ────────────────────────────────────┐
+│  ┌─ Header (unchanged across pages) ──────────────────┐  │
+│  │  [Icon Box] Title · Subtitle          [Btn] [Btn]  │  │
+│  │  border-b border-slate-100 pb-10                   │  │
+│  └─────────────────────────────────────────────────── ┘  │
+│                                                           │
+│  mt-6 grid grid-cols-1 lg:grid-cols-{N} gap-6            │
+│  ┌─ Main Content ─────────────────────┐  ┌─ Sidebar ─┐  │
+│  │  bg-white rounded-xl border        │  │  sticky   │  │
+│  │  border-slate-200 overflow-hidden  │  │  top-6    │  │
+│  └────────────────────────────────────┘  └───────────┘  │
+└───────────────────────────────────────────────────────────┘
+```
 
-## 4. Feedback Loop (Uptime Toast Engine)
-- **Placement**: Fixed `top-10 right-10`.
-- **Styling**: `backdrop-blur-3xl`, `bg-slate-950/95`, `rounded-[2.5rem]`.
-- **Logic**: 4-second timeout, smooth blur-scale transitions.
-- **Feedback Type**: Use `Synchronization Success` or `Integrity Failure` branding.
+## 5. Table / List Container Pattern
+```html
+<div class="bg-white rounded-xl border border-slate-200 overflow-hidden">
+  <!-- Header -->
+  <div class="flex items-center justify-between px-5 py-3 bg-slate-50 border-b border-slate-200">
+    <div class="text-[0.6rem] font-black uppercase tracking-[0.18em] text-slate-400">
+      Section Title <span class="text-[#ff6900]">(count)</span>
+    </div>
+    <div class="text-[0.55rem] text-slate-400 font-bold uppercase tracking-widest">Col1 · Col2 · Col3</div>
+  </div>
+  <!-- Rows -->
+  <div class="divide-y divide-slate-100">
+    <!-- Row -->
+    <div class="flex items-center gap-4 px-5 py-3.5 hover:bg-slate-50/60
+                border-l-4 border-l-transparent hover:border-l-[#ff6900] transition-all">
+      ...
+    </div>
+  </div>
+</div>
+```
 
-## 4. Maintenance Principles
-- Never leave placeholders; use valid assets or generated visuals.
-- Maintain the column layout: Sidebar (2 cols) | Content (10 cols).
-- All new tabs must follow the `x-show` pattern with established transitions.
+## 6. Toolbar / Action Bar Pattern
+```html
+<div class="bg-white rounded-xl border border-slate-200 px-5 py-4 flex items-center justify-between">
+  <div class="flex items-center gap-2">
+    <div class="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center">
+      {SVG icon}
+    </div>
+    <span class="text-[0.65rem] font-black uppercase tracking-widest text-slate-500">Label</span>
+  </div>
+  <div class="flex items-center gap-2">
+    <!-- Action Buttons → use rounded-lg, colored variants -->
+    <button class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 hover:bg-blue-600
+                   hover:text-white text-blue-600 border border-blue-200 rounded-lg
+                   text-[0.58rem] font-black uppercase tracking-widest transition-all">
+      {SVG} Label
+    </button>
+  </div>
+</div>
+```
+
+## 7. Modal Pattern (Lead Intelligence Style)
+```html
+<!-- Backdrop + Wrapper -->
+<div class="fixed inset-0 z-[9999] flex items-center justify-center p-6">
+  <div class="absolute inset-0 bg-[#031629]/50 backdrop-blur-sm" @click="close"></div>
+
+  <!-- Panel -->
+  <div class="relative bg-white rounded-2xl overflow-hidden shadow-2xl w-full max-w-4xl flex flex-col z-10"
+       style="max-height: calc(100vh - 64px);">
+
+    <!-- Header: white bg, bordered icon box, Title · Subtitle format -->
+    <div class="flex items-center justify-between px-6 py-4 bg-white border-b border-slate-200">
+      <div class="flex items-center gap-4">
+        <div class="w-10 h-10 rounded-lg border border-slate-200 flex items-center justify-center bg-white">
+          {SVG icon, stroke="#1d293d"}
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="text-sm font-black text-[#1d293d]">Section Name</span>
+            <span class="text-[#ff6900] font-black">·</span>
+            <span class="text-[#ff6900] font-black text-sm uppercase">Identifier</span>
+          </div>
+          <div class="text-[0.58rem] text-slate-400 font-semibold uppercase tracking-widest mt-0.5">
+            Interface subtitle · Context info
+          </div>
+        </div>
+      </div>
+      <button class="w-8 h-8 rounded-lg border border-slate-200 flex items-center justify-center
+                     text-slate-400 hover:bg-slate-50 transition-all">✕</button>
+    </div>
+
+    <!-- Body: gray background -->
+    <div class="flex-1 overflow-y-auto bg-[#f0f2f5] p-4">
+      <!-- Content cards: bg-white rounded-xl border border-slate-200 -->
+    </div>
+
+    <!-- Footer: white, Cancel left, Orange CTA right -->
+    <div class="px-6 py-4 bg-white border-t border-slate-200 flex items-center justify-between">
+      <button class="px-5 py-2 text-[0.6rem] font-black uppercase tracking-widest
+                     text-slate-500 border border-slate-200 rounded-lg hover:bg-slate-50 transition-all">
+        Cancel
+      </button>
+      <button class="flex items-center gap-2 px-8 py-2.5 text-[0.6rem] font-black uppercase
+                     tracking-widest text-white bg-[#ff6900] rounded-lg hover:bg-[#e55e00]
+                     transition-all shadow-md disabled:opacity-60">
+        Save Changes
+      </button>
+    </div>
+  </div>
+</div>
+```
+
+## 8. Cards Inside Modal/Content (3-col grid)
+```html
+<div class="grid grid-cols-3 gap-3">
+  <div class="bg-white rounded-xl border border-slate-200 overflow-hidden hover:shadow-md hover:border-slate-300 transition-all">
+    <!-- Card Header -->
+    <div class="px-4 pt-3 pb-2 border-b border-slate-100">
+      <div class="flex items-center justify-between">
+        <span class="text-[0.55rem] font-black uppercase tracking-[0.15em] text-slate-400">GROUP NAME</span>
+        <span class="text-[0.5rem] font-black text-slate-400">2/6</span>  <!-- orange if full -->
+      </div>
+    </div>
+    <!-- Card Body: pills, values, etc. -->
+    <div class="p-3 flex flex-wrap gap-1.5">
+      <!-- Pills: bg-[#ff6900] active, bg-slate-50 inactive -->
+    </div>
+  </div>
+</div>
+```
+
+## 9. Buttons Reference
+| Type | Classes |
+|---|---|
+| Primary CTA | `px-6 py-2.5 bg-[#ff6900] text-white rounded-lg font-black hover:bg-[#e55e00] shadow-md` |
+| Secondary | `px-6 py-2.5 bg-[#1d293d] text-white rounded-lg font-black hover:bg-[#ff6900]` |
+| Ghost | `px-5 py-2 border border-slate-200 rounded-lg text-slate-500 hover:bg-slate-50` |
+| Danger | `bg-red-50 border border-red-100 text-red-400 hover:bg-red-500 hover:text-white rounded-lg` |
+| Icon Btn | `w-8 h-8 rounded-lg border border-slate-200 flex items-center justify-center` |
+
+## 10. Toast Engine (Uptime Style)
+- **Position**: `fixed top-10 right-10 z-[10000]`
+- **Style**: `bg-slate-950/95 backdrop-blur-3xl text-white rounded-[2.5rem] shadow-2xl border border-white/10`
+- **Label**: `text-[0.6rem] font-black uppercase tracking-widest text-emerald-400` → "Synchronization Success"
+- **Timeout**: 4 seconds
+
+## 11. Sidebar / Live Preview Panel
+- Sticky: `sticky top-6 space-y-4`
+- Preview body background: `bg-[#f0f2f5]`
+- Stats card: `bg-white rounded-xl border border-slate-200 px-5 py-4`
+  - Stat tiles: `bg-[#f0f2f5] rounded-lg px-3 py-2`
+
+## 12. SVG Icons (No Lucide in new pages)
+- Use **inline static SVGs** only for performance (no `<i data-lucide>` in new pages)
+- Stroke width: `2` for icons, `2.5` for small action icons
+- Size: `width="14" height="14"` standard, `width="18"` for headers
+
+## 13. Maintenance Rules
+- **No placeholders** — use real data or generated visuals
+- **AJAX only** — all saves via `fetch()` + `@submit.prevent`
+- **Anti-flicker** — use `x-cloak` on Alpine containers
+- **Column layout**: Sidebar (2 cols) | Content (10 cols) for admin layout
+- **New tabs**: always use `x-show` pattern with transitions
+- **Background**: page wrapper uses `pb-20`, inner content `mt-6`

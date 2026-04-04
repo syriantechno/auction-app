@@ -9,9 +9,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('auctions', function (Blueprint $table) {
-            $table->boolean('anti_snipe_enabled')->default(true)->after('status');
-            $table->unsignedSmallInteger('time_extension_threshold')->default(30)->after('anti_snipe_enabled'); // seconds remaining to trigger
-            $table->unsignedSmallInteger('time_extension_seconds')->default(20)->after('time_extension_threshold'); // seconds to add
+            if (!Schema::hasColumn('auctions', 'anti_snipe_enabled')) {
+                $table->boolean('anti_snipe_enabled')->default(true)->after('status');
+            }
+            if (!Schema::hasColumn('auctions', 'time_extension_threshold')) {
+                $table->unsignedSmallInteger('time_extension_threshold')->default(30)->after('anti_snipe_enabled');
+            }
+            if (!Schema::hasColumn('auctions', 'time_extension_seconds')) {
+                $table->unsignedSmallInteger('time_extension_seconds')->default(20)->after('time_extension_threshold');
+            }
         });
     }
 

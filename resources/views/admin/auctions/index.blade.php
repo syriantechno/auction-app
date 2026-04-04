@@ -5,7 +5,7 @@
 @section('content')
 <div class="px-1 space-y-5 animate-in fade-in duration-500">
 
-    <x-admin-header icon="gavel" title="Auctions"
+    <x-admin-header icon="gavel" title="Live" highlight="Auctions" dot="emerald"
         subtitle="Live & upcoming auction sessions">
         <x-slot name="actions">
             <div class="flex items-center gap-2 bg-white px-5 py-2.5 rounded-lg border border-slate-100 shadow-sm">

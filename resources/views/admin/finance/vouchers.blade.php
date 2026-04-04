@@ -3,7 +3,7 @@
 @section('content')
 <div class="px-1 space-y-5 animate-in fade-in duration-500">
 
-    <x-admin-header icon="arrow-up-right" title="Payments — الصرف"
+    <x-admin-header icon="arrow-up-right" title="Payment" highlight="Vouchers" dot="rose"
         subtitle="All outgoing payment vouchers">
         <x-slot name="actions">
             <button onclick="document.getElementById('newVoucherModal').classList.remove('hidden')"

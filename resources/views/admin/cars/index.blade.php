@@ -5,8 +5,8 @@
 @section('content')
 <div class="px-1 space-y-5 animate-in fade-in duration-500">
 
-    <x-admin-header icon="car" title="Vehicles"
-        subtitle="Vehicle inventory & catalog">
+    <x-admin-header icon="car" title="Vehicle" highlight="Inventory" dot="amber"
+        subtitle="All registered cars & stock">
         <x-slot name="actions">
             <div class="flex items-center gap-2 bg-white px-5 py-2.5 rounded-lg border border-slate-100 shadow-sm">
                 <span class="text-[0.55rem] font-black uppercase text-slate-400 tracking-widest">Total</span>

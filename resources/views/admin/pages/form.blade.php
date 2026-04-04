@@ -77,12 +77,6 @@
                         </div>
                     </div>
                 </div>
-                                    Auto
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
 
                 {{-- ── JODIT EDITOR ── --}}
                 <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">

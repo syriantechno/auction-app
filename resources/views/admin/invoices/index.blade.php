@@ -5,7 +5,7 @@
 @section('content')
 <div class="px-1">
 
-    <x-admin-header icon="receipt" title="Invoices"
+    <x-admin-header icon="receipt" title="Invoice" highlight="Records" dot="indigo"
         subtitle="Billing & payment records">
     </x-admin-header>
 

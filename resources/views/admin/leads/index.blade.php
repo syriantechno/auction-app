@@ -6,7 +6,7 @@
 @section('content')
 <div class="px-1 space-y-5">
 
-    <x-admin-header icon="users" title="Leads"
+    <x-admin-header icon="users" title="Lead" highlight="Management" dot="blue"
         subtitle="Customer leads & inquiries">
         <x-slot name="actions">
             <a href="{{ route('admin.leads.create') }}" class="px-6 h-11 bg-[#ff4605] text-white rounded-lg font-black shadow-lg shadow-orange-500/20 hover:scale-[1.02] active:scale-95 transition-all text-[0.7rem] uppercase tracking-widest flex items-center gap-2">

@@ -12,29 +12,35 @@ class PostController extends Controller
 {
     public function index()
     {
-        $posts = Post::with('category')->latest()->paginate(20);
-        return view('admin.posts.index', compact('posts'));
+        $posts      = Post::with('category')->latest()->paginate(20);
+        $totalCount = Post::count();
+        $liveCount  = Post::where('is_published', true)->count();
+        $draftCount = Post::where('is_published', false)->count();
+        return view('admin.posts.index', compact('posts', 'totalCount', 'liveCount', 'draftCount'));
     }
 
     public function create()
     {
-        $categories = Category::all();
+        $categories = Category::orderBy('name')->get();
         return view('admin.posts.create', compact('categories'));
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'category_id' => 'nullable|exists:categories,id',
-            'content_raw' => 'required|string',
-            'featured_image' => 'nullable|url',
-            'is_published' => 'boolean',
+            'title'         => 'required|string|max:255',
+            'category_id'   => 'nullable|exists:categories,id',
+            'content_raw'   => 'required|string',
+            'featured_image'=> 'nullable|string|max:1000',
+            'meta_description' => 'nullable|string|max:320',
+            'is_published'  => 'boolean',
         ]);
 
-        $validated['slug'] = Str::slug($validated['title']);
-        $validated['content'] = ['body' => $validated['content_raw']]; // Wrap in JSON structure
+        $validated['slug']         = Str::slug($validated['title']) . '-' . Str::random(4);
+        $validated['content']      = ['body' => $validated['content_raw']];
         $validated['published_at'] = $request->has('is_published') ? now() : null;
+
+        unset($validated['content_raw']);
 
         Post::create($validated);
 
@@ -43,20 +49,25 @@ class PostController extends Controller
 
     public function edit(Post $post)
     {
-        $categories = Category::all();
+        $categories = Category::orderBy('name')->get();
         return view('admin.posts.edit', compact('post', 'categories'));
     }
 
     public function update(Request $request, Post $post)
     {
         $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'content_raw' => 'required|string',
-            'is_published' => 'boolean',
+            'title'            => 'required|string|max:255',
+            'category_id'      => 'nullable|exists:categories,id',
+            'content_raw'      => 'required|string',
+            'featured_image'   => 'nullable|string|max:1000',
+            'meta_description' => 'nullable|string|max:320',
+            'is_published'     => 'boolean',
         ]);
 
-        $validated['content'] = ['body' => $validated['content_raw']];
-        $validated['published_at'] = $request->has('is_published') && !$post->is_published ? now() : $post->published_at;
+        $validated['content']      = ['body' => $validated['content_raw']];
+        $validated['published_at'] = ($request->has('is_published') && !$post->is_published) ? now() : $post->published_at;
+
+        unset($validated['content_raw']);
 
         $post->update($validated);
 

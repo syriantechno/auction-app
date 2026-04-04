@@ -6,8 +6,8 @@
 @section('content')
 <div class="px-1 space-y-6">
 
-    <x-admin-header icon="clipboard-check" title="Inspection Reports"
-        subtitle="Vehicle inspection & valuation records">
+    <x-admin-header icon="clipboard-check" title="Inspection" highlight="Reports" dot="emerald"
+        subtitle="All vehicle inspection records">
         <x-slot name="actions">
             <a href="{{ route('admin.inspections.create') }}" class="px-6 h-11 bg-[#ff4605] text-white rounded-lg font-black shadow-lg shadow-orange-500/20 hover:scale-[1.02] active:scale-95 transition-all text-[0.7rem] uppercase tracking-widest flex items-center gap-2">
                 <i data-lucide="plus" class="w-4 h-4"></i> New Inspection

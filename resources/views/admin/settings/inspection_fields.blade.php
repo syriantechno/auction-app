@@ -3,9 +3,9 @@
 @section('title', 'Inspection Field Builder')
 
 @section('content')
-<div class="px-1 space-y-10 pb-20" x-data="fieldBuilder()">
+<div class="pb-20" x-data="fieldBuilder()">
 
-    {{-- Header --}}
+    {{-- Header (unchanged) --}}
     <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-8 pb-10 border-b border-slate-100">
         <div class="flex items-center gap-6">
             <div class="w-14 h-14 rounded-2xl bg-[#1d293d] flex items-center justify-center shadow-2xl transform rotate-3">
@@ -16,10 +16,15 @@
                 <p class="text-slate-400 font-bold text-[0.65rem] uppercase tracking-[0.2em] italic opacity-80 underline decoration-[#ff6900]/30 underline-offset-4 mt-3">Configure inspection form fields — reflects instantly on audit forms</p>
             </div>
         </div>
-        <div class="flex items-center gap-4">
-            <a href="{{ route('admin.settings.logo') }}" class="px-6 py-4 bg-white text-slate-400 hover:text-slate-900 border border-slate-100 rounded-xl text-[0.65rem] font-black uppercase tracking-widest transition-all">Back</a>
-            <button @click="save()" class="px-10 py-5 bg-[#1d293d] text-white rounded-2xl font-black shadow-2xl hover:bg-black transition-all flex items-center gap-4 text-[0.7rem] uppercase tracking-[0.2em]">
-                <i data-lucide="save" class="w-5 h-5 text-[#ff6900]"></i> Save Configuration
+        <div class="flex items-center gap-3">
+            <a href="{{ route('admin.settings.logo') }}"
+               class="px-5 py-2.5 bg-white text-slate-400 hover:text-slate-900 border border-slate-200 rounded-lg text-[0.62rem] font-black uppercase tracking-widest transition-all">
+                Back
+            </a>
+            <button @click="save()"
+                    class="px-6 py-2.5 bg-[#1d293d] text-white rounded-lg font-black shadow-md hover:bg-[#ff6900] transition-all flex items-center gap-2 text-[0.62rem] uppercase tracking-widest">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                Save Configuration
             </button>
         </div>
     </div>
@@ -27,170 +32,234 @@
     <form id="fieldsForm" method="POST" action="{{ route('admin.settings.inspection-fields.update') }}">
         @csrf
 
-        <div class="grid grid-cols-1 lg:grid-cols-5 gap-10">
+        <div class="mt-6 grid grid-cols-1 lg:grid-cols-5 gap-6">
 
-            {{-- LEFT: Field Builder --}}
-            <div class="lg:col-span-3 space-y-6">
-                <div class="bg-white rounded-[2.5rem] p-10 shadow-xl border border-slate-50">
-                    <div class="flex items-center justify-between mb-10">
-                        <div class="flex items-center gap-4">
-                            <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-500 flex items-center justify-center border border-blue-100">
-                                <i data-lucide="layout-list" class="w-5 h-5"></i>
-                            </div>
-                            <h2 class="text-sm font-black text-[#031629] uppercase tracking-widest italic">Active Fields <span class="text-slate-300 font-bold ml-2" x-text="'(' + fields.length + ')'"></span></h2>
+            {{-- ═══════════════════════════
+                 LEFT: Field Builder (3 cols)
+            ════════════════════════════ --}}
+            <div class="lg:col-span-3 space-y-4">
+
+                {{-- Add Field Toolbar --}}
+                <div class="bg-white rounded-xl border border-slate-200 px-5 py-4 flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <div class="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1d293d" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                         </div>
-                        <div class="flex gap-2">
-                            <button type="button" @click="addField('text')" class="px-4 py-2.5 bg-blue-50 hover:bg-[#1d293d] hover:text-white text-blue-500 border border-blue-100 rounded-xl text-[0.65rem] font-black uppercase tracking-widest transition-all flex items-center gap-2">
-                                <i data-lucide="type" class="w-3.5 h-3.5"></i> Text
-                            </button>
-                            <button type="button" @click="addField('textarea')" class="px-4 py-2.5 bg-violet-50 hover:bg-violet-600 hover:text-white text-violet-500 border border-violet-100 rounded-xl text-[0.65rem] font-black uppercase tracking-widest transition-all flex items-center gap-2">
-                                <i data-lucide="align-left" class="w-3.5 h-3.5"></i> Textarea
-                            </button>
-                            <button type="button" @click="addField('image')" class="px-4 py-2.5 bg-orange-50 hover:bg-[#ff6900] hover:text-white text-[#ff6900] border border-orange-100 rounded-xl text-[0.65rem] font-black uppercase tracking-widest transition-all flex items-center gap-2">
-                                <i data-lucide="image-plus" class="w-3.5 h-3.5"></i> Photo
-                            </button>
-                            <button type="button" @click="addField('checkbox')" class="px-4 py-2.5 bg-emerald-50 hover:bg-emerald-600 hover:text-white text-emerald-500 border border-emerald-100 rounded-xl text-[0.65rem] font-black uppercase tracking-widest transition-all flex items-center gap-2">
-                                <i data-lucide="check-square" class="w-3.5 h-3.5"></i> Check
-                            </button>
+                        <span class="text-[0.65rem] font-black uppercase tracking-widest text-slate-500">Add Field</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button type="button" @click="addField('text')"
+                                class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 hover:bg-blue-600 hover:text-white text-blue-600 border border-blue-200 rounded-lg text-[0.58rem] font-black uppercase tracking-widest transition-all">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
+                            Text
+                        </button>
+                        <button type="button" @click="addField('textarea')"
+                                class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-violet-50 hover:bg-violet-600 hover:text-white text-violet-600 border border-violet-200 rounded-lg text-[0.58rem] font-black uppercase tracking-widest transition-all">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="17" y1="10" x2="3" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="17" y1="18" x2="3" y2="18"/></svg>
+                            Textarea
+                        </button>
+                        <button type="button" @click="addField('image')"
+                                class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-orange-50 hover:bg-[#ff6900] hover:text-white text-[#ff6900] border border-orange-200 rounded-lg text-[0.58rem] font-black uppercase tracking-widest transition-all">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                            Photo
+                        </button>
+                        <button type="button" @click="addField('checkbox')"
+                                class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 hover:bg-emerald-600 hover:text-white text-emerald-600 border border-emerald-200 rounded-lg text-[0.58rem] font-black uppercase tracking-widest transition-all">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                            Check
+                        </button>
+                    </div>
+                </div>
+
+                {{-- Fields Container --}}
+                <div class="bg-white rounded-xl border border-slate-200 overflow-hidden">
+
+                    {{-- Table Header --}}
+                    <div class="flex items-center justify-between px-5 py-3 bg-slate-50 border-b border-slate-200">
+                        <div class="text-[0.6rem] font-black uppercase tracking-[0.18em] text-slate-400">
+                            Active Fields
+                            <span class="ml-2 text-[#ff6900]" x-text="'(' + fields.length + ')'"></span>
                         </div>
+                        <div class="text-[0.55rem] text-slate-400 font-bold uppercase tracking-widest">Label · Type · Required · Order</div>
                     </div>
 
                     {{-- Empty State --}}
-                    <div x-show="fields.length === 0" class="py-20 text-center">
-                        <div class="w-16 h-16 rounded-2xl bg-slate-50 flex items-center justify-center mx-auto mb-4">
-                            <i data-lucide="inbox" class="w-8 h-8 text-slate-200"></i>
+                    <div x-show="fields.length === 0" class="py-16 text-center bg-[#f0f2f5]">
+                        <div class="w-12 h-12 rounded-xl bg-white border border-slate-200 flex items-center justify-center mx-auto mb-3 shadow-sm">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
                         </div>
-                        <p class="text-slate-300 font-black text-sm uppercase tracking-widest italic">No fields configured yet</p>
-                        <p class="text-slate-400 text-xs mt-2 font-bold">Click a type button above to add fields</p>
+                        <p class="text-[0.65rem] font-black text-slate-300 uppercase tracking-widest">No fields configured yet</p>
+                        <p class="text-[0.58rem] text-slate-400 mt-1 font-medium">Use the toolbar above to add fields</p>
                     </div>
 
                     {{-- Fields List --}}
-                    <div class="space-y-4">
+                    <div class="divide-y divide-slate-100">
                         <template x-for="(field, index) in fields" :key="field._key">
-                            <div class="relative p-8 border-2 rounded-[1.5rem] transition-all group"
-                                 :class="{ 'border-[#ff6900] bg-orange-50/30': field._active, 'border-slate-100 bg-slate-50/50 hover:border-slate-200': !field._active }">
+                            <div class="flex items-center gap-4 px-5 py-3.5 hover:bg-slate-50/60 transition-all group"
+                                 :class="{ 'bg-orange-50/40 border-l-4 border-l-[#ff6900]': field._active, 'border-l-4 border-l-transparent': !field._active }">
 
-                                {{-- Hidden form inputs --}}
+                                {{-- Hidden inputs --}}
                                 <input type="hidden" :name="'fields[' + index + '][label]'" :value="field.label">
                                 <input type="hidden" :name="'fields[' + index + '][type]'" :value="field.type">
                                 <input type="hidden" :name="'fields[' + index + '][required]'" :value="field.required ? 'on' : 'off'">
 
-                                <div class="flex items-start gap-6">
-                                    {{-- Type Badge & Icon --}}
-                                    <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
-                                         :class="{
-                                            'bg-blue-100 text-blue-500': field.type === 'text',
-                                            'bg-violet-100 text-violet-500': field.type === 'textarea',
-                                            'bg-orange-100 text-[#ff6900]': field.type === 'image',
-                                            'bg-emerald-100 text-emerald-500': field.type === 'checkbox',
-                                         }">
-                                        <i :data-lucide="field.type === 'text' ? 'type' : field.type === 'textarea' ? 'align-left' : field.type === 'image' ? 'image' : 'check-square'" class="w-4 h-4"></i>
-                                    </div>
-
-                                    {{-- Field Config --}}
-                                    <div class="flex-1 space-y-4">
-                                        <div class="flex items-center gap-4">
-                                            <input type="text" x-model="field.label" placeholder="Field Label..."
-                                                   class="flex-1 bg-white border-2 border-slate-100 px-5 py-3 rounded-2xl font-black text-sm text-[#031629] outline-none focus:border-[#ff6900] transition-all placeholder:text-slate-300"
-                                                   @focus="field._active = true" @blur="field._active = false; refreshIcons()">
-                                            <span class="text-[0.6rem] font-black uppercase tracking-widest px-3 py-1.5 rounded-lg"
-                                                  :class="{
-                                                    'bg-blue-50 text-blue-400': field.type === 'text',
-                                                    'bg-violet-50 text-violet-400': field.type === 'textarea',
-                                                    'bg-orange-50 text-orange-400': field.type === 'image',
-                                                    'bg-emerald-50 text-emerald-400': field.type === 'checkbox',
-                                                  }" x-text="field.type"></span>
-                                        </div>
-
-                                        <div class="flex items-center gap-6">
-                                             <label class="flex items-center gap-3 cursor-pointer group/req">
-                                                <div class="relative">
-                                                    <input type="checkbox" x-model="field.required" class="sr-only peer">
-                                                    <div class="w-10 h-5 bg-slate-200 rounded-full peer peer-checked:bg-[#ff6900] transition-colors"></div>
-                                                    <div class="absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow peer-checked:translate-x-5 transition-transform"></div>
-                                                </div>
-                                                <span class="text-[0.65rem] font-black text-slate-400 uppercase tracking-widest" :class="field.required ? 'text-[#ff6900]' : ''">Required</span>
-                                             </label>
-                                             <div class="flex items-center gap-2 ml-auto">
-                                                <button type="button" @click="moveUp(index)" :disabled="index === 0"
-                                                        class="w-8 h-8 rounded-lg bg-white border border-slate-100 flex items-center justify-center text-slate-300 hover:text-slate-700 hover:border-slate-300 disabled:opacity-30 transition-all">
-                                                    <i data-lucide="chevron-up" class="w-4 h-4"></i>
-                                                </button>
-                                                <button type="button" @click="moveDown(index)" :disabled="index === fields.length - 1"
-                                                        class="w-8 h-8 rounded-lg bg-white border border-slate-100 flex items-center justify-center text-slate-300 hover:text-slate-700 hover:border-slate-300 disabled:opacity-30 transition-all">
-                                                    <i data-lucide="chevron-down" class="w-4 h-4"></i>
-                                                </button>
-                                                <button type="button" @click="removeField(index)"
-                                                        class="w-8 h-8 rounded-lg bg-red-50 border border-red-100 flex items-center justify-center text-red-300 hover:bg-red-500 hover:text-white hover:border-red-500 transition-all">
-                                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
-                                                </button>
-                                             </div>
-                                        </div>
-                                    </div>
+                                {{-- Type Badge --}}
+                                <div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 text-xs"
+                                     :class="{
+                                        'bg-blue-100 text-blue-500': field.type === 'text',
+                                        'bg-violet-100 text-violet-500': field.type === 'textarea',
+                                        'bg-orange-100 text-[#ff6900]': field.type === 'image',
+                                        'bg-emerald-100 text-emerald-600': field.type === 'checkbox',
+                                     }">
+                                    <template x-if="field.type === 'text'">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
+                                    </template>
+                                    <template x-if="field.type === 'textarea'">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="17" y1="10" x2="3" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="17" y1="18" x2="3" y2="18"/></svg>
+                                    </template>
+                                    <template x-if="field.type === 'image'">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                                    </template>
+                                    <template x-if="field.type === 'checkbox'">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                                    </template>
                                 </div>
+
+                                {{-- Label Input --}}
+                                <input type="text" x-model="field.label" placeholder="Field label..."
+                                       class="flex-1 bg-transparent border-0 border-b border-dashed border-slate-200 focus:border-[#ff6900] text-[0.75rem] font-bold text-[#1d293d] outline-none py-1 placeholder:text-slate-300 transition-all"
+                                       @focus="field._active = true" @blur="field._active = false">
+
+                                {{-- Type Pill --}}
+                                <span class="text-[0.5rem] font-black uppercase tracking-widest px-2 py-0.5 rounded-md flex-shrink-0"
+                                      :class="{
+                                        'bg-blue-50 text-blue-400': field.type === 'text',
+                                        'bg-violet-50 text-violet-400': field.type === 'textarea',
+                                        'bg-orange-50 text-orange-400': field.type === 'image',
+                                        'bg-emerald-50 text-emerald-500': field.type === 'checkbox',
+                                      }" x-text="field.type">
+                                </span>
+
+                                {{-- Required Toggle --}}
+                                <label class="flex items-center gap-1.5 cursor-pointer flex-shrink-0">
+                                    <div class="relative">
+                                        <input type="checkbox" x-model="field.required" class="sr-only peer">
+                                        <div class="w-8 h-4 bg-slate-200 rounded-full peer peer-checked:bg-[#ff6900] transition-colors"></div>
+                                        <div class="absolute top-0.5 left-0.5 w-3 h-3 bg-white rounded-full shadow peer-checked:translate-x-4 transition-transform"></div>
+                                    </div>
+                                    <span class="text-[0.52rem] font-black uppercase tracking-widest text-slate-400"
+                                          :class="field.required ? 'text-[#ff6900]' : ''">Req</span>
+                                </label>
+
+                                {{-- Order Buttons --}}
+                                <div class="flex items-center gap-1 flex-shrink-0">
+                                    <button type="button" @click="moveUp(index)" :disabled="index === 0"
+                                            class="w-6 h-6 rounded-md bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-400 hover:bg-slate-200 disabled:opacity-20 transition-all">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>
+                                    </button>
+                                    <button type="button" @click="moveDown(index)" :disabled="index === fields.length - 1"
+                                            class="w-6 h-6 rounded-md bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-400 hover:bg-slate-200 disabled:opacity-20 transition-all">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                                    </button>
+                                    <button type="button" @click="removeField(index)"
+                                            class="w-6 h-6 rounded-md bg-red-50 border border-red-100 flex items-center justify-center text-red-300 hover:bg-red-500 hover:text-white hover:border-red-500 transition-all">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+                                    </button>
+                                </div>
+
                             </div>
                         </template>
                     </div>
+
                 </div>
             </div>
 
-            {{-- RIGHT: Live Preview --}}
-            <div class="lg:col-span-2 space-y-8">
-                {{-- Preview Card --}}
-                <div class="bg-[#1d293d] rounded-[2.5rem] p-10 shadow-2xl sticky top-8">
-                    <div class="flex items-center gap-4 mb-8">
-                        <div class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 text-[#ff6900] flex items-center justify-center">
-                            <i data-lucide="eye" class="w-5 h-5"></i>
+            {{-- ═══════════════════════════
+                 RIGHT: Live Preview (2 cols)
+            ════════════════════════════ --}}
+            <div class="lg:col-span-2">
+                <div class="sticky top-6 space-y-4">
+
+                    {{-- Preview Card --}}
+                    <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+
+                        {{-- Preview Header --}}
+                        <div class="flex items-center gap-3 px-5 py-3 bg-slate-50 border-b border-slate-200">
+                            <div class="w-7 h-7 rounded-lg border border-slate-200 bg-white flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#1d293d" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                            </div>
+                            <div>
+                                <div class="text-[0.62rem] font-black text-[#1d293d] uppercase tracking-widest">Form Preview</div>
+                                <div class="text-[0.52rem] text-slate-400 font-semibold uppercase tracking-widest">Live render of audit fields</div>
+                            </div>
                         </div>
-                        <div>
-                            <h2 class="text-sm font-black text-white uppercase tracking-widest italic">Form Preview</h2>
-                            <p class="text-[0.6rem] text-slate-500 font-bold uppercase tracking-widest mt-1">Live render of audit fields</p>
+
+                        {{-- Preview Body --}}
+                        <div class="p-5 bg-[#f0f2f5] min-h-[200px]">
+                            <div class="space-y-4">
+                                <template x-for="field in fields.filter(f => f.label)" :key="field._key">
+                                    <div class="space-y-1.5">
+                                        <label class="flex items-center gap-1 text-[0.58rem] text-slate-500 font-black uppercase tracking-widest">
+                                            <span x-text="field.label"></span>
+                                            <span x-show="field.required" class="text-[#ff6900]">*</span>
+                                        </label>
+
+                                        <template x-if="field.type === 'text'">
+                                            <div class="h-9 bg-white border border-slate-200 rounded-lg"></div>
+                                        </template>
+                                        <template x-if="field.type === 'textarea'">
+                                            <div class="h-20 bg-white border border-slate-200 rounded-lg"></div>
+                                        </template>
+                                        <template x-if="field.type === 'image'">
+                                            <div class="h-14 bg-white border border-dashed border-slate-300 rounded-lg flex items-center justify-center">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                                            </div>
+                                        </template>
+                                        <template x-if="field.type === 'checkbox'">
+                                            <div class="flex items-center gap-2 h-8">
+                                                <div class="w-4 h-4 rounded bg-white border border-slate-300"></div>
+                                                <div class="h-2.5 w-20 bg-slate-200 rounded"></div>
+                                            </div>
+                                        </template>
+                                    </div>
+                                </template>
+
+                                <div x-show="fields.filter(f => f.label).length === 0" class="py-10 text-center">
+                                    <p class="text-[0.6rem] text-slate-300 font-black uppercase tracking-widest">Preview appears here...</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="space-y-5">
-                        <template x-for="field in fields.filter(f => f.label)" :key="field._key">
-                            <div class="space-y-2">
-                                <label class="flex items-center gap-2 text-[0.65rem] text-slate-400 font-black uppercase tracking-widest">
-                                    <span x-text="field.label"></span>
-                                    <span x-show="field.required" class="text-[#ff6900]">*</span>
-                                </label>
-
-                                <template x-if="field.type === 'text'">
-                                    <div class="h-12 bg-black/20 border border-white/10 rounded-2xl animate-pulse opacity-30"></div>
-                                </template>
-                                <template x-if="field.type === 'textarea'">
-                                    <div class="h-24 bg-black/20 border border-white/10 rounded-2xl animate-pulse opacity-30"></div>
-                                </template>
-                                <template x-if="field.type === 'image'">
-                                    <div class="h-16 bg-black/20 border border-dashed border-white/10 rounded-2xl flex items-center justify-center opacity-30">
-                                        <i data-lucide="upload" class="w-4 h-4 text-white"></i>
-                                    </div>
-                                </template>
-                                <template x-if="field.type === 'checkbox'">
-                                    <div class="flex items-center gap-3 h-10 opacity-30">
-                                        <div class="w-5 h-5 rounded bg-black/20 border border-white/10"></div>
-                                        <div class="h-3 w-24 bg-black/20 rounded"></div>
-                                    </div>
-                                </template>
+                    {{-- Stats Card --}}
+                    <div class="bg-white rounded-xl border border-slate-200 px-5 py-4">
+                        <div class="text-[0.55rem] font-black uppercase tracking-[0.18em] text-slate-400 mb-3">Field Summary</div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="bg-[#f0f2f5] rounded-lg px-3 py-2">
+                                <div class="text-[0.52rem] uppercase tracking-widest text-slate-400 font-bold">Total Fields</div>
+                                <div class="text-lg font-black text-[#1d293d]" x-text="fields.length"></div>
                             </div>
-                        </template>
-
-                        <div x-show="fields.filter(f => f.label).length === 0" class="py-10 text-center">
-                            <p class="text-slate-600 font-black text-xs uppercase tracking-widest italic">Preview appears here...</p>
+                            <div class="bg-[#f0f2f5] rounded-lg px-3 py-2">
+                                <div class="text-[0.52rem] uppercase tracking-widest text-slate-400 font-bold">Required</div>
+                                <div class="text-lg font-black text-[#ff6900]" x-text="fields.filter(f=>f.required).length"></div>
+                            </div>
                         </div>
                     </div>
 
                     {{-- Save Button --}}
                     <button @click="save()" type="button"
-                            class="w-full mt-10 h-16 bg-[#ff6900] text-white rounded-2xl font-black shadow-2xl highlight:bg-orange-600 active:scale-95 transition-all flex items-center justify-center gap-4 text-[0.7rem] uppercase tracking-[0.2em]">
-                        <i data-lucide="zap" class="w-5 h-5"></i> Apply & Save
+                            class="w-full py-3 bg-[#ff6900] text-white rounded-xl font-black shadow-md hover:bg-[#e55e00] active:scale-95 transition-all flex items-center justify-center gap-2 text-[0.65rem] uppercase tracking-widest">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                        Apply & Save
                     </button>
+
                 </div>
             </div>
+
         </div>
     </form>
 </div>
+
 
 @push('scripts')
 <script>

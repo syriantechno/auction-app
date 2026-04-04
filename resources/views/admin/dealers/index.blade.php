@@ -5,7 +5,8 @@
 @section('content')
 <div class="px-1 space-y-5">
 
-    <x-admin-header icon="users" title="Dealers" subtitle="Registered bidders & buyers on the platform">
+    <x-admin-header icon="users" title="Dealer" highlight="Network" dot="cyan"
+        subtitle="Registered bidders & buyers on the platform">
     </x-admin-header>
 
     {{-- Toolbar --}}

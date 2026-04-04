@@ -6,11 +6,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     @php
-        $adminSiteName = \App\Models\SystemSetting::get('site_name', 'Laravel');
-        $adminSiteLogo = \App\Models\SystemSetting::get('site_logo');
+        // These are now shared via AppServiceProvider — safe fallback if not set
+        if (!isset($adminSiteName)) $adminSiteName = \App\Models\SystemSetting::get('site_name', 'Motor Bazar');
+        if (!isset($adminSiteLogo)) $adminSiteLogo = \App\Models\SystemSetting::get('site_logo');
+        if (!isset($adminSiteFavicon)) $adminSiteFavicon = \App\Models\SystemSetting::get('site_favicon');
+        if (!isset($appCurrencySymbol)) $appCurrencySymbol = \App\Helpers\CurrencyHelper::symbol();
+        if (!isset($appCurrencyCode)) $appCurrencyCode = \App\Models\SystemSetting::get('site_currency', 'AED');
+        if (!isset($appCurrencyPos)) $appCurrencyPos = \App\Models\SystemSetting::get('currency_position', 'before');
+        if (!isset($appDateFormat)) $appDateFormat = \App\Models\SystemSetting::get('date_format', 'd/m/Y');
         $googleMapsKey = \App\Models\SystemSetting::get('google_maps_api_key', env('GOOGLE_MAPS_API_KEY'));
     @endphp
     <title>{{ $adminSiteName }} Admin | @yield('title')</title>
+    @if($adminSiteFavicon)
+    <link rel="icon" type="image/x-icon" href="{{ asset('storage/' . $adminSiteFavicon) }}">
+    @endif
+
 
     <!-- Design System: Jakarta Sans & Tailwind -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -28,6 +38,14 @@
     <script>
         window.googleMapsKey = "{{ $googleMapsKey }}";
         window.mapProvider = "{{ \App\Models\SystemSetting::get('google_maps_provider', 'google') }}";
+        // Currency globals — used by any JS that formats money
+        window.appCurrency = {
+            code:     "{{ $appCurrencyCode }}",
+            symbol:   "{{ $appCurrencySymbol }}",
+            position: "{{ $appCurrencyPos }}",
+        };
+        window.appDateFormat = "{{ $appDateFormat }}";
+
     </script>
     <script src="https://unpkg.com/lucide@latest"></script>
 
@@ -38,10 +56,8 @@
         <script src="https://maps.googleapis.com/maps/api/js?key={{ $googleMapsKey }}&libraries=places"></script>
     @endif
 
-    <!-- Alerts & Notifications: SweetAlert2 & Toastify -->
+    <!-- Alerts & Notifications: SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 
     <style>
         :root {
@@ -315,38 +331,20 @@
                     </ul>
                 </div>
 
-                {{-- Group 4: System & Financial --}}
+                {{-- Group 4: Settings --}}
                 <div class="space-y-2 pt-2">
-                    <div x-show="sidebarOpen" x-cloak class="text-[0.6rem] text-slate-400 font-bold mb-3 uppercase tracking-[0.2em] pl-3 opacity-70 italic">System & Finance</div>
+                    <div x-show="sidebarOpen" x-cloak class="text-[0.6rem] text-slate-400 font-bold mb-3 uppercase tracking-[0.2em] pl-3 opacity-70 italic">System</div>
                     <ul class="space-y-1">
                         <li>
                             <a href="{{ route('admin.seo.dashboard') }}" class="sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-medium {{ request()->routeIs('admin.seo.*') ? 'text-slate-800 bg-slate-50 border border-slate-100' : 'text-slate-500 hover:bg-slate-50' }}">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0 {{ request()->routeIs('admin.seo.*') ? 'text-[#ff6900]' : 'text-slate-400' }}"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
                                 <span x-show="sidebarOpen" x-cloak>SEO Intelligence</span>
                             </a>
                         </li>
-
-                            <a href="{{ route('admin.settings.logo') }}" class="sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-medium {{ request()->routeIs('admin.settings.logo') ? 'text-slate-800 bg-slate-50 border border-slate-100 shadow-sm' : 'text-slate-500 hover:bg-slate-50' }}">
-                                <span x-show="sidebarOpen" x-cloak>System Profile</span>
-                            </a>
-                        </li>
                         <li>
-                            <a href="{{ route('admin.settings.google-maps') }}" class="sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-medium {{ request()->routeIs('admin.settings.google-maps') ? 'text-slate-800 bg-slate-50 border border-slate-100 shadow-sm' : 'text-slate-500 hover:bg-slate-50' }}">
-                                <span x-show="sidebarOpen" x-cloak>Maps Config</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{ route('admin.settings.inspection-fields') }}" class="sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-medium {{ request()->routeIs('admin.settings.inspection-fields') ? 'text-slate-800 bg-slate-50 border border-slate-100 shadow-sm' : 'text-slate-500 hover:bg-slate-50' }}">
-                                <span x-show="sidebarOpen" x-cloak>Audit Field Builder</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{ route('admin.settings.auctions') }}" class="sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-medium {{ request()->routeIs('admin.settings.auctions') ? 'text-slate-800 bg-slate-50 border border-slate-100 shadow-sm' : 'text-slate-500 hover:bg-slate-50' }}">
-                                <span x-show="sidebarOpen" x-cloak>Auction Settings</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{ route('admin.settings.communication') }}" class="sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-medium {{ request()->routeIs('admin.settings.communication') ? 'text-slate-800 bg-slate-50 border border-slate-100 shadow-sm' : 'text-slate-500 hover:bg-slate-50' }}">
-                                <span x-show="sidebarOpen" x-cloak>Email &amp; WhatsApp</span>
+                            <a href="{{ route('admin.settings.hub') }}" class="sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-bold {{ request()->routeIs('admin.settings.*') ? 'text-slate-900 bg-slate-50 border border-slate-100 shadow-sm' : 'text-slate-500 hover:bg-slate-50' }}">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0 {{ request()->routeIs('admin.settings.*') ? 'text-[#ff6900]' : 'text-slate-400' }}"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+                                <span x-show="sidebarOpen" x-cloak>Settings</span>
                             </a>
                         </li>
                     </ul>
@@ -477,20 +475,113 @@
              }
         });
 
-        // Global Notifications
-        document.addEventListener('DOMContentLoaded', function() {
-            @if(session('success'))
-                Toastify({ text: "{{ session('success') }}", duration: 4000, gravity: "top", position: "right", style: { background: "#1e293b", color: "#fff", borderRadius: "1rem", fontSize: "0.75rem", fontWeight: "400" } }).showToast();
-            @endif
-            @if(session('error'))
-                Toastify({ text: "{{ session('error') }}", duration: 5000, gravity: "top", position: "right", style: { background: "#ef4444", borderRadius: "1rem", fontSize: "0.75rem", fontWeight: "400" } }).showToast();
-            @endif
-        });
+        // ── Premium Stacked Glass Toast Engine ──────────────────────────────
+        (function() {
+            // Create toast container — top-right, below navbar
+            const _tc = document.createElement('div');
+            _tc.id = 'bazarToastContainer';
+            _tc.style.cssText = 'position:fixed;top:86px;right:1.5rem;z-index:99999;display:flex;flex-direction:column;gap:0.6rem;max-width:360px;pointer-events:none;';
+            document.body.appendChild(_tc);
 
-        window.notify = {
-            success: (msg) => Toastify({ text: msg, style: { background: "#1e293b", color: "#fff", borderRadius: "1rem" } }).showToast(),
-            error: (msg) => Toastify({ text: msg, style: { background: "#ef4444", borderRadius: "1rem" } }).showToast()
-        };
+            // Icon paths per type
+            const _icons = {
+                success: '<polyline points="20 6 9 17 4 12"/>',
+                error:   '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>',
+                warning: '<path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>',
+                info:    '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>'
+            };
+            // One unified dark glass bg — only icon color changes
+            const _typeConfig = {
+                success: { icon: '#34d399', bg: 'rgba(52,211,153,0.18)',  label: 'Success' },
+                error:   { icon: '#f87171', bg: 'rgba(239,68,68,0.18)',   label: 'Error'   },
+                warning: { icon: '#fbbf24', bg: 'rgba(251,191,36,0.18)',  label: 'Warning' },
+                info:    { icon: '#60a5fa', bg: 'rgba(96,165,250,0.18)',  label: 'Info'    },
+            };
+
+            window.showToast = function(msg, type = 'success', duration = 4500) {
+                const t  = _typeConfig[type] || _typeConfig.info;
+                const ic = _icons[type]      || _icons.info;
+
+                const wrap = document.createElement('div');
+                wrap.style.cssText = 'pointer-events:auto;';
+                wrap.innerHTML = `
+                    <div style="
+                        display:flex;align-items:center;gap:12px;
+                        background:rgba(10,15,28,0.82);
+                        backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+                        border:1px solid rgba(255,255,255,0.09);
+                        border-left:3px solid ${t.icon};
+                        color:white;
+                        padding:13px 16px;
+                        border-radius:14px;
+                        box-shadow:0 8px 32px rgba(0,0,0,0.5);
+                        font-family:'Plus Jakarta Sans',sans-serif;
+                        min-width:280px;max-width:340px;
+                        opacity:0;
+                        transform:translateX(1rem) scale(0.97);
+                        transition:all 0.28s cubic-bezier(0.34,1.3,0.64,1);
+                    ">
+                        <div style="width:32px;height:32px;border-radius:9px;background:${t.bg};flex-shrink:0;display:flex;align-items:center;justify-content:center;">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="${t.icon}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">${ic}</svg>
+                        </div>
+                        <div style="flex:1;min-width:0;">
+                            <div style="font-size:0.65rem;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;color:${t.icon};line-height:1;">${t.label}</div>
+                            <div style="font-size:0.78rem;color:rgba(255,255,255,0.82);font-weight:500;margin-top:3px;line-height:1.4;">${msg}</div>
+                        </div>
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="2.5"
+                             style="flex-shrink:0;cursor:pointer;transition:stroke 0.15s;"
+                             onmouseenter="this.setAttribute('stroke','rgba(255,255,255,0.7)')"
+                             onmouseleave="this.setAttribute('stroke','rgba(255,255,255,0.25)')"
+                             onclick="this.closest('div[style]').parentElement.remove()">
+                            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                        </svg>
+                    </div>`;
+
+                _tc.appendChild(wrap);
+                const inner = wrap.firstElementChild;
+
+                // Animate IN — delay 10ms so browser registers initial opacity:0 state
+                setTimeout(() => {
+                    inner.style.opacity = '1';
+                    inner.style.transform = 'translateX(0) scale(1)';
+                }, 10);
+
+                // Auto dismiss — slide OUT
+                setTimeout(() => {
+                    inner.style.transition = 'all 0.22s ease-in';
+                    inner.style.opacity = '0';
+                    inner.style.transform = 'translateX(2rem) scale(0.96)';
+                    setTimeout(() => wrap.remove(), 230);
+                }, duration);
+            };
+
+            // Backwards-compat
+            window.notify = {
+                success: (msg) => showToast(msg, 'success'),
+                error:   (msg) => showToast(msg, 'error'),
+                warning: (msg) => showToast(msg, 'warning'),
+                info:    (msg) => showToast(msg, 'info'),
+            };
+
+            // Alpine.js $dispatch('show-toast', {message, type})
+            window.addEventListener('show-toast', e => {
+                const d = e.detail || {};
+                showToast(d.message || d.msg || '', d.type || 'success');
+            });
+
+            // PHP session flash
+            document.addEventListener('DOMContentLoaded', function() {
+                @if(session('success'))
+                    showToast("{{ addslashes(session('success')) }}", 'success');
+                @endif
+                @if(session('error'))
+                    showToast("{{ addslashes(session('error')) }}", 'error');
+                @endif
+                @if(session('warning'))
+                    showToast("{{ addslashes(session('warning')) }}", 'warning');
+                @endif
+            });
+        })();
     </script>
 
     {{-- ══════════════════════════════════════
@@ -574,24 +665,10 @@
 
         // ── Show toast ──
         function showNotifToast(n) {
-            if (typeof Toastify === 'undefined') return;
-            const safeUrl = (n.url && n.url !== 'undefined') ? n.url : null;
-            Toastify({
-                text: `🔔 ${n.title}\n${n.message.substring(0, 70)}`,
-                duration: 6000,
-                gravity: 'top',
-                position: 'right',
-                style: {
-                    background: 'linear-gradient(135deg,#1d293d,#031629)',
-                    borderRadius: '1rem',
-                    fontSize: '0.75rem',
-                    fontWeight: '700',
-                    boxShadow: '0 20px 60px -20px rgba(0,0,0,0.5)',
-                    maxWidth: '360px',
-                    whiteSpace: 'pre-line',
-                },
-                onClick: () => { if (safeUrl) window.location.href = safeUrl; }
-            }).showToast();
+            if (typeof showToast !== 'function') return;
+            const title = n.title || 'Notification';
+            const body  = (n.message || '').substring(0, 80);
+            showToast(`<strong style="font-size:0.7rem">${title}</strong><br><span style="font-size:0.65rem;opacity:0.75">${body}</span>`, 'info', 6000);
         }
 
         // ── Fetch full notification list ──
