@@ -395,7 +395,7 @@
                 {{-- Right Side: The Elite Showroom Asset --}}
                 <div class="w-full lg:w-[55%] relative transform hover:scale-[1.05] transition-all duration-1000">
                     <img src="{{ $page->hero_image ?: '/images/cars/mclaren.png' }}" 
-                        class="w-full h-auto object-contain filter drop-shadow-[0_80px_100px_rgba(0,0,0,0.12)]" 
+                        class="w-full h-auto object-contain filter contrast-[1.18] brightness-[1.05] saturate-[1.25] drop-shadow-[0_90px_110px_rgba(3,22,41,0.18)]" 
                         alt="Elite Selection"
                         style="image-rendering: -webkit-optimize-contrast; transform: scale({{ data_get($page->content, 'hero.car_scale', 1) }}); transform-origin: center bottom;">
                 </div>
@@ -1065,7 +1065,7 @@
             {{-- Section Label --}}
             <div class="flex items-center gap-4 mb-8">
                 <div class="h-1 w-10 bg-[#ff4605] rounded-full"></div>
-                <span class="text-[0.62rem] font-black uppercase tracking-[0.3em] text-slate-500">Find Us</span>
+                <span class="text-[0.62rem] font-black uppercase tracking-[0.3em] text-slate-500">{{ data_get($page?->content, 'location.section_label', 'Find Us') }}</span>
             </div>
 
             {{-- Map Card --}}
@@ -1073,7 +1073,7 @@
 
                 {{-- Map Embed --}}
                 <iframe
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3608.6!2d55.296249!3d25.264171!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjXCsDE1JzUxLjAiTiA1NcKwMTcnNDYuNSJF!5e0!3m2!1sen!2sae!4v1680000000000!5m2!1sen!2sae"
+                    src="{{ data_get($page?->content, 'location.iframe_url', 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3608.6!2d55.296249!3d25.264171!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjXCsDE1JzUxLjAiTiA1NcKwMTcnNDYuNSJF!5e0!3m2!1sen!2sae!4v1680000000000!5m2!1sen!2sae') }}"
                     width="100%" height="100%"
                     class="absolute inset-0 w-full h-full object-cover"
                     style="border:0; min-height: 420px; filter: grayscale(20%) contrast(1.05);"
@@ -1088,9 +1088,9 @@
                 <div class="relative z-10 flex flex-col justify-center h-full min-h-[420px] max-w-sm px-10 py-10">
 
                     <h2 class="text-3xl lg:text-4xl font-black text-white tracking-tight leading-tight mb-2">
-                        Visit Motor<br><span class="text-[#ff4605]">Bazar</span>
+                        {{ data_get($page?->content, 'location.title', 'Visit Motor') }}<br><span class="text-[#ff4605]">{{ data_get($page?->content, 'location.title_accent', 'Bazar') }}</span>
                     </h2>
-                    <p class="text-slate-300 text-sm font-medium mb-8">Come see our full inventory in person — our team is ready to help.</p>
+                    <p class="text-slate-300 text-sm font-medium mb-8">{{ data_get($page?->content, 'location.subtitle', 'Come see our full inventory in person — our team is ready to help.') }}</p>
 
                     <div class="space-y-4 mb-8">
                         <div class="flex items-center gap-3">
@@ -1128,7 +1128,7 @@
                        target="_blank"
                        class="inline-flex items-center gap-2.5 bg-[#ff4605] hover:bg-[#ff6900] text-white font-black text-[0.72rem] uppercase tracking-[0.2em] px-6 py-3.5 rounded-xl transition-all duration-300 hover:shadow-[0_8px_24px_-6px_rgba(255,70,5,0.5)] hover:-translate-y-0.5 w-fit">
                         <i data-lucide="navigation" class="w-4 h-4"></i>
-                        Get Directions
+                        {{ data_get($page?->content, 'location.button_label', 'Get Directions') }}
                     </a>
                 </div>
             </div>

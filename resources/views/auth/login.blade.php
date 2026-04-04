@@ -149,7 +149,7 @@
             <div class="flex items-center gap-4 mb-16 lg:-ml-24">
                 <div class="w-32 h-32 flex items-center justify-center text-[#031629]">
                     @if($siteLogo)
-                        <img src="{{ asset('storage/' . $siteLogo) }}" class="w-full h-full object-contain filter invert-[1] hue-rotate-[180deg] brightness-[1.1] contrast-[1.5] saturate-[1.8] drop-shadow-[0_10px_10px_rgba(3,22,41,0.05)]">
+                        <img src="{{ asset('storage/' . $siteLogo) }}" class="w-20 h-20 object-contain">
                     @else
                         <div class="w-24 h-24 rounded-[32px] bg-[#1d293d] shadow-2xl flex items-center justify-center overflow-hidden">
                             <span class="font-black italic text-5xl text-white">{{ strtoupper(substr($siteName, 0, 1)) }}</span>

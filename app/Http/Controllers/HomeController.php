@@ -312,20 +312,29 @@ class HomeController extends Controller
             ),
         ]);
 
-        // ── Notify all admins ─────────────────────────────────
-        User::where('role', 'admin')
-            ->orWhereIn('email', ['admin@motorbazar.ae', 'admin@automazad.com'])
-            ->get()
-            ->each(fn($admin) => $admin->notify(new NewLeadReceived($lead)));
+        // ── Notify all admins (Safe Capture) ───────────────────
+        try {
+            User::where('role', 'admin')
+                ->orWhereIn('email', ['admin@motorbazar.ae', 'admin@automazad.com'])
+                ->get()
+                ->each(fn($admin) => $admin->notify(new NewLeadReceived($lead)));
+        } catch (\Throwable $e) {
+            Log::error('[Notification] Admin live alert failed: ' . $e->getMessage());
+        }
 
         // ── Send confirmation email to lead ───────────────────
         $leadEmail = data_get($lead->car_details, 'email');
+        Log::info('[Email] Attempting to send to: ' . ($leadEmail ?? 'NULL'));
         if ($leadEmail && filter_var($leadEmail, FILTER_VALIDATE_EMAIL)) {
             try {
-                Mail::to($leadEmail)->send(new LeadConfirmation($lead));
+                Mail::to($leadEmail)->send(new \App\Mail\LeadConfirmation($lead));
+                Log::info('[Email] Confirmation sent successfully to ' . $leadEmail);
             } catch (\Throwable $e) {
-                Log::error('[Email] Lead confirmation failed: ' . $e->getMessage());
+                Log::error('[Email] Lead confirmation failed to ' . $leadEmail . ': ' . $e->getMessage());
+                Log::error($e);
             }
+        } else {
+            Log::warning('[Email] Invalid or missing email address: ' . ($leadEmail ?? 'NONE'));
         }
 
         // ── Send WhatsApp confirmation to lead ────────────────

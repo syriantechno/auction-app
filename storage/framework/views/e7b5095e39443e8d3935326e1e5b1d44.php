@@ -182,6 +182,18 @@
                         </div>
                     </button>
 
+                    <button type="button" @click="activeTab = 'location'" 
+                        :class="activeTab === 'location' ? 'bg-[#ff6900]/5 border-[#ff6900]/20 text-[#ff6900]' : 'bg-transparent border-transparent text-slate-400 grayscale opacity-60 hover:bg-slate-50 hover:border-slate-100 hover:grayscale-0 hover:opacity-100'"
+                        class="w-full flex items-center gap-2 p-2.5 rounded-lg border-2 transition-all duration-300 text-left active:scale-[0.98] group">
+                        <div class="w-8 h-8 rounded-lg bg-white border border-slate-200 flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow">
+                            <i data-lucide="map-pin" :class="activeTab === 'location' ? 'text-[#ff6900]' : 'text-slate-400 group-hover:text-[#ff6900]'"></i>
+                        </div>
+                        <div>
+                            <div class="text-[0.65rem] font-medium uppercase text-slate-900">Location Hub</div>
+                            <div class="text-[0.5rem] font-bold uppercase tracking-tighter text-slate-400">Find Us · Map</div>
+                        </div>
+                    </button>
+
                     <button type="button" @click="activeTab = 'styles'" 
                         :class="activeTab === 'styles' ? 'bg-slate-100 border-slate-300 text-slate-900' : 'bg-transparent border-transparent text-slate-400 grayscale opacity-60 hover:bg-slate-50 hover:border-slate-100 hover:grayscale-0 hover:opacity-100'"
                         class="w-full flex items-center gap-2 p-2.5 rounded-lg border-2 transition-all duration-300 text-left active:scale-[0.98] group">
@@ -879,6 +891,96 @@
                                             <input type="hidden" name="lead_form_brands[<?php echo e($index); ?>][slug]" value="<?php echo e($brand['slug']); ?>">
                                         </div>
                                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ==================== LOCATION TAB ==================== -->
+                <div x-show="activeTab === 'location'" x-cloak x-transition>
+                    <div class="bg-white p-8 rounded-lg border border-slate-200 shadow-sm space-y-8">
+                        <div class="flex items-center gap-4 mb-2">
+                            <div class="w-12 h-12 bg-orange-50 rounded-lg flex items-center justify-center border border-orange-100 shadow-sm">
+                                <i data-lucide="map" class="w-6 h-6 text-[#ff6900]"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-medium uppercase tracking-widest text-slate-800">Branch & Location Hub</h3>
+                                <p class="text-[0.6rem] text-slate-400 font-medium uppercase tracking-widest mt-1">Manage HQ details & Interactive Map</p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            
+                            <div class="space-y-6">
+                                <div class="space-y-4">
+                                    <label class="text-[0.62rem] font-medium uppercase tracking-[0.2em] text-slate-400 block ml-1">Copywriting & Header</label>
+                                    <div class="bg-slate-50 p-5 rounded-lg border border-slate-100 space-y-4">
+                                        <div>
+                                            <label class="text-[0.55rem] font-medium uppercase tracking-widest text-slate-500 mb-2 block">Small Top Label</label>
+                                            <input type="text" name="location[section_label]" value="<?php echo e(old('location.section_label', data_get($page->content, 'location.section_label', 'Find Us'))); ?>" class="w-full bg-white border border-slate-200 rounded-md px-4 py-2.5 text-[0.8rem] font-bold text-slate-700 focus:border-[#ff6900] outline-none transition-all" placeholder="Find Us">
+                                        </div>
+                                        <div class="grid grid-cols-2 gap-3">
+                                            <div>
+                                                <label class="text-[0.55rem] font-medium uppercase tracking-widest text-slate-500 mb-2 block">Main Title</label>
+                                                <input type="text" name="location[title]" value="<?php echo e(old('location.title', data_get($page->content, 'location.title', 'Visit Motor'))); ?>" class="w-full bg-white border border-slate-200 rounded-md px-4 py-2.5 text-[0.8rem] font-bold text-slate-700 focus:border-[#ff6900] outline-none transition-all" placeholder="Visit Motor">
+                                            </div>
+                                            <div>
+                                                <label class="text-[0.55rem] font-medium uppercase tracking-widest text-slate-500 mb-2 block">Title Accent (Orange)</label>
+                                                <input type="text" name="location[title_accent]" value="<?php echo e(old('location.title_accent', data_get($page->content, 'location.title_accent', 'Bazar'))); ?>" class="w-full bg-white border border-slate-200 rounded-md px-4 py-2.5 text-[0.8rem] font-bold text-[#ff6900] focus:border-[#ff6900] outline-none transition-all" placeholder="Bazar">
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label class="text-[0.55rem] font-medium uppercase tracking-widest text-slate-500 mb-2 block">Atmospheric Subtitle</label>
+                                            <textarea name="location[subtitle]" rows="2" class="w-full bg-white border border-slate-200 rounded-md px-4 py-2.5 text-[0.8rem] font-medium text-slate-600 focus:border-[#ff6900] outline-none transition-all" placeholder="Come see our full inventory..."><?php echo e(old('location.subtitle', data_get($page->content, 'location.subtitle', 'Come see our full inventory in person — our team is ready to help.'))); ?></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="space-y-4">
+                                    <label class="text-[0.62rem] font-medium uppercase tracking-[0.2em] text-slate-400 block ml-1">Call-To-Action</label>
+                                    <div class="bg-slate-50 p-5 rounded-lg border border-slate-100 grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="text-[0.55rem] font-medium uppercase tracking-widest text-slate-500 mb-2 block">Button Label</label>
+                                            <input type="text" name="location[button_label]" value="<?php echo e(old('location.button_label', data_get($page->content, 'location.button_label', 'Get Directions'))); ?>" class="w-full bg-white border border-slate-200 rounded-md px-4 py-2.5 text-[0.8rem] font-bold text-slate-700 focus:border-[#ff6900] outline-none transition-all">
+                                        </div>
+                                        <div>
+                                            <label class="text-[0.55rem] font-medium uppercase tracking-widest text-slate-500 mb-2 block">External Maps URL</label>
+                                            <input type="text" name="location[maps_url]" value="<?php echo e(old('location.maps_url', data_get($page->content, 'location.maps_url', 'https://maps.google.com'))); ?>" class="w-full bg-white border border-slate-200 rounded-md px-4 py-2.5 text-[0.7rem] font-mono text-slate-500 outline-none focus:border-[#ff6900]" placeholder="https://goo.gl/maps/...">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            
+                            <div class="space-y-6">
+                                <div class="space-y-4">
+                                    <label class="text-[0.62rem] font-medium uppercase tracking-[0.2em] text-slate-400 block ml-1">Branch Informatics</label>
+                                    <div class="bg-slate-50 p-5 rounded-lg border border-slate-100 space-y-4">
+                                        <div>
+                                            <label class="text-[0.55rem] font-medium uppercase tracking-widest text-slate-500 mb-2 block flex items-center gap-2"><i data-lucide="map-pin" class="w-3 h-3"></i> Physical Address</label>
+                                            <input type="text" name="location[address]" value="<?php echo e(old('location.address', data_get($page->content, 'location.address', 'Dubai, United Arab Emirates'))); ?>" class="w-full bg-white border border-slate-200 rounded-md px-4 py-2.5 text-[0.8rem] font-bold text-slate-700 outline-none focus:border-[#ff6900]">
+                                        </div>
+                                        <div>
+                                            <label class="text-[0.55rem] font-medium uppercase tracking-widest text-slate-500 mb-2 block flex items-center gap-2"><i data-lucide="phone" class="w-3 h-3"></i> Direct Support Line</label>
+                                            <input type="text" name="location[phone]" value="<?php echo e(old('location.phone', data_get($page->content, 'location.phone', '+971 4 000 0000'))); ?>" class="w-full bg-white border border-slate-200 rounded-md px-4 py-2.5 text-[0.8rem] font-bold text-slate-700 outline-none focus:border-[#ff6900]">
+                                        </div>
+                                        <div>
+                                            <label class="text-[0.55rem] font-medium uppercase tracking-widest text-slate-500 mb-2 block flex items-center gap-2"><i data-lucide="clock" class="w-3 h-3"></i> Operation Hours</label>
+                                            <input type="text" name="location[hours]" value="<?php echo e(old('location.hours', data_get($page->content, 'location.hours', 'Mon – Sat: 9:00 AM – 7:00 PM'))); ?>" class="w-full bg-white border border-slate-200 rounded-md px-4 py-2.5 text-[0.8rem] font-bold text-slate-700 outline-none focus:border-[#ff6900]">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="space-y-4">
+                                    <label class="text-[0.62rem] font-medium uppercase tracking-[0.2em] text-slate-400 block ml-1">Interactive Map Embed</label>
+                                    <div class="bg-slate-50 p-5 rounded-lg border border-slate-100">
+                                        <label class="text-[0.55rem] font-medium uppercase tracking-widest text-slate-500 mb-2 block">Google Maps Iframe SRC</label>
+                                        <textarea name="location[iframe_url]" rows="3" class="w-full bg-white border border-slate-200 rounded-md px-4 py-3 text-[0.65rem] font-mono text-slate-400 outline-none focus:border-[#ff6900] custom-scrollbar" placeholder="Paste the 'src' attribute from your Google Maps embed code..."><?php echo e(old('location.iframe_url', data_get($page->content, 'location.iframe_url', 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3608.6!2d55.296249!3d25.264171!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjXCsDE1JzUxLjAiTiA1NcKwMTcnNDYuNSJF!5e0!3m2!1sen!2sae!4v1680000000000!5m2!1sen!2sae'))); ?></textarea>
+                                        <p class="text-[0.5rem] text-slate-400 mt-2 italic font-medium uppercase tracking-wider leading-relaxed">
+                                            How to find: Google Maps > Share > Embed a map > Copy the URL inside the src="" attribute.
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
                         </div>

@@ -64,6 +64,8 @@ class NewLeadReceived extends Notification implements ShouldBroadcast
 
     public function broadcastOn(): array
     {
-        return [];
+        return [
+            new \Illuminate\Broadcasting\PrivateChannel('App.Models.User.' . $this->leadId), // WRONG, I will use custom channel soon
+        ];
     }
 }

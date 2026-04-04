@@ -178,7 +178,7 @@
                 
                 <div class="h-20 flex items-center">
                     <?php if($siteLogo): ?>
-                        <img src="<?php echo e(asset('storage/' . $siteLogo)); ?>" class="h-full w-auto object-contain filter invert-[1] hue-rotate-[180deg] brightness-[1.1] contrast-[1.5] saturate-[1.8]">
+                        <img src="<?php echo e(asset('storage/' . $siteLogo)); ?>" class="h-16 w-auto object-contain">
                     <?php else: ?>
                         <div class="w-20 h-20 rounded-lg bg-white flex items-center justify-center text-[#031629] shadow-xl shadow-slate-200/70 border border-slate-200">
                             <i data-lucide="car-front" class="w-10 h-10 text-[#031629]"></i>

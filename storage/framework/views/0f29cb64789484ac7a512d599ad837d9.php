@@ -161,7 +161,7 @@
             <div class="h-[120px] flex items-center px-4 border-b border-[#f1f5f9] overflow-hidden whitespace-nowrap flex-shrink-0">
                 <div class="flex items-center gap-1 min-w-max">
                     <?php if($adminSiteLogo): ?>
-                        <img src="<?php echo e(asset('storage/' . $adminSiteLogo)); ?>" class="w-20 h-20 object-contain rounded-lg filter invert-[1] hue-rotate-[180deg] brightness-[1.1] contrast-[1.5] saturate-[1.8]">
+                        <img src="<?php echo e(asset('storage/' . $adminSiteLogo)); ?>" class="w-20 h-20 object-contain">
                     <?php else: ?>
                         <div class="w-16 h-16 bg-slate-800 rounded-lg flex items-center justify-center shadow-lg">
                             <span class="text-white font-medium text-2xl tracking-tighter italic"><?php echo e(strtoupper(substr($adminSiteName, 0, 1))); ?></span>

@@ -125,6 +125,7 @@ class CMSController extends Controller
             'navbar_glass' => 'nullable|boolean',
             'navbar.bg_color' => 'nullable|string|max:20',
             'navbar.text_color' => 'nullable|string|max:20',
+            'location' => 'nullable|array',
         ]);
 
         $heroBackgroundImage = data_get($content, 'hero.background_image', '/images/hero-bg.png');
@@ -247,6 +248,23 @@ class CMSController extends Controller
                     'bg_color'  => data_get($b, 'bg_color', '#f1f5f9'),
                     'desc'      => data_get($b, 'desc', ''),
                 ])->values()->all();
+        }
+        
+        // Save Location Hub content
+        if ($request->has('location')) {
+            $loc = $request->input('location', []);
+            $content['location'] = [
+                'section_label' => data_get($loc, 'section_label', 'Find Us'),
+                'title'         => data_get($loc, 'title', 'Visit Motor'),
+                'title_accent'  => data_get($loc, 'title_accent', 'Bazar'),
+                'subtitle'      => data_get($loc, 'subtitle', 'Come see our full inventory in person — our team is ready to help.'),
+                'address'       => data_get($loc, 'address', 'Dubai, United Arab Emirates'),
+                'phone'         => data_get($loc, 'phone', '+971 4 000 0000'),
+                'hours'         => data_get($loc, 'hours', 'Mon – Sat: 9:00 AM – 7:00 PM'),
+                'button_label'  => data_get($loc, 'button_label', 'Get Directions'),
+                'maps_url'      => data_get($loc, 'maps_url', 'https://maps.google.com'),
+                'iframe_url'    => data_get($loc, 'iframe_url', ''),
+            ];
         }
 
         // Footer settings
