@@ -3,10 +3,14 @@
 @section('page_title', 'Settings Hub')
 
 @section('content')
-<div class="px-1 pb-20" x-data="{ activeTab: 'tab1', isSaving: false, toast: { show: false, message: '', type: 'success' },
+<div class="px-1 pb-20" x-data="{ activeTab: '{{ request()->query('tab', 'tab1') }}', isSaving: false, toast: { show: false, message: '', type: 'success' },
     showToast(msg, type = 'success') {
         this.toast.show = true; this.toast.message = msg; this.toast.type = type;
         setTimeout(() => { this.toast.show = false; }, 4000);
+    },
+    init() {
+        @if(session('success')) this.showToast('{{ session('success') }}', 'success'); @endif
+        @if(session('error')) this.showToast('{{ session('error') }}', 'error'); @endif
     },
     async saveGeneral(e) {
         this.isSaving = true;
@@ -117,8 +121,9 @@
                  TAB 01 — GENERAL SETTINGS
             ════════════════════════════════════ --}}
             <div x-show="activeTab === 'tab1'" x-cloak x-transition>
-                <form @submit.prevent="saveGeneral" action="{{ route('admin.settings.general.save') }}" method="POST" enctype="multipart/form-data">
+                <form action="{{ route('admin.settings.general.save') }}" method="POST" enctype="multipart/form-data">
                 @csrf
+                <input type="hidden" name="active_tab" value="tab1">
                 <div class="space-y-5">
 
                     {{-- ── Section A: Brand Identity ── --}}
@@ -979,20 +984,10 @@
             {{-- ═══════════════════════════════════
                  TAB 03 — NOTIFICATION SETTINGS
             ════════════════════════════════════ --}}
-            <div x-show="activeTab === 'tab3'" x-cloak x-transition
-                 x-data="{
-                    isSavingNotif: false,
-                    async saveNotif(e) {
-                        this.isSavingNotif = true;
-                        const fd = new FormData(e.target);
-                        const r = await fetch(e.target.action, { method:'POST', body:fd, headers:{'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content,'X-Requested-With':'XMLHttpRequest','Accept':'application/json'} });
-                        const d = await r.json();
-                        $dispatch('show-toast', { message: d.message, type: r.ok ? 'success' : 'error' });
-                        this.isSavingNotif = false;
-                    }
-                 }">
-                <form @submit.prevent="saveNotif" action="{{ route('admin.settings.notifications.save') }}" method="POST">
+            <div x-show="activeTab === 'tab3'" x-cloak x-transition>
+                <form action="{{ route('admin.settings.notifications.save') }}" method="POST">
                 @csrf
+                <input type="hidden" name="active_tab" value="tab3">
                 <div class="space-y-5">
 
                     {{-- ─── In-App Bell Notifications ─── --}}
@@ -1218,7 +1213,7 @@
                         this.connecting=false; 
                     }
                  }">
-                <form @submit.prevent="save" action="{{ route('admin.settings.communication.update') }}" method="POST">
+                <form action="{{ route('admin.settings.communication.update') }}" method="POST">
                 @csrf
                 <div class="space-y-5">
 
@@ -1367,11 +1362,12 @@
                  TAB 05 — WHATSAPP SETTINGS
             ════════════════════════════════════ --}}
             <div x-show="activeTab === 'tab5'" x-cloak x-transition
-                 x-data="{ isSaving: false, waTestNum: '', testing: false,
-                    async save(e) { this.isSaving=true; const fd=new FormData(e.target); const r=await fetch(e.target.action,{method:'POST',body:fd,headers:{'X-CSRF-TOKEN':document.querySelector('meta[name=csrf-token]').content,'X-Requested-With':'XMLHttpRequest','Accept':'application/json'}}); const d=await r.json(); $dispatch('show-toast',{message:d.message,type:r.ok?'success':'error'}); this.isSaving=false; },
+                 x-data="{ waTestNum: '', testing: false,
                     async test() { this.testing=true; const r=await fetch('{{ route('admin.settings.communication.test-whatsapp') }}',{method:'POST',body:JSON.stringify({phone:this.waTestNum}),headers:{'X-CSRF-TOKEN':document.querySelector('meta[name=csrf-token]').content,'Content-Type':'application/json','Accept':'application/json'}}); const d=await r.json(); $dispatch('show-toast',{message:d.message,type:r.ok?'success':'error'}); this.testing=false; }
                  }">
-                <form @submit.prevent="save" action="{{ route('admin.settings.communication.update') }}" method="POST">
+                <form action="{{ route('admin.settings.communication.update') }}" method="POST">
+                @csrf
+                <input type="hidden" name="active_tab" value="tab5">
                 @csrf
                 <div class="space-y-5">
 
@@ -1507,20 +1503,12 @@
             ════════════════════════════════════ --}}
             <div x-show="activeTab === 'tab6'" x-cloak x-transition
                  x-data="{
-                    isSaving: false,
                     threshold: {{ $auctionSettings['time_extension_threshold'] ?? 30 }},
-                    extension: {{ $auctionSettings['time_extension_seconds'] ?? 20 }},
-                    async save(e) {
-                        this.isSaving = true;
-                        const fd = new FormData(e.target);
-                        const r = await fetch(e.target.action, { method:'POST', body:fd, headers:{'X-CSRF-TOKEN':document.querySelector('meta[name=csrf-token]').content,'X-Requested-With':'XMLHttpRequest','Accept':'application/json'} });
-                        const d = await r.json();
-                        $dispatch('show-toast', { message: d.message, type: r.ok ? 'success' : 'error' });
-                        this.isSaving = false;
-                    }
+                    extension: {{ $auctionSettings['time_extension_seconds'] ?? 20 }}
                  }">
-                <form @submit.prevent="save" action="{{ route('admin.settings.auctions.update') }}" method="POST">
+                <form action="{{ route('admin.settings.auctions.update') }}" method="POST">
                 @csrf
+                <input type="hidden" name="active_tab" value="tab6">
                 <div class="space-y-5">
 
                     {{-- ─── Anti-Sniping ─── --}}

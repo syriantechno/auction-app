@@ -105,11 +105,8 @@ class SettingsController extends Controller
 
         \Illuminate\Support\Facades\Cache::forget('system_settings_global');
 
-        if ($request->wantsJson()) {
-            return response()->json(['message' => 'Notification settings saved successfully ✓']);
-        }
-
-        return back()->with('success', 'Notification settings saved.');
+        return redirect()->route('admin.settings.hub', ['tab' => 'tab3'])
+            ->with('success', 'Notification settings saved successfully.');
     }
 
 
@@ -173,11 +170,8 @@ class SettingsController extends Controller
         \Illuminate\Support\Facades\Cache::forget('menu_nav_header');
         \Illuminate\Support\Facades\Cache::forget('menu_nav_footer');
 
-        if ($request->wantsJson()) {
-            return response()->json(['message' => 'General settings saved successfully ✓']);
-        }
-
-        return back()->with('success', 'General settings saved.');
+        return redirect()->route('admin.settings.hub', ['tab' => 'tab1'])
+            ->with('success', 'General settings saved successfully.');
     }
 
     public function logo()
@@ -330,11 +324,8 @@ class SettingsController extends Controller
 
         \Illuminate\Support\Facades\Cache::forget('system_settings_global');
 
-        if ($request->wantsJson()) {
-            return response()->json(['message' => 'Auction settings saved successfully ✓']);
-        }
-
-        return back()->with('success', __('messages.auction_settings_saved'));
+        return redirect()->route('admin.settings.hub', ['tab' => 'tab6'])
+            ->with('success', 'Auction settings saved successfully.');
     }
 
 
@@ -383,7 +374,8 @@ class SettingsController extends Controller
 
         \Illuminate\Support\Facades\Cache::forget('system_settings_global');
 
-        return back()->with('success', 'Communication settings saved successfully.');
+        return redirect()->route('admin.settings.hub', ['tab' => 'tab4'])
+            ->with('success', 'Email & WhatsApp settings saved successfully.');
     }
 
     /** Test email — sends to given address using current settings */

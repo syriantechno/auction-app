@@ -2,10 +2,14 @@
 <?php $__env->startSection('page_title', 'Settings Hub'); ?>
 
 <?php $__env->startSection('content'); ?>
-<div class="px-1 pb-20" x-data="{ activeTab: 'tab1', isSaving: false, toast: { show: false, message: '', type: 'success' },
+<div class="px-1 pb-20" x-data="{ activeTab: '<?php echo e(request()->query('tab', 'tab1')); ?>', isSaving: false, toast: { show: false, message: '', type: 'success' },
     showToast(msg, type = 'success') {
         this.toast.show = true; this.toast.message = msg; this.toast.type = type;
         setTimeout(() => { this.toast.show = false; }, 4000);
+    },
+    init() {
+        <?php if(session('success')): ?> this.showToast('<?php echo e(session('success')); ?>', 'success'); <?php endif; ?>
+        <?php if(session('error')): ?> this.showToast('<?php echo e(session('error')); ?>', 'error'); <?php endif; ?>
     },
     async saveGeneral(e) {
         this.isSaving = true;
@@ -115,8 +119,9 @@
 
             
             <div x-show="activeTab === 'tab1'" x-cloak x-transition>
-                <form @submit.prevent="saveGeneral" action="<?php echo e(route('admin.settings.general.save')); ?>" method="POST" enctype="multipart/form-data">
+                <form action="<?php echo e(route('admin.settings.general.save')); ?>" method="POST" enctype="multipart/form-data">
                 <?php echo csrf_field(); ?>
+                <input type="hidden" name="active_tab" value="tab1">
                 <div class="space-y-5">
 
                     
@@ -979,20 +984,10 @@
             </div>
 
             
-            <div x-show="activeTab === 'tab3'" x-cloak x-transition
-                 x-data="{
-                    isSavingNotif: false,
-                    async saveNotif(e) {
-                        this.isSavingNotif = true;
-                        const fd = new FormData(e.target);
-                        const r = await fetch(e.target.action, { method:'POST', body:fd, headers:{'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content,'X-Requested-With':'XMLHttpRequest','Accept':'application/json'} });
-                        const d = await r.json();
-                        $dispatch('show-toast', { message: d.message, type: r.ok ? 'success' : 'error' });
-                        this.isSavingNotif = false;
-                    }
-                 }">
-                <form @submit.prevent="saveNotif" action="<?php echo e(route('admin.settings.notifications.save')); ?>" method="POST">
+            <div x-show="activeTab === 'tab3'" x-cloak x-transition>
+                <form action="<?php echo e(route('admin.settings.notifications.save')); ?>" method="POST">
                 <?php echo csrf_field(); ?>
+                <input type="hidden" name="active_tab" value="tab3">
                 <div class="space-y-5">
 
                     
@@ -1217,7 +1212,7 @@
                         this.connecting=false; 
                     }
                  }">
-                <form @submit.prevent="save" action="<?php echo e(route('admin.settings.communication.update')); ?>" method="POST">
+                <form action="<?php echo e(route('admin.settings.communication.update')); ?>" method="POST">
                 <?php echo csrf_field(); ?>
                 <div class="space-y-5">
 
@@ -1364,11 +1359,12 @@
 
             
             <div x-show="activeTab === 'tab5'" x-cloak x-transition
-                 x-data="{ isSaving: false, waTestNum: '', testing: false,
-                    async save(e) { this.isSaving=true; const fd=new FormData(e.target); const r=await fetch(e.target.action,{method:'POST',body:fd,headers:{'X-CSRF-TOKEN':document.querySelector('meta[name=csrf-token]').content,'X-Requested-With':'XMLHttpRequest','Accept':'application/json'}}); const d=await r.json(); $dispatch('show-toast',{message:d.message,type:r.ok?'success':'error'}); this.isSaving=false; },
+                 x-data="{ waTestNum: '', testing: false,
                     async test() { this.testing=true; const r=await fetch('<?php echo e(route('admin.settings.communication.test-whatsapp')); ?>',{method:'POST',body:JSON.stringify({phone:this.waTestNum}),headers:{'X-CSRF-TOKEN':document.querySelector('meta[name=csrf-token]').content,'Content-Type':'application/json','Accept':'application/json'}}); const d=await r.json(); $dispatch('show-toast',{message:d.message,type:r.ok?'success':'error'}); this.testing=false; }
                  }">
-                <form @submit.prevent="save" action="<?php echo e(route('admin.settings.communication.update')); ?>" method="POST">
+                <form action="<?php echo e(route('admin.settings.communication.update')); ?>" method="POST">
+                <?php echo csrf_field(); ?>
+                <input type="hidden" name="active_tab" value="tab5">
                 <?php echo csrf_field(); ?>
                 <div class="space-y-5">
 
@@ -1502,20 +1498,13 @@
             
             <div x-show="activeTab === 'tab6'" x-cloak x-transition
                  x-data="{
-                    isSaving: false,
                     threshold: <?php echo e($auctionSettings['time_extension_threshold'] ?? 30); ?>,
-                    extension: <?php echo e($auctionSettings['time_extension_seconds'] ?? 20); ?>,
-                    async save(e) {
-                        this.isSaving = true;
-                        const fd = new FormData(e.target);
-                        const r = await fetch(e.target.action, { method:'POST', body:fd, headers:{'X-CSRF-TOKEN':document.querySelector('meta[name=csrf-token]').content,'X-Requested-With':'XMLHttpRequest','Accept':'application/json'} });
-                        const d = await r.json();
-                        $dispatch('show-toast', { message: d.message, type: r.ok ? 'success' : 'error' });
-                        this.isSaving = false;
-                    }
+                    extension: <?php echo e($auctionSettings['time_extension_seconds'] ?? 20); ?>
+
                  }">
-                <form @submit.prevent="save" action="<?php echo e(route('admin.settings.auctions.update')); ?>" method="POST">
+                <form action="<?php echo e(route('admin.settings.auctions.update')); ?>" method="POST">
                 <?php echo csrf_field(); ?>
+                <input type="hidden" name="active_tab" value="tab6">
                 <div class="space-y-5">
 
                     
