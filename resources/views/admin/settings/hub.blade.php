@@ -1195,7 +1195,20 @@
             ════════════════════════════════════ --}}
             <div x-show="activeTab === 'tab4'" x-cloak x-transition
                  x-data="{ isSaving: false, testEmail: '', testing: false, connecting: false,
-                    async save(e) { this.isSaving = true; const fd = new FormData(e.target); const r = await fetch(e.target.action, {method:'POST',body:fd,headers:{'X-CSRF-TOKEN':document.querySelector('meta[name=csrf-token]').content,'X-Requested-With':'XMLHttpRequest','Accept':'application/json'}}); const d = await r.json(); $dispatch('show-toast',{message:d.message,type:r.ok?'success':'error'}); this.isSaving=false; },
+                    async save(e) { 
+                        this.isSaving = true; 
+                        try {
+                            const fd = new FormData(e.target); 
+                            const r = await fetch(e.target.action, {method:'POST',body:fd,headers:{'X-CSRF-TOKEN':document.querySelector('meta[name=csrf-token]').content,'X-Requested-With':'XMLHttpRequest','Accept':'application/json'}}); 
+                            const d = await r.json(); 
+                            $dispatch('show-toast',{message:d.message,type:r.ok?'success':'error'}); 
+                        } catch (err) {
+                            $dispatch('show-toast',{message:'Server Connection Error. Check console or Firewall.',type:'error'});
+                            console.error(err);
+                        } finally {
+                            this.isSaving=false; 
+                        }
+                    },
                     async test() { this.testing=true; const r = await fetch('{{ route('admin.settings.communication.test-email') }}',{method:'POST',body:JSON.stringify({email:this.testEmail}),headers:{'X-CSRF-TOKEN':document.querySelector('meta[name=csrf-token]').content,'Content-Type':'application/json','Accept':'application/json'}}); const d = await r.json(); $dispatch('show-toast',{message:d.message,type:r.ok?'success':'error'}); this.testing=false; },
                     async connect() { 
                         this.connecting=true; 
