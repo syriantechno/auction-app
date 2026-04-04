@@ -477,114 +477,111 @@
                  xDataElement.__x.$data.sidebarOpen = false;
              }
         });
+    </script>
 
-        // ── Premium Stacked Glass Toast Engine ──────────────────────────────
-        (function() {
-            // Create toast container — top-right, below navbar
-            const _tc = document.createElement('div');
-            _tc.id = 'bazarToastContainer';
-            _tc.style.cssText = 'position:fixed;top:86px;right:1.5rem;z-index:99999;display:flex;flex-direction:column;gap:0.6rem;max-width:360px;pointer-events:none;';
-            document.body.appendChild(_tc);
+    <!-- ── Premium Elite Toast Engine: The Rocket Pill ── -->
+    <script>
+        let eliteToastContainer = null;
+        
+        function ensureToastContainer() {
+            if (eliteToastContainer) return eliteToastContainer;
+            eliteToastContainer = document.createElement('div');
+            eliteToastContainer.id = 'eliteToastContainer';
+            eliteToastContainer.style.cssText = 'position:fixed;top:2.5rem;right:2.5rem;z-index:9999999;display:flex;flex-direction:column;gap:1rem;pointer-events:none;';
+            document.body.appendChild(eliteToastContainer);
+            return eliteToastContainer;
+        }
 
-            // Icon paths per type
-            const _icons = {
-                success: '<polyline points="20 6 9 17 4 12"/>',
-                error:   '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>',
-                warning: '<path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>',
-                info:    '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>'
-            };
-            // One unified dark glass bg — only icon color changes
-            const _typeConfig = {
-                success: { icon: '#34d399', bg: 'rgba(52,211,153,0.18)',  label: 'Success' },
-                error:   { icon: '#f87171', bg: 'rgba(239,68,68,0.18)',   label: 'Error'   },
-                warning: { icon: '#fbbf24', bg: 'rgba(251,191,36,0.18)',  label: 'Warning' },
-                info:    { icon: '#60a5fa', bg: 'rgba(96,165,250,0.18)',  label: 'Info'    },
-            };
+        const toastConfigs = {
+            success: {
+                label: 'Sync Successful',
+                icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="text-emerald-400"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>',
+                bg: 'rgba(2, 6, 23, 0.96)',
+                border: 'rgba(255, 255, 255, 0.15)',
+                subColor: 'rgba(255,255,255,0.4)'
+            },
+            error: {
+                label: 'Sync Failure',
+                icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="text-red-400"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
+                bg: '#dc2626',
+                border: 'rgba(255, 255, 255, 0.2)',
+                subColor: 'rgba(255,255,255,0.6)'
+            }
+        };
 
-            window.showToast = function(msg, type = 'success', duration = 4500) {
-                const t  = _typeConfig[type] || _typeConfig.info;
-                const ic = _icons[type]      || _icons.info;
+        window.showToast = function(msg, type = 'success', duration = 5000) {
+            const config = toastConfigs[type] || toastConfigs.success;
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                pointer-events: auto;
+                display: flex;
+                align-items: center;
+                gap: 1.25rem;
+                padding: 1.5rem 2.5rem;
+                background: ${config.bg};
+                backdrop-filter: blur(24px);
+                -webkit-backdrop-filter: blur(24px);
+                border: 1px solid ${config.border};
+                border-radius: 5rem;
+                box-shadow: 0 35px 60px -15px rgba(0,0,0,0.3);
+                min-width: 380px;
+                max-width: 500px;
+                opacity: 0;
+                transform: translateX(3rem) scale(0.9) blur(10px);
+                transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+                position: relative;
+                overflow: hidden;
+                font-family: 'Plus Jakarta Sans', sans-serif;
+            `;
 
-                const wrap = document.createElement('div');
-                wrap.style.cssText = 'pointer-events:auto;';
-                wrap.innerHTML = `
-                    <div style="
-                        display:flex;align-items:center;gap:12px;
-                        background:rgba(10,15,28,0.82);
-                        backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
-                        border:1px solid rgba(255,255,255,0.09);
-                        border-left:3px solid ${t.icon};
-                        color:white;
-                        padding:13px 16px;
-                        border-radius:14px;
-                        box-shadow:0 8px 32px rgba(0,0,0,0.5);
-                        font-family:'Plus Jakarta Sans',sans-serif;
-                        min-width:280px;max-width:340px;
-                        opacity:0;
-                        transform:translateX(1rem) scale(0.97);
-                        transition:all 0.28s cubic-bezier(0.34,1.3,0.64,1);
-                    ">
-                        <div style="width:32px;height:32px;border-radius:9px;background:${t.bg};flex-shrink:0;display:flex;align-items:center;justify-content:center;">
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="${t.icon}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">${ic}</svg>
-                        </div>
-                        <div style="flex:1;min-width:0;">
-                            <div style="font-size:0.65rem;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;color:${t.icon};line-height:1;">${t.label}</div>
-                            <div style="font-size:0.78rem;color:rgba(255,255,255,0.82);font-weight:500;margin-top:3px;line-height:1.4;">${msg}</div>
-                        </div>
-                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="2.5"
-                             style="flex-shrink:0;cursor:pointer;transition:stroke 0.15s;"
-                             onmouseenter="this.setAttribute('stroke','rgba(255,255,255,0.7)')"
-                             onmouseleave="this.setAttribute('stroke','rgba(255,255,255,0.25)')"
-                             onclick="this.closest('div[style]').parentElement.remove()">
-                            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-                        </svg>
-                    </div>`;
+            toast.innerHTML = `
+                <div style="width: 3.5rem; height: 3.5rem; border-radius: 1.2rem; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: inset 0 0 12px rgba(0,0,0,0.1);">
+                    ${config.icon}
+                </div>
+                <div style="flex: 1;">
+                    <p style="margin: 0; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3em; color: ${config.subColor}; margin-bottom: 0.25rem;">${config.label}</p>
+                    <p style="margin: 0; font-size: 1.05rem; font-weight: 500; color: white; letter-spacing: -0.02em; line-height: 1.2;">${msg}</p>
+                </div>
+                <div style="position: absolute; top: 0.75rem; right: 2rem; opacity: 0.1; color: white; pointer-events: none;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-5c1.62-2.2 5-2.5 5-2.5"/><path d="M12 15v5s3.03-.55 5-2c2.2-1.62 2.5-5 2.5-5"/></svg>
+                </div>
+            `;
 
-                _tc.appendChild(wrap);
-                const inner = wrap.firstElementChild;
-
-                // Animate IN — delay 10ms so browser registers initial opacity:0 state
-                setTimeout(() => {
-                    inner.style.opacity = '1';
-                    inner.style.transform = 'translateX(0) scale(1)';
-                }, 10);
-
-                // Auto dismiss — slide OUT
-                setTimeout(() => {
-                    inner.style.transition = 'all 0.22s ease-in';
-                    inner.style.opacity = '0';
-                    inner.style.transform = 'translateX(2rem) scale(0.96)';
-                    setTimeout(() => wrap.remove(), 230);
-                }, duration);
-            };
-
-            // Backwards-compat
-            window.notify = {
-                success: (msg) => showToast(msg, 'success'),
-                error:   (msg) => showToast(msg, 'error'),
-                warning: (msg) => showToast(msg, 'warning'),
-                info:    (msg) => showToast(msg, 'info'),
-            };
-
-            // Alpine.js $dispatch('show-toast', {message, type})
-            window.addEventListener('show-toast', e => {
-                const d = e.detail || {};
-                showToast(d.message || d.msg || '', d.type || 'success');
+            const target = ensureToastContainer();
+            target.appendChild(toast);
+            
+            // Animate In
+            requestAnimationFrame(() => {
+                toast.style.opacity = '1';
+                toast.style.transform = 'translateX(0) scale(1) blur(0)';
             });
 
-            // PHP session flash
-            document.addEventListener('DOMContentLoaded', function() {
-                <?php if(session('success')): ?>
-                    showToast("<?php echo e(addslashes(session('success'))); ?>", 'success');
-                <?php endif; ?>
-                <?php if(session('error')): ?>
-                    showToast("<?php echo e(addslashes(session('error'))); ?>", 'error');
-                <?php endif; ?>
-                <?php if(session('warning')): ?>
-                    showToast("<?php echo e(addslashes(session('warning'))); ?>", 'warning');
-                <?php endif; ?>
-            });
-        })();
+            // Auto Close
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(3rem) scale(0.9) blur(10px)';
+                setTimeout(() => toast.remove(), 500);
+            }, duration);
+        };
+
+        // Global Notify API
+        window.notify = {
+            success: (m) => showToast(m, 'success'),
+            error: (m) => showToast(m, 'error'),
+            warning: (m) => showToast(m, 'error'),
+            info: (m) => showToast(m, 'success')
+        };
+
+        // Alpine Event Link
+        window.addEventListener('show-toast', e => {
+            showToast(e.detail.message || e.detail.msg, e.detail.type || 'success');
+        });
+
+        // Session Flash Logic
+        document.addEventListener('DOMContentLoaded', () => {
+            <?php if(session('success')): ?> showToast("<?php echo e(addslashes(session('success'))); ?>", 'success'); <?php endif; ?>
+            <?php if(session('error')): ?> showToast("<?php echo e(addslashes(session('error'))); ?>", 'error'); <?php endif; ?>
+        });
     </script>
 
     

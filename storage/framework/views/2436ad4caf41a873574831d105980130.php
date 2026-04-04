@@ -14,6 +14,8 @@
         $navbarHours = data_get($navbarContent, 'hours', 'Mon - Fri: 9:00 - 18:00');
         $isSticky = (bool) data_get($navbarContent, 'sticky', true);
         $isGlass  = (bool) data_get($navbarContent, 'glass', true);
+        $navbarBgColor = data_get($navbarContent, 'bg_color', '#ffffff');
+        $navbarTextColor = data_get($navbarContent, 'text_color', '#0d121f');
 
         // Social links — computed ONCE, used in both Navbar and Footer
         $allSocialKeys = ['facebook','instagram','tiktok','youtube','x','linkedin','whatsapp'];
@@ -80,23 +82,61 @@
             -webkit-font-smoothing: antialiased;
         }
         .nav-link {
-            font-size: 0.85rem;
-            font-weight: 700;
-            color: #0f172a;
-            transition: all 0.3s ease;
-            padding: 8px 12px;
+            font-size: 0.74rem;
+            font-weight: 800;
+            color: <?php echo e($navbarTextColor); ?>;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 8px 10px;
+            position: relative;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
         }
-        .nav-link:hover { color: #ff4605; }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 2px;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: #ff4605;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateX(-50%);
+            border-radius: 99px;
+            box-shadow: 0 4px 12px rgba(255, 70, 5, 0.3);
+        }
+
+        .nav-link:hover::after {
+            width: 14px;
+        }
+
+        .nav-link-active::after {
+            width: 14px !important;
+        }
+
+        /* Extreme Thumping Pulse Animation */
+        @keyframes pulse-orange {
+            0% { box-shadow: 0 0 0 0 rgba(255, 70, 5, 0.6); }
+            70% { box-shadow: 0 0 0 18px rgba(255, 70, 5, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 70, 5, 0); }
+        }
+        .animate-pulse-orange {
+            animation: pulse-orange 2s infinite !important;
+        }
+
+        .nav-link:hover {
+            color: #ff4605;
+        }
         
         .sticky-nav {
-            background: <?php echo e($isGlass ? 'rgba(255, 255, 255, 0.7)' : 'white'); ?>;
+            background: <?php echo e($isGlass ? 'rgba(255, 255, 255, 0.7)' : $navbarBgColor); ?>;
             backdrop-filter: <?php echo e($isGlass ? 'blur(12px)' : 'none'); ?>;
             box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
             border-bottom: 1px solid rgba(255, 255, 255, 0.3);
         }
         
         .static-nav {
-            background: white;
+            background: <?php echo e($navbarBgColor); ?>;
             position: relative !important;
             box-shadow: none;
             border-bottom: 1px solid #f1f5f9;
@@ -148,20 +188,21 @@
             </a>
 
             
-            <div class="hidden lg:flex items-center gap-3">
+            
+            <div class="hidden lg:flex items-center gap-0.5">
                 <?php if(isset($headerMenu) && $headerMenu->items): ?>
                     <?php $__currentLoopData = $headerMenu->items; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                         <?php if($item->children->count() > 0): ?>
                             <div class="relative group flex items-center h-full">
-                                <button class="nav-link flex items-center gap-1.5 h-full">
+                                <button class="nav-link flex items-center gap-1.5 h-full <?php echo e(request()->url() == $item->url ? 'nav-link-active' : ''); ?>">
                                     <?php echo e($item->label); ?>
 
-                                    <i data-lucide="chevron-down" class="w-3.5 opacity-50 group-hover:rotate-180 transition-transform"></i>
+                                    <i data-lucide="chevron-down" class="w-2.5 opacity-40 group-hover:rotate-180 transition-transform"></i>
                                 </button>
                                 
                                 <div class="absolute top-[80%] left-0 w-56 bg-white rounded-lg shadow-2xl border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 p-2 z-[60]">
                                     <?php $__currentLoopData = $item->children; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $child): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                        <a href="<?php echo e($child->url); ?>" class="block px-4 py-3 rounded-md text-[0.75rem] font-bold text-deep-900 hover:bg-gray-50 transition-all">
+                                        <a href="<?php echo e($child->url); ?>" class="block px-4 py-3 rounded-md text-[0.7rem] font-black uppercase tracking-wide text-deep-900 hover:bg-orange-50 hover:text-[#ff6900] transition-all">
                                             <?php echo e($child->label); ?>
 
                                         </a>
@@ -169,10 +210,15 @@
                                 </div>
                             </div>
                         <?php else: ?>
-                            <a href="<?php echo e($item->url); ?>" class="nav-link <?php echo e(request()->url() == $item->url ? 'text-bazar-500' : ''); ?>">
+                            <a href="<?php echo e($item->url); ?>" class="nav-link <?php echo e(request()->url() == $item->url ? 'text-bazar-500 nav-link-active' : ''); ?>">
                                 <?php echo e($item->label); ?>
 
                             </a>
+                        <?php endif; ?>
+
+                        
+                        <?php if (! ($loop->last)): ?>
+                            <div class="h-4 w-px bg-slate-300/80"></div>
                         <?php endif; ?>
                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 <?php endif; ?>
@@ -207,49 +253,74 @@
 
             
             <div class="flex items-center gap-3 ml-auto">
-                <div class="hidden md:flex flex-col items-end gap-0.5">
-                    <div class="flex items-center gap-1.5 font-black text-[0.85rem] text-slate-900 group">
-                        <i data-lucide="phone" class="w-3.5 h-3.5 text-bazar-500 fill-bazar-500/10"></i>
-                        <a href="tel:<?php echo e($navbarPhone); ?>" class="hover:text-bazar-500 transition-colors"><?php echo e($navbarPhone); ?></a>
-                    </div>
-                    <div class="text-[0.55rem] font-bold text-slate-400 uppercase tracking-widest"><?php echo e($navbarHours); ?></div>
+                <div class="hidden md:flex">
+                    <!-- Interactive Sliding Contact Card -->
+                    <a href="tel:<?php echo e($navbarPhone); ?>" class="flex flex-row-reverse items-center bg-white/95 rounded-full shadow-[0_15px_40px_-12px_rgba(0,0,0,0.12)] border border-white/40 p-1 transition-all duration-700 ease-[cubic-bezier(0.34,1.56,0.64,1)] w-[52px] hover:w-[210px] cursor-pointer overflow-hidden group/contact relative z-40">
+                        <!-- Pulse Orange Icon Circle (anchored right) -->
+                        <div class="w-[42px] h-[42px] rounded-full bg-[#ff4605] border border-orange-400/20 flex items-center justify-center shrink-0 z-20 transition-transform duration-500 group-hover/contact:scale-95 group-hover/contact:-rotate-12 animate-pulse-orange">
+                            <i data-lucide="phone-incoming" class="w-4 h-4 text-white"></i>
+                        </div>
+                        
+                        <!-- Info Area (reveals to the left) -->
+                        <div class="opacity-0 translate-x-10 group-hover/contact:opacity-100 group-hover/contact:translate-x-0 transition-all duration-500 delay-75 flex-1 px-4 text-right overflow-hidden whitespace-nowrap pointer-events-none">
+                            <p class="text-[0.8rem] font-black text-slate-950 tracking-tight leading-none mb-1"><?php echo e($navbarPhone); ?></p>
+                            <p class="text-[0.45rem] font-black text-[#ff4605] uppercase tracking-[0.12em] leading-none text-nowrap opacity-90"><?php echo e($navbarHours); ?></p>
+                        </div>
+                    </a>
                 </div>
 
                 <?php if(auth()->guard()->check()): ?>
-                    <div class="relative group">
-                        <button class="flex items-center gap-3 bg-gray-50 hover:bg-gray-100 p-1.5 pr-4 rounded-lg transition-all border border-gray-100">
-                            <div class="w-9 h-9 rounded-md overflow-hidden border-2 border-white shadow-sm shrink-0">
+                    <div class="relative group py-2">
+                        <!-- Precise Sliding Avatar Card -->
+                        <div class="flex flex-row-reverse items-center bg-white/95 backdrop-blur-3xl rounded-full shadow-[0_15px_40px_-12px_rgba(0,0,0,0.12)] border border-white/40 p-1 transition-all duration-700 ease-[cubic-bezier(0.34,1.56,0.64,1)] w-[52px] hover:w-[200px] cursor-pointer overflow-hidden group/card relative z-50">
+                            <!-- Image (anchored right) -->
+                            <div class="w-[42px] h-[42px] rounded-full overflow-hidden border-2 border-white shadow-lg shrink-0 z-20 transition-transform duration-500 group-hover/card:scale-95 group-hover/card:rotate-3">
                                 <img src="https://i.pravatar.cc/100?u=<?php echo e(auth()->id()); ?>" class="w-full h-full object-cover">
                             </div>
-                            <div class="text-left">
-                                <div class="text-[0.7rem] font-black text-deep-900 leading-none truncate max-w-[100px]"><?php echo e(auth()->user()->name); ?></div>
-                                <div class="text-[0.55rem] text-bazar-500 font-bold uppercase tracking-widest mt-1">Authorized</div>
+                            
+                            <!-- Name Area (reveals to the left) -->
+                            <div class="opacity-0 translate-x-10 group-hover/card:opacity-100 group-hover/card:translate-x-0 transition-all duration-500 delay-75 flex-1 px-4 text-right overflow-hidden whitespace-nowrap pointer-events-none">
+                                <p style="color: #ff4605" class="text-[0.45rem] font-bold uppercase tracking-[0.2em] mb-0.5 leading-none opacity-80 text-nowrap">Welcome</p>
+                                <p class="text-[0.82rem] font-black text-slate-900 tracking-tighter leading-none text-nowrap"><?php echo e(explode(' ', auth()->user()->name)[0]); ?></p>
                             </div>
-                            <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-gray-400 group-hover:rotate-180 transition-transform ml-1"></i>
-                        </button>
+                        </div>
+
                         
-                        <div class="absolute right-0 mt-3 w-56 bg-white rounded-lg shadow-2xl border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 p-2 z-[60]">
-                            <div class="p-4 border-b border-gray-50 mb-1">
-                                <div class="text-sm font-black text-deep-900 truncate"><?php echo e(auth()->user()->name); ?></div>
-                                <div class="text-[0.6rem] text-gray-400 font-bold uppercase mt-0.5 tracking-widest">Premium Member</div>
+                        <div class="absolute right-0 top-full mt-2 w-60 bg-white rounded-[1.4rem] shadow-[0_40px_90px_-20px_rgba(0,0,0,0.35)] border border-slate-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 p-2 z-[60] origin-top-right transform scale-95 group-hover:scale-100">
+                            <div class="p-4 border-b border-slate-100/50 mb-1.5 bg-slate-50/50 rounded-2xl">
+                                <div class="text-[0.85rem] font-black text-slate-950 truncate leading-tight"><?php echo e(auth()->user()->name); ?></div>
+                                <div class="text-[0.55rem] text-slate-400 font-bold uppercase mt-1 tracking-[0.1em]">Identity Verified</div>
                             </div>
-                            <a href="<?php echo e(route('dealer.profile', auth()->id())); ?>" class="flex items-center gap-3 px-4 py-3 rounded-md text-xs font-bold text-gray-600 hover:bg-orange-50 hover:text-[#ff6900] transition-colors">
-                                <i data-lucide="user-circle" class="w-4"></i> My Profile
-                            </a>
-                            <a href="<?php echo e(route('user.bids')); ?>" class="flex items-center gap-3 px-4 py-3 rounded-md text-xs font-bold text-gray-600 hover:bg-gray-50">
-                                <i data-lucide="gavel" class="w-4"></i> My Bids
-                            </a>
-                            <?php if(auth()->user()->is_admin): ?>
-                                <a href="<?php echo e(route('admin.dashboard')); ?>" class="flex items-center gap-3 px-4 py-3 rounded-md text-xs font-bold text-gray-600 hover:bg-gray-50">
-                                    <i data-lucide="shield-check" class="w-4"></i> Dashboard
+                            
+                            <div class="space-y-0.5">
+                                <a href="<?php echo e(route('dealer.profile', auth()->id())); ?>" class="flex items-center gap-3 px-3.5 py-3 rounded-xl text-[0.7rem] font-bold text-slate-600 hover:bg-orange-50 hover:text-[#ff4605] transition-all group/item">
+                                    <div class="w-7 h-7 rounded-lg bg-orange-100/50 flex items-center justify-center text-orange-600 group-hover/item:scale-110 transition-transform">
+                                        <i data-lucide="shield-user" class="w-3"></i>
+                                    </div>
+                                    Secure Profile
                                 </a>
-                            <?php endif; ?>
-                            <form action="<?php echo e(route('logout')); ?>" method="POST" class="mt-1 border-t border-gray-50 pt-1">
-                                <?php echo csrf_field(); ?>
-                                <button type="submit" class="w-full flex items-center gap-3 px-4 py-3 rounded-md text-xs font-bold text-red-500 hover:bg-red-50">
-                                    <i data-lucide="log-out" class="w-4"></i> Sign Out
-                                </button>
-                            </form>
+                                
+                                <?php if(auth()->user()->is_admin): ?>
+                                    <a href="<?php echo e(route('admin.dashboard')); ?>" class="flex items-center gap-3 px-3.5 py-3 rounded-xl text-[0.7rem] font-bold text-slate-600 hover:bg-slate-50 transition-all group/item">
+                                        <div class="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center text-slate-600 group-hover/item:scale-110 transition-transform">
+                                            <i data-lucide="cpu" class="w-3"></i>
+                                        </div>
+                                        Core Systems
+                                    </a>
+                                <?php endif; ?>
+
+                                <div class="pt-2 mt-2 border-t border-slate-100/50">
+                                    <form action="<?php echo e(route('logout')); ?>" method="POST">
+                                        <?php echo csrf_field(); ?>
+                                        <button type="submit" class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl text-[0.75rem] font-bold text-red-500 hover:bg-red-50 transition-all group/item">
+                                            <div class="w-8 h-8 rounded-lg bg-red-100/50 flex items-center justify-center text-red-600 group-hover/item:scale-110 transition-transform">
+                                                <i data-lucide="power" class="w-3.5"></i>
+                                            </div>
+                                            Terminate Session
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 <?php else: ?>
@@ -260,7 +331,7 @@
                         <i data-lucide="user-circle" class="w-4 h-4 group-hover:scale-110 transition-transform"></i>
                         <span>My Profile</span>
                     </a>
-                    <a href="#" class="btn-bazar flex items-center gap-2">
+                    <a href="#" class="btn-bazar flex items-center gap-2 animate-pulse-orange">
                         <i data-lucide="plus" class="w-4 h-4"></i>
                         <span>Sell My Car</span>
                     </a>

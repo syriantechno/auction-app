@@ -2,15 +2,9 @@
 <?php $__env->startSection('page_title', 'Settings Hub'); ?>
 
 <?php $__env->startSection('content'); ?>
-<div class="px-1 pb-20" x-data="{ activeTab: '<?php echo e(request()->query('tab', 'tab1')); ?>', isSaving: false, toast: { show: false, message: '', type: 'success' },
-    showToast(msg, type = 'success') {
-        this.toast.show = true; this.toast.message = msg; this.toast.type = type;
-        setTimeout(() => { this.toast.show = false; }, 4000);
-    },
-    init() {
-        <?php if(session('success')): ?> this.showToast('<?php echo e(session('success')); ?>', 'success'); <?php endif; ?>
-        <?php if(session('error')): ?> this.showToast('<?php echo e(session('error')); ?>', 'error'); <?php endif; ?>
-    },
+<div class="px-1 pb-20" x-data="{ 
+    activeTab: '<?php echo e(request()->query('tab', 'tab1')); ?>', 
+    isSaving: false,
     async saveGeneral(e) {
         this.isSaving = true;
         const form = e.target;
@@ -18,29 +12,13 @@
         try {
             const r = await fetch(form.action, { method: 'POST', body: fd, headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content, 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' } });
             const d = await r.json();
-            if (r.ok) { this.showToast(d.message || 'General settings saved!', 'success'); }
-            else { this.showToast(d.message || 'Save failed.', 'error'); }
-        } catch(err) { this.showToast('Network error.', 'error'); }
+            if (r.ok) { window.showToast(d.message || 'General settings saved!', 'success'); }
+            else { window.showToast(d.message || 'Save failed.', 'error'); }
+        } catch(err) { window.showToast('Network error.', 'error'); }
         finally { this.isSaving = false; }
     }
 }">
 
-    
-    <div x-show="toast.show"
-         x-transition:enter="transition ease-out duration-300"
-         x-transition:enter-start="opacity-0 translate-x-8"
-         x-transition:enter-end="opacity-100 translate-x-0"
-         x-transition:leave="transition ease-in duration-200"
-         x-transition:leave-end="opacity-0 translate-x-8"
-         class="fixed top-6 right-6 z-[99999] flex items-center gap-4 px-6 py-4 rounded-2xl shadow-2xl border min-w-[320px]"
-         :class="toast.type === 'success' ? 'bg-[#031629] text-white border-white/10' : 'bg-red-600 text-white border-red-400'"
-         x-cloak>
-        <div class="w-9 h-9 rounded-xl flex items-center justify-center bg-white/10">
-            <template x-if="toast.type === 'success'"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" class="text-emerald-400"><polyline points="20 6 9 17 4 12"/></svg></template>
-            <template x-if="toast.type === 'error'"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" class="text-red-200"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></template>
-        </div>
-        <p class="text-[0.8rem] font-bold" x-text="toast.message"></p>
-    </div>
 
     
     <div class="flex items-center justify-between mb-6">
@@ -60,17 +38,17 @@
                 <?php
                 $tabs = [
                     1  => ['label' => 'General',    'sub' => 'App Settings',  'color' => 'orange'],
-                    2  => ['label' => 'Roles',       'sub' => 'Permissions',   'color' => 'orange'],
+                    2  => ['label' => 'Roles',       'sub' => 'Security',      'color' => 'orange'],
                     3  => ['label' => 'Alerts',      'sub' => 'Notifications', 'color' => 'blue'],
                     4  => ['label' => 'Email',       'sub' => 'SMTP & Templates','color' => 'blue'],
                     5  => ['label' => 'WhatsApp',    'sub' => 'API & Templates', 'color' => 'emerald'],
                     6  => ['label' => 'Auction',     'sub' => 'Bidding Rules',  'color' => 'emerald'],
-                    7  => ['label' => 'Inspection',  'sub' => 'Field Builder',  'color' => 'violet'],
-                    8  => ['label' => 'Maps',         'sub' => 'API & Location', 'color' => 'violet'],
-                    9  => ['label' => 'SEO',          'sub' => 'Meta & Defaults','color' => 'rose'],
-                    10 => ['label' => 'Tab 10',      'sub' => 'Placeholder',   'color' => 'rose'],
-                    11 => ['label' => 'Tab 11',      'sub' => 'Placeholder',   'color' => 'amber'],
-                    12 => ['label' => 'Tab 12',      'sub' => 'Placeholder',   'color' => 'amber'],
+                    7  => ['label' => 'Inspection', 'sub' => 'Field Builder',  'color' => 'violet'],
+                    8  => ['label' => 'Placeholder', 'sub' => 'Not Used',      'color' => 'slate'],
+                    9  => ['label' => 'Maps',         'sub' => 'API & Location', 'color' => 'violet'],
+                    10 => ['label' => 'SEO',          'sub' => 'Meta & Defaults','color' => 'rose'],
+                    11 => ['label' => 'Blog',         'sub' => 'Hero & Display', 'color' => 'orange'],
+                    12 => ['label' => 'Navigation',   'sub' => 'Header & Style', 'color' => 'blue'],
                     13 => ['label' => 'Tab 13',      'sub' => 'Placeholder',   'color' => 'slate'],
                     14 => ['label' => 'Tab 14',      'sub' => 'Placeholder',   'color' => 'slate'],
                     15 => ['label' => 'Tab 15',      'sub' => 'Placeholder',   'color' => 'slate'],
@@ -1494,8 +1472,6 @@
                 </div>
                 </form>
             </div>
-
-            
             <div x-show="activeTab === 'tab6'" x-cloak x-transition
                  x-data="{
                     threshold: <?php echo e($auctionSettings['time_extension_threshold'] ?? 30); ?>,
@@ -1878,8 +1854,173 @@
             </div>
 
             
+            
+            <div x-show="activeTab === 'tab11'" x-cloak x-transition>
+                <form action="<?php echo e(route('admin.settings.blog.save')); ?>" method="POST" enctype="multipart/form-data">
+                <?php echo csrf_field(); ?>
+                <input type="hidden" name="active_tab" value="tab11">
+                <div class="space-y-5">
+                    
+                    <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+                        <div class="flex items-center gap-3 px-6 py-4 border-b border-slate-50 bg-slate-50/50">
+                            <div class="w-9 h-9 rounded-xl bg-orange-50 flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ff6900" stroke-width="2.5"><path d="M4 11V4a2 2 0 0 1 2-2h10l4 4v16a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-4"/><path d="M14 2v6h6"/><path d="M8 13h6"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L12 15"/></svg>
+                            </div>
+                            <div>
+                                <div class="text-[0.72rem] font-black text-[#031629] uppercase tracking-wide">Blog Hero Configuration</div>
+                                <div class="text-[0.6rem] text-slate-400 font-medium">Customize blog index and post headers</div>
+                            </div>
+                        </div>
+                        <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-8">
+                            
+                            
+                            <div class="space-y-4">
+                                <label class="block text-[0.6rem] font-black uppercase tracking-widest text-[#031629]">Main Blog Page Hero Image</label>
+                                
+                                
+                                <div id="blogIndexDropZone"
+                                     class="relative cursor-pointer group"
+                                     onclick="document.getElementById('blogIndexFileInput').click()"
+                                     ondragover="event.preventDefault();this.classList.add('border-[#ff6900]','bg-orange-50')"
+                                     ondragleave="this.classList.remove('border-[#ff6900]','bg-orange-50')"
+                                     ondrop="handleBlogIndexDrop(event)">
+
+                                    
+                                    <div id="blogIndexPreview" class="<?php echo e(!empty($settings['blog_index_hero_image']) ? '' : 'hidden'); ?> relative rounded-2xl overflow-hidden aspect-video border border-slate-100 shadow-sm">
+                                        <img id="blogIndexPreviewImg"
+                                             src="<?php echo e(!empty($settings['blog_index_hero_image']) ? asset('storage/' . $settings['blog_index_hero_image']) : ''); ?>" 
+                                             class="w-full h-full object-cover">
+                                        <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                            <span class="text-white text-[0.6rem] font-black uppercase tracking-widest">Change Image</span>
+                                        </div>
+                                        <button type="button" onclick="event.stopPropagation();clearBlogIndexImage()"
+                                                class="absolute top-2 right-2 w-7 h-7 rounded-full bg-red-500 text-white flex items-center justify-center hover:bg-red-600 transition-all shadow">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                                        </button>
+                                    </div>
+
+                                    
+                                    <div id="blogIndexEmpty" class="<?php echo e(!empty($settings['blog_index_hero_image']) ? 'hidden' : ''); ?> aspect-video bg-slate-50 rounded-2xl border-2 border-dashed border-slate-200 flex flex-col items-center justify-center gap-2 hover:border-[#ff6900] transition-colors">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-slate-300"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+                                        <span class="text-[0.6rem] font-bold text-slate-400 uppercase tracking-widest">Drop index hero or click</span>
+                                    </div>
+
+                                    <input type="file" id="blogIndexFileInput" name="blog_index_hero_image"
+                                           accept="image/*" class="hidden"
+                                           onchange="handleBlogIndexFile(this.files[0])">
+                                </div>
+                            </div>
+
+                            
+                            <div class="space-y-4">
+                                <label class="block text-[0.6rem] font-black uppercase tracking-widest text-[#031629]">Individual Post Hero Image</label>
+                                
+                                
+                                <div id="blogShowDropZone"
+                                     class="relative cursor-pointer group"
+                                     onclick="document.getElementById('blogShowFileInput').click()"
+                                     ondragover="event.preventDefault();this.classList.add('border-[#ff6900]','bg-orange-50')"
+                                     ondragleave="this.classList.remove('border-[#ff6900]','bg-orange-50')"
+                                     ondrop="handleBlogShowDrop(event)">
+
+                                    
+                                    <div id="blogShowPreview" class="<?php echo e(!empty($settings['blog_show_hero_image']) ? '' : 'hidden'); ?> relative rounded-2xl overflow-hidden aspect-video border border-slate-100 shadow-sm">
+                                        <img id="blogShowPreviewImg"
+                                             src="<?php echo e(!empty($settings['blog_show_hero_image']) ? asset('storage/' . $settings['blog_show_hero_image']) : ''); ?>" 
+                                             class="w-full h-full object-cover">
+                                        <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                            <span class="text-white text-[0.6rem] font-black uppercase tracking-widest">Change Image</span>
+                                        </div>
+                                        <button type="button" onclick="event.stopPropagation();clearBlogShowImage()"
+                                                class="absolute top-2 right-2 w-7 h-7 rounded-full bg-red-500 text-white flex items-center justify-center hover:bg-red-600 transition-all shadow">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                                        </button>
+                                    </div>
+
+                                    
+                                    <div id="blogShowEmpty" class="<?php echo e(!empty($settings['blog_show_hero_image']) ? 'hidden' : ''); ?> aspect-video bg-slate-50 rounded-2xl border-2 border-dashed border-slate-200 flex flex-col items-center justify-center gap-2 hover:border-[#ff6900] transition-colors">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-slate-300"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+                                        <span class="text-[0.6rem] font-bold text-slate-400 uppercase tracking-widest">Drop post hero or click</span>
+                                    </div>
+
+                                    <input type="file" id="blogShowFileInput" name="blog_show_hero_image"
+                                           accept="image/*" class="hidden"
+                                           onchange="handleBlogShowFile(this.files[0])">
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden" 
+                         x-data="{ opacity: <?php echo e(\App\Models\SystemSetting::get('blog_post_hero_opacity', 60)); ?> }">
+                        <div class="flex items-center gap-3 px-6 py-4 border-b border-slate-50 bg-slate-50/50">
+                            <div class="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3730a3" stroke-width="2.5"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                            </div>
+                            <div>
+                                <div class="text-[0.72rem] font-black text-[#031629] uppercase tracking-wide">Post Hero Strategy</div>
+                                <div class="text-[0.6rem] text-slate-400 font-medium">Define how individual post headers behave</div>
+                            </div>
+                        </div>
+                        <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-8">
+                            
+                            
+                            <div class="space-y-3">
+                                <label class="block text-[0.6rem] font-black uppercase tracking-widest text-[#031629]">Post Display Mode</label>
+                                <?php $heroMode = \App\Models\SystemSetting::get('blog_post_hero_mode', 'auto'); ?>
+                                <div class="flex items-center gap-4">
+                                    <label class="flex-1 flex items-center gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all <?php echo e($heroMode === 'auto' ? 'border-[#ff6900] bg-orange-50' : 'border-slate-100 bg-white'); ?>">
+                                        <input type="radio" name="blog_post_hero_mode" value="auto" <?php echo e($heroMode === 'auto' ? 'checked' : ''); ?> class="accent-[#ff6900]">
+                                        <div>
+                                            <div class="text-[0.72rem] font-black text-[#031629] uppercase">Auto-Featured</div>
+                                            <div class="text-[0.58rem] text-slate-400 font-medium whitespace-nowrap">Use post's image as background</div>
+                                        </div>
+                                    </label>
+                                    <label class="flex-1 flex items-center gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all <?php echo e($heroMode === 'manual' ? 'border-[#ff6900] bg-orange-50' : 'border-slate-100 bg-white'); ?>">
+                                        <input type="radio" name="blog_post_hero_mode" value="manual" <?php echo e($heroMode === 'manual' ? 'checked' : ''); ?> class="accent-[#ff6900]">
+                                        <div>
+                                            <div class="text-[0.72rem] font-black text-[#031629] uppercase">Global Hero</div>
+                                            <div class="text-[0.58rem] text-slate-400 font-medium whitespace-nowrap">Use the image uploaded above</div>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+
+                            
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between">
+                                    <label class="text-[0.6rem] font-black uppercase tracking-widest text-slate-500">Global Hero Transparency</label>
+                                    <span class="text-lg font-black text-[#ff6900]" x-text="opacity + '%'"></span>
+                                </div>
+                                <input type="range" name="blog_post_hero_opacity"
+                                       min="0" max="100" step="5"
+                                       x-model="opacity"
+                                       class="w-full h-2 accent-[#ff6900] rounded-full cursor-pointer bg-slate-100 shadow-inner">
+                                <div class="flex justify-between text-[0.58rem] text-slate-300 font-bold uppercase tracking-tighter">
+                                    <span>Clear View</span>
+                                    <span>Soft Fade</span>
+                                    <span>Strong Mask</span>
+                                </div>
+                                <p class="text-[0.58rem] text-slate-400 font-medium">Controls the white overlay strength across all blog headers</p>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end pt-2">
+                        <button type="submit"
+                            class="flex items-center gap-2.5 px-8 py-3 text-[0.72rem] font-black uppercase tracking-widest text-white bg-[#031629] rounded-xl hover:bg-[#ff6900] transition-all shadow-md">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                            <span>Save Blog Settings</span>
+                        </button>
+                    </div>
+                </div>
+                </form>
+            </div>
+
             <?php $__currentLoopData = $tabs; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $num => $tab): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-            <?php if($num <= 9): ?> <?php continue; ?> <?php endif; ?>
+            <?php if($num <= 9 || $num == 11): ?> <?php continue; ?> <?php endif; ?>
 
             <?php $tabId = 'tab' . $num; ?>
             <div x-show="activeTab === '<?php echo e($tabId); ?>'" x-cloak x-transition>
@@ -1913,6 +2054,65 @@
         </div>
     </div>
 </div>
+<?php $__env->startPush('scripts'); ?>
+<script>
+    // ── Blog Index Hero ──
+    window.showBlogIndexPreview = function(src) {
+        document.getElementById('blogIndexPreviewImg').src = src;
+        document.getElementById('blogIndexPreview').classList.remove('hidden');
+        document.getElementById('blogIndexEmpty').classList.add('hidden');
+    };
+    window.clearBlogIndexImage = function() {
+        document.getElementById('blogIndexPreviewImg').src = '';
+        document.getElementById('blogIndexPreview').classList.add('hidden');
+        document.getElementById('blogIndexEmpty').classList.remove('hidden');
+        document.getElementById('blogIndexFileInput').value = '';
+    };
+    window.handleBlogIndexFile = function(file) {
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = e => showBlogIndexPreview(e.target.result);
+        reader.readAsDataURL(file);
+    };
+    window.handleBlogIndexDrop = function(e) {
+        e.preventDefault();
+        e.currentTarget.classList.remove('border-[#ff6900]','bg-orange-50');
+        const file = e.dataTransfer.files[0];
+        if (file && file.type.startsWith('image/')) {
+            document.getElementById('blogIndexFileInput').files = e.dataTransfer.files;
+            handleBlogIndexFile(file);
+        }
+    };
+
+    // ── Blog Show Hero ──
+    window.showBlogShowPreview = function(src) {
+        document.getElementById('blogShowPreviewImg').src = src;
+        document.getElementById('blogShowPreview').classList.remove('hidden');
+        document.getElementById('blogShowEmpty').classList.add('hidden');
+    };
+    window.clearBlogShowImage = function() {
+        document.getElementById('blogShowPreviewImg').src = '';
+        document.getElementById('blogShowPreview').classList.add('hidden');
+        document.getElementById('blogShowEmpty').classList.remove('hidden');
+        document.getElementById('blogShowFileInput').value = '';
+    };
+    window.handleBlogShowFile = function(file) {
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = e => showBlogShowPreview(e.target.result);
+        reader.readAsDataURL(file);
+    };
+    window.handleBlogShowDrop = function(e) {
+        e.preventDefault();
+        e.currentTarget.classList.remove('border-[#ff6900]','bg-orange-50');
+        const file = e.dataTransfer.files[0];
+        if (file && file.type.startsWith('image/')) {
+            document.getElementById('blogShowFileInput').files = e.dataTransfer.files;
+            handleBlogShowFile(file);
+        }
+    };
+</script>
+<?php $__env->stopPush(); ?>
 <?php $__env->stopSection(); ?>
 
 <?php echo $__env->make('admin.layout', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH D:\auction_app\resources\views/admin/settings/hub.blade.php ENDPATH**/ ?>

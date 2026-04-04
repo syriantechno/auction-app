@@ -580,7 +580,7 @@
                         </div>
 
                         <div class="flex justify-end pt-2">
-                            <button type="button" data-action="next" class="h-16 px-12 bg-[#ff6900] text-white rounded-lg font-black uppercase tracking-widest text-sm hover:-translate-y-0.5 shadow-lg shadow-orange-500/20 transition-all group">
+                            <button type="button" data-action="next" class="h-16 px-12 bg-[#ff6900] text-white rounded-lg font-black uppercase tracking-widest text-sm hover:-translate-y-0.5 shadow-lg shadow-orange-500/20 transition-all group animate-pulse-orange">
                                 <span class="flex items-center gap-3">
                                     {{ data_get($page?->content, 'lead_form.step1.button_label', 'Get Free Valuation') }}
                                     <i data-lucide="arrow-right" class="w-5 h-5 group-hover:translate-x-1 transition-transform"></i>
@@ -707,7 +707,7 @@
                         {{-- Back / Next Row --}}
                         <div class="flex justify-end items-center gap-3 pt-3 mt-3 border-t border-slate-100">
                             <button type="button" data-action="back" class="h-10 px-7 rounded-lg border border-slate-200 font-black uppercase tracking-widest text-[0.6rem] text-slate-400 hover:bg-slate-50 hover:text-slate-900 transition-all">&larr; Back</button>
-                            <button type="button" data-action="next" class="btn-bazar-primary h-10 px-9 rounded-lg font-black uppercase tracking-widest text-[0.65rem] transition-all">Next Stage &rarr;</button>
+                            <button type="button" data-action="next" class="btn-bazar-primary h-10 px-9 rounded-lg font-black uppercase tracking-widest text-[0.65rem] transition-all animate-pulse-orange">Next Stage &rarr;</button>
                         </div>
                     </div>
 
@@ -944,7 +944,7 @@
 
                                 {{-- Final Action --}}
                                 <div class="mt-auto pt-6 space-y-4">
-                                    <button type="submit" data-action="submit" class="btn-bazar-primary w-full h-14 rounded-lg font-black uppercase tracking-[0.25em] text-[0.75rem] transition-all shadow-2xl shadow-orange-500/30">{{ data_get($page?->content, 'lead_form.step3.submit_label', 'Request Free Valuation') }}</button>
+                                    <button type="submit" data-action="submit" class="btn-bazar-primary w-full h-14 rounded-lg font-black uppercase tracking-[0.25em] text-[0.75rem] transition-all shadow-2xl shadow-orange-500/30 animate-pulse-orange">{{ data_get($page?->content, 'lead_form.step3.submit_label', 'Request Free Valuation') }}</button>
                                     <button type="button" data-action="back" class="w-full text-center text-[0.6rem] font-black uppercase tracking-[0.35em] text-slate-400 hover:text-slate-900 transition-all">&larr; Adjust Specs</button>
                                 </div>
                             </div>

@@ -22,7 +22,7 @@ class Page extends Model
     protected $casts = [
         'is_active'    => 'boolean',
         'is_published' => 'boolean',
-        // NOTE: content is raw HTML — NOT json-cast
+        'content'      => 'json',
     ];
 
     /** Pages that appear in a menu */

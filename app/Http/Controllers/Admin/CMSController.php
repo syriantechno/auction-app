@@ -123,6 +123,8 @@ class CMSController extends Controller
             'navbar_hours' => 'nullable|string|max:100',
             'navbar_sticky' => 'nullable|boolean',
             'navbar_glass' => 'nullable|boolean',
+            'navbar.bg_color' => 'nullable|string|max:20',
+            'navbar.text_color' => 'nullable|string|max:20',
         ]);
 
         $heroBackgroundImage = data_get($content, 'hero.background_image', '/images/hero-bg.png');
@@ -224,12 +226,14 @@ class CMSController extends Controller
             'background_color' => $request->input('footer_background_color') ?? data_get($content, 'footer.background_color', '#031629'),
         ];
         
-        // Navbar settings
+        $navbarInput = $request->input('navbar', []);
         $content['navbar'] = [
-            'phone' => $request->input('navbar_phone') ?? data_get($content, 'navbar.phone', '+1 (234) 567 890'),
-            'hours' => $request->input('navbar_hours') ?? data_get($content, 'navbar.hours', 'Mon - Fri: 9:00 - 18:00'),
-            'sticky' => $request->boolean('navbar_sticky', data_get($content, 'navbar.sticky', true)),
-            'glass' => $request->boolean('navbar_glass', data_get($content, 'navbar.glass', true)),
+            'phone'      => $request->input('navbar_phone') ?? data_get($content, 'navbar.phone', '+1 (234) 567 890'),
+            'hours'      => $request->input('navbar_hours') ?? data_get($content, 'navbar.hours', 'Mon - Fri: 9:00 - 18:00'),
+            'sticky'     => $request->boolean('navbar_sticky', data_get($content, 'navbar.sticky', true)),
+            'glass'      => $request->boolean('navbar_glass', data_get($content, 'navbar.glass', true)),
+            'bg_color'   => data_get($navbarInput, 'bg_color', data_get($content, 'navbar.bg_color', '#ffffff')),
+            'text_color' => data_get($navbarInput, 'text_color', data_get($content, 'navbar.text_color', '#1d293d')),
         ];
 
         // Trust Badges
@@ -293,7 +297,7 @@ class CMSController extends Controller
         if ($request->wantsJson() || $request->ajax()) {
             return response()->json([
                 'success' => true,
-                'message' => 'Homepage infrastructure updated successfully!',
+                'message' => 'Infrastructure Synchronized Successfully!',
             ]);
         }
 

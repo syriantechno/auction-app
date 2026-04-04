@@ -30,7 +30,9 @@ class SettingsController extends Controller
             'contact_phone', 'contact_email', 'contact_address', 'contact_whatsapp', 'support_hours',
             'site_language', 'site_currency', 'site_timezone', 'currency_position', 'date_format',
             'maintenance_mode', 'maintenance_message',
-        ], $socialSettingKeys);
+        ], $socialSettingKeys, [
+            'blog_index_hero_image', 'blog_show_hero_image'
+        ]);
 
         $settings = [];
         foreach ($keys as $key) {
@@ -447,6 +449,61 @@ class SettingsController extends Controller
         } catch (\Throwable $e) {
             return response()->json(['message' => 'Error: ' . $e->getMessage()], 500);
         }
+    }
+
+    public function saveBlogSettings(Request $request)
+    {
+        $request->validate([
+            'blog_index_hero_image'  => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'blog_show_hero_image'   => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'blog_post_hero_mode'    => 'nullable|string|in:auto,manual',
+            'blog_post_hero_opacity' => 'nullable|integer|min:0|max:100',
+        ]);
+
+        if ($request->hasFile('blog_index_hero_image')) {
+            $old = SystemSetting::get('blog_index_hero_image');
+            if ($old && Storage::disk('public')->exists($old)) Storage::disk('public')->delete($old);
+            SystemSetting::set('blog_index_hero_image', $request->file('blog_index_hero_image')->store('blog', 'public'));
+        }
+
+        if ($request->hasFile('blog_show_hero_image')) {
+            $old = SystemSetting::get('blog_show_hero_image');
+            if ($old && Storage::disk('public')->exists($old)) Storage::disk('public')->delete($old);
+            SystemSetting::set('blog_show_hero_image', $request->file('blog_show_hero_image')->store('blog', 'public'));
+        }
+
+        if ($request->has('blog_post_hero_mode')) {
+            SystemSetting::set('blog_post_hero_mode', $request->blog_post_hero_mode);
+        }
+
+        if ($request->has('blog_post_hero_opacity')) {
+            SystemSetting::set('blog_post_hero_opacity', $request->blog_post_hero_opacity);
+        }
+
+        \Illuminate\Support\Facades\Cache::forget('system_settings_global');
+
+        return redirect()->route('admin.settings.hub', ['tab' => 'tab11'])
+            ->with('success', 'Blog settings saved successfully.');
+    }
+
+    public function saveNavbarSettings(Request $request)
+    {
+        $request->validate([
+            'navbar_hours'   => 'nullable|string|max:255',
+            'navbar_phone'   => 'nullable|string|max:50',
+            'navbar_sticky'  => 'nullable|boolean',
+            'navbar_glass'   => 'nullable|boolean',
+        ]);
+
+        \App\Models\SystemSetting::set('navbar_hours', $request->navbar_hours);
+        \App\Models\SystemSetting::set('navbar_phone', $request->navbar_phone);
+        \App\Models\SystemSetting::set('navbar_sticky', $request->has('navbar_sticky') ? '1' : '0');
+        \App\Models\SystemSetting::set('navbar_glass',  $request->has('navbar_glass') ? '1' : '0');
+
+        \Illuminate\Support\Facades\Cache::forget('system_settings_global');
+
+        return redirect()->route('admin.settings.hub', ['tab' => 'tab12'])
+            ->with('success', 'Navigation settings saved successfully.');
     }
 
     /** Apply SMTP config from DB into Laravel runtime */

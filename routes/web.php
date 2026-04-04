@@ -151,6 +151,8 @@ Route::prefix('admin')->middleware(['auth'])->name('admin.')->group(function () 
     Route::post('/settings/communication/test-email',    [\App\Http\Controllers\Admin\SettingsController::class, 'testEmail'])->name('settings.communication.test-email');
     Route::post('/settings/communication/test-smtp',     [\App\Http\Controllers\Admin\SettingsController::class, 'testConnection'])->name('settings.smtp.test');
     Route::post('/settings/communication/test-whatsapp', [\App\Http\Controllers\Admin\SettingsController::class, 'testWhatsApp'])->name('settings.communication.test-whatsapp');
+    Route::post('/settings/blog',                [\App\Http\Controllers\Admin\SettingsController::class, 'saveBlogSettings'])->name('settings.blog.save');
+    Route::post('/settings/navbar',              [\App\Http\Controllers\Admin\SettingsController::class, 'saveNavbarSettings'])->name('settings.navbar.save');
     Route::get('/settings/toast-showcase', fn() => view('admin.settings.toast_showcase'))->name('settings.toast-showcase');
 
 

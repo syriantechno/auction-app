@@ -28,19 +28,25 @@ class PostController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'title'         => 'required|string|max:255',
-            'category_id'   => 'nullable|exists:categories,id',
-            'content_raw'   => 'required|string',
-            'featured_image'=> 'nullable|string|max:1000',
-            'meta_description' => 'nullable|string|max:320',
-            'is_published'  => 'boolean',
+            'title'               => 'required|string|max:255',
+            'category_id'         => 'nullable|exists:categories,id',
+            'content_raw'         => 'required|string',
+            'featured_image'      => 'nullable|string|max:1000',
+            'featured_image_file' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:4096',
+            'meta_description'    => 'nullable|string|max:320',
+            'is_published'        => 'boolean',
         ]);
+
+        if ($request->hasFile('featured_image_file')) {
+            $path = $request->file('featured_image_file')->store('posts', 'public');
+            $validated['featured_image'] = '/storage/' . $path;
+        }
 
         $validated['slug']         = Str::slug($validated['title']) . '-' . Str::random(4);
         $validated['content']      = ['body' => $validated['content_raw']];
         $validated['published_at'] = $request->has('is_published') ? now() : null;
 
-        unset($validated['content_raw']);
+        unset($validated['content_raw'], $validated['featured_image_file']);
 
         Post::create($validated);
 
@@ -56,18 +62,29 @@ class PostController extends Controller
     public function update(Request $request, Post $post)
     {
         $validated = $request->validate([
-            'title'            => 'required|string|max:255',
-            'category_id'      => 'nullable|exists:categories,id',
-            'content_raw'      => 'required|string',
-            'featured_image'   => 'nullable|string|max:1000',
-            'meta_description' => 'nullable|string|max:320',
-            'is_published'     => 'boolean',
+            'title'               => 'required|string|max:255',
+            'category_id'         => 'nullable|exists:categories,id',
+            'content_raw'         => 'required|string',
+            'featured_image'      => 'nullable|string|max:1000',
+            'featured_image_file' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:4096',
+            'meta_description'    => 'nullable|string|max:320',
+            'is_published'        => 'boolean',
         ]);
+
+        if ($request->hasFile('featured_image_file')) {
+            // Optional: delete old local image if exists
+            if ($post->featured_image && str_starts_with($post->featured_image, '/storage/')) {
+                $oldPath = str_replace('/storage/', '', $post->featured_image);
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($oldPath);
+            }
+            $path = $request->file('featured_image_file')->store('posts', 'public');
+            $validated['featured_image'] = '/storage/' . $path;
+        }
 
         $validated['content']      = ['body' => $validated['content_raw']];
         $validated['published_at'] = ($request->has('is_published') && !$post->is_published) ? now() : $post->published_at;
 
-        unset($validated['content_raw']);
+        unset($validated['content_raw'], $validated['featured_image_file']);
 
         $post->update($validated);
 

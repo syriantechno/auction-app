@@ -1,13 +1,11 @@
-@extends('layouts.app')
+<?php $__env->startSection('title'); ?><?php echo e($post->title); ?> — <?php echo e($siteName ?? 'Motor Bazar'); ?><?php $__env->stopSection(); ?>
+<?php $__env->startSection('meta_description', $post->meta_description ?? \Illuminate\Support\Str::limit(strip_tags($post->content['body'] ?? ''), 160)); ?>
 
-@section('title'){{ $post->title }} — {{ $siteName ?? 'Motor Bazar' }}@endsection
-@section('meta_description', $post->meta_description ?? \Illuminate\Support\Str::limit(strip_tags($post->content['body'] ?? ''), 160))
+<?php $__env->startSection('content'); ?>
 
-@section('content')
 
-{{-- Hero Header --}}
 <section class="relative pt-40 pb-20 overflow-hidden hero-gradient section-border-b">
-    @php
+    <?php
         $showHero   = \App\Models\SystemSetting::get('blog_show_hero_image');
         $heroMode   = \App\Models\SystemSetting::get('blog_post_hero_mode', 'auto');
         $opacity    = \App\Models\SystemSetting::get('blog_post_hero_opacity', 60);
@@ -15,39 +13,42 @@
         $heroUrl = ($heroMode === 'auto' && $post->featured_image) 
                    ? $post->featured_image 
                    : ($showHero ? asset('storage/' . $showHero) : null);
-    @endphp
-    @if($heroUrl)
+    ?>
+    <?php if($heroUrl): ?>
     <div class="absolute inset-0 z-0">
-        <img src="{{ $heroUrl }}" class="w-full h-full object-cover">
-        <div class="absolute inset-0 bg-[#e7e7e7]" style="opacity: {{ $opacity / 100 }}"></div>
+        <img src="<?php echo e($heroUrl); ?>" class="w-full h-full object-cover">
+        <div class="absolute inset-0 bg-[#e7e7e7]" style="opacity: <?php echo e($opacity / 100); ?>"></div>
     </div>
-    @endif
+    <?php endif; ?>
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-8">
             <div class="max-w-3xl">
                 <nav class="flex items-center gap-2 text-[0.6rem] font-black text-slate-400 uppercase tracking-widest mb-6">
-                    <a href="{{ route('home') }}" class="hover:text-[#ff6900] transition-colors">Home</a>
+                    <a href="<?php echo e(route('home')); ?>" class="hover:text-[#ff6900] transition-colors">Home</a>
                     <span class="text-slate-300">›</span>
-                    <a href="{{ route('blog.index') }}" class="hover:text-[#ff6900] transition-colors">Blog</a>
-                    @if($post->category)
+                    <a href="<?php echo e(route('blog.index')); ?>" class="hover:text-[#ff6900] transition-colors">Blog</a>
+                    <?php if($post->category): ?>
                     <span class="text-slate-300">›</span>
-                    <a href="{{ route('blog.index', ['cat' => $post->category->slug]) }}" class="hover:text-[#ff6900] transition-colors">
-                        {{ $post->category->name }}
+                    <a href="<?php echo e(route('blog.index', ['cat' => $post->category->slug])); ?>" class="hover:text-[#ff6900] transition-colors">
+                        <?php echo e($post->category->name); ?>
+
                     </a>
-                    @endif
+                    <?php endif; ?>
                     <span class="text-slate-300">›</span>
-                    <span class="text-slate-600 truncate max-w-[150px] inline-block">{{ $post->title }}</span>
+                    <span class="text-slate-600 truncate max-w-[150px] inline-block"><?php echo e($post->title); ?></span>
                 </nav>
                 
-                @if($post->category)
+                <?php if($post->category): ?>
                 <span class="inline-block text-[0.55rem] font-black text-[#ff6900] uppercase tracking-[0.2em] mb-4 bg-[#ff6900]/10 px-3 py-1.5 rounded-full">
-                    {{ $post->category->name }}
+                    <?php echo e($post->category->name); ?>
+
                 </span>
-                @endif
+                <?php endif; ?>
                 
                 <h1 class="text-4xl lg:text-6xl font-black text-[#031629] uppercase italic tracking-tighter leading-[0.9] mb-6 [text-shadow:0_4px_12px_rgba(0,0,0,0.1)]">
-                    {{ $post->title }}
+                    <?php echo e($post->title); ?>
+
                 </h1>
                 
                 <div class="flex items-center gap-6 mt-8">
@@ -55,7 +56,7 @@
                         <div class="w-10 h-10 rounded-xl bg-[#031629] flex items-center justify-center text-white font-black text-[0.6rem]">MB</div>
                         <div>
                             <div class="text-[0.65rem] font-black text-[#031629] uppercase tracking-wide">Motor Bazar Editorial</div>
-                            <div class="text-[0.55rem] font-bold text-slate-400 uppercase tracking-widest">{{ ($post->published_at ?? $post->created_at)?->format('d M Y') }}</div>
+                            <div class="text-[0.55rem] font-bold text-slate-400 uppercase tracking-widest"><?php echo e(($post->published_at ?? $post->created_at)?->format('d M Y')); ?></div>
                         </div>
                     </div>
                     
@@ -78,84 +79,88 @@
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
     <div class="lg:grid lg:grid-cols-12 lg:gap-12">
         
-        {{-- Main Content Column --}}
+        
         <div class="lg:col-span-8">
 
-            {{-- Featured Image --}}
-            @if($post->featured_image)
+            
+            <?php if($post->featured_image): ?>
             <div class="mb-12 rounded-3xl overflow-hidden aspect-[16/8] bg-slate-100 shadow-2xl shadow-slate-200/50">
-                <img src="{{ $post->featured_image }}" alt="{{ $post->title }}" class="w-full h-full object-cover">
+                <img src="<?php echo e($post->featured_image); ?>" alt="<?php echo e($post->title); ?>" class="w-full h-full object-cover">
             </div>
-            @endif
+            <?php endif; ?>
 
-            {{-- Article Content --}}
+            
             <article class="prose prose-slate prose-lg max-w-none
                             prose-p:text-slate-600 prose-p:leading-relaxed
                             prose-headings:font-black prose-headings:text-[#031629] prose-headings:uppercase prose-headings:italic
                             prose-a:text-[#ff6900] prose-a:no-underline hover:prose-a:underline
                             prose-img:rounded-3xl prose-img:shadow-2xl prose-img:shadow-slate-200/50">
-                {!! $post->content['body'] ?? '' !!}
+                <?php echo $post->content['body'] ?? ''; ?>
+
             </article>
 
-            {{-- Footer: Share + Navigation --}}
+            
             <div class="mt-12 pt-8 border-t border-slate-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
 
-                {{-- Back to blog --}}
-                <a href="{{ route('blog.index') }}"
+                
+                <a href="<?php echo e(route('blog.index')); ?>"
                    class="flex items-center gap-2 text-[0.6rem] font-black text-slate-400 uppercase tracking-widest hover:text-[#ff6900] transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
                     All Articles
                 </a>
 
-                {{-- Related category --}}
-                @if($post->category)
-                <a href="{{ route('blog.index', ['cat' => $post->category->slug]) }}"
+                
+                <?php if($post->category): ?>
+                <a href="<?php echo e(route('blog.index', ['cat' => $post->category->slug])); ?>"
                    class="flex items-center gap-2 px-4 py-2 bg-[#ff6900]/10 text-[#ff6900] rounded-full text-[0.6rem] font-black uppercase tracking-widest hover:bg-[#ff6900] hover:text-white transition-all">
-                    More in {{ $post->category->name }}
+                    More in <?php echo e($post->category->name); ?>
+
                     <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
                 </a>
-                @endif
+                <?php endif; ?>
             </div>
 
-            {{-- Related Posts --}}
-            @if($related->count())
+            
+            <?php if($related->count()): ?>
             <div class="mt-16">
                 <h2 class="text-2xl font-black text-[#031629] uppercase italic tracking-tighter mb-8">
                     Related <span class="text-[#ff6900]">Articles</span>
                 </h2>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    @foreach($related as $rel)
-                    <a href="{{ route('blog.show', $rel->slug) }}"
+                    <?php $__currentLoopData = $related; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $rel): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <a href="<?php echo e(route('blog.show', $rel->slug)); ?>"
                        class="group bg-white rounded-xl border border-slate-200 overflow-hidden hover:shadow-md hover:-translate-y-0.5 transition-all">
-                        @if($rel->featured_image)
+                        <?php if($rel->featured_image): ?>
                         <div class="aspect-[16/9] overflow-hidden bg-[#f0f2f5]">
-                            <img src="{{ $rel->featured_image }}" alt="{{ $rel->title }}"
+                            <img src="<?php echo e($rel->featured_image); ?>" alt="<?php echo e($rel->title); ?>"
                                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                         </div>
-                        @else
+                        <?php else: ?>
                         <div class="aspect-[16/9] bg-[#f0f2f5] flex items-center justify-center">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-slate-300"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
                         </div>
-                        @endif
+                        <?php endif; ?>
                         <div class="p-4">
                             <div class="text-[0.7rem] font-black text-[#1d293d] group-hover:text-[#ff6900] transition-colors line-clamp-2">
-                                {{ $rel->title }}
+                                <?php echo e($rel->title); ?>
+
                             </div>
                             <div class="text-[0.55rem] text-slate-400 mt-1.5">
-                                {{ ($rel->published_at ?? $rel->created_at)?->format('d M Y') }}
+                                <?php echo e(($rel->published_at ?? $rel->created_at)?->format('d M Y')); ?>
+
                             </div>
                         </div>
                     </a>
-                    @endforeach
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </div>
             </div>
-            @endif
+            <?php endif; ?>
         </div>
 
-        {{-- Sidebar --}}
+        
         <aside class="lg:col-span-4 mt-16 lg:mt-0 space-y-12">
             
-            {{-- Search or CTA? Let's add Catalog/Brands --}}
+            
             <div>
                 <h3 class="text-lg font-black text-[#031629] uppercase italic tracking-tighter mb-6 flex items-center gap-3">
                     <span class="w-8 h-8 rounded-lg bg-[#ff6900]/10 flex items-center justify-center">
@@ -164,24 +169,24 @@
                     Vehicle <span class="text-[#ff6900]">Catalog</span>
                 </h3>
                 <div class="bg-white rounded-2xl border border-slate-100 p-2 shadow-sm grid grid-cols-2 gap-1">
-                    @foreach($brands->take(12) as $brand)
-                    <a href="{{ route('auctions.index', ['make' => $brand->name]) }}" 
+                    <?php $__currentLoopData = $brands->take(12); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $brand): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <a href="<?php echo e(route('auctions.index', ['make' => $brand->name])); ?>" 
                        class="flex items-center gap-3 p-2.5 rounded-xl hover:bg-slate-50 transition-colors group">
                         <div class="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center p-1.5 group-hover:bg-white shadow-sm border border-transparent group-hover:border-slate-100">
-                            <img src="{{ $brand->logo_url }}" alt="{{ $brand->name }}" class="w-full h-full object-contain">
+                            <img src="<?php echo e($brand->logo_url); ?>" alt="<?php echo e($brand->name); ?>" class="w-full h-full object-contain">
                         </div>
-                        <span class="text-[0.65rem] font-bold text-slate-600 group-hover:text-[#ff6900]">{{ $brand->name }}</span>
+                        <span class="text-[0.65rem] font-bold text-slate-600 group-hover:text-[#ff6900]"><?php echo e($brand->name); ?></span>
                     </a>
-                    @endforeach
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </div>
                 <div class="mt-4 text-center">
-                    <a href="{{ route('auctions.index') }}" class="text-[0.6rem] font-black uppercase tracking-widest text-slate-400 hover:text-[#ff6900] transition-colors">
+                    <a href="<?php echo e(route('auctions.index')); ?>" class="text-[0.6rem] font-black uppercase tracking-widest text-slate-400 hover:text-[#ff6900] transition-colors">
                         Explore All Auctions →
                     </a>
                 </div>
             </div>
 
-            {{-- Latest Posts --}}
+            
             <div>
                 <h3 class="text-lg font-black text-[#031629] uppercase italic tracking-tighter mb-6 flex items-center gap-3">
                     <span class="w-8 h-8 rounded-lg bg-[#031629]/5 flex items-center justify-center">
@@ -190,37 +195,39 @@
                     Latest <span class="text-[#ff6900]">Articles</span>
                 </h3>
                 <div class="space-y-6">
-                    @foreach($latestPosts as $lp)
-                    <a href="{{ route('blog.show', $lp->slug) }}" class="group flex gap-4">
+                    <?php $__currentLoopData = $latestPosts; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $lp): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <a href="<?php echo e(route('blog.show', $lp->slug)); ?>" class="group flex gap-4">
                         <div class="w-20 h-20 rounded-xl overflow-hidden bg-[#f0f2f5] flex-shrink-0">
-                            @if($lp->featured_image)
-                            <img src="{{ $lp->featured_image }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
-                            @else
+                            <?php if($lp->featured_image): ?>
+                            <img src="<?php echo e($lp->featured_image); ?>" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                            <?php else: ?>
                             <div class="w-full h-full flex items-center justify-center">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-slate-300"><path d="M4 11V4a2 2 0 0 1 2-2h10l4 4v16a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-4"/><path d="M14 2v6h6"/></svg>
                             </div>
-                            @endif
+                            <?php endif; ?>
                         </div>
                         <div class="flex-1 py-1">
                             <h4 class="text-[0.7rem] font-black text-[#031629] group-hover:text-[#ff6900] transition-colors leading-snug line-clamp-2 uppercase">
-                                {{ $lp->title }}
+                                <?php echo e($lp->title); ?>
+
                             </h4>
                             <div class="text-[0.55rem] text-slate-400 font-bold mt-1.5 uppercase tracking-wide">
-                                {{ ($lp->published_at ?? $lp->created_at)?->format('d M Y') }}
+                                <?php echo e(($lp->published_at ?? $lp->created_at)?->format('d M Y')); ?>
+
                             </div>
                         </div>
                     </a>
-                    @endforeach
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </div>
             </div>
 
-            {{-- Promo / Banner --}}
+            
             <div class="relative rounded-2xl bg-[#031629] p-8 overflow-hidden group">
                 <div class="absolute top-0 right-0 -mr-8 -mt-8 w-32 h-32 bg-[#ff6900]/10 rounded-full blur-3xl group-hover:bg-[#ff6900]/20 transition-all duration-700"></div>
                 <div class="relative z-10">
                     <h3 class="text-2xl font-black text-white uppercase italic tracking-tighter leading-none mb-2">Sell Your Car <span class="text-[#ff6900]">Fast</span></h3>
                     <p class="text-slate-400 text-[0.65rem] font-bold uppercase tracking-widest mb-6">Get an instant valuation now</p>
-                    <a href="{{ route('home') }}?step=1" 
+                    <a href="<?php echo e(route('home')); ?>?step=1" 
                        class="inline-block px-6 py-3 bg-[#ff6900] text-white rounded-xl text-[0.65rem] font-black uppercase tracking-widest hover:bg-white hover:text-[#031629] transition-all">
                         Get Appraisal
                     </a>
@@ -234,9 +241,9 @@
     </div>
 </div>
 
-@endsection
+<?php $__env->stopSection(); ?>
 
-@section('head')
+<?php $__env->startSection('head'); ?>
 <style>
     .hero-gradient {
         background: radial-gradient(circle at 10% 20%, rgba(255, 105, 0, 0.05) 0%, transparent 40%),
@@ -247,4 +254,6 @@
         border-bottom: 1px solid #f1f5f9;
     }
 </style>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH D:\auction_app\resources\views/blog/show.blade.php ENDPATH**/ ?>

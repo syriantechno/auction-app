@@ -43,6 +43,16 @@ class BlogController extends Controller
             ->limit(3)
             ->get();
 
-        return view('blog.show', compact('post', 'related'));
+        // Latest posts for sidebar
+        $latestPosts = Post::where('is_published', true)
+            ->where('id', '!=', $post->id)
+            ->latest('published_at')
+            ->limit(5)
+            ->get();
+
+        // Catalog (Brands) for sidebar
+        $brands = \App\Models\Brand::orderBy('name')->get();
+
+        return view('blog.show', compact('post', 'related', 'latestPosts', 'brands'));
     }
 }
