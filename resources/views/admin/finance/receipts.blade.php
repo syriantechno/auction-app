@@ -1,20 +1,23 @@
 @extends('admin.layout')
 @section('title', 'Receipts — القبض')
 @section('content')
-<div class="px-1 space-y-5 animate-in fade-in duration-500">
-
-    <x-admin-header icon="arrow-down-left" title="Receipts — القبض"
-        subtitle="All incoming payments recorded">
+    <x-admin-page-standard 
+        icon="arrow-down-left" 
+        title="Financial" 
+        highlight="Receipts" 
+        subtitle="All incoming payments recorded"
+        dot="emerald">
+        
         <x-slot name="actions">
             <button onclick="document.getElementById('newReceiptModal').classList.remove('hidden')"
-                class="px-5 h-10 bg-emerald-600 text-white rounded-lg font-black text-[0.65rem] uppercase tracking-widest flex items-center gap-2 hover:bg-emerald-700 transition-all shadow-lg">
-                <i data-lucide="plus" class="w-4 h-4"></i> New Receipt
+                class="group h-14 px-8 bg-slate-900 hover:bg-[#ff6900] text-white rounded-2xl font-black text-[0.7rem] uppercase tracking-[0.2em] transition-all duration-500 flex items-center gap-3 shadow-xl shadow-emerald-500/10">
+                <i data-lucide="plus" class="w-4 h-4 group-hover:rotate-90 transition-transform duration-500 text-emerald-400 group-hover:text-white"></i>
+                <span>New Receipt</span>
             </button>
         </x-slot>
-    </x-admin-header>
 
     @if(session('success'))
-    <div class="bg-emerald-50 text-emerald-700 px-4 py-3 rounded-lg border border-emerald-100 text-sm font-bold flex items-center gap-2">
+    <div class="bg-emerald-50 text-emerald-700 px-4 py-3 rounded-lg border border-emerald-100 text-sm font-bold flex items-center gap-2 mb-6">
         <i data-lucide="check-circle" class="w-4 h-4"></i> {{ session('success') }}
     </div>
     @endif
@@ -89,10 +92,9 @@
     </div>
 
     @if($receipts->hasPages())
-    <div class="flex justify-center">{{ $receipts->links() }}</div>
+    <div class="flex justify-center mt-6">{{ $receipts->links() }}</div>
     @endif
-
-</div>
+    </x-admin-page-standard>
 
 {{-- New Receipt Modal --}}
 <div id="newReceiptModal" class="hidden fixed inset-0 z-[120] flex items-center justify-center bg-[#1d293d]/40 backdrop-blur-sm p-4">

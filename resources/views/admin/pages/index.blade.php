@@ -8,58 +8,27 @@
     $draftCount     = $pages->where('is_published', false)->count();
 @endphp
 
-<div class="px-1 space-y-5 animate-in fade-in duration-500">
-
-    {{-- Header --}}
-    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div class="flex items-center gap-4">
-            <h1 class="text-3xl font-medium text-slate-800 tracking-tighter italic">Page Builder</h1>
-            <div class="h-8 w-px bg-slate-200 hidden md:block"></div>
-            <p class="text-[0.65rem] text-slate-500 font-medium uppercase tracking-[0.2em] hidden md:block">Dynamic Content Management</p>
-        </div>
-        <div class="flex items-center gap-3">
-            <div class="flex items-center gap-3 bg-white px-5 py-2.5 rounded-lg border border-slate-200 shadow-sm">
-                <span class="text-[0.6rem] font-medium uppercase text-slate-400 tracking-widest">Total Pages:</span>
-                <span class="text-sm font-medium text-slate-800 tabular-nums">{{ $pages->count() }}</span>
-            </div>
-            <a href="{{ route('admin.pages.create') }}"
-               style="background: var(--primary-orange);"
-               class="px-6 h-[44px] text-white rounded-lg font-medium shadow-lg shadow-orange-500/10 hover:scale-[1.02] active:scale-95 transition-all text-[0.65rem] uppercase tracking-widest flex items-center gap-2">
-                <i data-lucide="plus-circle" class="w-4 h-4 text-white/80"></i> New Page
+    <x-admin-page-standard 
+        icon="file-text" 
+        title="Content" 
+        highlight="Pages" 
+        subtitle="Dynamic Content Management"
+        dot="orange">
+        
+        <x-slot name="actions">
+            <a href="{{ route('admin.pages.create') }}" class="group bg-slate-900 hover:bg-[#ff6900] text-white px-8 py-4 rounded-2xl font-black text-[0.7rem] uppercase tracking-[0.2em] transition-all duration-500 flex items-center gap-3 shadow-xl shadow-orange-500/10">
+                <i data-lucide="plus" class="w-4 h-4 group-hover:rotate-90 transition-transform duration-500 text-orange-400 group-hover:text-white"></i>
+                <span>New Page</span>
             </a>
-        </div>
-    </div>
+        </x-slot>
 
-    {{-- Stats Bar --}}
-    <div class="grid grid-cols-3 gap-3">
-        <div class="bg-white rounded-lg border border-slate-200 shadow-sm p-4 flex items-center gap-4">
-            <div class="w-10 h-10 rounded-md bg-slate-50 border border-slate-100 flex items-center justify-center">
-                <i data-lucide="file-text" class="w-5 h-5 text-slate-400"></i>
+        <x-slot name="stats">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <x-admin-stat-card label="All Pages" :value="$pages->count()" icon="file-text" color="slate" />
+                <x-admin-stat-card label="Published" :value="$publishedCount" icon="check-circle" color="emerald" />
+                <x-admin-stat-card label="Drafts" :value="$draftCount" icon="clock" color="orange" />
             </div>
-            <div>
-                <div class="text-[0.55rem] font-medium text-slate-400 uppercase tracking-widest">All Pages</div>
-                <div class="text-xl font-medium text-slate-800 tabular-nums leading-tight">{{ $pages->count() }}</div>
-            </div>
-        </div>
-        <div class="bg-white rounded-lg border border-slate-200 shadow-sm p-4 flex items-center gap-4">
-            <div class="w-10 h-10 rounded-md bg-emerald-50 border border-emerald-100 flex items-center justify-center">
-                <i data-lucide="check-circle" class="w-5 h-5 text-emerald-500"></i>
-            </div>
-            <div>
-                <div class="text-[0.55rem] font-medium text-slate-400 uppercase tracking-widest">Published</div>
-                <div class="text-xl font-medium text-slate-800 tabular-nums leading-tight">{{ $publishedCount }}</div>
-            </div>
-        </div>
-        <div class="bg-white rounded-lg border border-slate-200 shadow-sm p-4 flex items-center gap-4">
-            <div class="w-10 h-10 rounded-md bg-amber-50 border border-amber-100 flex items-center justify-center">
-                <i data-lucide="clock" class="w-5 h-5 text-amber-400"></i>
-            </div>
-            <div>
-                <div class="text-[0.55rem] font-medium text-slate-400 uppercase tracking-widest">Drafts</div>
-                <div class="text-xl font-medium text-slate-800 tabular-nums leading-tight">{{ $draftCount }}</div>
-            </div>
-        </div>
-    </div>
+        </x-slot>
 
     @if(session('success'))
         <div class="bg-white border border-emerald-200 text-emerald-700 px-5 py-3 rounded-lg text-[0.75rem] font-medium flex items-center gap-2 shadow-sm">
@@ -157,7 +126,5 @@
                 @endforelse
             </tbody>
         </table>
-    </div>
-
-</div>
+    </x-admin-page-standard>
 @endsection

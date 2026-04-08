@@ -10,7 +10,9 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
+use Spatie\Permission\PermissionRegistrar;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -18,6 +20,16 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        \App\Models\Auction::observe(\App\Observers\AuctionObserver::class);
+        \App\Models\CMS\Page::observe(\App\Observers\PageObserver::class);
+
+        // ── Super Admin bypass: give all permissions ─────────────────
+        Gate::before(function ($user, $ability) {
+            if ($user->hasRole('super-admin')) {
+                return true;
+            }
+        });
+
         if (app()->runningInConsole()) return;
 
         // ── 1. Slow query logger (dev only) ─────────────────────────

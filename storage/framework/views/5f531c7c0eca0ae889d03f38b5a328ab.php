@@ -2,31 +2,33 @@
 <?php $__env->startSection('page_title', 'Settings Hub'); ?>
 
 <?php $__env->startSection('content'); ?>
-<div class="px-1 pb-20" x-data="{ 
-    activeTab: '<?php echo e(request()->query('tab', 'tab1')); ?>', 
-    isSaving: false,
-    async saveGeneral(e) {
-        this.isSaving = true;
-        const form = e.target;
-        const fd = new FormData(form);
-        try {
-            const r = await fetch(form.action, { method: 'POST', body: fd, headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content, 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' } });
-            const d = await r.json();
-            if (r.ok) { window.showToast(d.message || 'General settings saved!', 'success'); }
-            else { window.showToast(d.message || 'Save failed.', 'error'); }
-        } catch(err) { window.showToast('Network error.', 'error'); }
-        finally { this.isSaving = false; }
-    }
-}">
+<?php if (isset($component)) { $__componentOriginal247ae89654097d25470c0e2135dc9b7d = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal247ae89654097d25470c0e2135dc9b7d = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.admin-page-standard','data' => ['icon' => 'settings','title' => 'Settings','highlight' => 'Hub','subtitle' => 'Global system configuration center','dot' => 'orange']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('admin-page-standard'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['icon' => 'settings','title' => 'Settings','highlight' => 'Hub','subtitle' => 'Global system configuration center','dot' => 'orange']); ?>
 
-
-    
-    <div class="flex items-center justify-between mb-6">
-        <div>
-            <h1 class="text-2xl font-medium text-slate-900 tracking-tight">Settings Hub</h1>
-            <p class="text-slate-500 text-[0.7rem] font-bold uppercase tracking-[0.2em] mt-1 italic">System Configuration Center</p>
-        </div>
-    </div>
+    <div class="pb-20" x-data="{ 
+        activeTab: '<?php echo e(request()->query('tab', 'tab1')); ?>', 
+        isSaving: false,
+        async saveGeneral(e) {
+            this.isSaving = true;
+            const form = e.target;
+            const fd = new FormData(form);
+            try {
+                const r = await fetch(form.action, { method: 'POST', body: fd, headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content, 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' } });
+                const d = await r.json();
+                if (r.ok) { window.showToast(d.message || 'General settings saved!', 'success'); }
+                else { window.showToast(d.message || 'Save failed.', 'error'); }
+            } catch(err) { window.showToast('Network error.', 'error'); }
+            finally { this.isSaving = false; }
+        }
+    }">
 
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
 
@@ -49,7 +51,7 @@
                     10 => ['label' => 'SEO',          'sub' => 'Meta & Defaults','color' => 'rose'],
                     11 => ['label' => 'Blog',         'sub' => 'Hero & Display', 'color' => 'orange'],
                     12 => ['label' => 'Navigation',   'sub' => 'Header & Style', 'color' => 'blue'],
-                    13 => ['label' => 'Tab 13',      'sub' => 'Placeholder',   'color' => 'slate'],
+                    13 => ['label' => 'Companies',  'sub' => 'Multi-Company', 'color' => 'amber'],
                     14 => ['label' => 'Tab 14',      'sub' => 'Placeholder',   'color' => 'slate'],
                     15 => ['label' => 'Tab 15',      'sub' => 'Placeholder',   'color' => 'slate'],
                 ];
@@ -96,6 +98,250 @@
         <div class="lg:col-span-10 space-y-4">
 
             
+            
+            <div x-show="activeTab === 'tab13'" x-cloak x-transition
+                 x-data="{
+                    companyModal: false,
+                    isEditing: false,
+                    currentCompany: { id: '', name: '', commercial_registration: '', tax_number: '', phone: '', email: '', website: '', address: '', country: '', city: '', postal_code: '', is_active: 1 },
+                    logoPreview: null,
+                    
+                    openCreate() {
+                        this.isEditing = false;
+                        this.currentCompany = { id: '', name: '', commercial_registration: '', tax_number: '', phone: '', email: '', website: '', address: '', country: '', city: '', postal_code: '', is_active: 1 };
+                        this.logoPreview = null;
+                        this.companyModal = true;
+                    },
+                    
+                    openEdit(company) {
+                        this.isEditing = true;
+                        this.currentCompany = { ...company };
+                        this.logoPreview = company.logo ? '/storage/' + company.logo : null;
+                        this.companyModal = true;
+                    },
+
+                    async saveCompany() {
+                        const form = document.getElementById('companyForm');
+                        const fd = new FormData(form);
+                        const url = this.isEditing ? `/admin/companies/${this.currentCompany.id}` : '/admin/companies';
+                        if(this.isEditing) fd.append('_method', 'PUT');
+
+                        try {
+                            const r = await fetch(url, {
+                                method: 'POST',
+                                body: fd,
+                                headers: { 'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>', 'X-Requested-With': 'XMLHttpRequest' }
+                            });
+                            const d = await r.json();
+                            if(d.success) {
+                                window.showToast(d.message, 'success');
+                                window.location.reload();
+                            } else {
+                                window.showToast(d.message || 'Operation failed', 'error');
+                            }
+                        } catch(err) { window.showToast('Network error', 'error'); }
+                    },
+
+                    async deleteCompany(id) {
+                        if(!confirm('Are you sure you want to delete this company? All linked data will be isolated or removed.')) return;
+                        try {
+                            const r = await fetch(`/admin/companies/${id}`, {
+                                method: 'DELETE',
+                                headers: { 'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>', 'X-Requested-With': 'XMLHttpRequest' }
+                            });
+                            const d = await r.json();
+                            if(d.success) {
+                                window.showToast(d.message, 'success');
+                                window.location.reload();
+                            }
+                        } catch(err) { window.showToast('Delete failed', 'error'); }
+                    }
+                 }">
+                
+                <div class="space-y-6">
+                    <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-600 shadow-sm">
+                                <i data-lucide="building-2" class="w-6 h-6"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-[0.95rem] font-black text-[#031629] uppercase tracking-wide">Company Registry</h3>
+                                <p class="text-[0.6rem] text-slate-400 font-bold uppercase tracking-widest mt-0.5">Manage multi-company logistics and branding</p>
+                            </div>
+                        </div>
+                        <button @click="openCreate()" class="px-6 h-11 bg-amber-500 text-white rounded-xl font-black shadow-lg shadow-amber-500/20 hover:scale-105 active:scale-95 transition-all text-[0.7rem] uppercase tracking-widest flex items-center gap-2">
+                            <i data-lucide="plus" class="w-4 h-4"></i> Add New Company
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                        <?php $__empty_1 = true; $__currentLoopData = $companies; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $company): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                        <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden group hover:shadow-xl hover:border-amber-200 transition-all duration-500">
+                            <div class="p-5 border-b border-slate-50 flex items-center gap-4">
+                                <div class="w-14 h-14 rounded-xl bg-slate-50 border border-slate-100 p-1 flex items-center justify-center overflow-hidden flex-shrink-0 group-hover:bg-amber-50 group-hover:border-amber-100 transition-colors">
+                                    <?php if($company->logo): ?>
+                                        <img src="<?php echo e(asset('storage/' . $company->logo)); ?>" class="w-full h-full object-contain">
+                                    <?php else: ?>
+                                        <span class="text-xl font-black text-slate-300"><?php echo e(substr($company->name, 0, 1)); ?></span>
+                                    <?php endif; ?>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <h4 class="text-[0.85rem] font-black text-[#031629] uppercase tracking-tight truncate"><?php echo e($company->name); ?></h4>
+                                    <div class="flex items-center gap-1.5 mt-1">
+                                        <span class="px-2 py-0.5 rounded-full text-[0.55rem] font-black uppercase <?php echo e($company->is_active ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-100 text-slate-400'); ?>">
+                                            <?php echo e($company->is_active ? 'Active Node' : 'Inactive'); ?>
+
+                                        </span>
+                                        <span class="text-[0.55rem] text-slate-400 font-bold uppercase tracking-tighter">ID: <?php echo e($company->id); ?></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="p-5 space-y-3 bg-slate-50/30">
+                                <div class="flex justify-between items-center text-[0.65rem]">
+                                    <span class="font-bold text-slate-400 uppercase tracking-widest">Tax Number</span>
+                                    <span class="font-black text-[#031629] font-mono"><?php echo e($company->tax_number ?? '---'); ?></span>
+                                </div>
+                                <div class="flex justify-between items-center text-[0.65rem]">
+                                    <span class="font-bold text-slate-400 uppercase tracking-widest">CR Number</span>
+                                    <span class="font-black text-[#031629] font-mono"><?php echo e($company->commercial_registration ?? '---'); ?></span>
+                                </div>
+                                <div class="flex justify-between items-center text-[0.65rem]">
+                                    <span class="font-bold text-slate-400 uppercase tracking-widest">Workforce</span>
+                                    <span class="font-black text-[#031629]"><?php echo e($company->employees_count ?? 0); ?> Members</span>
+                                </div>
+                            </div>
+                            <div class="px-5 py-4 bg-white border-t border-slate-50 flex items-center justify-between gap-3">
+                                <button @click="openEdit(<?php echo e($company->toJson()); ?>)" class="flex-1 px-4 py-2.5 rounded-lg border border-slate-200 text-[0.65rem] font-black text-slate-600 uppercase hover:bg-slate-800 hover:text-white hover:border-slate-800 transition-all flex items-center justify-center gap-2">
+                                    <i data-lucide="edit-3" class="w-3.5 h-3.5"></i> Edit
+                                </button>
+                                <button @click="deleteCompany(<?php echo e($company->id); ?>)" class="w-10 h-10 rounded-lg border border-red-50 text-red-400 flex items-center justify-center hover:bg-red-500 hover:text-white transition-all shadow-sm">
+                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
+                        <div class="lg:col-span-3 py-20 bg-slate-50/50 rounded-2xl border-2 border-dashed border-slate-100 flex flex-col items-center justify-center text-center">
+                            <div class="w-20 h-20 rounded-3xl bg-white border border-slate-100 flex items-center justify-center shadow-lg text-slate-200 mb-6">
+                                <i data-lucide="ghost" class="w-10 h-10"></i>
+                            </div>
+                            <h4 class="text-[0.8rem] font-black text-slate-400 uppercase tracking-[0.2em]">No Companies Detected</h4>
+                            <p class="text-[0.65rem] text-slate-300 font-bold uppercase tracking-widest mt-2 max-w-xs leading-relaxed">Initialize your organization by adding your first business entity.</p>
+                        </div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+
+                
+                <div x-show="companyModal" x-cloak class="fixed inset-0 z-[10000] flex items-center justify-center p-6 bg-[#031629]/60 backdrop-blur-sm" @keydown.escape.window="companyModal = false">
+                    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl overflow-hidden animate-in zoom-in-95 duration-200 flex flex-col" style="max-height: 90vh;">
+                        <div class="px-8 py-5 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
+                            <div class="flex items-center gap-4">
+                                <div class="w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center shadow-lg shadow-amber-500/20">
+                                    <i data-lucide="plus-circle" class="w-5 h-5" x-show="!isEditing"></i>
+                                    <i data-lucide="edit" class="w-5 h-5" x-show="isEditing"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-[0.95rem] font-black text-[#031629] uppercase tracking-wide" x-text="isEditing ? 'Sync Company Data' : 'Initialize Business Unit'"></h3>
+                                    <p class="text-[0.6rem] text-slate-400 font-bold uppercase tracking-widest mt-0.5">Multi-company logistics node configuration</p>
+                                </div>
+                            </div>
+                            <button @click="companyModal = false" class="w-8 h-8 rounded-lg border border-slate-200 text-slate-400 hover:bg-white hover:text-red-500 transition-all flex items-center justify-center">
+                                <i data-lucide="x" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+
+                        <div class="flex-1 overflow-y-auto p-8 custom-scrollbar">
+                            <form id="companyForm" class="grid grid-cols-1 md:grid-cols-2 gap-6 pb-2">
+                                <div class="space-y-4">
+                                    <div>
+                                        <label class="block text-[0.65rem] font-black uppercase text-slate-400 tracking-widest mb-2">Legal entity name</label>
+                                        <input type="text" name="name" x-model="currentCompany.name" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-amber-400 focus:bg-white outline-none transition-all font-black text-[#031629] text-[0.85rem]">
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="block text-[0.65rem] font-black uppercase text-slate-400 tracking-widest mb-2">Com. Reg (CR)</label>
+                                            <input type="text" name="commercial_registration" x-model="currentCompany.commercial_registration" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-amber-400 focus:bg-white outline-none transition-all font-mono font-bold text-slate-700 text-[0.8rem]">
+                                        </div>
+                                        <div>
+                                            <label class="block text-[0.65rem] font-black uppercase text-slate-400 tracking-widest mb-2">Tax Number (TRN)</label>
+                                            <input type="text" name="tax_number" x-model="currentCompany.tax_number" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-amber-400 focus:bg-white outline-none transition-all font-mono font-bold text-slate-700 text-[0.8rem]">
+                                        </div>
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="block text-[0.65rem] font-black uppercase text-slate-400 tracking-widest mb-2">Primary Phone</label>
+                                            <input type="text" name="phone" x-model="currentCompany.phone" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-amber-400 focus:bg-white outline-none transition-all font-bold text-slate-700 text-[0.8rem]">
+                                        </div>
+                                        <div>
+                                            <label class="block text-[0.65rem] font-black uppercase text-slate-400 tracking-widest mb-2">Official Email</label>
+                                            <input type="email" name="email" x-model="currentCompany.email" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-amber-400 focus:bg-white outline-none transition-all font-bold text-slate-700 text-[0.8rem]">
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="block text-[0.65rem] font-black uppercase text-slate-400 tracking-widest mb-2">Corporate Website</label>
+                                        <input type="text" name="website" x-model="currentCompany.website" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-amber-400 focus:bg-white outline-none transition-all font-bold text-slate-700 text-[0.8rem]">
+                                    </div>
+                                </div>
+                                <div class="space-y-4">
+                                    <div>
+                                        <label class="block text-[0.65rem] font-black uppercase text-slate-400 tracking-widest mb-2">Company branding (Logo)</label>
+                                        <div class="flex items-start gap-4">
+                                            <div class="w-24 h-24 rounded-2xl bg-slate-50 border-2 border-dashed border-slate-200 flex items-center justify-center overflow-hidden relative group cursor-pointer" onclick="document.getElementById('companyLogoInput').click()">
+                                                <template x-if="logoPreview">
+                                                    <img :src="logoPreview" class="w-full h-full object-contain p-2">
+                                                </template>
+                                                <template x-if="!logoPreview">
+                                                    <i data-lucide="image" class="w-8 h-8 text-slate-300"></i>
+                                                </template>
+                                                <div class="absolute inset-0 bg-amber-500/80 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
+                                                    <i data-lucide="upload" class="w-5 h-5"></i>
+                                                </div>
+                                            </div>
+                                            <div class="flex-1">
+                                                <input type="file" id="companyLogoInput" name="logo" class="hidden" accept="image/*" @change="logoPreview = URL.createObjectURL($event.target.files[0])">
+                                                <p class="text-[0.6rem] text-slate-400 leading-relaxed font-medium">Upload a high-resolution PNG or SVG logo. Max 2MB recommended.</p>
+                                                <button type="button" x-show="logoPreview" @click="logoPreview = null; document.getElementById('companyLogoInput').value = ''" class="mt-2 text-[0.55rem] font-black uppercase text-red-500 hover:underline">Clear Image</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="block text-[0.65rem] font-black uppercase text-slate-400 tracking-widest mb-2">Official Address</label>
+                                        <textarea name="address" x-model="currentCompany.address" rows="3" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-amber-400 focus:bg-white outline-none transition-all font-bold text-slate-700 text-[0.8rem] resize-none"></textarea>
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="block text-[0.65rem] font-black uppercase text-slate-400 tracking-widest mb-2">City</label>
+                                            <input type="text" name="city" x-model="currentCompany.city" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-amber-400 focus:bg-white outline-none transition-all font-bold text-slate-700 text-[0.8rem]">
+                                        </div>
+                                        <div>
+                                            <label class="block text-[0.65rem] font-black uppercase text-slate-400 tracking-widest mb-2">Postal Code</label>
+                                            <input type="text" name="postal_code" x-model="currentCompany.postal_code" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-amber-400 focus:bg-white outline-none transition-all font-bold text-slate-700 text-[0.8rem]">
+                                        </div>
+                                    </div>
+                                    <div class="pt-2">
+                                        <label class="flex items-center gap-3 cursor-pointer group">
+                                            <div class="relative">
+                                                <input type="checkbox" name="is_active" value="1" x-model="currentCompany.is_active" class="sr-only peer">
+                                                <div class="w-11 h-6 bg-slate-200 rounded-full peer peer-checked:bg-emerald-500 transition-all after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-5"></div>
+                                            </div>
+                                            <span class="text-[0.65rem] font-black uppercase tracking-widest text-[#031629]">Infrastructure Status (Active)</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="px-8 py-5 border-t border-slate-100 bg-slate-50/50 flex items-center justify-end gap-3">
+                            <button @click="companyModal = false" class="px-6 py-2.5 text-[0.65rem] font-black uppercase tracking-widest text-slate-500 hover:text-[#031629] transition-all">Cancel</button>
+                            <button @click="saveCompany()" class="px-8 py-3 bg-[#031629] text-white rounded-xl font-black shadow-lg hover:bg-amber-500 transition-all text-[0.7rem] uppercase tracking-widest flex items-center gap-2">
+                                <i data-lucide="save" class="w-4 h-4"></i>
+                                <span x-text="isEditing ? 'Sync Changes' : 'Initialize Unit'"></span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div x-show="activeTab === 'tab1'" x-cloak x-transition>
                 <form action="<?php echo e(route('admin.settings.general.save')); ?>" method="POST" enctype="multipart/form-data">
                 <?php echo csrf_field(); ?>
@@ -933,7 +1179,7 @@
                                                 <select name="role"
                                                     class="text-[0.7rem] font-semibold border border-slate-200 rounded-lg px-3 py-1.5 focus:border-[#ff6900] focus:ring-2 focus:ring-orange-500/10 outline-none bg-white">
                                                     <?php $__currentLoopData = $roles; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $role): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                                    <option value="<?php echo e($role->name); ?>" <?php echo e($user->hasRole($role->name) ? 'selected' : ''); ?>>
+                                                    <option value="<?php echo e($role->name); ?>" <?php echo e(($user instanceof \App\Models\User && $user->hasRole($role->name)) ? 'selected' : ''); ?>>
                                                         <?php echo e(str_replace('-', ' ', ucwords($role->name))); ?>
 
                                                     </option>
@@ -2020,7 +2266,7 @@
             </div>
 
             <?php $__currentLoopData = $tabs; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $num => $tab): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-            <?php if($num <= 9 || $num == 11): ?> <?php continue; ?> <?php endif; ?>
+            <?php if($num <= 9 || $num == 11 || $num == 13): ?> <?php continue; ?> <?php endif; ?>
 
             <?php $tabId = 'tab' . $num; ?>
             <div x-show="activeTab === '<?php echo e($tabId); ?>'" x-cloak x-transition>
@@ -2053,7 +2299,16 @@
 
         </div>
     </div>
-</div>
+ <?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal247ae89654097d25470c0e2135dc9b7d)): ?>
+<?php $attributes = $__attributesOriginal247ae89654097d25470c0e2135dc9b7d; ?>
+<?php unset($__attributesOriginal247ae89654097d25470c0e2135dc9b7d); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal247ae89654097d25470c0e2135dc9b7d)): ?>
+<?php $component = $__componentOriginal247ae89654097d25470c0e2135dc9b7d; ?>
+<?php unset($__componentOriginal247ae89654097d25470c0e2135dc9b7d); ?>
+<?php endif; ?>
 <?php $__env->startPush('scripts'); ?>
 <script>
     // ── Blog Index Hero ──

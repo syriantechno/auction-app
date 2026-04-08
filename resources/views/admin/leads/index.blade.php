@@ -4,16 +4,19 @@
 @section('page_title', 'Leads Management')
 
 @section('content')
-<div class="px-1 space-y-5">
-
-    <x-admin-header icon="users" title="Lead" highlight="Management" dot="blue"
-        subtitle="Customer leads & inquiries">
+    <x-admin-page-standard 
+        icon="users" 
+        title="Lead" 
+        highlight="Management" 
+        subtitle="Customer leads & inquiries"
+        dot="blue">
+        
         <x-slot name="actions">
-            <a href="{{ route('admin.leads.create') }}" class="px-6 h-11 bg-[#ff4605] text-white rounded-lg font-black shadow-lg shadow-orange-500/20 hover:scale-[1.02] active:scale-95 transition-all text-[0.7rem] uppercase tracking-widest flex items-center gap-2">
-                <i data-lucide="plus" class="w-4 h-4"></i> New Lead
+            <a href="{{ route('admin.leads.create') }}" class="group bg-slate-900 hover:bg-[#ff6900] text-white px-8 py-4 rounded-2xl font-black text-[0.7rem] uppercase tracking-[0.2em] transition-all duration-500 flex items-center gap-3 shadow-xl shadow-blue-500/10">
+                <i data-lucide="plus" class="w-4 h-4 group-hover:rotate-90 transition-transform duration-500 text-blue-400 group-hover:text-white"></i>
+                <span>New Lead</span>
             </a>
         </x-slot>
-    </x-admin-header>
 
     <!-- Leads Toolbar (Unified Height h-44px) -->
     <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
@@ -57,7 +60,7 @@
     <div id="tableContainer" class="relative">
         @include('admin.leads._table', ['leads' => $leads])
     </div>
-</div>
+    </x-admin-page-standard>
 
 <!-- Modal: Inspection Assignment -->
 <div id="schedulingModal" class="hidden fixed inset-0 z-[110] flex items-center justify-center bg-[#1d293d]/40 backdrop-blur-md transition-all duration-300">
@@ -335,6 +338,15 @@
                             <input type="hidden" name="lead_id" id="auditLeadIdHidden">
                             
                             <div class="space-y-2">
+                                <label class="text-[0.6rem] text-slate-400 font-black uppercase tracking-widest ml-1">Source</label>
+                                <select id="auditSourceSelect" name="source" class="w-full h-14 bg-slate-50 border border-slate-100 px-6 rounded-md font-black text-[0.75rem] text-slate-900 outline-none focus:border-[#FF6900] focus:bg-white transition-all appearance-none cursor-pointer">
+                                    @foreach(\App\Models\Lead::getSourceOptions() as $value => $label)
+                                        <option value="{{ $value }}">{{ $label }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="space-y-2">
                                 <label class="text-[0.6rem] text-slate-400 font-black uppercase tracking-widest ml-1">Status</label>
                                 <select id="auditStatusSelect" name="status" class="w-full h-14 bg-slate-50 border border-slate-100 px-6 rounded-md font-black text-[0.75rem] text-slate-900 outline-none focus:border-[#FF6900] focus:bg-white transition-all appearance-none cursor-pointer">
                                     <option value="new">New Proposal</option>
@@ -365,6 +377,10 @@
                             <div class="flex items-center justify-between text-[0.65rem] font-black uppercase tracking-widest text-slate-400">
                                 <span>Channel</span>
                                 <span class="text-[#ff6900]">Secure SSL</span>
+                            </div>
+                            <div class="flex items-center justify-between text-[0.65rem] font-black uppercase tracking-widest text-slate-400 pt-2 border-t border-slate-100">
+                                <span>Source</span>
+                                <span id="auditSource" class="px-2 py-1 rounded-md text-white text-[0.55rem]">Unknown</span>
                             </div>
                         </div>
                     </div>
@@ -515,23 +531,45 @@
                 const mapContainer = document.getElementById('auditMapContainer');
 
                 if (mapProvider === 'google' && googleKey) {
-                    mapContainer.innerHTML = `<iframe id="auditMapIframe" width="100%" height="100%" frameborder="0" style="border:0" src="https://www.google.com/maps/embed/v1/place?key=${googleKey}&q=${encodeURIComponent(address)}" allowfullscreen></iframe>`;
+                    mapContainer.innerHTML = `<iframe id="auditMapIframe" width="100%" height="100%" frameborder="0" style="border:0; display:block;" src="https://www.google.com/maps/embed/v1/place?key=${googleKey}&q=${encodeURIComponent(address)}" allowfullscreen></iframe>`;
                 } else if (window.L) {
-                    mapContainer.innerHTML = `<div id="auditLeafletMap" class="w-full h-full"></div>`;
-                    const map = L.map('auditLeafletMap', { zoomControl: false }).setView([25.2048, 55.2708], 11);
-                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-                    
-                    // Simple Geocoding via Nominatim
-                    fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`)
-                        .then(res => res.json())
-                        .then(data => {
-                            if (data && data.length > 0) {
-                                const { lat, lon } = data[0];
-                                map.setView([lat, lon], 14);
-                                L.marker([lat, lon]).addTo(map);
-                            }
-                        })
-                        .catch(e => console.error('OSM Geocode Error:', e));
+                    mapContainer.innerHTML = `<div id="auditLeafletMap" style="width:100%; height:100%;"></div>`;
+                    // Initialize map after a short delay to ensure container is visible
+                    setTimeout(() => {
+                        const mapEl = document.getElementById('auditLeafletMap');
+                        if (!mapEl) return;
+                        
+                        // Clean up any existing map instance
+                        if (mapEl._leaflet_id) {
+                            mapEl.innerHTML = '';
+                        }
+                        
+                        const map = L.map('auditLeafletMap', { 
+                            zoomControl: false,
+                            attributionControl: false
+                        }).setView([25.2048, 55.2708], 11);
+                        
+                        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                            maxZoom: 19
+                        }).addTo(map);
+                        
+                        // Force map to recalculate size
+                        map.invalidateSize(true);
+                        
+                        // Geocode and set marker
+                        fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`)
+                            .then(res => res.json())
+                            .then(data => {
+                                if (data && data.length > 0) {
+                                    const { lat, lon } = data[0];
+                                    map.setView([lat, lon], 15);
+                                    L.marker([lat, lon]).addTo(map);
+                                }
+                                // Invalidate size again after view change
+                                setTimeout(() => map.invalidateSize(true), 100);
+                            })
+                            .catch(e => console.error('OSM Geocode Error:', e));
+                    }, 150);
                 }
                 
                 document.getElementById('auditName').innerText = details.name || 'Anonymous';
@@ -541,19 +579,15 @@
                 document.getElementById('auditInitial').innerText = (details.name || 'U').charAt(0);
                 
                 document.getElementById('auditStatusSelect').value = lead.status;
+                document.getElementById('auditSourceSelect').value = lead.source || 'other';
                 document.getElementById('auditNotes').value = lead.notes || '';
+                
+                // Update source badge
+                const sourceEl = document.getElementById('auditSource');
+                sourceEl.textContent = lead.source_label || 'Unknown';
+                sourceEl.style.backgroundColor = lead.source_color || '#6B7280';
 
                 document.getElementById('auditModal').classList.remove('hidden');
-                
-                // Fix #2: Invalidate map size after showing modal (crucial for Leaflet)
-                if (window.L && document.getElementById('auditLeafletMap')) {
-                    setTimeout(() => {
-                        const mapEl = document.getElementById('auditLeafletMap');
-                        if (mapEl._leaflet_id) {
-                            // Re-init if needed or trigger resize
-                        }
-                    }, 100);
-                }
             }
         } catch (err) { window.notify.error("Failed to load intelligence"); }
     }
@@ -685,6 +719,9 @@
         window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank');
         closeWhatsAppModal();
     }
+
+    // ── REAL-TIME: Listen for new leads ─────────────────────────────
+    // MOVED TO scripts section to ensure Pusher is loaded first
 </script>
 
 <style>
@@ -696,5 +733,95 @@
     .page-item.active .page-link { @apply bg-slate-800 text-white shadow-lg; }
     .page-item .page-link:hover { @apply bg-[#ff6900] text-white; }
 </style>
-@endsection
 
+@push('scripts')
+<script src="https://unpkg.com/pusher-js@8.3.0/dist/web/pusher.min.js"></script>
+<script>
+    // Initialize Pusher
+    if (typeof window.pusher === 'undefined' && typeof Pusher !== 'undefined') {
+        window.pusher = new Pusher('{{ env('REVERB_APP_KEY', 'local') }}', {
+            wsHost: window.location.hostname,
+            wsPort: {{ env('REVERB_PORT', 8080) }},
+            wssPort: {{ env('REVERB_PORT', 8080) }},
+            forceTLS: {{ env('REVERB_SCHEME', 'http') === 'https' ? 'true' : 'false' }},
+            enabledTransports: ['ws', 'wss'],
+            disableStats: true,
+            cluster: '',
+            authEndpoint: '/pusher/auth',
+            auth: {
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                }
+            }
+        });
+    }
+    
+    // ── REAL-TIME: Listen for new leads ─────────────────────────────
+    console.log('[Debug] Pusher object inside push block:', typeof window.pusher);
+    
+    if (typeof window.pusher !== 'undefined') {
+        console.log('[Debug] Subscribing to leads.admin channel...');
+        const leadsChannel = window.pusher.subscribe('private-leads.admin');
+        
+        leadsChannel.bind('pusher:subscription_succeeded', () => {
+            console.log('[Debug] Successfully subscribed to leads.admin');
+        });
+        
+        leadsChannel.bind('pusher:subscription_error', (status) => {
+            console.error('[Debug] Failed to subscribe to leads.admin:', status);
+        });
+        
+        leadsChannel.bind('lead.created', (e) => {
+            console.log('[Real-time] New lead received:', e);
+            
+            // Play alert sound
+            if (typeof playAlertTone === 'function') {
+                console.log('[Debug] Playing alert tone');
+                playAlertTone();
+            } else {
+                console.warn('[Debug] playAlertTone function not found');
+            }
+            
+            // Show toast notification
+            if (typeof showToast === 'function') {
+                console.log('[Debug] Showing toast notification');
+                const titleText = e.title || 'Lead #' + (e.lead_id || '');
+                const messageText = e.message || 'Click to view';
+                showToast(
+                    '<strong style="font-size:0.7rem">🚗 New Lead: ' + titleText + '</strong><br>' +
+                    '<span style="font-size:0.65rem;opacity:0.75">' + messageText + '</span>',
+                    'success',
+                    8000
+                );
+            } else {
+                console.warn('[Debug] showToast function not found, using alert fallback');
+                // Fallback notification
+                if (e.title) {
+                    const notif = document.createElement('div');
+                    notif.className = 'fixed top-20 right-4 bg-emerald-500 text-white px-6 py-4 rounded-lg shadow-2xl z-[9999] animate-in slide-in-from-right';
+                    notif.innerHTML = '<strong>🚗 ' + e.title + '</strong><br><small>' + (e.message || '') + '</small>';
+                    document.body.appendChild(notif);
+                    setTimeout(() => notif.remove(), 8000);
+                }
+            }
+            
+            // Refresh the table immediately
+            if (typeof syncMatrix === 'function') {
+                console.log('[Debug] Refreshing table');
+                syncMatrix();
+            }
+            
+            // Update notification badge
+            const notifBadge = document.getElementById('notif-badge');
+            if (notifBadge && notifBadge.classList.contains('hidden')) {
+                notifBadge.classList.remove('hidden');
+                notifBadge.textContent = '!';
+            }
+        });
+    } else {
+        console.error('[Debug] Pusher not available - real-time notifications disabled');
+    }
+</script>
+@endpush
+
+@endsection

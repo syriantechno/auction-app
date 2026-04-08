@@ -3,53 +3,36 @@
 @section('title', 'Menu Builder — ' . $menu->name)
 
 @section('content')
-<div class="pb-20 space-y-5">
-
-    {{-- ══════════════════════════
-         HEADER
-    ══════════════════════════ --}}
-    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-8 border-b border-slate-100">
-        <div class="flex items-center gap-5">
-            <div class="relative">
-                <div class="w-14 h-14 rounded-lg bg-[#1d293d] flex items-center justify-center shadow-xl transform rotate-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#ff6900" stroke-width="2.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="15" y2="18"/></svg>
-                </div>
-                <div class="absolute -bottom-1 -right-1 w-5 h-5 rounded-lg bg-violet-500 border-[3px] border-[#f8fafc] animate-pulse"></div>
-            </div>
-            <div>
-                <h1 class="text-4xl font-black text-[#031629] uppercase italic tracking-tighter leading-none">
-                    {{ $menu->name }} <span class="text-[#ff6900]">Builder</span>
-                </h1>
-                <p class="text-slate-400 font-bold text-[0.65rem] uppercase tracking-[0.2em] italic opacity-80 mt-2.5">
-                    {{ strtoupper($menu->location ?? 'Custom') }} Zone · Drag to reorder items
-                </p>
-            </div>
-        </div>
-
+<x-admin-page-standard 
+    icon="menu" 
+    title="Menu" 
+    highlight="Builder" 
+    subtitle="{{ strtoupper($menu->location ?? 'Custom') }} Zone Intelligence · Drag to reorder items"
+    dot="violet"
+>
+    <x-slot name="actions">
         <div class="flex items-center gap-3">
-            <div class="bg-white border border-slate-200 rounded-lg px-4 py-2.5 flex items-center gap-2 shadow-sm">
-                <span class="text-[0.55rem] font-black uppercase text-slate-400 tracking-widest">Items</span>
-                <span class="text-lg font-black text-[#1d293d] tabular-nums" id="itemsCounter">{{ $menu->items->count() }}</span>
-            </div>
             <a href="{{ route('admin.menus.index') }}"
-               class="px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-slate-400 hover:text-[#1d293d] flex items-center gap-2 text-[0.6rem] font-black uppercase tracking-widest transition-all">
-                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+               class="h-[52px] px-8 bg-white border-2 border-slate-100 rounded-xl text-slate-400 hover:text-slate-900 transition-all flex items-center gap-3 text-[0.7rem] font-black uppercase tracking-[0.2em] shadow-sm">
+                <i data-lucide="arrow-left" class="w-4 h-4"></i>
                 Back
             </a>
             <a href="{{ route('admin.pages.create') }}"
-               class="px-5 py-2.5 bg-[#1d293d] text-white rounded-lg font-black text-[0.62rem] uppercase tracking-widest flex items-center gap-2 hover:bg-[#ff6900] transition-all shadow-md">
-                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+               class="h-[52px] px-8 bg-[#1d293d] hover:bg-[#ff6900] text-white rounded-xl font-black text-[0.7rem] uppercase tracking-[0.2em] transition-all duration-500 flex items-center gap-3 shadow-xl shadow-slate-900/10 group">
+                <i data-lucide="plus" class="w-4 h-4 group-hover:rotate-90 transition-transform duration-500"></i>
                 New Page
             </a>
         </div>
-    </div>
+    </x-slot>
+
 
     @if(session('success'))
-    <div class="flex items-center gap-3 bg-white border border-emerald-200 text-emerald-700 px-5 py-3 rounded-lg text-[0.72rem] font-bold shadow-sm">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+    <div class="flex items-center gap-3 bg-white border border-emerald-200 text-emerald-700 px-5 py-3 rounded-lg text-[0.72rem] font-bold shadow-sm mb-6">
+        <i data-lucide="check-circle" class="w-4 h-4 text-emerald-500"></i>
         {{ session('success') }}
     </div>
     @endif
+
 
     {{-- ══════════════════════════
          MAIN GRID
@@ -301,7 +284,7 @@
 
         </div>
     </div>
-</div>
+    </x-admin-page-standard>
 
 {{-- SortableJS CDN --}}
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>

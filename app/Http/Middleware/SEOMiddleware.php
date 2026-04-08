@@ -51,15 +51,19 @@ class SEOMiddleware
 
     private function findSEOData(string $url, string $path): ?SEOData
     {
-        // Try to find by URL pattern
-        $seoData = $this->findSEOBypattern($url, $path);
+        $cacheKey = 'seo_data_' . md5($url . $path);
         
-        if ($seoData) {
-            return $seoData;
-        }
-        
-        // Try to find by model
-        return $this->findSEOByModel($path);
+        return \Illuminate\Support\Facades\Cache::remember($cacheKey, 3600, function() use ($url, $path) {
+            // Try to find by URL pattern
+            $seoData = $this->findSEOBypattern($url, $path);
+            
+            if ($seoData) {
+                return $seoData;
+            }
+            
+            // Try to find by model
+            return $this->findSEOByModel($path);
+        });
     }
 
     private function findSEOBypattern(string $url, string $path): ?SEOData

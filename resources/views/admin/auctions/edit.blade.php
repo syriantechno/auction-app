@@ -113,29 +113,30 @@
             <i data-lucide="save" class="w-5 h-5 text-[#ff6900]"></i> Save Changes
         </button>
     </form>
+
+    @push('scripts')
+    <script>
+        function setLive(minutes) {
+            const now = new Date();
+            const end = new Date(now.getTime() + minutes * 60000);
+            const fmt = d => d.toISOString().slice(0, 16);
+            document.querySelector('[name="start_at"]').value = fmt(now);
+            document.querySelector('[name="end_at"]').value = fmt(end);
+            // Auto-select Active
+            document.querySelectorAll('[name="status"]').forEach(r => {
+                r.checked = r.value === 'active';
+                const lbl = r.closest('label');
+                if (r.value === 'active') {
+                    lbl.classList.add('border-[#ff6900]', 'bg-orange-50/50');
+                    lbl.classList.remove('border-slate-100');
+                } else {
+                    lbl.classList.remove('border-[#ff6900]', 'bg-orange-50/50');
+                    lbl.classList.add('border-slate-100');
+                }
+            });
+        }
+    </script>
+    @endpush
+
 </div>
 @endsection
-
-@push('scripts')
-<script>
-    function setLive(minutes) {
-        const now = new Date();
-        const end = new Date(now.getTime() + minutes * 60000);
-        const fmt = d => d.toISOString().slice(0, 16);
-        document.querySelector('[name="start_at"]').value = fmt(now);
-        document.querySelector('[name="end_at"]').value = fmt(end);
-        // Auto-select Active
-        document.querySelectorAll('[name="status"]').forEach(r => {
-            r.checked = r.value === 'active';
-            const lbl = r.closest('label');
-            if (r.value === 'active') {
-                lbl.classList.add('border-[#ff6900]', 'bg-orange-50/50');
-                lbl.classList.remove('border-slate-100');
-            } else {
-                lbl.classList.remove('border-[#ff6900]', 'bg-orange-50/50');
-                lbl.classList.add('border-slate-100');
-            }
-        });
-    }
-</script>
-@endpush

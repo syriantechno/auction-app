@@ -28,6 +28,8 @@ class RankTrackingService
         $results = [];
 
         foreach ($keywords as $keyword) {
+            if (empty($keyword)) continue;
+
             $results[$keyword] = [
                 'google' => $this->trackGoogleRanking($keyword, $domain),
                 'bing' => $this->trackBingRanking($keyword, $domain),

@@ -3,11 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    {{-- SEO CORE: The Google Compliance Grid --}}
     <title>@yield('title', 'أوتومزاد - مزادات السيارات الفاخرة')</title>
+    <meta name="description" content="@yield('meta_description', 'أكبر منصة لمزادات السيارات في الخليج. اشترِ سيارتك الآن بأفضل الأسعار مع تقرير فحص فني دقيق لكل سيارة.')">
+    <meta name="keywords" content="@yield('meta_keywords', 'مزادات السيارات, سيارات مستعملة, حراج السيارات, شراء سيارة, تويوتا, نيسان, الخليج')">
+    <link rel="canonical" href="{{ url()->current() }}">
+    <meta name="robots" content="index, follow">
+
+    {{-- SOCIAL INTEGRATION: The Viral Pulse --}}
+    <meta property="og:title" content="@yield('title', 'أوتومزاد - مزادات السيارات الفاخرة')">
+    <meta property="og:description" content="@yield('meta_description', 'أكبر منصة لمزادات السيارات في الخليج.')">
+    <meta property="og:image" content="@yield('og_image', asset('images/og-default.png'))">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Motor Bazar">
+    
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="@yield('title', 'أوتومزاد - مزادات السيارات الفاخرة')">
+    <meta name="twitter:description" content="@yield('meta_description', 'أكبر منصة لمزادات السيارات في الخليج.')">
+    <meta name="twitter:image" content="@yield('og_image', asset('images/og-default.png'))">
+
+    <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+    
+    @yield('head')
     <script>
         tailwind.config = {
             theme: {

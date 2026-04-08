@@ -65,7 +65,14 @@ class LeadController extends Controller
         if (request()->ajax()) {
             return response()->json([
                 'success' => true,
-                'lead' => $lead,
+                'lead' => [
+                    'id' => $lead->id,
+                    'status' => $lead->status,
+                    'notes' => $lead->notes,
+                    'source' => $lead->source,
+                    'source_label' => Lead::getSourceLabel($lead->source),
+                    'source_color' => Lead::getSourceColor($lead->source ?? ''),
+                ],
                 'user' => $lead->user,
                 'details' => $lead->car_details
             ]);
@@ -78,6 +85,7 @@ class LeadController extends Controller
         $validated = $request->validate([
             'status' => 'required|string',
             'notes' => 'nullable|string',
+            'source' => 'nullable|string|in:' . implode(',', array_keys(Lead::getSourceOptions())),
         ]);
 
         $lead->update($validated);

@@ -4,16 +4,19 @@
 @section('page_title', 'Valuation Reports')
 
 @section('content')
-<div class="px-1 space-y-6">
-
-    <x-admin-header icon="clipboard-check" title="Inspection" highlight="Reports" dot="emerald"
-        subtitle="All vehicle inspection records">
+    <x-admin-page-standard 
+        icon="clipboard-check" 
+        title="Inspection" 
+        highlight="Reports" 
+        subtitle="All vehicle inspection records"
+        dot="emerald">
+        
         <x-slot name="actions">
-            <a href="{{ route('admin.inspections.create') }}" class="px-6 h-11 bg-[#ff4605] text-white rounded-lg font-black shadow-lg shadow-orange-500/20 hover:scale-[1.02] active:scale-95 transition-all text-[0.7rem] uppercase tracking-widest flex items-center gap-2">
-                <i data-lucide="plus" class="w-4 h-4"></i> New Inspection
+            <a href="{{ route('admin.inspections.create') }}" class="group bg-slate-900 hover:bg-[#ff6900] text-white px-8 py-4 rounded-2xl font-black text-[0.7rem] uppercase tracking-[0.2em] transition-all duration-500 flex items-center gap-3 shadow-xl shadow-emerald-500/10">
+                <i data-lucide="plus" class="w-4 h-4 group-hover:rotate-90 transition-transform duration-500 text-emerald-400 group-hover:text-white"></i>
+                <span>New Inspection</span>
             </a>
         </x-slot>
-    </x-admin-header>
 
     @if(session('success'))
         <div class="bg-emerald-50 text-emerald-600 px-4 py-3 rounded-md mb-6 font-bold border border-emerald-100 flex items-center gap-2 text-xs">
@@ -111,52 +114,52 @@
             {{ $reports->links() }}
         </div>
     @endif
-</div>
-@endsection
 
-@push('scripts')
-<script>
-    function archiveReport(reportId, url) {
-        Swal.fire({
-            title: 'Archive Audit?',
-            text: 'This record will be moved to the archive vault.',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#ff4605',
-            cancelButtonColor: '#1e293b',
-            confirmButtonText: 'Yes, Archive',
-            cancelButtonText: 'Cancel'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                fetch(url, {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'Accept': 'application/json',
-                    },
-                    body: new URLSearchParams({
-                        '_method': 'DELETE'
+    @push('scripts')
+    <script>
+        function archiveReport(reportId, url) {
+            Swal.fire({
+                title: 'Archive Audit?',
+                text: 'This record will be moved to the archive vault.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ff4605',
+                cancelButtonColor: '#1e293b',
+                confirmButtonText: 'Yes, Archive',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json',
+                        },
+                        body: new URLSearchParams({
+                            '_method': 'DELETE'
+                        })
                     })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        const row = document.getElementById('report-row-' + reportId);
-                        row.classList.add('opacity-0', '-translate-x-4', 'transition-all', 'duration-500');
-                        setTimeout(() => row.remove(), 500);
-                        Toastify({ text: data.message, style: { background: "#1e293b", color: "#fff", borderRadius: "1rem" } }).showToast();
-                    } else {
-                        Swal.fire('Error!', data.message || 'Processing failed.', 'error');
-                    }
-                })
-                .catch(err => {
-                    console.error(err);
-                    Swal.fire('Error!', 'System communication failure.', 'error');
-                });
-            }
-        });
-    }
-</script>
-@endpush
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            const row = document.getElementById('report-row-' + reportId);
+                            row.classList.add('opacity-0', '-translate-x-4', 'transition-all', 'duration-500');
+                            setTimeout(() => row.remove(), 500);
+                            Toastify({ text: data.message, style: { background: "#1e293b", color: "#fff", borderRadius: "1rem" } }).showToast();
+                        } else {
+                            Swal.fire('Error!', data.message || 'Processing failed.', 'error');
+                        }
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        Swal.fire('Error!', 'System communication failure.', 'error');
+                    });
+                }
+            });
+        }
+    </script>
+    @endpush
 
+    </x-admin-page-standard>
+@endsection

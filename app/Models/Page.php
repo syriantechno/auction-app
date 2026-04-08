@@ -16,13 +16,19 @@ class Page extends Model
         'is_active',
         'hero_image',
         'is_published',
-        'meta_description',
+        'seo_title',
+        'seo_description',
+        'seo_keywords',
+        'seo_schema',
+        'seo_score',
     ];
 
     protected $casts = [
         'is_active'    => 'boolean',
         'is_published' => 'boolean',
         'content'      => 'json',
+        'seo_schema'   => 'json',
+        'seo_score'    => 'integer',
     ];
 
     /** Pages that appear in a menu */

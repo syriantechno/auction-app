@@ -23,7 +23,7 @@ use Illuminate\Database\Eloquent\Model;
 class Receipt extends Model
 {
     protected $fillable = [
-        'receipt_number', 'auction_id', 'invoice_id', 'financial_account_id',
+        'company_id', 'receipt_number', 'auction_id', 'invoice_id', 'financial_account_id',
         'received_from_user_id', 'received_from_name', 'amount',
         'payment_method', 'reference', 'receipt_date', 'purpose', 'notes', 'created_by',
     ];
@@ -53,6 +53,11 @@ class Receipt extends Model
                 }
             }
         });
+    }
+
+    public function company()
+    {
+        return $this->belongsTo(Company::class);
     }
 
     public function auction()

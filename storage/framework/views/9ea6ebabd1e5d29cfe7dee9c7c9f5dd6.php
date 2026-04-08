@@ -1,0 +1,842 @@
+<?php $__env->startSection('title', 'Leads Management'); ?>
+<?php $__env->startSection('page_title', 'Leads Management'); ?>
+
+<?php $__env->startSection('content'); ?>
+    <?php if (isset($component)) { $__componentOriginal247ae89654097d25470c0e2135dc9b7d = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal247ae89654097d25470c0e2135dc9b7d = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.admin-page-standard','data' => ['icon' => 'users','title' => 'Lead','highlight' => 'Management','subtitle' => 'Customer leads & inquiries','dot' => 'blue']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('admin-page-standard'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['icon' => 'users','title' => 'Lead','highlight' => 'Management','subtitle' => 'Customer leads & inquiries','dot' => 'blue']); ?>
+        
+         <?php $__env->slot('actions', null, []); ?> 
+            <a href="<?php echo e(route('admin.leads.create')); ?>" class="group bg-slate-900 hover:bg-[#ff6900] text-white px-8 py-4 rounded-2xl font-black text-[0.7rem] uppercase tracking-[0.2em] transition-all duration-500 flex items-center gap-3 shadow-xl shadow-blue-500/10">
+                <i data-lucide="plus" class="w-4 h-4 group-hover:rotate-90 transition-transform duration-500 text-blue-400 group-hover:text-white"></i>
+                <span>New Lead</span>
+            </a>
+         <?php $__env->endSlot(); ?>
+
+    <!-- Leads Toolbar (Unified Height h-44px) -->
+    <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+        <form id="filterForm" action="<?php echo e(route('admin.leads.index')); ?>" method="GET" class="flex flex-wrap items-end gap-3">
+            <div class="flex-1 min-w-[220px]">
+                <label class="text-[0.65rem] font-medium text-slate-500 uppercase tracking-widest mb-1.5 block ml-1">Search</label>
+                <div class="relative">
+                    <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2"></i>
+                    <input type="text" name="search" id="searchInput" placeholder="Lead name, email or status..." class="w-full h-[44px] bg-slate-50 border border-slate-300 rounded-md pl-11 pr-4 py-2 text-[0.9rem] font-normal text-slate-700 outline-none focus:bg-white focus:border-orange-500/40 transition-all shadow-sm">
+                </div>
+            </div>
+            <div class="w-52">
+                <label class="text-[0.65rem] font-medium text-slate-500 uppercase tracking-widest mb-1.5 block ml-1">Status</label>
+                <div class="relative">
+                    <select name="status" id="statusFilter" class="w-full h-[44px] bg-slate-50 border border-slate-300 rounded-md px-4 py-2 text-[0.9rem] font-normal text-slate-700 appearance-none outline-none focus:bg-white focus:border-orange-500/40 transition-all">
+                        <option value="">All Statuses</option>
+                        <option value="pending">Pending</option>
+                        <option value="in_review">In Review</option>
+                        <option value="approved">Approved</option>
+                        <option value="rejected">Rejected</option>
+                    </select>
+                    <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+                </div>
+            </div>
+            
+            <button type="button" id="resetBtn" class="bg-slate-100 h-[44px] border border-slate-300 text-slate-700 rounded-md px-5 py-2 text-[0.65rem] font-medium uppercase tracking-widest hover:bg-slate-200 transition-all flex items-center gap-2 shadow-sm">
+                <i data-lucide="refresh-cw" class="w-4 h-4 text-slate-400"></i> Reset
+            </button>
+            
+            <div class="relative flex items-center justify-center bg-slate-800 h-[44px] border border-slate-700 rounded-md px-4 py-2 overflow-hidden min-w-[5.5rem]">
+                <div id="loadingIndicator" class="hidden flex items-center gap-1.5">
+                    <div class="w-1.5 h-1.5 bg-[#ff6900] rounded-full animate-bounce"></div>
+                    <div class="w-1.5 h-1.5 bg-[#ff6900] rounded-full animate-bounce delay-75"></div>
+                </div>
+                <span id="readyText" class="text-[0.55rem] font-medium uppercase tracking-[0.2em] text-slate-400">Pipeline OK</span>
+            </div>
+        </form>
+    </div>
+
+    <!-- Table -->
+    <div id="tableContainer" class="relative">
+        <?php echo $__env->make('admin.leads._table', ['leads' => $leads], array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
+    </div>
+     <?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal247ae89654097d25470c0e2135dc9b7d)): ?>
+<?php $attributes = $__attributesOriginal247ae89654097d25470c0e2135dc9b7d; ?>
+<?php unset($__attributesOriginal247ae89654097d25470c0e2135dc9b7d); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal247ae89654097d25470c0e2135dc9b7d)): ?>
+<?php $component = $__componentOriginal247ae89654097d25470c0e2135dc9b7d; ?>
+<?php unset($__componentOriginal247ae89654097d25470c0e2135dc9b7d); ?>
+<?php endif; ?>
+
+<!-- Modal: Inspection Assignment -->
+<div id="schedulingModal" class="hidden fixed inset-0 z-[110] flex items-center justify-center bg-[#1d293d]/40 backdrop-blur-md transition-all duration-300">
+    <div class="bg-[#e7e7e7] w-full max-w-4xl rounded-lg shadow-2xl border border-slate-200 overflow-hidden animate-in zoom-in-95 duration-200">
+        <div class="bg-slate-50 px-10 py-8 border-b border-slate-200 relative">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 bg-white border border-slate-200 rounded-lg flex items-center justify-center shadow-sm">
+                    <i data-lucide="calendar-check" class="text-[#ff6900] w-6 h-6"></i>
+                </div>
+                <div>
+                    <h4 class="text-xl font-black text-slate-900 tracking-tight italic">Schedule Inspection</h4>
+                    <p class="text-[0.6rem] text-slate-500 font-bold uppercase tracking-[0.2em] mt-1">Fill the inspection report when ready</p>
+                </div>
+            </div>
+            <button onclick="closeSchedulingModal()" class="absolute right-10 top-8 w-12 h-12 rounded-md bg-white hover:bg-slate-100 border border-slate-200 flex items-center justify-center transition-all">
+                <i data-lucide="x" class="w-5 h-5 text-slate-400"></i>
+            </button>
+        </div>
+
+        <form id="scheduleForm" class="p-10">
+            <?php echo csrf_field(); ?>
+            <input type="hidden" id="schedLeadId" name="id">
+            
+            <div class="grid grid-cols-12 gap-10">
+                <!-- Data Segment 1: Client & Car -->
+                <div class="col-span-12 md:col-span-5 space-y-8 pr-10 border-r border-slate-100">
+                    <div>
+                        <label class="text-[0.6rem] font-black uppercase text-slate-400 tracking-widest mb-4 block">Vehicle Info</label>
+                        <div id="schedCarInfo" class="bg-slate-50 p-6 rounded-lg border border-slate-100 space-y-3">
+                            <h3 id="schedCarTitle" class="text-lg font-medium text-slate-800 italic">...</h3>
+                            <div class="flex flex-wrap gap-2">
+                                <span id="schedMileage" class="px-2.5 py-1 bg-white border border-slate-200 rounded-lg text-[0.6rem] font-bold text-slate-600 uppercase">...</span>
+                                <span id="schedCondition" class="px-2.5 py-1 bg-white border border-slate-200 rounded-lg text-[0.6rem] font-bold text-[#ff6900] uppercase">...</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="text-[0.6rem] font-black uppercase text-slate-400 tracking-widest mb-4 block">Client Info</label>
+                        <div class="space-y-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-lg bg-orange-50 flex items-center justify-center text-[#ff6900]">
+                                    <i data-lucide="user" class="w-4 h-4"></i>
+                                </div>
+                                <span id="schedClientName" class="text-sm font-medium text-slate-700 italic">...</span>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400">
+                                    <i data-lucide="phone" class="w-4 h-4"></i>
+                                </div>
+                                <span id="schedClientPhone" class="text-sm font-mono text-slate-500">...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Data Segment 2: Assignment & Ops -->
+                <div class="col-span-12 md:col-span-7 space-y-8">
+                    <div class="grid grid-cols-2 gap-6">
+                        <div class="space-y-2">
+                            <label class="text-[0.65rem] font-black uppercase text-slate-500 tracking-widest ml-1">Assigned Inspector</label>
+                            <select name="inspector_id" required class="w-full h-[52px] bg-slate-50 border-2 border-slate-100 rounded-lg px-5 text-[0.9rem] font-medium text-slate-700 outline-none focus:border-orange-500/40 transition-all appearance-none shadow-sm">
+                                <option value="">Select Inspector...</option>
+                                <?php $__currentLoopData = \App\Models\User::all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $inspector): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <option value="<?php echo e($inspector->id); ?>"><?php echo e($inspector->name); ?></option>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                            </select>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-[0.65rem] font-black uppercase text-slate-500 tracking-widest ml-1">Inspection Venue</label>
+                            <div class="relative">
+                                <i data-lucide="map-pin" class="w-4.5 h-4.5 absolute left-4.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                                <input type="text" name="location" placeholder="Dubai Oasis, Lot 4..." class="w-full h-[52px] bg-slate-50 border-2 border-slate-100 rounded-lg pl-12 pr-5 text-[0.9rem] font-medium text-slate-700 outline-none focus:border-orange-500/40 transition-all shadow-sm">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-6">
+                        <div class="space-y-2">
+                            <label class="text-[0.65rem] font-black uppercase text-slate-500 tracking-widest ml-1">Confirmed Date</label>
+                            <div class="relative">
+                                <i data-lucide="calendar" class="w-4.5 h-4.5 absolute left-4.5 top-1/2 -translate-y-1/2 text-[#ff6900]"></i>
+                                <input type="text" id="sched_date" name="inspection_date" required class="w-full h-[52px] bg-slate-50 border-2 border-slate-100 rounded-lg pl-12 pr-5 text-[0.9rem] font-medium text-slate-700 bazar-date cursor-pointer outline-none focus:border-orange-500/40 transition-all shadow-sm">
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-[0.65rem] font-black uppercase text-slate-500 tracking-widest ml-1">Verified Time Slot</label>
+                            <div class="relative">
+                                <i data-lucide="clock" class="w-4.5 h-4.5 absolute left-4.5 top-1/2 -translate-y-1/2 text-[#ff6900]"></i>
+                                <input type="text" id="sched_time" name="inspection_time" required class="w-full h-[52px] bg-slate-50 border-2 border-slate-100 rounded-lg pl-12 pr-5 text-[0.9rem] font-medium text-slate-700 bazar-time cursor-pointer outline-none focus:border-orange-500/40 transition-all shadow-sm">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pt-6 border-t border-slate-100 flex items-center justify-end gap-4">
+                        <button type="button" onclick="closeSchedulingModal()" class="px-8 py-4 rounded-lg text-[0.7rem] font-bold uppercase tracking-widest text-slate-400 hover:text-slate-700 transition-all">Cancel</button>
+                        <button type="submit" class="bg-slate-800 px-10 py-4 rounded-lg text-[0.7rem] font-bold uppercase tracking-[0.2em] text-white shadow-xl hover:bg-[#1d293d] active:scale-95 transition-all flex items-center gap-3">
+                            <i data-lucide="send" class="w-4 h-4"></i> Submit
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal: Calibrate Protocol (Re-status) -->
+<div id="leadModal" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-[#1d293d]/30 backdrop-blur-sm transition-all duration-300">
+    <div class="bg-[#e7e7e7] w-full max-w-md rounded-lg shadow-2xl overflow-hidden relative border border-slate-200 flex flex-col animate-in fade-in zoom-in-95 duration-300">
+        <div class="bg-slate-50 px-8 py-6 border-b border-slate-200 flex items-center justify-between">
+            <h4 class="text-[0.65rem] font-black text-slate-500 uppercase tracking-[0.2em]">Update Status</h4>
+            <button onclick="closeLeadModal()" class="w-10 h-10 rounded-md bg-white border border-slate-200 hover:bg-slate-100 flex items-center justify-center transition-all">
+                <i data-lucide="x" class="w-4 h-4 text-slate-400"></i>
+            </button>
+        </div>
+        <div class="p-8 space-y-6">
+            <form id="ajaxLeadForm" class="space-y-6">
+                <?php echo csrf_field(); ?>
+                <input type="hidden" id="leadId" name="id">
+                <div class="space-y-1.5">
+                    <label class="text-[0.65rem] font-medium text-slate-500 uppercase tracking-widest ml-1">Status</label>
+                    <select id="inputStatus" name="status" required class="w-full h-[48px] bg-slate-50 border border-slate-300 rounded-md px-4 py-2 text-[0.9rem] font-normal text-slate-700 appearance-none outline-none focus:bg-white focus:border-orange-500/40 transition-all shadow-inner">
+                        <option value="pending">Pending</option>
+                        <option value="in_review">In Review</option>
+                        <option value="inspection_scheduled">Inspection Scheduled</option>
+                        <option value="approved">Approved</option>
+                        <option value="rejected">Rejected</option>
+                    </select>
+                </div>
+                <div class="space-y-1.5">
+                    <label class="text-[0.65rem] font-medium text-slate-500 uppercase tracking-widest ml-1">Notes</label>
+                    <textarea id="inputNotes" name="notes" rows="3" class="w-full bg-slate-50 border border-slate-300 rounded-md px-5 py-3.5 text-[0.9rem] font-normal text-slate-700 outline-none focus:bg-white focus:border-orange-500 transition-all shadow-inner"></textarea>
+                </div>
+                <button type="submit" style="background: var(--primary-orange);" class="w-full text-white py-4 rounded-lg text-[0.7rem] font-medium uppercase tracking-[0.2em] shadow-xl shadow-orange-500/10 flex items-center justify-center gap-2 hover:scale-[1.01] active:scale-98 transition-all">
+                    <i data-lucide="save" class="w-4 h-4 text-white/80"></i> Update
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Elite Audit Hub (Redesigned Minimalist Elite Edition) -->
+<div id="auditModal" class="hidden fixed inset-0 z-[120] flex items-center justify-center bg-[#1d293d]/40 backdrop-blur-md transition-all duration-500 p-4 md:p-10">
+    <div class="bg-[#e7e7e7] w-full max-w-6xl max-h-full rounded-lg shadow-[0_40px_100px_-20px_rgba(0,0,0,0.15)] border border-slate-200 overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-300">
+        
+        <!-- Header: Elite Refined -->
+        <div class="bg-slate-50 px-10 py-8 border-b border-slate-200 flex items-center justify-between shrink-0 relative">
+            <div class="flex items-center gap-6">
+                <div class="w-14 h-14 bg-white border border-slate-200 rounded-md flex items-center justify-center shadow-sm">
+                    <i data-lucide="shield-check" class="text-slate-900 w-7 h-7"></i>
+                </div>
+                <div>
+                    <h3 class="text-xl font-black text-slate-900 tracking-tight flex items-center gap-3">
+                        Lead Intelligence <span class="w-1 h-1 bg-slate-200 rounded-full"></span> 
+                        <span id="auditId" class="text-[#FF6900]">#000</span>
+                    </h3>
+                    <p class="text-[0.6rem] text-slate-500 font-extrabold uppercase tracking-[0.3em] mt-1">Lead Profile Interface • Verified Profile</p>
+                </div>
+            </div>
+            <button onclick="closeAuditModal()" class="w-12 h-12 rounded-md bg-white hover:bg-slate-100 border border-slate-200 flex items-center justify-center transition-all group">
+                <i data-lucide="x" class="w-6 h-6 text-slate-400 group-hover:text-slate-900 group-hover:rotate-90 transition-all duration-300"></i>
+            </button>
+        </div>
+
+        <!-- Scrollable Content -->
+        <div class="flex-1 overflow-y-auto p-10">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
+                
+                <!-- Main Column -->
+                <div class="lg:col-span-8 space-y-10">
+                    
+                    <!-- IMPACT CONTACT HERO (The card you liked, refined for calmness) -->
+                    <div class="bg-white rounded-lg border border-slate-200 p-10 shadow-sm relative overflow-hidden group hover:border-[#FF6900]/30 transition-all duration-500">
+                        <div class="absolute right-0 top-0 h-full w-2 bg-[#FF6900]/10 group-hover:bg-[#FF6900] transition-all duration-500"></div>
+                        <div class="space-y-10">
+                            <div class="flex flex-col md:flex-row md:items-start justify-between gap-10">
+                                <!-- Email Focus -->
+                                <div class="space-y-4 flex-1 overflow-hidden">
+                                    <div class="flex items-center gap-3">
+                                        <i data-lucide="mail" class="w-4 h-4 text-[#ff6900]"></i>
+                                        <span class="text-[0.6rem] font-black uppercase text-slate-400 tracking-[0.2em] italic">Customer Email</span>
+                                    </div>
+                                    <div id="auditEmail" class="text-xl md:text-2xl font-black text-slate-900 truncate">...</div>
+                                </div>
+
+                                <!-- Phone Access -->
+                                <div class="space-y-4 shrink-0">
+                                    <div class="flex items-center gap-3">
+                                        <i data-lucide="phone" class="w-4 h-4 text-[#ff6900]"></i>
+                                        <span class="text-[0.6rem] font-black uppercase text-slate-400 tracking-[0.2em] italic">Direct Link</span>
+                                    </div>
+                                    <div id="auditPhone" class="text-xl md:text-2xl font-black text-[#ff6900] tracking-tight">...</div>
+                                </div>
+                            </div>
+
+                            <!-- Highlights -->
+                            <div class="pt-6 border-t border-slate-50 flex flex-wrap items-center gap-x-12 gap-y-6">
+                                <div class="space-y-2">
+                                    <label class="text-[0.6rem] text-slate-400 font-black uppercase tracking-[0.3em]">Protocol Schedule</label>
+                                    <div class="text-[1.1rem] font-black text-slate-800 flex items-center gap-3">
+                                        <i data-lucide="calendar" class="w-5 text-[#FF6900]"></i>
+                                        <span id="auditTimeline">...</span>
+                                    </div>
+                                </div>
+                                <div class="space-y-2">
+                                    <label class="text-[0.6rem] text-slate-400 font-black uppercase tracking-[0.3em]">Identity Hub</label>
+                                    <div class="text-[1.1rem] font-black text-slate-800 flex items-center gap-3">
+                                        <i data-lucide="user" class="w-5 text-slate-400"></i>
+                                        <span id="auditName">...</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Specs -->
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div class="bg-white p-6 rounded-lg border border-slate-200 shadow-sm transition-all hover:bg-slate-50 group">
+                            <span class="text-[0.55rem] text-slate-400 font-black uppercase tracking-widest block mb-2">Mileage</span>
+                            <div id="auditMileage" class="text-lg font-black text-slate-900 group-hover:text-[#FF6900] transition-colors">...</div>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg border border-slate-200 shadow-sm transition-all hover:bg-slate-50 group">
+                            <span class="text-[0.55rem] text-slate-400 font-black uppercase tracking-widest block mb-2">Engine</span>
+                            <div id="auditEngine" class="text-lg font-black text-slate-900 group-hover:text-[#FF6900] transition-colors">...</div>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg border border-slate-200 shadow-sm transition-all hover:bg-slate-50 group">
+                            <span class="text-[0.55rem] text-slate-400 font-black uppercase tracking-widest block mb-2">Specs</span>
+                            <div id="auditGcc" class="text-lg font-black text-slate-900 group-hover:text-[#FF6900] transition-colors">...</div>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg border border-slate-200 shadow-sm transition-all hover:bg-slate-50 group">
+                            <span class="text-[0.55rem] text-slate-400 font-black uppercase tracking-widest block mb-2">Paint</span>
+                            <div id="auditPaint" class="text-lg font-black text-slate-900 group-hover:text-[#FF6900] transition-colors">...</div>
+                        </div>
+                    </div>
+
+                    <!-- Geo Data -->
+                    <div class="bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden">
+                        <div class="px-8 py-6 border-b border-slate-100 flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <i data-lucide="map-pin" class="w-5 text-blue-500"></i>
+                                <span class="text-[0.7rem] font-black text-slate-900 uppercase tracking-widest">Geo Destination Intelligence</span>
+                            </div>
+                            <span id="auditLocType" class="bg-blue-50 text-blue-600 px-3 py-1 rounded-lg text-[0.55rem] font-black uppercase tracking-widest border border-blue-100">...</span>
+                        </div>
+                        <div class="p-2">
+                            <div class="h-[400px] rounded-md overflow-hidden border border-slate-100 relative group">
+                                <div id="auditMapContainer" class="w-full h-full">
+                                    <iframe id="auditMapIframe" width="100%" height="100%" frameborder="0" style="border:0" src="" allowfullscreen></iframe>
+                                </div>
+                                <div class="absolute bottom-4 left-4 right-4 p-4 bg-white/95 backdrop-blur-md rounded-md border border-slate-200 shadow-xl z-[1001]">
+                                    <p id="auditAddress" class="text-[0.7rem] font-black text-slate-900 truncate tracking-tight">Detecting coordinates...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sidebar Command Panel -->
+                <div class="lg:col-span-4 space-y-8">
+                    <!-- Workflow Calibration -->
+                    <div class="bg-white rounded-lg border border-slate-200 p-10 shadow-sm">
+                        <div class="flex items-center gap-4 mb-10 pb-6 border-b border-slate-50">
+                            <div class="w-12 h-12 rounded-md bg-[#1d293d] text-white flex items-center justify-center shadow-lg">
+                                <span id="auditInitial" class="text-xl font-black uppercase">U</span>
+                            </div>
+                            <div>
+                                <h4 class="text-[0.75rem] font-black text-slate-900 uppercase tracking-widest mb-0.5">Update Lead</h4>
+                                <p class="text-[0.55rem] text-slate-400 font-extrabold uppercase tracking-widest">Change Status & Notes</p>
+                            </div>
+                        </div>
+
+                        <form id="modalStatusForm" class="space-y-8">
+                            <?php echo csrf_field(); ?>
+                            <?php echo method_field('PUT'); ?>
+                            <input type="hidden" name="lead_id" id="auditLeadIdHidden">
+                            
+                            <div class="space-y-2">
+                                <label class="text-[0.6rem] text-slate-400 font-black uppercase tracking-widest ml-1">Source</label>
+                                <select id="auditSourceSelect" name="source" class="w-full h-14 bg-slate-50 border border-slate-100 px-6 rounded-md font-black text-[0.75rem] text-slate-900 outline-none focus:border-[#FF6900] focus:bg-white transition-all appearance-none cursor-pointer">
+                                    <?php $__currentLoopData = \App\Models\Lead::getSourceOptions(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $value => $label): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                        <option value="<?php echo e($value); ?>"><?php echo e($label); ?></option>
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                </select>
+                            </div>
+
+                            <div class="space-y-2">
+                                <label class="text-[0.6rem] text-slate-400 font-black uppercase tracking-widest ml-1">Status</label>
+                                <select id="auditStatusSelect" name="status" class="w-full h-14 bg-slate-50 border border-slate-100 px-6 rounded-md font-black text-[0.75rem] text-slate-900 outline-none focus:border-[#FF6900] focus:bg-white transition-all appearance-none cursor-pointer">
+                                    <option value="new">New Proposal</option>
+                                    <option value="pending">In Queue</option>
+                                    <option value="in_review">Review Phase</option>
+                                    <option value="inspection_scheduled">Inspection Scheduled</option>
+                                    <option value="approved">Verified (Approved)</option>
+                                    <option value="rejected">Archived (Rejected)</option>
+                                </select>
+                            </div>
+
+                            <div class="space-y-2">
+                                <label class="text-[0.6rem] text-slate-400 font-black uppercase tracking-widest ml-1">Notes</label>
+                                <textarea id="auditNotes" name="notes" rows="6" class="w-full bg-slate-50 border border-slate-100 px-6 py-5 rounded-md font-black text-[0.75rem] text-slate-900 outline-none focus:border-[#FF6900] focus:bg-white transition-all placeholder:text-slate-300" placeholder="Enter administrative notes..."></textarea>
+                            </div>
+
+                            <button type="submit" class="w-full h-16 bg-[#FF6900] text-white rounded-md font-black text-[0.7rem] uppercase tracking-[0.4em] shadow-[0_15px_40px_-5px_rgba(255,105,0,0.3)] hover:bg-black transition-all">Save Changes</button>
+                        </form>
+                    </div>
+
+                    <!-- Metadata Context -->
+                    <div class="bg-white p-8 rounded-lg border border-slate-200 shadow-sm">
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between text-[0.65rem] font-black uppercase tracking-widest text-slate-400">
+                                <span>Lead ID</span>
+                                <span class="text-slate-900">#001</span>
+                            </div>
+                            <div class="flex items-center justify-between text-[0.65rem] font-black uppercase tracking-widest text-slate-400">
+                                <span>Channel</span>
+                                <span class="text-[#ff6900]">Secure SSL</span>
+                            </div>
+                            <div class="flex items-center justify-between text-[0.65rem] font-black uppercase tracking-widest text-slate-400 pt-2 border-t border-slate-100">
+                                <span>Source</span>
+                                <span id="auditSource" class="px-2 py-1 rounded-md text-white text-[0.55rem]">Unknown</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- WhatsApp Modal -->
+<div id="whatsappModal" class="hidden fixed inset-0 z-[110] flex items-center justify-center bg-[#1d293d]/40 backdrop-blur-md transition-all duration-300">
+    <div class="bg-[#e7e7e7] w-full max-w-lg rounded-lg shadow-2xl border border-slate-200 overflow-hidden animate-in zoom-in-95 duration-200">
+        <div class="bg-emerald-500 px-8 py-6 text-white relative">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center shadow-lg">
+                    <i data-lucide="message-circle" class="text-white w-6 h-6"></i>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold"><?php echo e(__('admin.whatsapp')); ?> <?php echo e(__('messages.message')); ?></h3>
+                    <p class="text-emerald-100 text-sm mt-1"><?php echo e(__('admin.send_message_to_customer')); ?></p>
+                </div>
+            </div>
+            <button onclick="closeWhatsAppModal()" class="absolute top-6 right-6 text-white/70 hover:text-white transition-colors">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+        </div>
+        
+        <div class="p-8">
+            <div class="mb-6">
+                <label class="text-[0.7rem] font-medium text-slate-500 uppercase tracking-widest mb-2 block"><?php echo e(__('admin.customer')); ?></label>
+                <div id="customerInfo" class="text-slate-800 font-medium"></div>
+            </div>
+            
+            <div class="mb-6">
+                <label class="text-[0.7rem] font-medium text-slate-500 uppercase tracking-widest mb-2 block"><?php echo e(__('messages.message')); ?></label>
+                <textarea id="whatsappMessage" rows="6" class="w-full bg-slate-50 border border-slate-200 rounded-md px-4 py-3 text-slate-700 font-normal resize-none focus:bg-white focus:border-emerald-500 outline-none transition-all"></textarea>
+            </div>
+            
+            <div class="flex gap-3">
+                <button onclick="sendWhatsAppMessage()" class="flex-1 bg-emerald-500 text-white px-6 py-3 rounded-md font-bold hover:bg-emerald-600 transition-all flex items-center justify-center gap-2">
+                    <i data-lucide="send" class="w-4 h-4"></i> <?php echo e(__('admin.send_via_whatsapp')); ?>
+
+                </button>
+                <button onclick="closeWhatsAppModal()" class="px-6 py-3 bg-slate-100 text-slate-700 rounded-md font-bold hover:bg-slate-200 transition-all">
+                    <?php echo e(__('messages.cancel')); ?>
+
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // LEADS ENGINE: SYNC
+    let syncMatrix; // Define globally
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const resetBtn = document.getElementById('resetBtn');
+        const form = document.getElementById('filterForm');
+        const searchInput = document.getElementById('searchInput');
+        let searchTimeout = null;
+
+        const filters = ['searchInput', 'statusFilter'];
+        filters.forEach(id => {
+            const el = document.getElementById(id);
+            if(el) {
+                const ev = id === 'searchInput' ? 'keyup' : 'change';
+                el.addEventListener(ev, () => {
+                    clearTimeout(searchTimeout);
+                    searchTimeout = setTimeout(() => syncMatrix(), id === 'searchInput' ? 400 : 0);
+                });
+            }
+        });
+
+        if(resetBtn) {
+            resetBtn.addEventListener('click', () => {
+                searchInput.value = '';
+                document.getElementById('statusFilter').selectedIndex = 0;
+                syncMatrix();
+            });
+        }
+
+        document.addEventListener('click', (e) => {
+            const link = e.target.closest('#paginationContainer a');
+            if (link) {
+                e.preventDefault();
+                syncMatrix(new URL(link.href));
+            }
+        });
+
+        syncMatrix = async function(targetUrl = null) {
+            const container = document.getElementById('tableContainer');
+            const loader = document.getElementById('loadingIndicator');
+            const ready = document.getElementById('readyText');
+
+            const url = targetUrl || new URL(form.action);
+            if(!targetUrl) {
+                const fd = new FormData(form);
+                for (let [k,v] of fd) { if(v) url.searchParams.set(k,v); }
+            }
+            
+            if(loader) loader.classList.remove('hidden'); 
+            if(ready) ready.classList.add('hidden');
+            if(container) container.style.opacity = '0.5';
+
+            try {
+                const res = await fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+                const html = await res.text();
+                if(container) container.innerHTML = html;
+                if (typeof lucide !== 'undefined') lucide.createIcons();
+                window.history.pushState({}, '', url.toString());
+            } catch (err) { console.error("Sync Error", err); }
+            finally {
+                if(loader) loader.classList.add('hidden'); 
+                if(ready) ready.classList.remove('hidden');
+                if(container) container.style.opacity = '1';
+            }
+        };
+
+        // Fix #1: Real-time Lead Pulse
+        setInterval(() => syncMatrix(), 60000);
+    });
+
+    // GLOBAL OPERATIONAL HANDLERS
+    function closeAuditModal() { document.getElementById('auditModal').classList.add('hidden'); }
+
+    async function viewLead(id) {
+        try {
+            const res = await fetch(`/admin/leads/${id}`, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+            const data = await res.json();
+            if(data.success) {
+                const lead = data.lead;
+                const details = data.details;
+
+                document.getElementById('auditId').innerText = '#' + lead.id;
+                document.getElementById('auditLeadIdHidden').value = lead.id;
+                document.getElementById('auditMileage').innerText = details.mileage ? (parseInt(details.mileage).toLocaleString() + ' KM') : 'N/A';
+                document.getElementById('auditEngine').innerText = details.engine || 'N/A';
+                document.getElementById('auditGcc').innerText = details.gcc || 'N/A';
+                document.getElementById('auditPaint').innerText = details.paint || 'N/A';
+                
+                const isHome = (details.inspection_type || 'branch') === 'home';
+                const address = isHome ? (details.home_address || 'Dubai') : 'Al Quoz Industrial Area 3, Dubai';
+                
+                document.getElementById('auditLocType').innerText = isHome ? 'Home Service' : 'Hub Node';
+                document.getElementById('auditAddress').innerText = address;
+                
+                const googleKey = window.googleMapsKey;
+                const mapProvider = window.mapProvider || 'google';
+                const mapContainer = document.getElementById('auditMapContainer');
+
+                if (mapProvider === 'google' && googleKey) {
+                    mapContainer.innerHTML = `<iframe id="auditMapIframe" width="100%" height="100%" frameborder="0" style="border:0; display:block;" src="https://www.google.com/maps/embed/v1/place?key=${googleKey}&q=${encodeURIComponent(address)}" allowfullscreen></iframe>`;
+                } else if (window.L) {
+                    mapContainer.innerHTML = `<div id="auditLeafletMap" style="width:100%; height:100%;"></div>`;
+                    // Initialize map after a short delay to ensure container is visible
+                    setTimeout(() => {
+                        const mapEl = document.getElementById('auditLeafletMap');
+                        if (!mapEl) return;
+                        
+                        // Clean up any existing map instance
+                        if (mapEl._leaflet_id) {
+                            mapEl.innerHTML = '';
+                        }
+                        
+                        const map = L.map('auditLeafletMap', { 
+                            zoomControl: false,
+                            attributionControl: false
+                        }).setView([25.2048, 55.2708], 11);
+                        
+                        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                            maxZoom: 19
+                        }).addTo(map);
+                        
+                        // Force map to recalculate size
+                        map.invalidateSize(true);
+                        
+                        // Geocode and set marker
+                        fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`)
+                            .then(res => res.json())
+                            .then(data => {
+                                if (data && data.length > 0) {
+                                    const { lat, lon } = data[0];
+                                    map.setView([lat, lon], 15);
+                                    L.marker([lat, lon]).addTo(map);
+                                }
+                                // Invalidate size again after view change
+                                setTimeout(() => map.invalidateSize(true), 100);
+                            })
+                            .catch(e => console.error('OSM Geocode Error:', e));
+                    }, 150);
+                }
+                
+                document.getElementById('auditName').innerText = details.name || 'Anonymous';
+                document.getElementById('auditEmail').innerText = details.email || 'N/A';
+                document.getElementById('auditPhone').innerText = details.phone || '...';
+                document.getElementById('auditTimeline').innerText = (details.inspection_date || 'TBD') + ' @ ' + (details.inspection_time || 'ASAP');
+                document.getElementById('auditInitial').innerText = (details.name || 'U').charAt(0);
+                
+                document.getElementById('auditStatusSelect').value = lead.status;
+                document.getElementById('auditSourceSelect').value = lead.source || 'other';
+                document.getElementById('auditNotes').value = lead.notes || '';
+                
+                // Update source badge
+                const sourceEl = document.getElementById('auditSource');
+                sourceEl.textContent = lead.source_label || 'Unknown';
+                sourceEl.style.backgroundColor = lead.source_color || '#6B7280';
+
+                document.getElementById('auditModal').classList.remove('hidden');
+            }
+        } catch (err) { window.notify.error("Failed to load intelligence"); }
+    }
+
+    async function confirmLead(id) {
+        try {
+            const res = await fetch(`/admin/leads/${id}`, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+            const data = await res.json();
+            if(data.success) {
+                const lead = data.lead;
+                const details = data.details;
+                
+                document.getElementById('schedLeadId').value = lead.id;
+                document.getElementById('schedCarTitle').innerText = (details.year || '') + ' ' + (details.make || '') + ' ' + (details.model || '');
+                document.getElementById('schedMileage').innerText = (details.mileage || '0') + ' KM';
+                document.getElementById('schedCondition').innerText = (details.condition || 'Used');
+                document.getElementById('schedClientName').innerText = details.name || 'Client Intelligence';
+                document.getElementById('schedClientPhone').innerText = details.phone || 'Phone Trace';
+                
+                document.getElementById('sched_date').value = details.inspection_date || '';
+                document.getElementById('sched_time').value = details.inspection_time || '';
+                
+                // Fix #4: Auto-fill location from lead
+                const locInput = document.querySelector('#scheduleForm input[name="location"]');
+                if (locInput) locInput.value = details.location || details.home_address || '';
+
+                document.getElementById('schedulingModal').classList.remove('hidden');
+                if(window.initBazarPickers) window.initBazarPickers(document.getElementById('schedulingModal'));
+            }
+        } catch (err) { window.notify.error("Access denied"); }
+    }
+
+    async function deleteLead(id) {
+        const result = await Swal.fire({
+            title: 'Delete this lead?',
+            text: "Lead #" + id + " will be permanently removed.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ff4605',
+            cancelButtonColor: '#1e293b',
+            confirmButtonText: 'Yes, Delete'
+        });
+
+        if (result.isConfirmed) {
+            try {
+                const res = await fetch(`/admin/leads/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'X-Requested-With': 'XMLHttpRequest', 'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>' }
+                });
+                const data = await res.json();
+                if(data.success) { window.notify.success(data.message || 'Lead deleted'); syncMatrix(); }
+            } catch (err) { window.notify.error("Failed to delete lead"); }
+        }
+    }
+
+    // Modal Status Update
+    document.getElementById('modalStatusForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const id = document.getElementById('auditLeadIdHidden').value;
+        const btn = this.querySelector('button[type="submit"]'); btn.disabled = true;
+
+        try {
+            const res = await fetch(`/admin/leads/${id}`, {
+                method: 'POST',
+                headers: { 'X-Requested-With': 'XMLHttpRequest', 'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>' },
+                body: new FormData(this)
+            });
+            const data = await res.json();
+            if(data.success) {
+                closeAuditModal();
+                syncMatrix();
+                window.notify.success("Updated successfully");
+            }
+        } catch (err) { window.notify.error("Registry Re-calibration Failed"); }
+        finally { btn.disabled = false; }
+    });
+
+    document.getElementById('scheduleForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const id = document.getElementById('schedLeadId').value;
+        const btn = this.querySelector('button[type="submit"]'); btn.disabled = true;
+        const payload = {
+            inspection_date: document.getElementById('sched_date').value,
+            inspection_time: document.getElementById('sched_time').value,
+            inspector_id: this.inspector_id.value,
+            location: this.location.value
+        };
+
+        try {
+            const res = await fetch(`/admin/leads/${id}/confirm`, {
+                method: 'POST',
+                headers: { 'X-Requested-With': 'XMLHttpRequest', 'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>', 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+            if(data.success) {
+                document.getElementById('schedulingModal').classList.add('hidden');
+                window.notify.success(data.message);
+                
+                // Fix #6: Just sync matrix, no redirect
+                syncMatrix();
+            }
+        } catch (err) { window.notify.error("Failed to save schedule"); }
+        finally { btn.disabled = false; }
+    });
+
+    function closeSchedulingModal() { document.getElementById('schedulingModal').classList.add('hidden'); }
+
+    // WhatsApp Modal
+    function openWhatsAppModal(customerName, phone, vehicle) {
+        const modal = document.getElementById('whatsappModal');
+        const customerInfo = document.getElementById('customerInfo');
+        const messageTextarea = document.getElementById('whatsappMessage');
+        customerInfo.innerHTML = `<strong>${customerName}</strong> - ${phone} - ${vehicle}`;
+        const defaultMessage = `Hello ${customerName},\n\nI'm contacting you regarding your car inquiry for the ${vehicle}.\n\nCan I help you with anything specific?`;
+        messageTextarea.value = defaultMessage;
+        modal.classList.remove('hidden');
+        modal.dataset.phone = phone;
+        setTimeout(() => messageTextarea.focus(), 100);
+    }
+    
+    function closeWhatsAppModal() { document.getElementById('whatsappModal').classList.add('hidden'); }
+    
+    function sendWhatsAppMessage() {
+        const modal = document.getElementById('whatsappModal');
+        const message = document.getElementById('whatsappMessage').value;
+        const phone = modal.dataset.phone;
+        if (!phone || !message) return;
+        window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank');
+        closeWhatsAppModal();
+    }
+
+    // ── REAL-TIME: Listen for new leads ─────────────────────────────
+    // MOVED TO scripts section to ensure Pusher is loaded first
+</script>
+
+<style>
+    /* Professional Pagination Navigator (Leads Custom) */
+    .pagination { @apply flex items-center gap-1.5 mt-0 MB-0; }
+    .page-item .page-link { 
+        @apply w-10 h-10 rounded-md flex items-center justify-center border-none bg-white text-slate-400 font-medium text-[0.7rem] transition-all shadow-sm; 
+    }
+    .page-item.active .page-link { @apply bg-slate-800 text-white shadow-lg; }
+    .page-item .page-link:hover { @apply bg-[#ff6900] text-white; }
+</style>
+
+<?php $__env->startPush('scripts'); ?>
+<script src="https://unpkg.com/pusher-js@8.3.0/dist/web/pusher.min.js"></script>
+<script>
+    // Initialize Pusher
+    if (typeof window.pusher === 'undefined' && typeof Pusher !== 'undefined') {
+        window.pusher = new Pusher('<?php echo e(env('REVERB_APP_KEY', 'local')); ?>', {
+            wsHost: window.location.hostname,
+            wsPort: <?php echo e(env('REVERB_PORT', 8080)); ?>,
+            wssPort: <?php echo e(env('REVERB_PORT', 8080)); ?>,
+            forceTLS: <?php echo e(env('REVERB_SCHEME', 'http') === 'https' ? 'true' : 'false'); ?>,
+            enabledTransports: ['ws', 'wss'],
+            disableStats: true,
+            cluster: '',
+            authEndpoint: '/pusher/auth',
+            auth: {
+                headers: {
+                    'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>'
+                }
+            }
+        });
+    }
+    
+    // ── REAL-TIME: Listen for new leads ─────────────────────────────
+    console.log('[Debug] Pusher object inside push block:', typeof window.pusher);
+    
+    if (typeof window.pusher !== 'undefined') {
+        console.log('[Debug] Subscribing to leads.admin channel...');
+        const leadsChannel = window.pusher.subscribe('private-leads.admin');
+        
+        leadsChannel.bind('pusher:subscription_succeeded', () => {
+            console.log('[Debug] Successfully subscribed to leads.admin');
+        });
+        
+        leadsChannel.bind('pusher:subscription_error', (status) => {
+            console.error('[Debug] Failed to subscribe to leads.admin:', status);
+        });
+        
+        leadsChannel.bind('lead.created', (e) => {
+            console.log('[Real-time] New lead received:', e);
+            
+            // Play alert sound
+            if (typeof playAlertTone === 'function') {
+                console.log('[Debug] Playing alert tone');
+                playAlertTone();
+            } else {
+                console.warn('[Debug] playAlertTone function not found');
+            }
+            
+            // Show toast notification
+            if (typeof showToast === 'function') {
+                console.log('[Debug] Showing toast notification');
+                const titleText = e.title || 'Lead #' + (e.lead_id || '');
+                const messageText = e.message || 'Click to view';
+                showToast(
+                    '<strong style="font-size:0.7rem">🚗 New Lead: ' + titleText + '</strong><br>' +
+                    '<span style="font-size:0.65rem;opacity:0.75">' + messageText + '</span>',
+                    'success',
+                    8000
+                );
+            } else {
+                console.warn('[Debug] showToast function not found, using alert fallback');
+                // Fallback notification
+                if (e.title) {
+                    const notif = document.createElement('div');
+                    notif.className = 'fixed top-20 right-4 bg-emerald-500 text-white px-6 py-4 rounded-lg shadow-2xl z-[9999] animate-in slide-in-from-right';
+                    notif.innerHTML = '<strong>🚗 ' + e.title + '</strong><br><small>' + (e.message || '') + '</small>';
+                    document.body.appendChild(notif);
+                    setTimeout(() => notif.remove(), 8000);
+                }
+            }
+            
+            // Refresh the table immediately
+            if (typeof syncMatrix === 'function') {
+                console.log('[Debug] Refreshing table');
+                syncMatrix();
+            }
+            
+            // Update notification badge
+            const notifBadge = document.getElementById('notif-badge');
+            if (notifBadge && notifBadge.classList.contains('hidden')) {
+                notifBadge.classList.remove('hidden');
+                notifBadge.textContent = '!';
+            }
+        });
+    } else {
+        console.error('[Debug] Pusher not available - real-time notifications disabled');
+    }
+</script>
+<?php $__env->stopPush(); ?>
+
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('admin.layout', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH D:\auction_app\resources\views/admin/leads/index.blade.php ENDPATH**/ ?>

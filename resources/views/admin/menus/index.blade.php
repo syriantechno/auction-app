@@ -3,49 +3,35 @@
 @section('title', 'Navigation Architect')
 
 @section('content')
-<div class="pb-20 space-y-5">
-
-    {{-- ══════════════════════════
-         HEADER
-    ══════════════════════════ --}}
-    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-8 border-b border-slate-100">
-        <div class="flex items-center gap-5">
-            <div class="relative">
-                <div class="w-14 h-14 rounded-lg bg-[#1d293d] flex items-center justify-center shadow-xl transform rotate-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#ff6900" stroke-width="2.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="15" y2="18"/></svg>
-                </div>
-                <div class="absolute -bottom-1 -right-1 w-5 h-5 rounded-lg bg-violet-500 border-[3px] border-[#f8fafc] animate-pulse"></div>
-            </div>
-            <div>
-                <h1 class="text-4xl font-black text-[#031629] uppercase italic tracking-tighter leading-none">
-                    Navigation <span class="text-[#ff6900]">Architect</span>
-                </h1>
-                <p class="text-slate-400 font-bold text-[0.65rem] uppercase tracking-[0.2em] italic opacity-80 mt-2.5">
-                    Manage header & footer navigation menus
-                </p>
-            </div>
-        </div>
-
+<x-admin-page-standard 
+    icon="menu" 
+    title="Navigation" 
+    highlight="Architect" 
+    subtitle="Manage header & footer navigation menus"
+    dot="violet"
+>
+    <x-slot name="actions">
         <div class="flex items-center gap-3">
-            <div class="flex items-center gap-2 bg-white px-4 py-2.5 rounded-lg border border-slate-200 shadow-sm">
-                <span class="w-2 h-2 rounded-full bg-[#ff6900] animate-pulse flex-shrink-0"></span>
-                <span class="text-[0.58rem] font-black uppercase text-slate-400 tracking-widest">Active · {{ $menus->count() }} Menu Zones</span>
+            <div class="h-[52px] flex items-center gap-3 bg-white px-6 rounded-xl border-2 border-slate-100 shadow-sm transition-all hover:bg-slate-50">
+                <span class="w-2.5 h-2.5 rounded-full bg-[#ff6900] animate-pulse flex-shrink-0"></span>
+                <span class="text-[0.7rem] font-black uppercase text-slate-500 tracking-[0.2em]">Active · {{ $menus->count() }} Zones</span>
             </div>
             <a href="{{ route('admin.pages.index') }}"
-               class="px-5 py-2.5 bg-[#1d293d] text-white rounded-lg font-black text-[0.62rem] uppercase tracking-widest flex items-center gap-2 hover:bg-[#ff6900] transition-all shadow-md">
-                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+               class="h-[52px] px-8 bg-[#1d293d] hover:bg-[#ff6900] text-white rounded-xl font-black text-[0.7rem] uppercase tracking-[0.2em] transition-all duration-500 flex items-center gap-3 shadow-xl shadow-slate-900/10 group">
+                <i data-lucide="file-text" class="w-4 h-4 group-hover:scale-110 transition-transform duration-500"></i>
                 Page Builder
             </a>
         </div>
-    </div>
+    </x-slot>
 
-    {{-- Success Toast --}}
+
     @if(session('success'))
-    <div class="flex items-center gap-3 bg-white border border-emerald-200 text-emerald-700 px-5 py-3 rounded-lg text-[0.72rem] font-bold shadow-sm">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+    <div class="flex items-center gap-3 bg-white border border-emerald-200 text-emerald-700 px-5 py-3 rounded-lg text-[0.72rem] font-bold shadow-sm mb-6">
+        <i data-lucide="check-circle" class="w-4 h-4 text-emerald-500"></i>
         {{ session('success') }}
     </div>
     @endif
+
 
     {{-- ══════════════════════════
          MENU CARDS GRID
@@ -174,5 +160,5 @@
         </div>
     </div>
 
-</div>
+</x-admin-page-standard>
 @endsection

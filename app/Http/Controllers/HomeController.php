@@ -12,17 +12,25 @@ use App\Models\CMS\Page;
 use App\Models\SystemSetting;
 use App\Models\User;
 use App\Mail\LeadConfirmation;
-use App\Notifications\NewLeadReceived;
+use App\Events\LeadCreated;
 use App\Services\WhatsAppService;
+use App\Notifications\NewLeadReceived;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
 
 class HomeController extends Controller
 {
     public function index(Request $request)
+    {
+        return $this->buildHomeView($request, 'home');
+    }
+
+    private function buildHomeView(Request $request, string $view)
     {
         $page = Cache::remember('homepage.cms.page', now()->addMinutes(10), function () {
             return Page::query()
@@ -141,6 +149,7 @@ class HomeController extends Controller
                     ->select('make', 'model')
                     ->whereNotNull('make')
                     ->whereNotNull('model')
+                    ->distinct()
                     ->get()
                     ->groupBy(function (Car $car) {
                         return mb_strtolower(preg_replace('/[^a-z0-9]+/i', '', trim((string) $car->make)));
@@ -204,6 +213,7 @@ class HomeController extends Controller
                 ->select('make', 'model')
                 ->whereNotNull('make')
                 ->whereNotNull('model')
+                ->distinct()
                 ->get()
                 ->groupBy(function (Car $car) {
                     return mb_strtolower(preg_replace('/[^a-z0-9]+/i', '', trim((string) $car->make)));
@@ -247,51 +257,87 @@ class HomeController extends Controller
             'needs_work' => 'Needs Work / Salvage',
         ];
 
-        return view('home', compact(
+        $googleReviewBlock = $this->buildGoogleReviewsBlock();
+
+        $pageContent = $page?->content ?? [];
+        $leadArchitecture = [
+            'header'         => SystemSetting::get('lead_header_label', data_get($pageContent, 'lead_form.header', 'Ready to Sell?')),
+            'wizard_title'   => SystemSetting::get('lead_header_title', data_get($pageContent, 'lead_form.title', 'What would you like to sell?')),
+            'step1'          => SystemSetting::get('lead_wizard_w1', data_get($pageContent, 'lead_form.wizard_w1', 'Select')),
+            'step2'          => SystemSetting::get('lead_wizard_w2', data_get($pageContent, 'lead_form.wizard_w2', 'Customize')),
+            'step3'          => SystemSetting::get('lead_wizard_w3', data_get($pageContent, 'lead_form.wizard_w3', 'Submit')),
+            'featured_brand_names' => json_decode(SystemSetting::get('lead_form_brands'), true) 
+                                    ?: collect(data_get($pageContent, 'lead_form_brands', []))->pluck('name')->toArray(),
+            'circles_enabled' => SystemSetting::get('lead_circles_enabled', '1') === '1',
+        ];
+
+        // Resolve logos for featured brands
+        $leadArchitecture['featured_brands'] = collect($leadArchitecture['featured_brand_names'])->map(function($brandName) use ($catalogMakesWithLogos) {
+            $found = collect($catalogMakesWithLogos)->firstWhere('name', $brandName);
+            if ($found) return $found;
+            return [
+                'name' => $brandName,
+                'logo' => $this->brandLogoFor($brandName)
+            ];
+        })->all();
+
+        return view($view, compact(
             'featuredAuctions', 'stats', 'page', 'catalogMakes', 
             'catalogMakesWithLogos', 'firstRow', 'secondRow',
             'catalogModelsByMake', 'popularBrands', 'wizardStartStep',
-            'sellCarYears', 'sellCarConditions'
+            'sellCarYears', 'sellCarConditions', 'googleReviewBlock',
+            'leadArchitecture'
         ));
+    }
+
+    public function home2(Request $request)
+    {
+        return $this->buildHomeView($request, 'home2');
     }
 
     public function storeSellLead(Request $request)
     {
-        $validated = $request->validate([
-            'year' => ['required', 'integer', 'min:1950', 'max:' . ((int) date('Y') + 1)],
+        $isPlate = $request->input('lead_type') === 'sell_plate';
+
+        $rules = [
+            'year' => $isPlate ? ['required', 'string', 'max:50'] : ['required', 'integer', 'min:1950', 'max:' . ((int) date('Y') + 1)],
             'make' => ['required', 'string', 'max:100'],
             'model' => ['required', 'string', 'max:100'],
             'trim' => ['nullable', 'string', 'max:100'],
-            'mileage' => ['nullable', 'integer', 'min:0'],
-            'gcc' => ['nullable', 'string', 'max:50'],
-            'body' => ['nullable', 'string', 'max:50'],
-            'engine' => ['nullable', 'string', 'max:50'],
-            'paint' => ['nullable', 'string', 'max:50'],
-            'condition' => ['required', 'in:excellent,good,fair,needs_work'],
+            'mileage' => ['nullable', 'string', 'max:100'],
+            'gcc' => ['nullable', 'string', 'max:100'],
+            'body' => ['nullable', 'string', 'max:100'],
+            'engine' => ['nullable', 'string', 'max:100'],
+            'paint' => ['nullable', 'string', 'max:100'],
+            'condition' => $isPlate ? ['nullable', 'string'] : ['required', 'in:excellent,good,fair,needs_work'],
             'features' => ['nullable', 'string', 'max:1000'],
             'name' => ['required', 'string', 'max:120'],
             'email' => ['required', 'email', 'max:190'],
             'phone' => ['required', 'string', 'max:30'],
             'inspection_date'  => ['required', 'date'],
             'inspection_time'  => ['required', 'string'],
-            'inspection_type'  => ['nullable', 'in:branch,home'],
+            'inspection_type'  => ['nullable', 'string'],
             'home_address'     => ['nullable', 'string', 'max:500'],
-        ]);
+            'lead_type'        => ['nullable', 'string'],
+        ];
+
+        $validated = $request->validate($rules);
 
         $lead = Lead::create([
             'user_id' => $request->user()?->id,
             'car_details' => [
                 'source' => 'home_sell_wizard',
-                'year' => (int) $validated['year'],
+                'lead_type' => $validated['lead_type'] ?? 'sell_car',
+                'year' => $validated['year'],
                 'make' => $validated['make'],
                 'model' => $validated['model'],
                 'trim' => $validated['trim'] ?? null,
-                'mileage' => isset($validated['mileage']) ? (int) $validated['mileage'] : null,
+                'mileage' => $validated['mileage'] ?? null,
                 'gcc' => $validated['gcc'] ?? null,
                 'body' => $validated['body'] ?? null,
                 'engine' => $validated['engine'] ?? null,
                 'paint' => $validated['paint'] ?? null,
-                'condition' => $validated['condition'],
+                'condition' => $validated['condition'] ?? 'good',
                 'features' => $validated['features'] ?? null,
                 'inspection_date'  => $validated['inspection_date'] ?? null,
                 'inspection_time'  => $validated['inspection_time'] ?? null,
@@ -302,8 +348,10 @@ class HomeController extends Controller
                 'phone'            => $validated['phone'],
             ],
             'status' => 'new',
+            'source' => session('lead_source', 'direct'),
             'notes' => sprintf(
-                'Sell lead: %s %s %s. Inspection scheduled for %s at %s',
+                '%s: %s %s %s. Inspection: %s at %s',
+                ($validated['lead_type'] ?? 'sell_car') === 'sell_plate' ? 'Plate Lead' : 'Car Lead',
                 $validated['year'],
                 $validated['make'],
                 $validated['model'],
@@ -311,6 +359,9 @@ class HomeController extends Controller
                 $validated['inspection_time'] ?? 'N/A'
             ),
         ]);
+
+        // ── Broadcast to admins in real-time ───────────────────
+        broadcast(new LeadCreated($lead));
 
         // ── Notify all admins (Safe Capture) ───────────────────
         try {
@@ -353,7 +404,7 @@ class HomeController extends Controller
                     '{year}'  => data_get($lead->car_details, 'year', ''),
                     '{date}'  => data_get($lead->car_details, 'inspection_date', 'TBD'),
                     '{time}'  => data_get($lead->car_details, 'inspection_time', 'TBD'),
-                    '{ref}'   => str_pad($lead->id, 6, '0', STR_PAD_LEFT),
+                    '{ref}'   => str_pad((string) $lead->id, 6, '0', STR_PAD_LEFT),
                 ]);
 
                 app(WhatsAppService::class)->send($leadPhone, $message);
@@ -370,6 +421,101 @@ class HomeController extends Controller
         }
 
         return back()->with('lead_submitted', true);
+    }
+
+    private function buildGoogleReviewsBlock(): array
+    {
+        $enabled = SystemSetting::get('google_reviews_enabled', '0') === '1';
+
+        $config = [
+            'enabled' => $enabled,
+            'title' => SystemSetting::get('google_reviews_title', 'Loved by real buyers'),
+            'subtitle' => SystemSetting::get('google_reviews_subtitle', 'Straight from Google Reviews'),
+            'badge' => SystemSetting::get('google_reviews_badge', '4.9 / 5 • Google Reviews'),
+            'place_id' => SystemSetting::get('google_reviews_place_id'),
+            'api_key' => SystemSetting::get('google_reviews_api_key'),
+            'manual_reviews' => json_decode(SystemSetting::get('google_reviews_manual_list', '[]'), true) ?: [],
+        ];
+
+        if (!$enabled) {
+            $config['reviews'] = [];
+            return $config;
+        }
+
+        $remoteReviews = $this->fetchGoogleReviews($config['place_id'], $config['api_key']);
+        $reviews = !empty($remoteReviews) ? $remoteReviews : $config['manual_reviews'];
+        $config['reviews'] = collect($reviews)
+            ->map(function ($review) {
+                $text = trim((string) data_get($review, 'text', ''));
+                $timestamp = (int) data_get($review, 'timestamp', data_get($review, 'time', 0));
+                return [
+                    'author' => data_get($review, 'author', data_get($review, 'author_name', 'Google User')),
+                    'rating' => (int) data_get($review, 'rating', 5),
+                    'text' => Str::limit($text, 420),
+                    'time' => data_get($review, 'relative_time_description') ?? data_get($review, 'time'),
+                    'profile_url' => data_get($review, 'profile_url') ?? data_get($review, 'author_url'),
+                    'photo_url' => data_get($review, 'photo_url') ?? data_get($review, 'profile_photo_url'),
+                    'timestamp' => $timestamp,
+                ];
+            })
+            ->filter(fn ($review) => filled($review['author']) && filled($review['text']) && (int) data_get($review, 'rating', 0) === 5)
+            ->sortByDesc(fn ($review) => (int) data_get($review, 'timestamp', 0))
+            ->take(8)
+            ->values()
+            ->all();
+
+        return $config;
+    }
+
+    private function fetchGoogleReviews(?string $placeId, ?string $apiKey): array
+    {
+        if (blank($placeId) || blank($apiKey)) {
+            return [];
+        }
+
+        $cacheKey = 'homepage.google_reviews.' . md5($placeId . $apiKey);
+
+        return Cache::remember($cacheKey, now()->addHours(3), function () use ($placeId, $apiKey) {
+            try {
+                $response = Http::timeout(5)->get('https://maps.googleapis.com/maps/api/place/details/json', [
+                    'place_id' => $placeId,
+                    'fields' => 'rating,reviews,user_ratings_total,name,reviews.profile_photo_url',
+                    'reviews_sort' => 'newest',
+                    'key' => $apiKey,
+                ]);
+
+                if (!$response->ok()) {
+                    Log::warning('[GoogleReviews] HTTP error', ['status' => $response->status()]);
+                    return [];
+                }
+
+                $payload = $response->json();
+                $status = data_get($payload, 'status');
+                if ($status !== 'OK') {
+                    Log::warning('[GoogleReviews] API status not OK', ['status' => $status]);
+                    return [];
+                }
+
+                return collect(data_get($payload, 'result.reviews', []))
+                    ->map(function ($review) {
+                        return [
+                            'author' => data_get($review, 'author_name', 'Google User'),
+                            'rating' => (int) data_get($review, 'rating', 5),
+                            'text' => data_get($review, 'text', ''),
+                            'relative_time_description' => data_get($review, 'relative_time_description'),
+                            'author_url' => data_get($review, 'author_url'),
+                            'profile_photo_url' => data_get($review, 'profile_photo_url'),
+                            'timestamp' => data_get($review, 'time'),
+                        ];
+                    })
+                    ->take(6)
+                    ->values()
+                    ->all();
+            } catch (\Throwable $e) {
+                Log::warning('[GoogleReviews] fetch failed: ' . $e->getMessage());
+                return [];
+            }
+        });
     }
 
     private function brandLogoFor(string $make): string

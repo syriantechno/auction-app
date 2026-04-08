@@ -1,81 +1,28 @@
 @extends('admin.layout')
 
 @section('title', 'CMS Control Center')
+@section('page_title', 'CMS Control Center')
 
-@section('styles')
-<style>
-    .hero-textarea {
-        width: 100%;
-        min-height: 110px;
-        border-radius: 1rem;
-        border: 1px solid #e2e8f0;
-        padding: 14px 18px;
-        background: #fff;
-        font-family: 'JetBrains Mono', 'Plus Jakarta Sans', monospace;
-        font-size: 0.95rem;
-        resize: vertical;
-        white-space: pre-wrap;
-        line-height: 1.5;
-    }
-
-    .hero-textarea:focus {
-        outline: none;
-        border-color: #ff6900;
-        box-shadow: 0 0 0 3px rgba(255, 105, 0, 0.15);
-    }
-    
-    [x-cloak] { display: none !important; }
-</style>
-@endsection
 
 @section('content')
-<div class="px-1 space-y-8 pb-20" x-init="lucide.createIcons()" x-data="{ 
-    activeTab: 'navbar',
-    lfStep: 1,
-    navbarSticky: {{ data_get($page->content, 'navbar.sticky', true) ? 'true' : 'false' }},
-    navbarGlass: {{ data_get($page->content, 'navbar.glass', true) ? 'true' : 'false' }},
-    navbarBg: '{{ data_get($page->content, 'navbar.bg_color', '#ffffff') }}',
-    navbarText: '{{ data_get($page->content, 'navbar.text_color', '#1d293d') }}',
-    isSaving: false,
+<x-admin-page-standard 
+    icon="layout" 
+    title="CMS" 
+    highlight="Control Center" 
+    subtitle="Homepage Content Management System"
+>
+    <x-slot name="actions">
+        <a href="/" target="_blank" class="flex items-center gap-2 px-6 py-3 bg-white hover:bg-slate-50 text-slate-500 hover:text-slate-900 rounded-lg border border-slate-200 text-[0.65rem] font-bold uppercase tracking-widest transition-all shadow-sm">
+            <i data-lucide="external-link" class="w-4 h-4"></i> Live Preview
+        </a>
+    </x-slot>
+    
+    @php
+        $_footerLinks = data_get($page->content, 'footer.quick_links', [['label'=>'Home','url'=>'/'],['label'=>'Browse Auctions','url'=>'/auctions'],['label'=>'How it Works','url'=>'/how-it-works'],['label'=>'Sell Your Car','url'=>'#']]);
+        $_footerPages = data_get($page->content, 'footer.pages', []);
+    @endphp
 
-    async saveForm(e) {
-        this.isSaving = true;
-        const form = e.target;
-        const formData = new FormData(form);
-        
-        try {
-            console.log('Synchronizing infrastructure...', formData);
-            const response = await fetch(form.action, {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'Accept': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content
-                }
-            });
-            
-            const data = await response.json();
-            console.log('Infrastructure response:', data);
-            
-            if (response.ok) {
-                window.showToast(data.message || 'Homepage infrastructure synchronized!', 'success');
-            } else {
-                let errorMsg = 'Synchronization Failed: ';
-                if (data.errors) {
-                    errorMsg += Object.values(data.errors).flat().join(', ');
-                } else {
-                    errorMsg += data.message || 'Unknown server error';
-                }
-                window.showToast(errorMsg, 'error');
-            }
-        } catch (error) {
-            window.showToast('Network error: Request timed out', 'error');
-        } finally {
-            this.isSaving = false;
-        }
-    }
-}">
+    <div x-data="window.__cmsPageData" x-init="lucide.createIcons()">
 
     @if($errors->any())
         <div class="bg-red-50 border-2 border-red-100 p-6 rounded-lg mb-8">
@@ -89,20 +36,9 @@
             </ul>
         </div>
     @endif
-    <!-- Header -->
-    <div class="px-1 group">
-        <div class="flex items-center justify-between">
-            <div>
-                <h1 class="text-2xl font-medium text-slate-900 tracking-tight">CMS Control Center</h1>
-                <p class="text-slate-500 text-[0.7rem] font-bold uppercase tracking-[0.2em] mt-1 italic">Homepage Content Management System</p>
-            </div>
-            <a href="/" target="_blank" class="flex items-center gap-2 px-6 py-3 bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-900 rounded-md text-[0.6rem] font-medium uppercase tracking-widest transition-all shadow-sm">
-                <i data-lucide="external-link" class="w-4 h-4"></i> Live Preview
-            </a>
-        </div>
-    </div>
 
-    <form @submit.prevent="saveForm" action="{{ route('admin.cms.home.update') }}" method="POST" enctype="multipart/form-data" class="w-full">
+
+    <form @submit.prevent="saveForm" x-ref="cmsForm" action="{{ route('admin.cms.home.update') }}" method="POST" enctype="multipart/form-data" class="w-full">
         @csrf
         
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
@@ -111,11 +47,11 @@
                 <div class="bg-white p-2 rounded-lg border border-slate-200 shadow-sm space-y-1.5 overflow-hidden">
                     <p class="text-[0.55rem] font-medium uppercase tracking-widest text-slate-400 mb-1 px-3 py-2">Content Sections</p>
                     
-                    <button type="button" @click="activeTab = 'navbar'" 
-                        :class="activeTab === 'navbar' ? 'bg-orange-50 border-orange-200 text-orange-600' : 'bg-transparent border-transparent text-slate-400 grayscale opacity-60 hover:bg-slate-50 hover:border-slate-100 hover:grayscale-0 hover:opacity-100'"
+                    <button type="button" @click="cmsTab = 'navbar'" 
+                        :class="cmsTab === 'navbar' ? 'bg-orange-50 border-orange-200 text-orange-600' : 'bg-transparent border-transparent text-slate-400 grayscale opacity-60 hover:bg-slate-50 hover:border-slate-100 hover:grayscale-0 hover:opacity-100'"
                         class="w-full flex items-center gap-2 p-2.5 rounded-lg border-2 transition-all duration-300 text-left active:scale-[0.98] group">
                         <div class="w-8 h-8 rounded-lg bg-white border border-slate-200 flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" :class="activeTab === 'navbar' ? 'text-[#ff6900]' : 'text-slate-400 group-hover:text-[#ff6900]'">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" :class="cmsTab === 'navbar' ? 'text-[#ff6900]' : 'text-slate-400 group-hover:text-[#ff6900]'">
                                 <rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/>
                             </svg>
                         </div>
@@ -125,11 +61,11 @@
                         </div>
                     </button>
 
-                    <button type="button" @click="activeTab = 'hero'" 
-                        :class="activeTab === 'hero' ? 'bg-orange-50 border-orange-200 text-[#ff6900]' : 'bg-transparent border-transparent text-slate-400 grayscale opacity-60 hover:bg-slate-50 hover:border-slate-100 hover:grayscale-0 hover:opacity-100'"
+                    <button type="button" @click="cmsTab = 'hero'" 
+                        :class="cmsTab === 'hero' ? 'bg-orange-50 border-orange-200 text-[#ff6900]' : 'bg-transparent border-transparent text-slate-400 grayscale opacity-60 hover:bg-slate-50 hover:border-slate-100 hover:grayscale-0 hover:opacity-100'"
                         class="w-full flex items-center gap-2 p-2.5 rounded-lg border-2 transition-all duration-300 text-left active:scale-[0.98] group">
                         <div class="w-8 h-8 rounded-lg bg-white border border-slate-200 flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" :class="activeTab === 'hero' ? 'text-[#ff6900]' : 'text-slate-400 group-hover:text-[#ff6900]'">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" :class="cmsTab === 'hero' ? 'text-[#ff6900]' : 'text-slate-400 group-hover:text-[#ff6900]'">
                                 <path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/>
                             </svg>
                         </div>
@@ -139,11 +75,11 @@
                         </div>
                     </button>
 
-                    <button type="button" @click="activeTab = 'lead_form'" 
-                        :class="activeTab === 'lead_form' ? 'bg-blue-50 border-blue-200 text-blue-600' : 'bg-transparent border-transparent text-slate-400 grayscale opacity-60 hover:bg-slate-50 hover:border-slate-100 hover:grayscale-0 hover:opacity-100'"
+                    <button type="button" @click="cmsTab = 'lead_form'" 
+                        :class="cmsTab === 'lead_form' ? 'bg-blue-50 border-blue-200 text-blue-600' : 'bg-transparent border-transparent text-slate-400 grayscale opacity-60 hover:bg-slate-50 hover:border-slate-100 hover:grayscale-0 hover:opacity-100'"
                         class="w-full flex items-center gap-2 p-2.5 rounded-lg border-2 transition-all duration-300 text-left active:scale-[0.98] group">
                         <div class="w-8 h-8 rounded-lg bg-white border border-slate-200 flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" :class="activeTab === 'lead_form' ? 'text-blue-500' : 'text-slate-400 group-hover:text-blue-500'">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" :class="cmsTab === 'lead_form' ? 'text-blue-500' : 'text-slate-400 group-hover:text-blue-500'">
                                 <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
                             </svg>
                         </div>
@@ -153,11 +89,11 @@
                         </div>
                     </button>
 
-                    <button type="button" @click="activeTab = 'trust_badges'" 
-                        :class="activeTab === 'trust_badges' ? 'bg-orange-50 border-orange-200 text-orange-600' : 'bg-transparent border-transparent text-slate-400 grayscale opacity-60 hover:bg-slate-50 hover:border-slate-100 hover:grayscale-0 hover:opacity-100'"
+                    <button type="button" @click="cmsTab = 'trust_badges'" 
+                        :class="cmsTab === 'trust_badges' ? 'bg-orange-50 border-orange-200 text-orange-600' : 'bg-transparent border-transparent text-slate-400 grayscale opacity-60 hover:bg-slate-50 hover:border-slate-100 hover:grayscale-0 hover:opacity-100'"
                         class="w-full flex items-center gap-2 p-2.5 rounded-lg border-2 transition-all duration-300 text-left active:scale-[0.98] group">
                         <div class="w-8 h-8 rounded-lg bg-white border border-slate-200 flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" :class="activeTab === 'trust_badges' ? 'text-orange-500' : 'text-slate-400 group-hover:text-orange-500'">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" :class="cmsTab === 'trust_badges' ? 'text-orange-500' : 'text-slate-400 group-hover:text-orange-500'">
                                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
                             </svg>
                         </div>
@@ -167,11 +103,11 @@
                         </div>
                     </button>
 
-                    <button type="button" @click="activeTab = 'brands'" 
-                        :class="activeTab === 'brands' ? 'bg-emerald-50 border-emerald-200 text-emerald-600' : 'bg-transparent border-transparent text-slate-400 grayscale opacity-60 hover:bg-slate-50 hover:border-slate-100 hover:grayscale-0 hover:opacity-100'"
+                    <button type="button" @click="cmsTab = 'brands'" 
+                        :class="cmsTab === 'brands' ? 'bg-emerald-50 border-emerald-200 text-emerald-600' : 'bg-transparent border-transparent text-slate-400 grayscale opacity-60 hover:bg-slate-50 hover:border-slate-100 hover:grayscale-0 hover:opacity-100'"
                         class="w-full flex items-center gap-2 p-2.5 rounded-lg border-2 transition-all duration-300 text-left active:scale-[0.98] group">
                         <div class="w-8 h-8 rounded-lg bg-white border border-slate-200 flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" :class="activeTab === 'brands' ? 'text-emerald-500' : 'text-slate-400 group-hover:text-emerald-500'">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" :class="cmsTab === 'brands' ? 'text-emerald-500' : 'text-slate-400 group-hover:text-emerald-500'">
                                 <path d="m15.477 12.89 1.515 8.526a.5.5 0 0 1-.81.47l-3.58-2.687a1 1 0 0 0-1.197 0l-3.586 2.686a.5.5 0 0 1-.81-.469l1.514-8.526"/><circle cx="12" cy="8" r="6"/>
                             </svg>
                         </div>
@@ -181,11 +117,11 @@
                         </div>
                     </button>
 
-                    <button type="button" @click="activeTab = 'location'" 
-                        :class="activeTab === 'location' ? 'bg-[#ff6900]/5 border-[#ff6900]/20 text-[#ff6900]' : 'bg-transparent border-transparent text-slate-400 grayscale opacity-60 hover:bg-slate-50 hover:border-slate-100 hover:grayscale-0 hover:opacity-100'"
+                    <button type="button" @click="cmsTab = 'location'" 
+                        :class="cmsTab === 'location' ? 'bg-[#ff6900]/5 border-[#ff6900]/20 text-[#ff6900]' : 'bg-transparent border-transparent text-slate-400 grayscale opacity-60 hover:bg-slate-50 hover:border-slate-100 hover:grayscale-0 hover:opacity-100'"
                         class="w-full flex items-center gap-2 p-2.5 rounded-lg border-2 transition-all duration-300 text-left active:scale-[0.98] group">
                         <div class="w-8 h-8 rounded-lg bg-white border border-slate-200 flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow">
-                            <i data-lucide="map-pin" :class="activeTab === 'location' ? 'text-[#ff6900]' : 'text-slate-400 group-hover:text-[#ff6900]'"></i>
+                            <i data-lucide="map-pin" :class="cmsTab === 'location' ? 'text-[#ff6900]' : 'text-slate-400 group-hover:text-[#ff6900]'"></i>
                         </div>
                         <div>
                             <div class="text-[0.65rem] font-medium uppercase text-slate-900">Location Hub</div>
@@ -193,11 +129,11 @@
                         </div>
                     </button>
 
-                    <button type="button" @click="activeTab = 'styles'" 
-                        :class="activeTab === 'styles' ? 'bg-slate-100 border-slate-300 text-slate-900' : 'bg-transparent border-transparent text-slate-400 grayscale opacity-60 hover:bg-slate-50 hover:border-slate-100 hover:grayscale-0 hover:opacity-100'"
+                    <button type="button" @click="cmsTab = 'styles'" 
+                        :class="cmsTab === 'styles' ? 'bg-slate-100 border-slate-300 text-slate-900' : 'bg-transparent border-transparent text-slate-400 grayscale opacity-60 hover:bg-slate-50 hover:border-slate-100 hover:grayscale-0 hover:opacity-100'"
                         class="w-full flex items-center gap-2 p-2.5 rounded-lg border-2 transition-all duration-300 text-left active:scale-[0.98] group">
                         <div class="w-8 h-8 rounded-lg bg-white border border-slate-200 flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" :class="activeTab === 'styles' ? 'text-slate-950' : 'text-slate-400 group-hover:text-slate-950'">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" :class="cmsTab === 'styles' ? 'text-slate-950' : 'text-slate-400 group-hover:text-slate-950'">
                                 <circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.688-1.688h1.937c3.084 0 5.625-2.541 5.625-5.625 0-4.82-4.559-8.75-10.125-8.75Z"/>
                             </svg>
                         </div>
@@ -207,11 +143,11 @@
                         </div>
                     </button>
 
-                    <button type="button" @click="activeTab = 'footer'"
-                        :class="activeTab === 'footer' ? 'bg-indigo-50 border-indigo-200 text-indigo-600' : 'bg-transparent border-transparent text-slate-400 grayscale opacity-60 hover:bg-slate-50 hover:border-slate-100 hover:grayscale-0 hover:opacity-100'"
+                    <button type="button" @click="cmsTab = 'footer'"
+                        :class="cmsTab === 'footer' ? 'bg-indigo-50 border-indigo-200 text-indigo-600' : 'bg-transparent border-transparent text-slate-400 grayscale opacity-60 hover:bg-slate-50 hover:border-slate-100 hover:grayscale-0 hover:opacity-100'"
                         class="w-full flex items-center gap-2 p-2.5 rounded-lg border-2 transition-all duration-300 text-left active:scale-[0.98] group">
                         <div class="w-8 h-8 rounded-lg bg-white border border-slate-200 flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" :class="activeTab === 'footer' ? 'text-indigo-500' : 'text-slate-400 group-hover:text-indigo-500'">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" :class="cmsTab === 'footer' ? 'text-indigo-500' : 'text-slate-400 group-hover:text-indigo-500'">
                                 <rect width="20" height="14" x="2" y="3" rx="2"/><path d="M8 21h8M12 17v4"/>
                             </svg>
                         </div>
@@ -221,11 +157,11 @@
                         </div>
                     </button>
 
-                    <button type="button" @click="activeTab = 'settings'"
-                        :class="activeTab === 'settings' ? 'bg-slate-800 text-white border-slate-800' : 'bg-transparent border-transparent text-slate-400 grayscale opacity-60 hover:bg-slate-50 hover:border-slate-100 hover:grayscale-0 hover:opacity-100'"
+                    <button type="button" @click="cmsTab = 'settings'"
+                        :class="cmsTab === 'settings' ? 'bg-slate-800 text-white border-slate-800' : 'bg-transparent border-transparent text-slate-400 grayscale opacity-60 hover:bg-slate-50 hover:border-slate-100 hover:grayscale-0 hover:opacity-100'"
                         class="w-full flex items-center gap-2 p-2.5 rounded-lg border-2 transition-all duration-300 text-left active:scale-[0.98] group">
                         <div class="w-8 h-8 rounded-lg bg-white border border-slate-200 flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" :class="activeTab === 'settings' ? 'text-slate-900' : 'text-slate-400 group-hover:text-slate-900'">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" :class="cmsTab === 'settings' ? 'text-slate-900' : 'text-slate-400 group-hover:text-slate-900'">
                                 <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/>
                             </svg>
                         </div>
@@ -247,7 +183,7 @@
                     
                     <button type="submit" 
                             :disabled="isSaving"
-                            class="w-full py-3 bg-[#1d293d] text-white rounded-lg text-[0.6rem] font-medium uppercase tracking-widest hover:bg-[#ff6900] active:scale-[0.98] transition-all shadow-lg shadow-slate-200 flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed">
+                            class="w-full py-3 bg-[#031629] text-white rounded-lg text-[0.6rem] font-medium uppercase tracking-widest hover:bg-[#ff6900] active:scale-[0.98] transition-all shadow-lg shadow-slate-200 flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed">
                         <template x-if="!isSaving">
                             <div class="flex items-center gap-1.5">
                                 <i data-lucide="save" class="w-3 h-3"></i> Sync Core Infrastructure
@@ -266,7 +202,7 @@
             <div class="lg:col-span-10 space-y-4">
                 
                 {{-- Move Global Identity to dedicated tab to avoid clutter --}}
-                <div x-show="activeTab === 'settings'" x-cloak x-transition>
+                <div x-show="cmsTab === 'settings'" x-cloak x-transition>
                     <div class="bg-white p-8 rounded-lg border border-slate-200 shadow-sm space-y-6">
                         <div class="flex items-center gap-4 mb-2">
                             <div class="w-12 h-12 bg-slate-900 rounded-lg flex items-center justify-center border border-slate-800 shadow-sm">
@@ -288,7 +224,7 @@
                 </div>
                 
                 <!-- ==================== NAVBAR TAB ==================== -->
-                <div x-show="activeTab === 'navbar'" x-cloak x-transition>
+                <div x-show="cmsTab === 'navbar'" x-cloak x-transition>
                     <div class="bg-white p-8 rounded-lg border border-slate-200 shadow-sm space-y-6">
                         <div class="flex items-center gap-4 mb-2">
                             <div class="w-12 h-12 bg-orange-50 rounded-lg flex items-center justify-center border border-orange-100 shadow-sm">
@@ -296,7 +232,7 @@
                             </div>
                             <div>
                                 <h3 class="text-sm font-medium uppercase tracking-widest text-slate-800">Navbar Architecture</h3>
-                                <p class="text-[0.6rem] text-slate-400 font-medium uppercase tracking-widest mt-1">Header Configuration & Global Navigation</p>
+                                <p class="text-[0.6rem] text-slate-400 font-medium uppercase tracking-widest mt-1">Header Configuration and Global Navigation</p>
                             </div>
                         </div>
 
@@ -327,6 +263,10 @@
                                             <input type="text" name="navbar_phone" value="{{ old('navbar_phone', data_get($page->content, 'navbar.phone', '+1 (234) 567 890')) }}" class="w-full bg-white border border-slate-200 rounded-md px-4 py-2.5 text-[0.8rem] font-bold text-slate-700 focus:border-[#ff6900] outline-none transition-all" placeholder="+1 (234) 567 890">
                                         </div>
                                         <div>
+                                            <label class="text-[0.55rem] font-medium uppercase tracking-widest text-slate-500 mb-2 block">WhatsApp Number</label>
+                                            <input type="text" name="navbar_whatsapp" value="{{ old('navbar_whatsapp', data_get($page->content, 'navbar.whatsapp', '')) }}" class="w-full bg-white border border-slate-200 rounded-md px-4 py-2.5 text-[0.8rem] font-bold text-slate-700 focus:border-[#ff6900] outline-none transition-all" placeholder="+971501234567">
+                                        </div>
+                                        <div>
                                             <label class="text-[0.55rem] font-medium uppercase tracking-widest text-slate-500 mb-2 block">Business Operations Time</label>
                                             <input type="text" name="navbar_hours" value="{{ old('navbar_hours', data_get($page->content, 'navbar.hours', 'Mon - Fri: 9:00 - 18:00')) }}" class="w-full bg-white border border-slate-200 rounded-md px-4 py-2.5 text-[0.8rem] font-bold text-slate-700 focus:border-[#ff6900] outline-none transition-all" placeholder="Mon - Fri: 9:00 - 18:00">
                                         </div>
@@ -342,10 +282,10 @@
                                         <label class="text-[0.55rem] font-medium uppercase tracking-widest text-slate-500 mb-3 block">Sticky Behavior</label>
                                         <div class="flex gap-2">
                                             <input type="hidden" name="navbar_sticky" :value="navbarSticky ? 1 : 0">
-                                            <button type="button" @click="navbarSticky = true" :class="navbarSticky ? 'bg-[#1d293d] text-white' : 'bg-white text-slate-400 border-slate-200'" class="flex-1 py-3 rounded-lg text-[0.6rem] font-medium uppercase tracking-widest border transition-all flex items-center justify-center gap-1.5">
+                                            <button type="button" @click="navbarSticky = true" :class="navbarSticky ? 'bg-[#031629] text-white' : 'bg-white text-slate-400 border-slate-200'" class="flex-1 py-3 rounded-lg text-[0.6rem] font-medium uppercase tracking-widest border transition-all flex items-center justify-center gap-1.5">
                                                 <i data-lucide="pin" class="w-3 h-3"></i> Always Sticky
                                             </button>
-                                            <button type="button" @click="navbarSticky = false" :class="!navbarSticky ? 'bg-[#1d293d] text-white' : 'bg-white text-slate-400 border-slate-200'" class="flex-1 py-3 rounded-lg text-[0.6rem] font-medium uppercase tracking-widest border transition-all flex items-center justify-center gap-1.5">
+                                            <button type="button" @click="navbarSticky = false" :class="!navbarSticky ? 'bg-[#031629] text-white' : 'bg-white text-slate-400 border-slate-200'" class="flex-1 py-3 rounded-lg text-[0.6rem] font-medium uppercase tracking-widest border transition-all flex items-center justify-center gap-1.5">
                                                 <i data-lucide="anchor" class="w-3 h-3"></i> Static Mode
                                             </button>
                                         </div>
@@ -357,7 +297,7 @@
                                             <button type="button" @click="navbarGlass = true" :class="navbarGlass ? 'bg-[#ff6900] text-white border-[#ff6900]' : 'bg-white text-slate-400 border-slate-200'" class="flex-1 py-3 rounded-lg text-[0.6rem] font-medium uppercase tracking-widest border transition-all flex items-center justify-center gap-1.5">
                                                 <i data-lucide="sparkles" class="w-3 h-3"></i> Enabled
                                             </button>
-                                            <button type="button" @click="navbarGlass = false" :class="!navbarGlass ? 'bg-[#1d293d] text-white' : 'bg-white text-slate-400 border-slate-200'" class="flex-1 py-3 rounded-lg text-[0.6rem] font-medium uppercase tracking-widest border transition-all flex items-center justify-center gap-1.5">
+                                            <button type="button" @click="navbarGlass = false" :class="!navbarGlass ? 'bg-[#031629] text-white' : 'bg-white text-slate-400 border-slate-200'" class="flex-1 py-3 rounded-lg text-[0.6rem] font-medium uppercase tracking-widest border transition-all flex items-center justify-center gap-1.5">
                                                 <i data-lucide="slash" class="w-3 h-3"></i> Disabled
                                             </button>
                                         </div>
@@ -369,7 +309,7 @@
                 </div>
 
                 <!-- ==================== HERO TAB ==================== -->
-                <div x-show="activeTab === 'hero'" x-cloak x-transition>
+                <div x-show="cmsTab === 'hero'" x-cloak x-transition>
                     <div class="bg-white p-8 rounded-lg border border-slate-200 shadow-sm space-y-6">
                         
                         {{-- Hero Content Hub --}}
@@ -380,31 +320,46 @@
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                                         <div class="space-y-2">
                                             <label class="text-[0.55rem] font-medium uppercase tracking-widest text-slate-500 ml-1">Top Announcement (Highlight)</label>
-                                            <input type="text" name="hero_announcement" value="{{ old('hero_announcement', data_get($page->content, 'hero.announcement')) }}" class="w-full bg-white border border-slate-200 rounded-md px-5 py-4 text-sm font-medium text-slate-800 focus:ring-4 focus:ring-orange-500/5 focus:border-[#ff6900] outline-none transition-all shadow-sm" placeholder="e.g. Luxury Fleet Available">
+                                            <textarea name="hero_announcement" id="hero_announcement_input" style="position:absolute;opacity:0;pointer-events:none;width:1px;height:1px;"></textarea>
+                                            <div id="rte_announcement" style="border:1.5px solid #e2e8f0;border-radius:6px;background:#fff;transition:border-color .2s;">
+                                                @include('admin.cms._rte_toolbar')
+                                                <div contenteditable="true" data-target="hero_announcement_input" data-initial="hero_announcement" style="min-height:60px;padding:10px 14px;outline:none;font-size:.85rem;line-height:1.6;color:#1e293b;"></div>
+                                            </div>
                                         </div>
                                         <div class="space-y-2">
                                             <label class="text-[0.55rem] font-medium uppercase tracking-widest text-slate-500 ml-1">Headline Blueprint</label>
-                                            <input type="text" name="hero_title" value="{{ old('hero_title', data_get($page->content, 'hero.title')) }}" class="w-full bg-white border border-slate-200 rounded-md px-5 py-4 text-sm font-bold text-slate-800 focus:ring-4 focus:ring-orange-500/5 focus:border-[#ff6900] outline-none transition-all shadow-sm" placeholder="Main Hero Headline">
+                                            <textarea name="hero_title" id="hero_title_input" style="position:absolute;opacity:0;pointer-events:none;width:1px;height:1px;"></textarea>
+                                            <div id="rte_title" style="border:1.5px solid #e2e8f0;border-radius:6px;background:#fff;transition:border-color .2s;">
+                                                @include('admin.cms._rte_toolbar')
+                                                <div contenteditable="true" data-target="hero_title_input" data-initial="hero_title" style="min-height:60px;padding:10px 14px;outline:none;font-size:.85rem;line-height:1.6;color:#1e293b;"></div>
+                                            </div>
                                         </div>
                                     </div>
+
+                                    {{-- Subtitle --}}
                                     <div class="space-y-2">
                                         <label class="text-[0.55rem] font-medium uppercase tracking-widest text-slate-500 ml-1">Atmospheric Subtitle</label>
-                                        <textarea name="hero_subtitle" rows="3" class="w-full bg-white border border-slate-200 rounded-md px-5 py-4 text-sm font-medium text-slate-800 focus:ring-4 focus:ring-orange-500/5 focus:border-[#ff6900] outline-none transition-all shadow-sm" placeholder="Detailed mission statement or call to action text...">{{ old('hero_subtitle', data_get($page->content, 'hero.subtitle')) }}</textarea>
+                                        <textarea name="hero_subtitle" id="hero_subtitle_input" style="position:absolute;opacity:0;pointer-events:none;width:1px;height:1px;"></textarea>
+                                        <div id="rte_subtitle" style="border:1.5px solid #e2e8f0;border-radius:6px;background:#fff;transition:border-color .2s;">
+                                            @include('admin.cms._rte_toolbar')
+                                            <div contenteditable="true" data-target="hero_subtitle_input" data-initial="hero_subtitle" style="min-height:120px;max-height:400px;overflow-y:auto;padding:10px 14px;outline:none;font-size:.85rem;line-height:1.6;color:#1e293b;"></div>
+                                        </div>
                                     </div>
-                                    
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4">
-                                        <div class="space-y-4">
+
+                                    {{-- CTA Buttons --}}
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+                                        <div class="space-y-2">
                                             <label class="text-[0.55rem] font-medium uppercase tracking-widest text-[#ff6900] ml-1 flex items-center gap-2">
-                                                <i data-lucide="play-circle" class="w-3 h-3"></i> Primary Interaction
+                                                <i data-lucide="play-circle" class="w-3 h-3"></i> Primary CTA
                                             </label>
                                             <div class="flex gap-2">
                                                 <input type="text" name="primary_cta_label" value="{{ old('primary_cta_label', data_get($page->content, 'hero.primary_cta_label')) }}" class="flex-1 bg-white border border-slate-200 rounded-md px-4 py-3 text-[0.75rem] font-medium" placeholder="Label">
                                                 <input type="text" name="primary_cta_url" value="{{ old('primary_cta_url', data_get($page->content, 'hero.primary_cta_url')) }}" class="flex-1 bg-white border border-slate-200 rounded-md px-4 py-3 text-[0.75rem] font-medium" placeholder="URL">
                                             </div>
                                         </div>
-                                        <div class="space-y-4">
+                                        <div class="space-y-2">
                                             <label class="text-[0.55rem] font-medium uppercase tracking-widest text-slate-400 ml-1 flex items-center gap-2">
-                                                <i data-lucide="info" class="w-3 h-3"></i> Secondary Interaction
+                                                <i data-lucide="info" class="w-3 h-3"></i> Secondary CTA
                                             </label>
                                             <div class="flex gap-2">
                                                 <input type="text" name="secondary_cta_label" value="{{ old('secondary_cta_label', data_get($page->content, 'hero.secondary_cta_label')) }}" class="flex-1 bg-white border border-slate-200 rounded-md px-4 py-3 text-[0.75rem] font-medium" placeholder="Label">
@@ -417,26 +372,38 @@
                         </div>
 
                         <div class="space-y-6">
-                            <div class="grid grid-cols-2 gap-4">
+                            <div class="grid grid-cols-3 gap-4">
                                 <div>
                                     <label class="text-[0.62rem] font-medium uppercase tracking-[0.2em] text-slate-400 mb-2 block">Vehicle Scale</label>
                                     <input type="hidden" name="hero_car_scale" id="hero_car_scale" value="{{ old('hero_car_scale', data_get($page->content, 'hero.car_scale', 1)) }}">
                                     <div class="flex gap-1.5" id="hero-scale-choices">
                                         @foreach([1, 1.25, 1.5, 1.8] as $scale)
-                                            <button type="button" data-scale="{{ $scale }}" class="hero-scale-btn flex-1 py-1.5 rounded-lg text-[0.6rem] font-medium border transition-all flex items-center justify-center gap-1 {{ (string) data_get($page->content, 'hero.car_scale', 1) === (string) $scale ? 'bg-[#1d293d] text-white border-[#1d293d]' : 'bg-slate-50 border-slate-100 text-slate-600' }}">
+                                            <button type="button" data-scale="{{ $scale }}" class="hero-scale-btn flex-1 py-1.5 rounded-lg text-[0.6rem] font-medium border transition-all flex items-center justify-center gap-1 {{ (string) data_get($page->content, 'hero.car_scale', 1) === (string) $scale ? 'bg-[#031629] text-white border-[#031629]' : 'bg-slate-50 border-slate-100 text-slate-600' }}">
                                                 <i data-lucide="maximize" class="w-2.5 h-2.5"></i> x{{ $scale }}
                                             </button>
                                         @endforeach
                                     </div>
                                 </div>
                                 <div>
+                                    <label class="text-[0.62rem] font-medium uppercase tracking-[0.2em] text-slate-400 mb-2 block">Car Mirror</label>
+                                    <input type="hidden" name="hero_car_mirror" id="hero_car_mirror" value="{{ old('hero_car_mirror', data_get($page->content, 'hero.car_mirror', 0)) }}">
+                                    <div class="flex gap-1.5">
+                                        <button type="button" data-mirror="0" class="hero-mirror-btn flex-1 py-1.5 rounded-lg text-[0.6rem] font-medium border transition-all flex items-center justify-center gap-1 {{ !data_get($page->content, 'hero.car_mirror', 0) ? 'bg-[#031629] text-white border-[#031629]' : 'bg-slate-50 border-slate-100 text-slate-600' }}">
+                                            <i data-lucide="image" class="w-2.5 h-2.5"></i> Normal
+                                        </button>
+                                        <button type="button" data-mirror="1" class="hero-mirror-btn flex-1 py-1.5 rounded-lg text-[0.6rem] font-medium border transition-all flex items-center justify-center gap-1 {{ data_get($page->content, 'hero.car_mirror', 0) ? 'bg-[#031629] text-white border-[#031629]' : 'bg-slate-50 border-slate-100 text-slate-600' }}">
+                                            <i data-lucide="flip-horizontal" class="w-2.5 h-2.5"></i> Mirror
+                                        </button>
+                                    </div>
+                                </div>
+                                <div>
                                     <label class="text-[0.62rem] font-medium uppercase tracking-[0.2em] text-slate-400 mb-2 block">Overlay Blend</label>
                                     <input type="hidden" name="hero_background_overlay_enabled" id="hero_background_overlay_enabled" value="{{ old('hero_background_overlay_enabled', data_get($page->content, 'hero.background_overlay_enabled', true) ? 1 : 0) }}">
                                     <div class="flex gap-1.5">
-                                        <button type="button" data-overlay="1" class="hero-overlay-btn flex-1 py-1.5 rounded-lg text-[0.6rem] font-medium border transition-all flex items-center justify-center gap-1 {{ data_get($page->content, 'hero.background_overlay_enabled', true) ? 'bg-[#1d293d] text-white border-[#1d293d]' : 'bg-slate-50 border-slate-100 text-slate-600' }}">
+                                        <button type="button" data-overlay="1" class="hero-overlay-btn flex-1 py-1.5 rounded-lg text-[0.6rem] font-medium border transition-all flex items-center justify-center gap-1 {{ data_get($page->content, 'hero.background_overlay_enabled', true) ? 'bg-[#031629] text-white border-[#031629]' : 'bg-slate-50 border-slate-100 text-slate-600' }}">
                                             <i data-lucide="eye" class="w-2.5 h-2.5"></i> On
                                         </button>
-                                        <button type="button" data-overlay="0" class="hero-overlay-btn flex-1 py-1.5 rounded-lg text-[0.6rem] font-medium border transition-all flex items-center justify-center gap-1 {{ !data_get($page->content, 'hero.background_overlay_enabled', true) ? 'bg-[#1d293d] text-white border-[#1d293d]' : 'bg-slate-50 border-slate-100 text-slate-600' }}">
+                                        <button type="button" data-overlay="0" class="hero-overlay-btn flex-1 py-1.5 rounded-lg text-[0.6rem] font-medium border transition-all flex items-center justify-center gap-1 {{ !data_get($page->content, 'hero.background_overlay_enabled', true) ? 'bg-[#031629] text-white border-[#031629]' : 'bg-slate-50 border-slate-100 text-slate-600' }}">
                                             <i data-lucide="eye-off" class="w-2.5 h-2.5"></i> Off
                                         </button>
                                     </div>
@@ -448,13 +415,13 @@
                                     <label class="text-[0.62rem] font-medium uppercase tracking-[0.2em] text-slate-400 mb-3 block">Showroom Environment</label>
                                     <input type="hidden" name="hero_background_mode" id="hero_background_mode" value="{{ old('hero_background_mode', data_get($page->content, 'hero.background_mode', 'image')) }}">
                                     <div class="flex gap-2 mb-2">
-                                        <button type="button" data-mode="solid" class="hero-mode-btn flex-1 py-1.5 rounded-lg text-[0.6rem] font-medium border transition-all flex items-center justify-center gap-1 {{ data_get($page->content, 'hero.background_mode', 'image') === 'solid' ? 'bg-[#1d293d] text-white' : 'bg-white border-slate-200 text-slate-500' }}">
+                                        <button type="button" data-mode="solid" class="hero-mode-btn flex-1 py-1.5 rounded-lg text-[0.6rem] font-medium border transition-all flex items-center justify-center gap-1 {{ data_get($page->content, 'hero.background_mode', 'image') === 'solid' ? 'bg-[#031629] text-white' : 'bg-white border-slate-200 text-slate-500' }}">
                                             <i data-lucide="square" class="w-3 h-3"></i> Solid
                                         </button>
-                                        <button type="button" data-mode="gradient" class="hero-mode-btn flex-1 py-1.5 rounded-lg text-[0.6rem] font-medium border transition-all flex items-center justify-center gap-1 {{ data_get($page->content, 'hero.background_mode', 'image') === 'gradient' ? 'bg-[#1d293d] text-white' : 'bg-white border-slate-200 text-slate-500' }}">
+                                        <button type="button" data-mode="gradient" class="hero-mode-btn flex-1 py-1.5 rounded-lg text-[0.6rem] font-medium border transition-all flex items-center justify-center gap-1 {{ data_get($page->content, 'hero.background_mode', 'image') === 'gradient' ? 'bg-[#031629] text-white' : 'bg-white border-slate-200 text-slate-500' }}">
                                             <i data-lucide="layers" class="w-3 h-3"></i> Gradient
                                         </button>
-                                        <button type="button" data-mode="image" class="hero-mode-btn flex-1 py-1.5 rounded-lg text-[0.6rem] font-medium border transition-all flex items-center justify-center gap-1 {{ data_get($page->content, 'hero.background_mode', 'image') === 'image' ? 'bg-[#1d293d] text-white' : 'bg-white border-slate-200 text-slate-500' }}">
+                                        <button type="button" data-mode="image" class="hero-mode-btn flex-1 py-1.5 rounded-lg text-[0.6rem] font-medium border transition-all flex items-center justify-center gap-1 {{ data_get($page->content, 'hero.background_mode', 'image') === 'image' ? 'bg-[#031629] text-white' : 'bg-white border-slate-200 text-slate-500' }}">
                                             <i data-lucide="image" class="w-3 h-3"></i> Image
                                         </button>
                                         <button type="button" data-mode="custom" class="hero-mode-btn flex-1 py-1.5 rounded-lg text-[0.6rem] font-medium border transition-all flex items-center justify-center gap-1 {{ data_get($page->content, 'hero.background_mode', 'image') === 'custom' ? 'bg-[#ff6900] text-white' : 'bg-white border-slate-200 text-slate-500' }}">
@@ -465,7 +432,7 @@
 
                                 <div id="custom-css-controls" class="{{ data_get($page->content, 'hero.background_mode', 'image') === 'custom' ? '' : 'hidden' }}">
                                     <label class="text-[0.55rem] font-medium uppercase tracking-widest text-[#ff6900] mb-2 block">Developer Lab (Raw CSS)</label>
-                                    <textarea name="hero_custom_css" id="hero_custom_css" rows="3" class="w-full bg-[#1d293d] text-orange-400 font-mono text-[0.65rem] p-3 rounded-md border border-orange-500/20 focus:border-orange-500 outline-none" placeholder="e.g. background: repeating-linear-gradient(...);">{{ old('hero_custom_css', data_get($page->content, 'hero.custom_css')) }}</textarea>
+                                    <textarea name="hero_custom_css" id="hero_custom_css" rows="3" class="w-full bg-[#031629] text-orange-400 font-mono text-[0.65rem] p-3 rounded-md border border-orange-500/20 focus:border-orange-500 outline-none" placeholder="e.g. background: repeating-linear-gradient(...);">{{ old('hero_custom_css', data_get($page->content, 'hero.custom_css')) }}</textarea>
                                 </div>
 
                                 <div id="image-asset-controls" class="{{ data_get($page->content, 'hero.background_mode', 'image') === 'image' ? '' : 'hidden' }}">
@@ -526,18 +493,19 @@
                                         </button>
                                     @endforeach
                                 </div>
-                                <input type="file" name="hero_image_upload" accept="image/*" class="w-full text-[0.6rem] font-medium text-slate-400 file:mr-3 file:rounded-lg file:border-0 file:bg-[#1d293d] file:px-3 file:py-1.5 file:text-[0.6rem] file:text-white file:font-medium file:uppercase">
+                                <input type="file" name="hero_image_upload" accept="image/*" class="w-full text-[0.6rem] font-medium text-slate-400 file:mr-3 file:rounded-lg file:border-0 file:bg-[#031629] file:px-3 file:py-1.5 file:text-[0.6rem] file:text-white file:font-medium file:uppercase">
                             </div>
                         </div>
 
                         {{-- Live Preview Anchor --}}
-                        <div class="rounded-lg border border-gray-100 bg-[#1d293d] p-5 shadow-xl relative overflow-hidden group">
+                        <div class="rounded-lg border border-gray-100 bg-[#031629] p-5 shadow-xl relative overflow-hidden group">
                             <div class="relative z-10 h-full flex flex-col">
                                 <div class="flex items-center justify-between mb-4">
                                     <h3 class="text-white font-medium text-[0.65rem] uppercase tracking-widest">Hero Live Preview</h3>
                                     <span id="hero-preview-mode-label" class="text-[0.55rem] font-medium uppercase tracking-[0.2em] text-white/40 italic">Elite Visual Engine</span>
                                 </div>
-                                <div id="hero-preview-panel" class="flex-1 rounded-md overflow-hidden border border-white/5 flex items-center justify-center min-h-[140px] transition-all duration-700" style="background: linear-gradient(rgba(14,16,23,.72), rgba(14,16,23,.72)), url('{{ data_get($page->content, 'hero.background_image', '/images/hero-bg.png') }}'); background-size: cover;">
+                                @php $heroBgImg = data_get($page->content, 'hero.background_image', '/images/hero-bg.png'); @endphp
+                                <div id="hero-preview-panel" class="flex-1 rounded-md overflow-hidden border border-white/5 flex items-center justify-center min-h-[140px] transition-all duration-700" style="background: linear-gradient(rgba(14,16,23,.72), rgba(14,16,23,.72)), url('{{ $heroBgImg }}'); background-size: cover;">
                                     <img src="{{ $page->hero_image ?: '/images/cars/mclaren.png' }}" id="hero-preview-image" class="max-w-[85%] max-h-[85%] object-contain transition-all duration-700">
                                 </div>
                             </div>
@@ -546,7 +514,7 @@
                     </div>
                 </div>
                                 <!-- ==================== LEAD FORM TAB ==================== -->
-                <div x-show="activeTab === 'lead_form'" x-cloak x-transition>
+                <div x-show="cmsTab === 'lead_form'" x-cloak x-transition>
                     <div class="bg-white p-8 rounded-lg border border-slate-200 shadow-sm space-y-6">
                         <div class="flex items-center gap-4 mb-2">
                             <div class="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center border border-blue-500 shadow-sm">
@@ -555,6 +523,67 @@
                             <div>
                                 <h3 class="text-sm font-medium uppercase tracking-widest text-slate-800">Lead Entry Architecture</h3>
                                 <p class="text-[0.6rem] text-slate-400 font-medium uppercase tracking-widest mt-1">Multi-Step Conversion Funnel Configuration</p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 gap-4">
+                            <div class="bg-blue-50/50 p-4 rounded-xl border border-blue-100 flex items-center justify-between">
+                                <div>
+                                    <h4 class="text-[0.65rem] font-black text-blue-800 uppercase tracking-widest flex items-center gap-2">
+                                        <i data-lucide="layout-template" class="w-3.5 h-3.5"></i> Hero Layout Architecture
+                                    </h4>
+                                    <p class="text-[0.55rem] text-blue-600/70 font-medium mt-1 uppercase tracking-wide">Toggle hero lead form visibility and define column width</p>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <div class="flex bg-white p-1 rounded-lg border border-slate-200 shadow-sm">
+                                        <input type="hidden" name="lead_form[show_hero_form]" :value="lfShowHero ? 1 : 0">
+                                        <button type="button" @click="lfShowHero = true" :class="lfShowHero ? 'bg-blue-600 text-white shadow-md' : 'text-slate-400 hover:text-slate-600'" class="px-4 py-1.5 rounded-md text-[0.55rem] font-black uppercase tracking-widest transition-all">Show Form</button>
+                                        <button type="button" @click="lfShowHero = false" :class="!lfShowHero ? 'bg-slate-800 text-white shadow-md' : 'text-slate-400 hover:text-slate-600'" class="px-4 py-1.5 rounded-md text-[0.55rem] font-black uppercase tracking-widest transition-all">Hide Form</button>
+                                    </div>
+                                    <div class="flex items-center gap-3 bg-white px-4 py-1.5 rounded-lg border border-slate-200 shadow-sm">
+                                        <div class="flex flex-col">
+                                            <span class="text-[0.45rem] font-black text-slate-400 uppercase tracking-widest mb-0.5">Col Width</span>
+                                            <div class="flex items-center gap-1">
+                                                <input type="number" name="lead_form[hero_form_width]" value="{{ old('lead_form.hero_form_width', data_get($page->content, 'lead_form.hero_form_width', 460)) }}" class="w-12 h-5 text-[0.75rem] font-black text-blue-600 border-none bg-transparent outline-none p-0 focus:ring-0" placeholder="460">
+                                                <span class="text-[0.55rem] font-bold text-slate-300 uppercase">px</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 gap-6">
+                            <div class="bg-slate-50/50 p-5 rounded-xl border border-slate-100 space-y-4">
+                                <h4 class="text-[0.65rem] font-black text-slate-700 uppercase tracking-widest flex items-center gap-2">
+                                    <i data-lucide="award" class="w-3.5 h-3.5"></i> Branding & Tab Identity
+                                </h4>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div class="space-y-3">
+                                        <div>
+                                            <label class="text-[0.5rem] font-black text-slate-400 uppercase tracking-[0.2em] mb-1.5 block">Header Small Label (e.g. Ready to sell?)</label>
+                                            <input type="text" name="lead_form[header_label]" value="{{ old('lead_form.header_label', data_get($page->content, 'lead_form.header_label', 'Ready to sell?')) }}" class="w-full bg-white border border-slate-200 rounded-md px-3 py-2 text-[0.7rem] font-black text-blue-600 outline-none focus:border-blue-500 shadow-sm transition-all" placeholder="Ready to sell?">
+                                        </div>
+                                        <div>
+                                            <label class="text-[0.5rem] font-black text-slate-400 uppercase tracking-[0.2em] mb-1.5 block">Header Big Title (HTML allowed)</label>
+                                            <input type="text" name="lead_form[header_title]" value="{{ old('lead_form.header_title', data_get($page->content, 'lead_form.header_title', 'What would you like to <span>sell?</span>')) }}" class="w-full bg-white border border-slate-200 rounded-md px-3 py-2 text-[0.7rem] font-black text-slate-700 outline-none focus:border-blue-500 shadow-sm transition-all" placeholder="What would you like to sell?">
+                                        </div>
+                                    </div>
+                                    <div class="space-y-3">
+                                        <div>
+                                            <label class="text-[0.5rem] font-black text-slate-400 uppercase tracking-[0.2em] mb-1.5 block">Car Tab Label</label>
+                                            <input type="text" name="lead_form[tab_car_label]" value="{{ old('lead_form.tab_car_label', data_get($page->content, 'lead_form.tab_car_label', 'My Car')) }}" class="w-full bg-white border border-slate-200 rounded-md px-3 py-2 text-[0.7rem] font-black text-slate-700 outline-none focus:border-blue-500 shadow-sm transition-all">
+                                        </div>
+                                        <div>
+                                            <label class="text-[0.5rem] font-black text-slate-400 uppercase tracking-[0.2em] mb-1.5 block">Plate Tab Label</label>
+                                            <input type="text" name="lead_form[tab_plate_label]" value="{{ old('lead_form.tab_plate_label', data_get($page->content, 'lead_form.tab_plate_label', 'Plate Number')) }}" class="w-full bg-white border border-slate-200 rounded-md px-3 py-2 text-[0.7rem] font-black text-slate-700 outline-none focus:border-blue-500 shadow-sm transition-all">
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="text-[0.5rem] font-black text-slate-400 uppercase tracking-[0.2em] mb-1.5 block">Max Brands in Dropdown</label>
+                                        <input type="number" name="lead_form[max_brands]" value="{{ old('lead_form.max_brands', data_get($page->content, 'lead_form.max_brands', 60)) }}" class="w-full bg-white border border-slate-200 rounded-md px-3 py-2 text-[0.7rem] font-black text-blue-600 outline-none focus:border-blue-500 shadow-sm transition-all" placeholder="60">
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -576,6 +605,19 @@
                                         <label class="text-[0.5rem] font-medium uppercase tracking-widest text-slate-500 mb-1 block">Step 3 Title (e.g. Submit)</label>
                                         <input type="text" name="lead_form[wizard_w3]" value="{{ old('lead_form.wizard_w3', data_get($page->content, 'lead_form.wizard_w3', 'Submit')) }}" class="w-full bg-white border border-slate-200 rounded-md px-3 py-2 text-[0.75rem] font-black text-slate-400 outline-none focus:border-blue-500 transition-all shadow-sm">
                                     </div>
+                                    <div class="col-span-3 border-t border-slate-100 pt-3 mt-1">
+                                        <label class="text-[0.5rem] font-black uppercase tracking-widest text-emerald-500 mb-2 block">Global Success Experience</label>
+                                        <div class="grid grid-cols-2 gap-4">
+                                            <div>
+                                                <label class="text-[0.5rem] font-medium uppercase tracking-widest text-slate-500 mb-1 block">Success Message (Toast)</label>
+                                                <input type="text" name="lead_form[success_message]" value="{{ old('lead_form.success_message', data_get($page->content, 'lead_form.success_message', 'Valuation request submitted successfully!')) }}" class="w-full bg-emerald-50 border border-emerald-100 rounded-md px-3 py-2 text-[0.65rem] font-bold text-emerald-700 outline-none">
+                                            </div>
+                                            <div>
+                                                <label class="text-[0.5rem] font-medium uppercase tracking-widest text-slate-500 mb-1 block">Button Final Label</label>
+                                                <input type="text" name="lead_form[final_btn_label]" value="{{ old('lead_form.final_btn_label', data_get($page->content, 'lead_form.final_btn_label', 'COMPLETE VALUATION')) }}" class="w-full bg-white border border-slate-200 rounded-md px-3 py-2 text-[0.65rem] font-bold text-slate-700 outline-none">
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -585,15 +627,44 @@
                             
                             {{-- Step Switcher Dots --}}
                             <div class="flex items-center gap-2 mb-4 bg-slate-50 p-1.5 rounded-lg border border-slate-100 w-fit">
-                                <template x-for="i in [1,2,3]">
+                                <template x-for="i in [1,2,3,'P']">
                                     <button type="button" @click="lfStep = i" 
                                         :class="lfStep === i ? 'bg-blue-600 text-white shadow-md' : 'bg-white text-slate-400 hover:text-slate-600'"
                                         class="px-4 py-1.5 rounded-md text-[0.6rem] font-black uppercase tracking-widest transition-all" 
-                                        x-text="'Step ' + i"></button>
+                                        x-text="i === 'P' ? 'Plate' : 'Step ' + i"></button>
                                 </template>
                             </div>
 
                             <div class="bg-slate-50 p-6 rounded-lg border border-slate-100 min-h-[400px]">
+                                {{-- PLATE FUNNEL CONTENT --}}
+                                <div x-show="lfStep === 'P'" class="space-y-6 animate-in fade-in slide-in-from-right duration-300">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                        <div class="space-y-4">
+                                            <h4 class="text-[0.65rem] font-black text-orange-600 uppercase tracking-widest border-b border-orange-100 pb-2">Plate Funnel: Step 1</h4>
+                                            <div class="grid grid-cols-2 gap-4">
+                                                <div>
+                                                    <label class="text-[0.5rem] font-medium uppercase tracking-widest text-slate-500 mb-1 block">Plate Code Label</label>
+                                                    <input type="text" name="lead_form[plate][code_label]" value="{{ old('lead_form.plate.code_label', data_get($page->content, 'lead_form.plate.code_label', 'Plate Code')) }}" class="w-full bg-white border border-slate-200 rounded-md px-3 py-2 text-[0.65rem] font-bold text-slate-700 outline-none">
+                                                </div>
+                                                <div>
+                                                    <label class="text-[0.5rem] font-medium uppercase tracking-widest text-slate-500 mb-1 block">Plate Number Label</label>
+                                                    <input type="text" name="lead_form[plate][number_label]" value="{{ old('lead_form.plate.number_label', data_get($page->content, 'lead_form.plate.number_label', 'Plate Number')) }}" class="w-full bg-white border border-slate-200 rounded-md px-3 py-2 text-[0.65rem] font-bold text-slate-700 outline-none">
+                                                </div>
+                                                <div class="col-span-2">
+                                                    <label class="text-[0.5rem] font-medium uppercase tracking-widest text-slate-500 mb-1 block">Plate Support subtitle</label>
+                                                    <input type="text" name="lead_form[plate][subtitle]" value="{{ old('lead_form.plate.subtitle', data_get($page->content, 'lead_form.plate.subtitle', 'Selected Plate Details')) }}" class="w-full bg-white border border-slate-200 rounded-md px-3 py-2 text-[0.65rem] font-medium text-slate-500 outline-none">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="space-y-4">
+                                            <h4 class="text-[0.65rem] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 pb-2">Plate Actions</h4>
+                                            <div>
+                                                <label class="text-[0.5rem] font-medium uppercase tracking-widest text-slate-500 mb-1 block">Plate Button Text</label>
+                                                <input type="text" name="lead_form[plate][button_label]" value="{{ old('lead_form.plate.button_label', data_get($page->content, 'lead_form.plate.button_label', 'CONTINUE TO CONTACT')) }}" class="w-full bg-[#ff6900] border-none rounded-md px-3 py-2 text-[0.65rem] font-black text-white outline-none">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                                 {{-- STEP 1 CONTENT --}}
                                 <div x-show="lfStep === 1" class="space-y-6 animate-in fade-in slide-in-from-left duration-300">
                                     <div class="grid grid-cols-1 gap-6">
@@ -657,9 +728,40 @@
                                                     <input type="text" name="lead_form[step2][mileage_label]" value="{{ old('lead_form.step2.mileage_label', data_get($page->content, 'lead_form.step2.mileage_label', 'Mileage (KM)')) }}" class="w-full bg-white border border-slate-200 rounded-md px-3 py-2 text-[0.65rem] font-bold text-slate-700 outline-none focus:border-blue-500">
                                                 </div>
                                             </div>
+
+                                            {{-- Technical Options Management --}}
+                                            <div class="space-y-4 pt-4 border-t border-blue-50">
+                                                <p class="text-[0.55rem] font-black uppercase tracking-widest text-blue-500">Technical Options Architecture</p>
+                                                <div class="grid grid-cols-2 gap-4">
+                                                    <div>
+                                                        <label class="text-[0.5rem] font-medium uppercase tracking-widest text-slate-400 mb-1 block">Regional Specs (One per line)</label>
+                                                        <textarea name="lead_form[step2][specs_options]" rows="4" class="w-full bg-white border border-slate-200 rounded-md px-3 py-2 text-[0.65rem] font-medium text-slate-600 focus:border-blue-500 outline-none resize-none">{{ old('lead_form.step2.specs_options', data_get($page->content, 'lead_form.step2.specs_options', "GCC Specs\nAmerican Specs\nJapanese Specs\nKorean Specs\nCanadian Specs\nOther / European\nI don't know")) }}</textarea>
+                                                    </div>
+                                                    <div>
+                                                        <label class="text-[0.5rem] font-medium uppercase tracking-widest text-slate-400 mb-1 block">Body Types (One per line)</label>
+                                                        <textarea name="lead_form[step2][body_options]" rows="4" class="w-full bg-white border border-slate-200 rounded-md px-3 py-2 text-[0.65rem] font-medium text-slate-600 focus:border-blue-500 outline-none resize-none">{{ old('lead_form.step2.body_options', data_get($page->content, 'lead_form.step2.body_options', "Sedan\nSUV\nCrossover\nCoupe\nConvertible\nHard top convertible\nSoft top convertible\nWagon\nHatchback\nVan\nPickup\nI don't know")) }}</textarea>
+                                                    </div>
+                                                    <div>
+                                                        <label class="text-[0.5rem] font-medium uppercase tracking-widest text-slate-400 mb-1 block">Engine Sizes (Comma separated)</label>
+                                                        <textarea name="lead_form[step2][engine_options]" rows="3" class="w-full bg-white border border-slate-200 rounded-md px-3 py-2 text-[0.65rem] font-medium text-slate-600 focus:border-blue-500 outline-none resize-none">{{ old('lead_form.step2.engine_options', data_get($page->content, 'lead_form.step2.engine_options', '1.0L, 1.2L, 1.4L, 1.6L, 1.8L, 2.0L, 2.2L, 2.4L, 2.5L, 3.0L, 3.5L, 3.8L, 4.0L, 4.4L, 4.8L, 5.0L, 5.5L, 6.0L, Other')) }}</textarea>
+                                                    </div>
+                                                    <div>
+                                                        <label class="text-[0.5rem] font-medium uppercase tracking-widest text-slate-400 mb-1 block">Mileage Options (One per line)</label>
+                                                        <textarea name="lead_form[step2][mileage_options]" rows="3" class="w-full bg-white border border-slate-200 rounded-md px-3 py-2 text-[0.65rem] font-medium text-slate-600 focus:border-blue-500 outline-none resize-none">{{ old('lead_form.step2.mileage_options', data_get($page->content, 'lead_form.step2.mileage_options', "Up to 5,000 KM\nUp to 10,000 KM\nUp to 20,000 KM\nUp to 40,000 KM\nUp to 60,000 KM\nUp to 100,000 KM\nUp to 150,000 KM\nUp to 200,000 KM\nMore than 250,000 KM")) }}</textarea>
+                                                    </div>
+                                                    <div>
+                                                        <label class="text-[0.5rem] font-medium uppercase tracking-widest text-slate-400 mb-1 block">Paint Condition (One per line)</label>
+                                                        <textarea name="lead_form[step2][paint_options]" rows="3" class="w-full bg-white border border-slate-200 rounded-md px-3 py-2 text-[0.65rem] font-medium text-slate-600 focus:border-blue-500 outline-none resize-none">{{ old('lead_form.step2.paint_options', data_get($page->content, 'lead_form.step2.paint_options', "Original Paint\n1-2 Panels Repaint\n3+ Panels Repaint\nMajor Accident Repaint\nTotal Repaint\nUnknown")) }}</textarea>
+                                                    </div>
+                                                    <div>
+                                                        <label class="text-[0.5rem] font-medium uppercase tracking-widest text-slate-400 mb-1 block">Trim Options (One per line)</label>
+                                                        <textarea name="lead_form[step2][trim_options]" rows="3" class="w-full bg-white border border-slate-200 rounded-md px-3 py-2 text-[0.65rem] font-medium text-slate-600 focus:border-blue-500 outline-none resize-none">{{ old('lead_form.step2.trim_options', data_get($page->content, 'lead_form.step2.trim_options', "Basic\nMid\nFull\nUnknown")) }}</textarea>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                         <div class="space-y-4">
-                                            <h4 class="text-[0.65rem] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 pb-2">Step 2: Condition & Actions</h4>
+                                            <h4 class="text-[0.65rem] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 pb-2">Step 2: Condition and Actions</h4>
                                             <div>
                                                 <label class="text-[0.5rem] font-medium uppercase tracking-widest text-slate-500 mb-1 block">Overall Condition Label</label>
                                                 <input type="text" name="lead_form[step2][condition_label]" value="{{ old('lead_form.step2.condition_label', data_get($page->content, 'lead_form.step2.condition_label', 'Overall Condition')) }}" class="w-full bg-white border border-slate-200 rounded-md px-3 py-2 text-[0.65rem] font-bold text-slate-700 outline-none focus:border-blue-500">
@@ -671,7 +773,7 @@
                                                 </div>
                                                 <div>
                                                     <label class="text-[0.5rem] font-medium uppercase tracking-widest text-slate-500 mb-1 block">Next Button</label>
-                                                    <input type="text" name="lead_form[step2][next_label]" value="{{ old('lead_form.step2.next_label', data_get($page->content, 'lead_form.step2.next_label', 'Next Stage')) }}" class="w-full bg-[#1d293d] border-none rounded-md px-3 py-2 text-[0.65rem] font-black text-white outline-none">
+                                                    <input type="text" name="lead_form[step2][next_label]" value="{{ old('lead_form.step2.next_label', data_get($page->content, 'lead_form.step2.next_label', 'Next Stage')) }}" class="w-full bg-[#031629] border-none rounded-md px-3 py-2 text-[0.65rem] font-black text-white outline-none">
                                                 </div>
                                             </div>
                                         </div>
@@ -682,7 +784,7 @@
                                 <div x-show="lfStep === 3" class="space-y-6 animate-in fade-in slide-in-from-right duration-300">
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                                         <div class="space-y-4">
-                                            <h4 class="text-[0.65rem] font-black text-blue-600 uppercase tracking-widest border-b border-blue-100 pb-2">Step 3: Identity & Booking</h4>
+                                            <h4 class="text-[0.65rem] font-black text-blue-600 uppercase tracking-widest border-b border-blue-100 pb-2">Step 3: Identity and Booking</h4>
                                             <div class="grid grid-cols-2 gap-4">
                                                 <div>
                                                     <label class="text-[0.5rem] font-medium uppercase tracking-widest text-slate-500 mb-1 block">Name Field Label</label>
@@ -819,7 +921,7 @@
                                      </div>
                                      <div class="flex gap-2 mt-1">
                                          <button type="button" class="flex-1 py-1.5 border border-slate-200 text-slate-400 rounded text-[0.45rem] font-black uppercase" id="pre_lf_back2">← Back</button>
-                                         <button type="button" class="flex-[2] py-1.5 bg-[#1d293d] text-white rounded text-[0.45rem] font-black uppercase" id="pre_lf_next2">Next Stage →</button>
+                                         <button type="button" class="flex-[2] py-1.5 bg-[#031629] text-white rounded text-[0.45rem] font-black uppercase" id="pre_lf_next2">Next Stage →</button>
                                      </div>
                                  </div>
 
@@ -880,7 +982,7 @@
                                         </button>
                                     @endforeach
                                 </div>
-                                <div id="lead-selected-brands-list" class="flex flex-wrap gap-2 min-h-[60px] p-3 bg-[#1d293d] rounded-lg border border-white/10 shadow-inner">
+                                <div id="lead-selected-brands-list" class="flex flex-wrap gap-2 min-h-[60px] p-3 bg-[#031629] rounded-lg border border-white/10 shadow-inner">
                                     @foreach(data_get($page->content, 'lead_form_brands', []) as $index => $brand)
                                         <div class="lead-selected-brand-tag flex items-center gap-2 bg-blue-600 text-white px-3 py-1.5 rounded-md text-[0.6rem] font-medium" data-slug="{{ $brand['slug'] }}">
                                             <span class="truncate max-w-[80px]">{{ $brand['name'] }}</span>
@@ -896,14 +998,15 @@
                 </div>
 
                 <!-- ==================== LOCATION TAB ==================== -->
-                <div x-show="activeTab === 'location'" x-cloak x-transition>
+                <div x-show="cmsTab === 'location'" x-cloak x-transition>
+                    
                     <div class="bg-white p-8 rounded-lg border border-slate-200 shadow-sm space-y-8">
                         <div class="flex items-center gap-4 mb-2">
                             <div class="w-12 h-12 bg-orange-50 rounded-lg flex items-center justify-center border border-orange-100 shadow-sm">
                                 <i data-lucide="map" class="w-6 h-6 text-[#ff6900]"></i>
                             </div>
                             <div>
-                                <h3 class="text-sm font-medium uppercase tracking-widest text-slate-800">Branch & Location Hub</h3>
+                                <h3 class="text-sm font-medium uppercase tracking-widest text-slate-800">Branch and Location Hub</h3>
                                 <p class="text-[0.6rem] text-slate-400 font-medium uppercase tracking-widest mt-1">Manage HQ details & Interactive Map</p>
                             </div>
                         </div>
@@ -912,7 +1015,21 @@
                             {{-- Section Identity --}}
                             <div class="space-y-6">
                                 <div class="space-y-4">
-                                    <label class="text-[0.62rem] font-medium uppercase tracking-[0.2em] text-slate-400 block ml-1">Copywriting & Header</label>
+                                    <label class="text-[0.62rem] font-medium uppercase tracking-[0.2em] text-slate-400 block ml-1">Homepage Section Header</label>
+                                    <div class="bg-slate-50 p-5 rounded-lg border border-slate-100 space-y-4">
+                                        <div>
+                                            <label class="text-[0.55rem] font-medium uppercase tracking-widest text-slate-500 mb-2 block flex items-center gap-2"><i data-lucide="type" class="w-3 h-3"></i> Section Title (Above Map)</label>
+                                            <input type="text" name="location[section_header_title]" value="{{ old('location.section_header_title', data_get($page->content, 'location.section_header_title', 'Find Us Section')) }}" class="w-full bg-white border border-slate-200 rounded-md px-4 py-2.5 text-[0.8rem] font-bold text-slate-700 focus:border-[#ff6900] outline-none transition-all" placeholder="Find Us Section">
+                                        </div>
+                                        <div>
+                                            <label class="text-[0.55rem] font-medium uppercase tracking-widest text-slate-500 mb-2 block flex items-center gap-2"><i data-lucide="text" class="w-3 h-3"></i> Section Subtitle</label>
+                                            <input type="text" name="location[section_header_subtitle]" value="{{ old('location.section_header_subtitle', data_get($page->content, 'location.section_header_subtitle', 'Visit our showroom and explore premium vehicles')) }}" class="w-full bg-white border border-slate-200 rounded-md px-4 py-2.5 text-[0.8rem] font-bold text-slate-700 focus:border-[#ff6900] outline-none transition-all" placeholder="Visit our showroom...">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="space-y-4">
+                                    <label class="text-[0.62rem] font-medium uppercase tracking-[0.2em] text-slate-400 block ml-1">Card Copywriting</label>
                                     <div class="bg-slate-50 p-5 rounded-lg border border-slate-100 space-y-4">
                                         <div>
                                             <label class="text-[0.55rem] font-medium uppercase tracking-widest text-slate-500 mb-2 block">Small Top Label</label>
@@ -950,7 +1067,7 @@
                                 </div>
                             </div>
 
-                            {{-- Branch Details --}}
+                            {{-- Branch Details & Guest Info --}}
                             <div class="space-y-6">
                                 <div class="space-y-4">
                                     <label class="text-[0.62rem] font-medium uppercase tracking-[0.2em] text-slate-400 block ml-1">Branch Informatics</label>
@@ -986,7 +1103,7 @@
                 </div>
 
                 <!-- ==================== SLIDER LOGOS TAB (HOMEPAGE) ==================== -->
-                <div x-show="activeTab === 'brands'" x-cloak x-transition>
+                <div x-show="cmsTab === 'brands'" x-cloak x-transition>
                     <div class="bg-white p-8 rounded-lg border border-slate-200 shadow-sm space-y-6">
                         <div class="flex items-center gap-4 mb-2">
                             <div class="w-12 h-12 bg-emerald-500 rounded-lg flex items-center justify-center border border-emerald-400 shadow-sm">
@@ -1048,7 +1165,7 @@
                 </div>
 
                 <!-- ==================== TRUST BADGES TAB ==================== -->
-                <div x-show="activeTab === 'trust_badges'" x-cloak x-transition>
+                <div x-show="cmsTab === 'trust_badges'" x-cloak x-transition>
                     <div class="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm">
                         <div class="flex items-center gap-4 mb-8">
                             <div class="w-12 h-12 rounded-xl flex items-center justify-center shadow-md" style="background: linear-gradient(135deg,#ff6900,#ff4605)">
@@ -1163,19 +1280,9 @@
                 </div>
 
                 <!-- ==================== FOOTER TAB ==================== -->
-                <div x-show="activeTab === 'footer'" x-cloak x-transition>
+                <div x-show="cmsTab === 'footer'" x-cloak x-transition>
 
-                    @php
-                        $_defaultLinks = [['label'=>'Home','url'=>'/'],['label'=>'Browse Auctions','url'=>'/auctions'],['label'=>'How it Works','url'=>'/how-it-works'],['label'=>'Sell Your Car','url'=>'#']];
-                        $_footerLinks  = data_get($page->content, 'footer.quick_links', $_defaultLinks);
-                        $_footerPages  = data_get($page->content, 'footer.pages', []);
-                    @endphp
 
-                    <!-- Data for Alpine (safe script context) -->
-                    <script>
-                        window.__footerLinks = @json($_footerLinks);
-                        window.__footerPages = @json($_footerPages);
-                    </script>
 
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
@@ -1229,6 +1336,24 @@
                                             class="flex-1 bg-slate-50 border border-slate-200 rounded-lg px-4 py-2 text-[0.75rem] text-slate-700 outline-none focus:border-indigo-400 transition-all">
                                     </div>
                                     @endforeach
+                                </div>
+                            </div>
+
+                            <!-- Footer Appearance -->
+                            <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+                                <div class="text-[0.6rem] font-black uppercase tracking-widest text-indigo-500 mb-4 flex items-center gap-2">
+                                    <div class="w-4 h-px bg-indigo-300"></div> Footer Appearance
+                                </div>
+                                <div class="space-y-3">
+                                    <div>
+                                        <label class="text-[0.5rem] font-black uppercase tracking-widest text-slate-400 mb-1 block flex items-center gap-2">
+                                            <i data-lucide="palette" class="w-3 h-3"></i> Background Color
+                                        </label>
+                                        <div class="flex items-center gap-2">
+                                            <input type="color" name="footer_background_color" value="{{ data_get($page->content, 'footer.background_color', '#eef3f9') }}" class="w-10 h-10 rounded-lg border border-gray-200 cursor-pointer">
+                                            <input type="text" value="{{ data_get($page->content, 'footer.background_color', '#eef3f9') }}" class="flex-1 bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-xs font-bold text-slate-700" readonly>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
@@ -1329,7 +1454,7 @@
                 </div>
 
                 <!-- ==================== STYLES TAB ==================== -->
-                <div x-show="activeTab === 'styles'" x-cloak x-transition>
+                <div x-show="cmsTab === 'styles'" x-cloak x-transition>
                     <div class="bg-emerald-600 p-10 rounded-lg text-white shadow-2xl relative overflow-hidden group">
                         <div class="absolute right-0 top-0 h-full w-2 bg-emerald-400 opacity-50 z-20"></div>
                         <div class="flex items-center gap-8 relative z-10">
@@ -1345,33 +1470,16 @@
                         </div>
                     </div>
 
-                    <div class="bg-white p-8 rounded-lg border border-slate-200 shadow-sm space-y-6 mt-4">
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="text-[0.6rem] font-medium uppercase tracking-widest text-slate-400 mb-1.5 block">Footer Background</label>
-                                <div class="flex items-center gap-2">
-                                    <input type="color" name="footer_background_color" value="{{ data_get($page->content, 'footer.background_color', '#031629') }}" class="w-10 h-10 rounded-lg border border-gray-200 cursor-pointer">
-                                    <input type="text" value="{{ data_get($page->content, 'footer.background_color', '#031629') }}" class="flex-1 bg-slate-50 border border-slate-100 rounded-md px-4 py-2.5 text-xs font-bold" readonly>
-                                </div>
-                            </div>
-                            <div>
-                                <label class="text-[0.6rem] font-medium uppercase tracking-widest text-slate-400 mb-1.5 block">Theme Accent</label>
-                                <div class="flex items-center gap-2">
-                                    <div class="w-10 h-10 rounded-lg bg-[#ff6900] shadow-lg shadow-orange-500/20"></div>
-                                    <span class="text-[0.65rem] font-medium text-slate-400 uppercase tracking-widest">Orange Bazaar</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
                 
             </div>
         </div>
     </form>
-</div>
+    </div>
+    </x-admin-page-standard>
 
 {{-- Icon Picker Modal Node --}}
-<div id="icon-picker-modal" class="hidden fixed inset-0 bg-[#1d293d]/40 backdrop-blur-sm z-[999] items-center justify-center p-4">
+<div id="icon-picker-modal" class="hidden fixed inset-0 bg-[#031629]/40 backdrop-blur-sm z-[999] items-center justify-center p-4">
     <div class="bg-white rounded-lg p-6 max-w-lg w-full shadow-2xl animate-in zoom-in duration-300">
         <div class="flex items-center justify-between mb-6">
             <h4 class="font-medium text-xs uppercase tracking-widest text-slate-800">Select Icon Key</h4>
@@ -1383,6 +1491,7 @@
 </div>
 
 <script>
+
 // Elite Brands Hub Logic
 (function() {
     const availableBrands = document.getElementById('elite-available-brands');
@@ -1559,10 +1668,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const hexToRgba = (hex, alpha) => {
         const clean = (hex || '#0e1017').replace('#', '');
-        const full = clean.length === 3 ? clean.split('').map((c) => c + c).join('') : clean.padEnd(6, '0');
-        const int = parseInt(full, 16);
-        return `rgba(${(int >> 16) & 255}, ${(int >> 8) & 255}, ${int & 255}, ${alpha})`;
-    };    const applyPreview = () => {
+        const normalized = (clean.length === 3
+            ? clean.split('').map((c) => c + c).join('')
+            : clean.padEnd(6, '0')
+        ).slice(0, 6);
+        const r = parseInt(normalized.slice(0, 2), 16);
+        const g = parseInt(normalized.slice(2, 4), 16);
+        const b = parseInt(normalized.slice(4, 6), 16);
+        return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+    };
+
+    const applyPreview = () => {
         const mode = document.getElementById('hero_background_mode')?.value || 'image';
         const color1 = colorHiddenInput?.value || '#0e1017';
         const opacity = opacityInput?.value || '0.72';
@@ -1608,11 +1724,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const mode = btn.dataset.mode;
             document.getElementById('hero_background_mode').value = mode;
             document.querySelectorAll('.hero-mode-btn').forEach(el => {
-                el.classList.remove('bg-[#1d293d]', 'text-white');
+                el.classList.remove('bg-[#031629]', 'text-white');
                 el.classList.add('bg-white', 'border-slate-200', 'text-slate-500');
             });
             btn.classList.remove('bg-white', 'border-slate-200', 'text-slate-500');
-            btn.classList.add('bg-[#1d293d]', 'text-white');
+            btn.classList.add('bg-[#031629]', 'text-white');
             
             document.getElementById('image-asset-controls')?.classList.toggle('hidden', mode !== 'image');
             document.getElementById('secondary-color-hub')?.classList.toggle('hidden', mode !== 'gradient');
@@ -1626,11 +1742,11 @@ document.addEventListener('DOMContentLoaded', () => {
         btn.addEventListener('click', () => {
             heroCarScaleInput.value = btn.dataset.scale;
             document.querySelectorAll('.hero-scale-btn').forEach(el => {
-                el.classList.remove('bg-[#1d293d]', 'text-white', 'border-[#031629]');
+                el.classList.remove('bg-[#031629]', 'text-white', 'border-[#031629]');
                 el.classList.add('bg-slate-50', 'border-slate-100', 'text-slate-600');
             });
             btn.classList.remove('bg-slate-50', 'border-slate-100', 'text-slate-600');
-            btn.classList.add('bg-[#1d293d]', 'text-white', 'border-[#031629]');
+            btn.classList.add('bg-[#031629]', 'text-white', 'border-[#031629]');
             if (previewImage) previewImage.style.transform = `scale(${btn.dataset.scale})`;
         });
     });
@@ -1639,12 +1755,24 @@ document.addEventListener('DOMContentLoaded', () => {
         btn.addEventListener('click', () => {
             heroOverlayEnabledInput.value = btn.dataset.overlay;
             document.querySelectorAll('.hero-overlay-btn').forEach(el => {
-                el.classList.remove('bg-[#1d293d]', 'text-white', 'border-[#031629]');
+                el.classList.remove('bg-[#031629]', 'text-white', 'border-[#031629]');
                 el.classList.add('bg-slate-50', 'border-slate-100', 'text-slate-600');
             });
             btn.classList.remove('bg-slate-50', 'border-slate-100', 'text-slate-600');
-            btn.classList.add('bg-[#1d293d]', 'text-white', 'border-[#031629]');
+            btn.classList.add('bg-[#031629]', 'text-white', 'border-[#031629]');
             applyPreview();
+        });
+    });
+
+    document.querySelectorAll('.hero-mirror-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+            document.getElementById('hero_car_mirror').value = btn.dataset.mirror;
+            document.querySelectorAll('.hero-mirror-btn').forEach(el => {
+                el.classList.remove('bg-[#031629]', 'text-white', 'border-[#031629]');
+                el.classList.add('bg-slate-50', 'border-slate-100', 'text-slate-600');
+            });
+            btn.classList.remove('bg-slate-50', 'border-slate-100', 'text-slate-600');
+            btn.classList.add('bg-[#031629]', 'text-white', 'border-[#031629]');
         });
     });
 
@@ -1705,6 +1833,139 @@ document.addEventListener('DOMContentLoaded', () => {
     })();
 
 });
+
+// ── Native RTE ──
+const RTE_SIZES = {'1':'0.65rem','2':'0.8rem','3':'1rem','4':'1.25rem','5':'1.6rem','6':'2rem','7':'2.8rem'};
+function rteCmd(btn, cmd, val) {
+    const wrap = btn.closest('[id^="rte_"]') || btn.parentElement?.closest('[id^="rte_"]');
+    const editor = wrap ? wrap.querySelector('[contenteditable="true"]') : null;
+    if (!editor) return;
+    editor.focus();
+    if (cmd === 'fontSize') {
+        const size = RTE_SIZES[val] || '1rem';
+        const sel = window.getSelection();
+        if (sel && sel.rangeCount && !sel.isCollapsed) {
+            const range = sel.getRangeAt(0);
+            const span = document.createElement('span');
+            span.style.fontSize = size;
+            span.appendChild(range.extractContents());
+            range.insertNode(span);
+            sel.removeAllRanges();
+        }
+    } else {
+        document.execCommand(cmd, false, val || null);
+    }
+    syncRTE(editor);
+}
+let _rteSavedRange = null;
+function rteSaveSelection() {
+    const sel = window.getSelection();
+    if (sel && sel.rangeCount) {
+        _rteSavedRange = sel.getRangeAt(0).cloneRange();
+    }
+}
+function rteRestoreSelection() {
+    if (_rteSavedRange) {
+        const sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(_rteSavedRange);
+    }
+}
+function rteApplyColor(input, prop) {
+    const wrap = input.closest('[id^="rte_"]') || input.parentElement?.closest('[id^="rte_"]');
+    const editor = wrap ? wrap.querySelector('[contenteditable="true"]') : null;
+    if (!editor) return;
+    editor.focus();
+    rteRestoreSelection();
+    const sel = window.getSelection();
+    if (sel && sel.rangeCount && !sel.isCollapsed) {
+        const range = sel.getRangeAt(0);
+        const span = document.createElement('span');
+        span.style[prop] = input.value;
+        span.appendChild(range.extractContents());
+        range.insertNode(span);
+        sel.removeAllRanges();
+        _rteSavedRange = null;
+        syncRTE(editor);
+    }
+}
+function syncRTE(editor) {
+    const targetId = editor.dataset.target;
+    if (targetId) {
+        const inp = document.getElementById(targetId);
+        if (inp) inp.value = editor.innerHTML;
+    }
+}
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('[contenteditable="true"][data-initial]').forEach(function(editor) {
+        var key = editor.dataset.initial;
+        if (window.__rteInitial && window.__rteInitial[key]) editor.innerHTML = window.__rteInitial[key];
+    });
+    document.querySelectorAll('[contenteditable="true"][data-target]').forEach(function(editor) {
+        syncRTE(editor); // fill textarea from editor content
+        editor.addEventListener('input', function() { syncRTE(editor); });
+        editor.addEventListener('blur',  function() { syncRTE(editor); });
+        editor.addEventListener('paste', function(e) {
+            e.preventDefault();
+            const text = (e.clipboardData || window.clipboardData).getData('text/plain');
+            document.execCommand('insertText', false, text);
+        });
+    });
+    function syncAllRTE() {
+        document.querySelectorAll('[contenteditable="true"][data-target]').forEach(function(editor) { syncRTE(editor); });
+    }
+    document.querySelector('form')?.addEventListener('submit', syncAllRTE);
+    // Also sync on mousedown of any submit button to catch it before submit fires
+    document.querySelectorAll('[type="submit"]').forEach(function(btn) {
+        btn.addEventListener('mousedown', syncAllRTE);
+    });
+});
 </script>
 @endsection
+
+@push('head')
+<script>
+window.__footerLinks = {!! json_encode($_footerLinks) !!};
+window.__footerPages = {!! json_encode($_footerPages) !!};
+window.__rteInitial = {
+    hero_announcement: {!! json_encode(old('hero_announcement', data_get($page->content, 'hero.announcement', ''))) !!},
+    hero_title:        {!! json_encode(old('hero_title',        data_get($page->content, 'hero.title', ''))) !!},
+    hero_subtitle:     {!! json_encode(old('hero_subtitle',     data_get($page->content, 'hero.subtitle', ''))) !!}
+};
+window.__cmsPageData = {
+    cmsTab: 'navbar',
+    lfStep: 1,
+    isSaving: false,
+    navbarBg:     {!! json_encode(data_get($page->content, 'navbar.bg_color', '#ffffff')) !!},
+    navbarText:   {!! json_encode(data_get($page->content, 'navbar.text_color', '#1e293b')) !!},
+    navbarSticky: {{ data_get($page->content, 'navbar.sticky', true)  ? 'true' : 'false' }},
+    navbarGlass:  {{ data_get($page->content, 'navbar.glass',  false) ? 'true' : 'false' }},
+    lfShowHero: {{ data_get($page->content, 'lead_form.show_hero_form', true) ? 'true' : 'false' }},
+    async saveForm(e) {
+        this.isSaving = true;
+        document.querySelectorAll('[contenteditable="true"][data-target]').forEach(function(editor) {
+            const inp = document.getElementById(editor.dataset.target);
+            if (inp) inp.value = editor.innerHTML;
+        });
+        const form = e.target;
+        const formData = new FormData(form);
+        try {
+            const response = await fetch(form.action, {
+                method: 'POST', body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content
+                }
+            });
+            const data = await response.json();
+            if (response.ok) { window.showToast(data.message || 'Saved!', 'success'); }
+            else { window.showToast(data.message || 'Error!', 'error'); }
+        } catch(err) { window.showToast('Network error', 'error'); }
+        finally { this.isSaving = false; }
+    }
+};
+</script>
+@endpush
+
 

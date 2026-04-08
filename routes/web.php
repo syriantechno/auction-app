@@ -6,9 +6,11 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\AuctionController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PageController;
+use App\Http\Controllers\SitemapController;
 use Illuminate\Support\Facades\Auth;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/sitemap.xml', [SitemapController::class, 'generate'])->name('sitemap');
 Route::view('/home-new', 'home_new')->name('home.new');
 // Admin Routes (Blade)
 Route::prefix('admin')->middleware(['auth'])->name('admin.')->group(function () {
@@ -23,6 +25,7 @@ Route::prefix('admin')->middleware(['auth'])->name('admin.')->group(function () 
 
     // SEO Management
     Route::get('/seo', [\App\Http\Controllers\Admin\SEOController::class, 'dashboard'])->name('seo.dashboard');
+    Route::get('/seo/guide', [\App\Http\Controllers\Admin\SEOController::class, 'guide'])->name('seo.guide');
     Route::get('/seo/settings', [\App\Http\Controllers\Admin\SEOController::class, 'settings'])->name('seo.settings');
     Route::post('/seo/settings', [\App\Http\Controllers\Admin\SEOController::class, 'updateSettings'])->name('seo.settings.update');
     Route::post('/seo/test-agent-router', [\App\Http\Controllers\Admin\SEOController::class, 'testAgentRouter'])->name('seo.test-agent-router');
@@ -35,6 +38,7 @@ Route::prefix('admin')->middleware(['auth'])->name('admin.')->group(function () 
     Route::post('/seo/generate-meta-tags', [\App\Http\Controllers\Admin\SEOController::class, 'generateMetaTags'])->name('seo.generate-meta-tags');
     Route::post('/seo/optimize-content', [\App\Http\Controllers\Admin\SEOController::class, 'optimizeContent'])->name('seo.optimize-content');
     Route::post('/seo/submit-urls', [\App\Http\Controllers\Admin\SEOController::class, 'submitUrls'])->name('seo.submit-urls');
+    Route::post('/seo/autonomous-protocol', [\App\Http\Controllers\Admin\SEOController::class, 'executeAutonomousProtocol'])->name('seo.autonomous');
     
     // SEO Test Page (وهمية - للحذف لاحقًا)
     Route::get('/seo/test', [\App\Http\Controllers\Admin\SEOTestController::class, 'index'])->name('seo.test');
@@ -81,7 +85,7 @@ Route::prefix('admin')->middleware(['auth'])->name('admin.')->group(function () 
     Route::get('/dealers/{user}',    [\App\Http\Controllers\Admin\DealerController::class, 'show'])->name('dealers.show');
 
     // ── Finance System ─────────────────────────────────────────────
-    Route::prefix('finance')->name('finance.')->group(function () {
+    Route::prefix('finance')->name('finance.')->middleware(['permission:view finance'])->group(function () {
         Route::get('/',                                           [\App\Http\Controllers\Admin\FinanceController::class, 'dashboard'])->name('dashboard');
         Route::get('/invoices',                                   [\App\Http\Controllers\Admin\FinanceController::class, 'invoices'])->name('invoices');
         Route::get('/invoices/{invoice}',                         [\App\Http\Controllers\Admin\FinanceController::class, 'showInvoice'])->name('invoice.show');
@@ -98,14 +102,18 @@ Route::prefix('admin')->middleware(['auth'])->name('admin.')->group(function () 
     });
 
     // CRM: Advanced Leads Pipeline
-    Route::post('/leads/{lead}/confirm', [\App\Http\Controllers\Admin\LeadController::class, 'confirm'])->name('leads.confirm');
-    Route::resource('/leads', \App\Http\Controllers\Admin\LeadController::class)->names('leads');
-    Route::get('/leads-api', [\App\Http\Controllers\Admin\LeadController::class, 'api'])->name('leads.api');
+    Route::middleware(['permission:view leads'])->group(function () {
+        Route::post('/leads/{lead}/confirm', [\App\Http\Controllers\Admin\LeadController::class, 'confirm'])->name('leads.confirm');
+        Route::resource('/leads', \App\Http\Controllers\Admin\LeadController::class)->names('leads');
+        Route::get('/leads-api', [\App\Http\Controllers\Admin\LeadController::class, 'api'])->name('leads.api');
+    });
 
     // Technical Inspections
-    Route::get('/inspections/calendar', [\App\Http\Controllers\Admin\InspectionController::class, 'calendar'])->name('inspections.calendar');
-    Route::get('/inspections/tasks', [\App\Http\Controllers\Admin\InspectionController::class, 'tasks'])->name('inspections.tasks');
-    Route::resource('/inspections', \App\Http\Controllers\Admin\InspectionController::class)->names('inspections');
+    Route::middleware(['permission:view inspections'])->group(function () {
+        Route::get('/inspections/calendar', [\App\Http\Controllers\Admin\InspectionController::class, 'calendar'])->name('inspections.calendar');
+        Route::get('/inspections/tasks', [\App\Http\Controllers\Admin\InspectionController::class, 'tasks'])->name('inspections.tasks');
+        Route::resource('/inspections', \App\Http\Controllers\Admin\InspectionController::class)->names('inspections');
+    });
 
     // Financial Hub
     Route::get('/invoices', [\App\Http\Controllers\Admin\InvoiceController::class, 'index'])->name('invoices.index');
@@ -147,12 +155,13 @@ Route::prefix('admin')->middleware(['auth'])->name('admin.')->group(function () 
     Route::post('/settings/google-maps',         [\App\Http\Controllers\Admin\SettingsController::class, 'updateGoogleMaps'])->name('settings.google-maps.update');
     Route::post('/settings/inspection-fields',   [\App\Http\Controllers\Admin\SettingsController::class, 'updateInspectionFields'])->name('settings.inspection-fields.update');
     Route::post('/settings/auctions',            [\App\Http\Controllers\Admin\SettingsController::class, 'updateAuctionSettings'])->name('settings.auctions.update');
-    Route::post('/settings/communication',       [\App\Http\Controllers\Admin\SettingsController::class, 'updateCommunicationSettings'])->name('settings.communication.update');
+    Route::post('/settings/communication',       [\App\Http\Controllers\Admin\SettingsController::class, 'saveCommunicationSettings'])->name('settings.communication.update');
     Route::post('/settings/communication/test-email',    [\App\Http\Controllers\Admin\SettingsController::class, 'testEmail'])->name('settings.communication.test-email');
     Route::post('/settings/communication/test-smtp',     [\App\Http\Controllers\Admin\SettingsController::class, 'testConnection'])->name('settings.smtp.test');
     Route::post('/settings/communication/test-whatsapp', [\App\Http\Controllers\Admin\SettingsController::class, 'testWhatsApp'])->name('settings.communication.test-whatsapp');
     Route::post('/settings/blog',                [\App\Http\Controllers\Admin\SettingsController::class, 'saveBlogSettings'])->name('settings.blog.save');
     Route::post('/settings/navbar',              [\App\Http\Controllers\Admin\SettingsController::class, 'saveNavbarSettings'])->name('settings.navbar.save');
+    Route::post('/settings/google-reviews',     [\App\Http\Controllers\Admin\SettingsController::class, 'saveGoogleReviewsSettings'])->name('settings.google-reviews.save');
     Route::get('/settings/toast-showcase', fn() => view('admin.settings.toast_showcase'))->name('settings.toast-showcase');
 
 
@@ -162,20 +171,98 @@ Route::prefix('admin')->middleware(['auth'])->name('admin.')->group(function () 
     Route::post('/notifications/{id}/read',[\App\Http\Controllers\Admin\NotificationController::class, 'markRead'])->name('notifications.read');
     Route::get('/notifications/count',     [\App\Http\Controllers\Admin\NotificationController::class, 'unreadCount'])->name('notifications.count');
 
-    // Modern Test Dashboard
-    Route::get('/test-dashboard', [DashboardController::class, 'showTestDashboard'])->name('test-dashboard');
+    // Routes Inventory & Audit
+    Route::get('/routes-inventory', function() { return view('admin.routes-inventory'); })->name('routes.inventory');
 
+
+    // ── Companies Management ─────────────────────────────
+    Route::resource('companies', \App\Http\Controllers\Admin\HR\CompanyController::class)->names('companies');
 
     // ── Roles & Permissions Management ──────────────────────────
-    Route::get('/roles',                        [\App\Http\Controllers\Admin\RoleController::class, 'index'])->name('roles.index');
-    Route::get('/roles/create',                 [\App\Http\Controllers\Admin\RoleController::class, 'create'])->name('roles.create');
-    Route::post('/roles',                       [\App\Http\Controllers\Admin\RoleController::class, 'store'])->name('roles.store');
-    Route::get('/roles/{role}/edit',            [\App\Http\Controllers\Admin\RoleController::class, 'edit'])->name('roles.edit');
-    Route::put('/roles/{role}',                 [\App\Http\Controllers\Admin\RoleController::class, 'update'])->name('roles.update');
-    Route::delete('/roles/{role}',              [\App\Http\Controllers\Admin\RoleController::class, 'destroy'])->name('roles.destroy');
-    Route::get('/roles/users',                  [\App\Http\Controllers\Admin\RoleController::class, 'users'])->name('roles.users');
-    Route::post('/roles/users/{user}/assign',   [\App\Http\Controllers\Admin\RoleController::class, 'assignRole'])->name('roles.assign');
-    Route::post('/roles/users/{user}/remove',   [\App\Http\Controllers\Admin\RoleController::class, 'removeRole'])->name('roles.remove');
+    Route::middleware(['permission:view roles'])->group(function () {
+        Route::get('/roles',                        [\App\Http\Controllers\Admin\RoleController::class, 'index'])->name('roles.index');
+        Route::get('/roles/create',                 [\App\Http\Controllers\Admin\RoleController::class, 'create'])->name('roles.create');
+        Route::post('/roles',                       [\App\Http\Controllers\Admin\RoleController::class, 'store'])->name('roles.store');
+        Route::get('/roles/{role}/edit',            [\App\Http\Controllers\Admin\RoleController::class, 'edit'])->name('roles.edit');
+        Route::put('/roles/{role}',                 [\App\Http\Controllers\Admin\RoleController::class, 'update'])->name('roles.update');
+        Route::delete('/roles/{role}',              [\App\Http\Controllers\Admin\RoleController::class, 'destroy'])->name('roles.destroy');
+        Route::get('/roles/users',                  [\App\Http\Controllers\Admin\RoleController::class, 'users'])->name('roles.users');
+        Route::post('/roles/users/{user}/assign',   [\App\Http\Controllers\Admin\RoleController::class, 'assignRole'])->name('roles.assign');
+        Route::post('/roles/users/{user}/remove',   [\App\Http\Controllers\Admin\RoleController::class, 'removeRole'])->name('roles.remove');
+    });
+
+    // ── HR Management ──────────────────────────
+    Route::prefix('hr')->name('hr.')->middleware(['permission:view hr'])->group(function () {
+        // HR Dashboard
+        Route::get('/', [\App\Http\Controllers\Admin\HR\HRController::class, 'dashboard'])->name('dashboard');
+        Route::get('/calendar', [\App\Http\Controllers\Admin\HR\HRController::class, 'calendar'])->name('calendar');
+        Route::get('/reports', [\App\Http\Controllers\Admin\HR\HRController::class, 'reports'])->name('reports');
+        Route::post('/reports/generate', [\App\Http\Controllers\Admin\HR\HRController::class, 'generateReport'])->name('reports.generate');
+
+        // Departments
+        Route::resource('departments', \App\Http\Controllers\Admin\HR\DepartmentController::class);
+
+        // Positions
+        Route::resource('positions', \App\Http\Controllers\Admin\HR\PositionController::class);
+
+        // Employees
+        Route::get('/employees/create-modal', [\App\Http\Controllers\Admin\HR\EmployeeController::class, 'createModal'])->name('employees.create-modal');
+        Route::get('/employees/datatable', [\App\Http\Controllers\Admin\HR\EmployeeController::class, 'datatable'])->name('employees.datatable');
+        Route::resource('employees', \App\Http\Controllers\Admin\HR\EmployeeController::class);
+
+        // Shifts
+        Route::resource('shifts', \App\Http\Controllers\Admin\HR\ShiftController::class);
+
+        // Attendance
+        Route::resource('attendance', \App\Http\Controllers\Admin\HR\AttendanceController::class);
+        Route::get('/attendance/bulk/create', [\App\Http\Controllers\Admin\HR\AttendanceController::class, 'bulkCreate'])->name('attendance.bulk.create');
+        Route::post('/attendance/bulk/store', [\App\Http\Controllers\Admin\HR\AttendanceController::class, 'bulkStore'])->name('attendance.bulk.store');
+        Route::get('/attendance/report', [\App\Http\Controllers\Admin\HR\AttendanceController::class, 'report'])->name('attendance.report');
+
+        // Leaves
+        Route::resource('leaves', \App\Http\Controllers\Admin\HR\LeaveController::class);
+        Route::post('/leaves/{leave}/approve', [\App\Http\Controllers\Admin\HR\LeaveController::class, 'approve'])->name('leaves.approve');
+        Route::post('/leaves/{leave}/reject', [\App\Http\Controllers\Admin\HR\LeaveController::class, 'reject'])->name('leaves.reject');
+
+        // Payroll
+        Route::resource('payrolls', \App\Http\Controllers\Admin\HR\PayrollController::class);
+        Route::post('/payrolls/{payroll}/approve', [\App\Http\Controllers\Admin\HR\PayrollController::class, 'approve'])->name('payrolls.approve');
+        Route::post('/payrolls/{payroll}/pay', [\App\Http\Controllers\Admin\HR\PayrollController::class, 'pay'])->name('payrolls.pay');
+        Route::post('/payrolls/generate-bulk', [\App\Http\Controllers\Admin\HR\PayrollController::class, 'generateBulk'])->name('payrolls.generate-bulk');
+
+        // Salary Structures
+        Route::resource('salary-structures', \App\Http\Controllers\Admin\HR\SalaryStructureController::class);
+
+        // Advances
+        Route::resource('advances', \App\Http\Controllers\Admin\HR\AdvanceController::class);
+        Route::post('/advances/{advance}/approve', [\App\Http\Controllers\Admin\HR\AdvanceController::class, 'approve'])->name('advances.approve');
+        Route::post('/advances/{advance}/reject', [\App\Http\Controllers\Admin\HR\AdvanceController::class, 'reject'])->name('advances.reject');
+        Route::post('/advances/{advance}/pay', [\App\Http\Controllers\Admin\HR\AdvanceController::class, 'pay'])->name('advances.pay');
+
+        // Penalties
+        Route::resource('penalties', \App\Http\Controllers\Admin\HR\PenaltyController::class);
+        Route::post('/penalties/{penalty}/approve', [\App\Http\Controllers\Admin\HR\PenaltyController::class, 'approve'])->name('penalties.approve');
+        Route::post('/penalties/{penalty}/deduct', [\App\Http\Controllers\Admin\HR\PenaltyController::class, 'deduct'])->name('penalties.deduct');
+
+        // Employee Documents
+        Route::resource('documents', \App\Http\Controllers\Admin\HR\EmployeeDocumentController::class);
+        Route::get('/documents/{document}/download', [\App\Http\Controllers\Admin\HR\EmployeeDocumentController::class, 'download'])->name('documents.download');
+
+        // Employee Evaluations
+        Route::resource('evaluations', \App\Http\Controllers\Admin\HR\EmployeeEvaluationController::class);
+
+        // Employee Rewards
+        Route::resource('rewards', \App\Http\Controllers\Admin\HR\EmployeeRewardController::class);
+        Route::post('/rewards/{reward}/pay', [\App\Http\Controllers\Admin\HR\EmployeeRewardController::class, 'pay'])->name('rewards.pay');
+
+        // Recruitment
+        Route::resource('recruitments', \App\Http\Controllers\Admin\HR\RecruitmentController::class);
+        Route::post('/recruitments/{recruitment}/close', [\App\Http\Controllers\Admin\HR\RecruitmentController::class, 'close'])->name('recruitments.close');
+        Route::post('/recruitments/{recruitment}/fill', [\App\Http\Controllers\Admin\HR\RecruitmentController::class, 'fill'])->name('recruitments.fill');
+
+        // Test Components Page
+        Route::get('/test-components', function() { return view('admin.hr.test_components'); })->name('test-components');
+    });
 });
 
 Route::get('/auctions', [AuctionController::class, 'index'])->name('auctions.index');
@@ -197,6 +284,27 @@ Route::middleware('auth')->group(function () {
         $bids = Auth::user()->bids()->with('auction.car')->latest()->get();
         return view('user.my-bids', compact('bids'));
     })->name('user.bids');
+    
+    // Pusher authentication for private channels
+    Route::post('/pusher/auth', function () {
+        $socketId = request('socket_id');
+        $channelName = request('channel_name');
+        
+        $pusher = new \Pusher\Pusher(
+            env('REVERB_APP_KEY', 'local'),
+            env('REVERB_APP_SECRET', 'local'),
+            env('REVERB_APP_ID', 'local'),
+            [
+                'cluster' => '',
+                'host' => env('REVERB_HOST', '127.0.0.1'),
+                'port' => env('REVERB_PORT', 8080),
+                'scheme' => env('REVERB_SCHEME', 'http'),
+            ]
+        );
+        
+        $auth = $pusher->authorizeChannel($channelName, $socketId);
+        return response($auth);
+    })->name('pusher.auth');
 });
 
 Route::post('/sell-car-lead', [HomeController::class, 'storeSellLead'])->name('sell-car-lead');

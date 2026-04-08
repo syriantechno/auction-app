@@ -31,7 +31,7 @@ use Illuminate\Database\Eloquent\Model;
 class Invoice extends Model
 {
     protected $fillable = [
-        'invoice_number', 'auction_id', 'negotiation_id', 'user_id',
+        'company_id', 'invoice_number', 'auction_id', 'negotiation_id', 'user_id',
         'amount', 'type', 'status',
         'commission_amount', 'tax_amount', 'total_amount',
         'lead_asking_price', 'dealer_final_price', 'gross_profit',
@@ -52,6 +52,11 @@ class Invoice extends Model
         'total_amount'       => 'decimal:2',
         'commission_amount'  => 'decimal:2',
     ];
+
+    public function company()
+    {
+        return $this->belongsTo(Company::class);
+    }
 
     public function user()
     {

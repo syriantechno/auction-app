@@ -14,12 +14,19 @@ class Post extends Model
         'featured_image',
         'is_published',
         'published_at',
+        'seo_title',
+        'seo_description',
+        'seo_keywords',
+        'seo_schema',
+        'seo_score',
     ];
 
     protected $casts = [
         'content' => 'array',
         'is_published' => 'boolean',
         'published_at' => 'datetime',
+        'seo_schema' => 'json',
+        'seo_score' => 'integer',
     ];
 
     public function category()

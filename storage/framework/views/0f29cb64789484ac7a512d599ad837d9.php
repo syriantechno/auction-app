@@ -6,15 +6,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
     <?php
-        // These are now shared via AppServiceProvider — safe fallback if not set
-        if (!isset($adminSiteName)) $adminSiteName = \App\Models\SystemSetting::get('site_name', 'Motor Bazar');
-        if (!isset($adminSiteLogo)) $adminSiteLogo = \App\Models\SystemSetting::get('site_logo');
-        if (!isset($adminSiteFavicon)) $adminSiteFavicon = \App\Models\SystemSetting::get('site_favicon');
-        if (!isset($appCurrencySymbol)) $appCurrencySymbol = \App\Helpers\CurrencyHelper::symbol();
-        if (!isset($appCurrencyCode)) $appCurrencyCode = \App\Models\SystemSetting::get('site_currency', 'AED');
-        if (!isset($appCurrencyPos)) $appCurrencyPos = \App\Models\SystemSetting::get('currency_position', 'before');
-        if (!isset($appDateFormat)) $appDateFormat = \App\Models\SystemSetting::get('date_format', 'd/m/Y');
-        $googleMapsKey = \App\Models\SystemSetting::get('google_maps_api_key', env('GOOGLE_MAPS_API_KEY'));
+        // ── Cached admin settings (5 min) — prevents 6+ DB hits per admin page load ──
+        $adminLayoutCache = \Illuminate\Support\Facades\Cache::remember('layout.admin.globals', now()->addMinutes(5), function () {
+            return [
+                'siteName'   => \App\Models\SystemSetting::get('site_name', 'Motor Bazar'),
+                'siteLogo'   => \App\Models\SystemSetting::get('site_logo'),
+                'siteFavicon'=> \App\Models\SystemSetting::get('site_favicon'),
+                'currency'   => \App\Models\SystemSetting::get('site_currency', 'AED'),
+                'currencyPos'=> \App\Models\SystemSetting::get('currency_position', 'before'),
+                'dateFormat' => \App\Models\SystemSetting::get('date_format', 'd/m/Y'),
+                'mapsKey'    => \App\Models\SystemSetting::get('google_maps_api_key', env('GOOGLE_MAPS_API_KEY', '')),
+                'mapProvider'=> \App\Models\SystemSetting::get('google_maps_provider', 'google'),
+                'currSym'    => \App\Helpers\CurrencyHelper::symbol(),
+            ];
+        });
+
+        if (!isset($adminSiteName))     $adminSiteName     = $adminLayoutCache['siteName'];
+        if (!isset($adminSiteLogo))     $adminSiteLogo     = $adminLayoutCache['siteLogo'];
+        if (!isset($adminSiteFavicon))  $adminSiteFavicon  = $adminLayoutCache['siteFavicon'];
+        if (!isset($appCurrencySymbol)) $appCurrencySymbol = $adminLayoutCache['currSym'];
+        if (!isset($appCurrencyCode))   $appCurrencyCode   = $adminLayoutCache['currency'];
+        if (!isset($appCurrencyPos))    $appCurrencyPos    = $adminLayoutCache['currencyPos'];
+        if (!isset($appDateFormat))     $appDateFormat     = $adminLayoutCache['dateFormat'];
+        $googleMapsKey = $adminLayoutCache['mapsKey'];
     ?>
     <title><?php echo e($adminSiteName); ?> Admin | <?php echo $__env->yieldContent('title'); ?></title>
     <?php if($adminSiteFavicon): ?>
@@ -22,7 +36,8 @@
     <?php endif; ?>
 
 
-    <!-- Design System: Jakarta Sans & Tailwind -->
+    <!-- Core Dependencies: jQuery & Jakarta Sans -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -87,6 +102,7 @@
         .rounded-md { border-radius: 0.375rem !important; }
 
         [x-cloak] { display: none !important; }
+        .hidden { display: none !important; }
 
         /*
          * ANTI-FLASH SIDEBAR: width is controlled by CSS class on <html>,
@@ -133,7 +149,7 @@
 
 <body class="antialiased text-[#111827] bg-[#e7e7e7]">
 
-    <div class="flex h-screen overflow-hidden" x-data="{
+    <div class="flex h-screen overflow-hidden" style="display: flex; flex-direction: row; height: 100vh; overflow: hidden;" x-data="{
         sidebarOpen: !document.documentElement.classList.contains('sidebar-collapsed'),
         openCRM: <?php echo e(request()->routeIs('admin.leads.*') || request()->routeIs('admin.inspections.*') ? 'true' : 'false'); ?>
 
@@ -189,13 +205,13 @@
                 </div>
 
                 
+                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view leads')): ?>
                 <div class="space-y-1">
                     <button @click="openCRM = !openCRM" class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-lg text-[0.8rem] font-bold text-slate-500 hover:bg-slate-50 transition-all">
                         <div class="flex items-center gap-4">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-slate-400 flex-shrink-0"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                             <span x-show="sidebarOpen" x-cloak>CRM & Operations</span>
                         </div>
-                        
                         <svg x-show="sidebarOpen" x-cloak :class="openCRM ? 'rotate-180' : ''"
                             xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
                             fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
@@ -205,9 +221,12 @@
                     </button>
                     
                     <ul x-show="openCRM" x-cloak x-collapse class="pl-12 space-y-1 mt-1 border-l-2 border-slate-50 ml-6">
+                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view leads')): ?>
                         <li>
                             <a href="<?php echo e(route('admin.leads.index')); ?>" class="block py-2 text-[0.75rem] font-medium <?php echo e(request()->routeIs('admin.leads.*') ? 'text-[#ff6900]' : 'text-slate-500 hover:text-slate-800'); ?>">Leads</a>
                         </li>
+                        <?php endif; ?>
+                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view inspections')): ?>
                         <li>
                             <a href="<?php echo e(route('admin.inspections.calendar')); ?>" class="block py-2 text-[0.75rem] font-medium <?php echo e(request()->routeIs('admin.inspections.calendar') ? 'text-[#ff6900]' : 'text-slate-500 hover:text-slate-800'); ?>">Inspections Calendar</a>
                         </li>
@@ -217,13 +236,87 @@
                         <li>
                             <a href="<?php echo e(route('admin.inspections.index')); ?>" class="block py-2 text-[0.75rem] font-medium <?php echo e((request()->routeIs('admin.inspections.*') && !request()->routeIs('admin.inspections.calendar') && !request()->routeIs('admin.inspections.tasks')) ? 'text-[#ff6900]' : 'text-slate-500 hover:text-slate-800'); ?>">Appraisal Reports</a>
                         </li>
+                        <?php endif; ?>
                     </ul>
                 </div>
+                <?php endif; ?>
 
                 
+                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view hr')): ?>
+                <div class="space-y-2 pt-2">
+                    <div x-show="sidebarOpen" x-cloak class="text-[0.6rem] text-slate-400 font-bold mb-3 uppercase tracking-[0.2em] pl-3 opacity-70 italic">HR Management</div>
+                    <ul class="space-y-1">
+                        
+                        <li x-data="{ open: <?php echo e(request()->routeIs('admin.hr.*') ? 'true' : 'false'); ?> }">
+                            
+                            <button @click="open = !open"
+                                class="w-full sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-bold transition-all
+                                    <?php echo e(request()->routeIs('admin.hr.*') ? 'text-slate-900 bg-slate-50 border border-slate-100 shadow-sm' : 'text-slate-500 hover:bg-slate-50'); ?>">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                    class="flex-shrink-0 <?php echo e(request()->routeIs('admin.hr.*') ? 'text-[#ff6900]' : 'text-slate-400'); ?>">
+                                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                                    <circle cx="9" cy="7" r="4"/>
+                                    <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                                </svg>
+                                <span x-show="sidebarOpen" x-cloak class="flex-1 text-left truncate">HR Management</span>
+                                <svg x-show="sidebarOpen" x-cloak :class="open ? 'rotate-180' : ''" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="transition-transform duration-200 text-slate-400 flex-shrink-0"><path d="m6 9 6 6 6-6"/></svg>
+                            </button>
+
+                            
+                            <ul x-show="open && sidebarOpen" x-cloak
+                                x-transition:enter="transition ease-out duration-150"
+                                x-transition:enter-start="opacity-0 -translate-y-1"
+                                x-transition:enter-end="opacity-100 translate-y-0"
+                                class="mt-1 ml-9 space-y-0.5 border-l-2 border-slate-100 pl-3">
+
+                                <?php
+                                    $hrLinks = [
+                                        ['route' => 'admin.hr.dashboard', 'label' => 'Dashboard', 'icon' => 'layout-dashboard', 'perm' => 'view hr'],
+                                        ['route' => 'admin.hr.departments.index', 'label' => 'Departments', 'icon' => 'building-2', 'perm' => null],
+                                        ['route' => 'admin.hr.positions.index', 'label' => 'Positions', 'icon' => 'briefcase', 'perm' => null],
+                                        ['route' => 'admin.hr.employees.index', 'label' => 'Employee Manager', 'icon' => 'users', 'perm' => null],
+                                        ['route' => 'admin.hr.shifts.index', 'label' => 'Shifts', 'icon' => 'clock', 'perm' => null],
+                                        ['route' => 'admin.hr.attendance.index', 'label' => 'Attendance', 'icon' => 'calendar-check', 'perm' => 'view attendance'],
+                                        ['route' => 'admin.hr.leaves.index', 'label' => 'Leaves', 'icon' => 'calendar-x', 'perm' => 'view leaves'],
+                                        ['route' => 'admin.hr.payrolls.index', 'label' => 'Payrolls', 'icon' => 'banknote', 'perm' => 'view payroll'],
+                                        ['route' => 'admin.hr.salary-structures.index', 'label' => 'Salary Structures', 'icon' => 'banknote', 'perm' => null],
+                                        ['route' => 'admin.hr.advances.index', 'label' => 'Advances', 'icon' => 'hand-coins', 'perm' => null],
+                                        ['route' => 'admin.hr.penalties.index', 'label' => 'Penalties', 'icon' => 'shield-alert', 'perm' => null],
+                                        ['route' => 'admin.hr.documents.index', 'label' => 'Documents', 'icon' => 'file-stack', 'perm' => null],
+                                        ['route' => 'admin.hr.evaluations.index', 'label' => 'Evaluations', 'icon' => 'clipboard-check', 'perm' => null],
+                                        ['route' => 'admin.hr.rewards.index', 'label' => 'Rewards', 'icon' => 'award', 'perm' => null],
+                                        ['route' => 'admin.hr.recruitments.index', 'label' => 'Recruitment', 'icon' => 'user-plus', 'perm' => null],
+                                        ['route' => 'admin.hr.test-components', 'label' => 'Test Page', 'icon' => 'layers', 'perm' => null],
+                                    ];
+                                ?>
+
+                                <?php $__currentLoopData = $hrLinks; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $link): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <?php if(empty($link['perm']) || auth()->user()->can($link['perm'])): ?>
+                                    <li>
+                                        <a href="<?php echo e(route($link['route'])); ?>"
+                                            class="flex items-center gap-2.5 px-2 py-2 rounded-md text-[0.72rem] font-bold transition-all
+                                                <?php echo e(request()->routeIs($link['route']) ? 'text-[#ff6900] bg-orange-50' : 'text-slate-400 hover:text-slate-700 hover:bg-slate-50'); ?>">
+                                            <i data-lucide="<?php echo e($link['icon']); ?>" class="w-4 h-4 flex-shrink-0"></i>
+                                            <?php echo e($link['label']); ?>
+
+                                        </a>
+                                    </li>
+                                    <?php endif; ?>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+                <?php endif; ?>
+
+                
+                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view cars')): ?>
                 <div class="space-y-2 pt-2">
                     <div x-show="sidebarOpen" x-cloak class="text-[0.6rem] text-slate-400 font-bold mb-3 uppercase tracking-[0.2em] pl-3 opacity-70 italic">Fleet Management</div>
                     <ul class="space-y-1">
+                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view cars')): ?>
                         <li>
                             <a href="<?php echo e(route('admin.cars.index')); ?>"
                                 class="sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-bold <?php echo e(request()->routeIs('admin.cars.*') ? 'text-slate-900 bg-slate-50 border border-slate-100 shadow-sm' : 'text-slate-500 hover:bg-slate-50'); ?>">
@@ -231,6 +324,8 @@
                                 <span x-show="sidebarOpen" x-cloak class="truncate">Vehicles</span>
                             </a>
                         </li>
+                        <?php endif; ?>
+                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view auctions')): ?>
                         <li>
                             <a href="<?php echo e(route('admin.auctions.index')); ?>"
                                 class="sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-bold <?php echo e(request()->routeIs('admin.auctions.*') ? 'text-slate-900 bg-slate-50 border border-slate-100 shadow-sm' : 'text-slate-500 hover:bg-slate-50'); ?>">
@@ -238,6 +333,8 @@
                                 <span x-show="sidebarOpen" x-cloak class="truncate">Auctions</span>
                             </a>
                         </li>
+                        <?php endif; ?>
+                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view stock')): ?>
                         <li>
                             <a href="<?php echo e(route('admin.stock.index')); ?>"
                                 class="sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-bold <?php echo e(request()->routeIs('admin.stock.*') ? 'text-slate-900 bg-slate-50 border border-slate-100 shadow-sm' : 'text-slate-500 hover:bg-slate-50'); ?>">
@@ -245,6 +342,8 @@
                                 <span x-show="sidebarOpen" x-cloak class="truncate">Stock</span>
                             </a>
                         </li>
+                        <?php endif; ?>
+                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view dealers')): ?>
                         <li>
                             <a href="<?php echo e(route('admin.dealers.index')); ?>"
                                 class="sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-bold <?php echo e(request()->routeIs('admin.dealers.*') ? 'text-slate-900 bg-slate-50 border border-slate-100 shadow-sm' : 'text-slate-500 hover:bg-slate-50'); ?>">
@@ -252,8 +351,10 @@
                                 <span x-show="sidebarOpen" x-cloak class="truncate">Dealers</span>
                             </a>
                         </li>
+                        <?php endif; ?>
 
                         
+                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view finance')): ?>
                         <li x-data="{ open: <?php echo e(request()->routeIs('admin.finance.*') ? 'true' : 'false'); ?> }">
                             
                             <button @click="open = !open"
@@ -298,59 +399,97 @@
 
                             </ul>
                         </li>
+                        <?php endif; ?>
 
                     </ul>
                 </div>
+                <?php endif; ?>
 
                 
+                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view cms')): ?>
                 <div class="space-y-2 pt-2">
                     <div x-show="sidebarOpen" x-cloak class="text-[0.6rem] text-slate-400 font-bold mb-3 uppercase tracking-[0.2em] pl-3 opacity-70 italic">Content</div>
                     <ul class="space-y-1">
+                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view cms')): ?>
                         <li>
                             <a href="<?php echo e(route('admin.cms.home')); ?>" class="sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-medium <?php echo e(request()->routeIs('admin.cms.*') ? 'text-slate-800 bg-slate-50 border border-slate-100' : 'text-slate-500 hover:bg-slate-50'); ?>">
                                 <i data-lucide="home" class="w-5 h-5"></i>
                                 <span x-show="sidebarOpen" x-cloak>Home CMS</span>
                             </a>
                         </li>
+                        <?php endif; ?>
+                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view posts')): ?>
                         <li>
                             <a href="<?php echo e(route('admin.posts.index')); ?>" class="sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-medium <?php echo e(request()->routeIs('admin.posts.*') ? 'text-slate-800 bg-slate-50 border border-slate-100' : 'text-slate-500 hover:bg-slate-50'); ?>">
                                 <i data-lucide="file-text" class="w-5 h-5"></i>
                                 <span x-show="sidebarOpen" x-cloak>Blog Posts</span>
                             </a>
                         </li>
+                        <?php endif; ?>
+                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view pages')): ?>
                         <li>
                             <a href="<?php echo e(route('admin.pages.index')); ?>" class="sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-medium <?php echo e(request()->routeIs('admin.pages.*') ? 'text-slate-800 bg-slate-50 border border-slate-100' : 'text-slate-500 hover:bg-slate-50'); ?>">
                                 <i data-lucide="layers" class="w-5 h-5"></i>
                                 <span x-show="sidebarOpen" x-cloak>Static Pages</span>
                             </a>
                         </li>
+                        <?php endif; ?>
+                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view menus')): ?>
                         <li>
                             <a href="<?php echo e(route('admin.menus.index')); ?>" class="sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-medium <?php echo e(request()->routeIs('admin.menus.*') ? 'text-slate-800 bg-slate-50 border border-slate-100' : 'text-slate-500 hover:bg-slate-50'); ?>">
                                 <i data-lucide="menu" class="w-5 h-5"></i>
                                 <span x-show="sidebarOpen" x-cloak>Site Navigation</span>
                             </a>
                         </li>
+                        <?php endif; ?>
                     </ul>
                 </div>
+                <?php endif; ?>
 
                 
+                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view settings')): ?>
                 <div class="space-y-2 pt-2">
                     <div x-show="sidebarOpen" x-cloak class="text-[0.6rem] text-slate-400 font-bold mb-3 uppercase tracking-[0.2em] pl-3 opacity-70 italic">System</div>
                     <ul class="space-y-1">
+                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view seo')): ?>
                         <li>
-                            <a href="<?php echo e(route('admin.seo.dashboard')); ?>" class="sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-medium <?php echo e(request()->routeIs('admin.seo.*') ? 'text-slate-800 bg-slate-50 border border-slate-100' : 'text-slate-500 hover:bg-slate-50'); ?>">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0 <?php echo e(request()->routeIs('admin.seo.*') ? 'text-[#ff6900]' : 'text-slate-400'); ?>"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                            <a href="<?php echo e(route('admin.seo.dashboard')); ?>" class="sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-medium <?php echo e(request()->routeIs('admin.seo.dashboard') ? 'text-slate-800 bg-slate-50 border border-slate-100' : 'text-slate-500 hover:bg-slate-50'); ?>">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0 <?php echo e(request()->routeIs('admin.seo.dashboard') ? 'text-[#ff6900]' : 'text-slate-400'); ?>"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
                                 <span x-show="sidebarOpen" x-cloak>SEO Intelligence</span>
                             </a>
                         </li>
+                        <li>
+                            <a href="<?php echo e(route('admin.seo.guide')); ?>" class="sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-medium <?php echo e(request()->routeIs('admin.seo.guide') ? 'text-slate-800 bg-slate-50 border border-slate-100' : 'text-slate-500 hover:bg-slate-50'); ?>">
+                                <i data-lucide="help-circle" class="w-5 h-5"></i>
+                                <span x-show="sidebarOpen" x-cloak>How it Works (SEO)</span>
+                            </a>
+                        </li>
+                        <?php endif; ?>
+                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view settings')): ?>
                         <li>
                             <a href="<?php echo e(route('admin.settings.hub')); ?>" class="sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-bold <?php echo e(request()->routeIs('admin.settings.*') ? 'text-slate-900 bg-slate-50 border border-slate-100 shadow-sm' : 'text-slate-500 hover:bg-slate-50'); ?>">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0 <?php echo e(request()->routeIs('admin.settings.*') ? 'text-[#ff6900]' : 'text-slate-400'); ?>"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
                                 <span x-show="sidebarOpen" x-cloak>Settings</span>
                             </a>
                         </li>
+                        <?php endif; ?>
+                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view roles')): ?>
+                        <li>
+                            <a href="<?php echo e(route('admin.roles.index')); ?>" class="sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-bold <?php echo e(request()->routeIs('admin.roles.*') ? 'text-slate-900 bg-slate-50 border border-slate-100 shadow-sm' : 'text-slate-500 hover:bg-slate-50'); ?>">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0 <?php echo e(request()->routeIs('admin.roles.*') ? 'text-[#ff6900]' : 'text-slate-400'); ?>"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                                <span x-show="sidebarOpen" x-cloak>Roles & Users</span>
+                            </a>
+                        </li>
+                        <?php endif; ?>
+                        <li>
+                            <a href="<?php echo e(route('admin.routes.inventory')); ?>" class="sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-bold <?php echo e(request()->routeIs('admin.routes.inventory') ? 'text-slate-900 bg-slate-50 border border-slate-100 shadow-sm' : 'text-slate-500 hover:bg-slate-50'); ?>">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0 <?php echo e(request()->routeIs('admin.routes.inventory') ? 'text-[#ff6900]' : 'text-slate-400'); ?>"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><path d="M4 9h16"/><path d="M9 16l3-3 3 3"/></svg>
+                                <span x-show="sidebarOpen" x-cloak>Routes Inventory</span>
+                            </a>
+                        </li>
                     </ul>
                 </div>
+                <?php endif; ?>
 
                 
                 <div class="pt-6 border-t border-slate-50">
@@ -388,6 +527,32 @@
                                 <?php elseif(request()->segment(3) == 'tasks'): ?> Field Tasks
                                 <?php else: ?> Appraisal Reports
                                 <?php endif; ?>
+                            <?php elseif(request()->segment(2) == 'hr'): ?>
+                                <?php
+                                    $hrTitles = [
+                                        'dashboard' => 'HR Dashboard',
+                                        'employees' => 'Employee Manager',
+                                        'departments' => 'Departments',
+                                        'positions' => 'Positions',
+                                        'shifts' => 'Shifts',
+                                        'attendance' => 'Attendance',
+                                        'leaves' => 'Leaves',
+                                        'payrolls' => 'Payrolls',
+                                        'salary-structures' => 'Salary Structures',
+                                        'advances' => 'Advances',
+                                        'penalties' => 'Penalties',
+                                        'documents' => 'Documents',
+                                        'evaluations' => 'Evaluations',
+                                        'rewards' => 'Rewards',
+                                        'recruitments' => 'Recruitment',
+                                        'test-components' => 'Test Page',
+                                        'calendar' => 'HR Calendar',
+                                        'reports' => 'HR Reports',
+                                    ];
+                                    $thirdSegment = request()->segment(3);
+                                ?>
+                                <?php echo e($hrTitles[$thirdSegment] ?? 'HR Management'); ?>
+
                             <?php else: ?> <?php echo $__env->yieldContent('page_title', 'Dashboard'); ?>
                             <?php endif; ?>
                         </span>
@@ -400,7 +565,7 @@
                     <div class="relative" id="notif-wrapper">
                         <button id="notif-bell" onclick="toggleNotifPanel()"
                                 class="relative w-10 h-10 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-500 hover:bg-[#1d293d] hover:text-white hover:border-[#1d293d] transition-all">
-                            <i data-lucide="bell" class="w-4 h-4"></i>
+                            <i data-lucide="bell" class="w-5 h-5"></i>
                             <span id="notif-badge"
                                   class="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] rounded-full bg-[#ff6900] text-white text-[0.5rem] font-black flex items-center justify-center px-1 hidden animate-bounce">0</span>
                         </button>
@@ -429,19 +594,64 @@
 
                             
                             <div class="px-6 py-3 border-t border-slate-50 text-center">
-                                <span class="text-[0.55rem] font-black uppercase tracking-widest text-slate-300">Auto-refreshes every 15 seconds</span>
+                                <span class="text-[0.55rem] font-black uppercase tracking-widest text-slate-300">Real-time notifications</span>
                             </div>
                         </div>
                     </div>
 
-                    <div class="flex items-center gap-3 pl-6 border-l border-slate-100">
-                        <div class="text-right">
-                            <p class="text-[0.75rem] font-bold text-slate-800 leading-none italic"><?php echo e(Auth::user()->name ?? 'Operator'); ?></p>
-                            <p class="text-[0.55rem] text-slate-400 uppercase tracking-widest mt-1">Administrator Access</p>
-                        </div>
-                        <div class="w-10 h-10 rounded-lg bg-slate-800 flex items-center justify-center text-white text-xs shadow-md">
-                           <?php echo e(strtoupper(substr(Auth::user()->name ?? 'A', 0, 1))); ?>
+                    <div class="relative" id="user-menu-wrapper">
+                        <!-- User Menu Button -->
+                        <button onclick="toggleUserPanel()" class="flex items-center gap-3 pl-6 border-l border-slate-100 hover:opacity-80 transition-all">
+                            <div class="text-right">
+                                <p class="text-[0.75rem] font-bold text-slate-800 leading-none italic"><?php echo e(Auth::user()->name ?? 'Operator'); ?></p>
+                                <p class="text-[0.55rem] text-slate-400 uppercase tracking-widest mt-1">Administrator Access</p>
+                            </div>
+                            <div class="w-10 h-10 rounded-lg bg-slate-800 flex items-center justify-center text-white text-xs shadow-md">
+                               <?php echo e(strtoupper(substr(Auth::user()->name ?? 'A', 0, 1))); ?>
 
+                            </div>
+                        </button>
+
+                        
+                        <div id="user-panel"
+                             class="hidden absolute top-[calc(100%+12px)] right-0 w-60 bg-white rounded-[1.4rem] shadow-2xl border border-slate-100 overflow-hidden z-50 p-2">
+                            
+                            
+                            <div class="p-4 border-b border-slate-100/50 mb-1.5 bg-slate-50/50 rounded-2xl">
+                                <div class="text-[0.85rem] font-black text-slate-950 truncate leading-tight"><?php echo e(Auth::user()->name ?? 'Operator'); ?></div>
+                                <div class="text-[0.55rem] text-slate-400 font-bold uppercase mt-1 tracking-[0.1em]">Administrator Access</div>
+                            </div>
+                            
+                            
+                            <div class="space-y-0.5">
+                                <a href="<?php echo e(route('dealer.profile', Auth::id())); ?>" class="flex items-center gap-3 px-3.5 py-3 rounded-xl text-[0.7rem] font-bold text-slate-600 hover:bg-orange-50 hover:text-[#ff6900] transition-all group/item">
+                                    <div class="w-7 h-7 rounded-lg bg-orange-100/50 flex items-center justify-center text-orange-600 group-hover/item:scale-110 transition-transform">
+                                        <i data-lucide="user-circle" class="w-4"></i>
+                                    </div>
+                                    My Profile
+                                </a>
+                                
+                                <?php if(Auth::user()->is_admin || Auth::user()->hasRole(['admin', 'super-admin'])): ?>
+                                    <a href="<?php echo e(route('admin.dashboard')); ?>" class="flex items-center gap-3 px-3.5 py-3 rounded-xl text-[0.7rem] font-bold text-slate-600 hover:bg-slate-50 transition-all group/item">
+                                        <div class="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center text-slate-600 group-hover/item:scale-110 transition-transform">
+                                            <i data-lucide="cpu" class="w-3"></i>
+                                        </div>
+                                        Core Systems
+                                    </a>
+                                <?php endif; ?>
+
+                                <div class="pt-2 mt-2 border-t border-slate-100/50">
+                                    <form action="<?php echo e(route('logout')); ?>" method="POST">
+                                        <?php echo csrf_field(); ?>
+                                        <button type="submit" class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl text-[0.75rem] font-bold text-red-500 hover:bg-red-50 transition-all group/item">
+                                            <div class="w-8 h-8 rounded-lg bg-red-100/50 flex items-center justify-center text-red-600 group-hover/item:scale-110 transition-transform">
+                                                <i data-lucide="log-out" class="w-4"></i>
+                                            </div>
+                                            Logout
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -585,6 +795,56 @@
     </script>
 
     
+    <script src="https://unpkg.com/pusher-js@8.3.0/dist/web/pusher.min.js"></script>
+    <script>
+        // Initialize Pusher directly for Reverb - MAKE IT GLOBAL
+        window.pusher = new Pusher('<?php echo e(env('REVERB_APP_KEY', 'local')); ?>', {
+            wsHost: window.location.hostname,
+            wsPort: <?php echo e(env('REVERB_PORT', 8080)); ?>,
+            wssPort: <?php echo e(env('REVERB_PORT', 8080)); ?>,
+            forceTLS: <?php echo e(env('REVERB_SCHEME', 'http') === 'https' ? 'true' : 'false'); ?>,
+            enabledTransports: ['ws', 'wss'],
+            disableStats: true,
+            cluster: '',  // Empty for Reverb
+            authEndpoint: '/pusher/auth',
+            auth: {
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content ?? ''
+                }
+            }
+        });
+
+        // Subscribe to private channels
+        <?php if(auth()->guard()->check()): ?>
+        const userChannel = window.pusher.subscribe('private-notifications.<?php echo e(auth()->id()); ?>');
+        userChannel.bind('notification.sent', (e) => {
+            console.log('[Real-time] Notification received:', e);
+            playAlertTone();
+            showNotifToast(e);
+            lastCount++;
+            setBadge(lastCount);
+            loadNotifications();
+        });
+
+        // Listen for role-based notifications
+        <?php
+        $userRoles = auth()->user()->roles->pluck('name')->toArray();
+        ?>
+        <?php $__currentLoopData = $userRoles; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $role): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+        const roleChannel<?php echo e($loop->index); ?> = window.pusher.subscribe('private-role.<?php echo e($role); ?>');
+        roleChannel<?php echo e($loop->index); ?>.bind('notification.sent', (e) => {
+            console.log('[Real-time] Role notification for <?php echo e($role); ?>:', e);
+            playAlertTone();
+            showNotifToast(e);
+            lastCount++;
+            setBadge(lastCount);
+            loadNotifications();
+        });
+        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+        <?php endif; ?>
+    </script>
+
+    
     <script>
     (function() {
         const CSRF = document.querySelector('meta[name="csrf-token"]')?.content ?? '';
@@ -622,18 +882,24 @@
             } catch(e) {}
         }
 
-        // ── Badge ──
+        // ── Badge & Card Text ──
         function setBadge(count) {
             const badge = document.getElementById('notif-badge');
             const label = document.getElementById('notif-count-label');
+            const cardCount = document.getElementById('notif-card-count');
+            
             if (!badge) return;
+            
             if (count > 0) {
                 badge.textContent = count > 99 ? '99+' : count;
                 badge.classList.remove('hidden');
+                if (cardCount) cardCount.textContent = count + ' New';
             } else {
                 badge.textContent = '0';
                 badge.classList.add('hidden');
+                if (cardCount) cardCount.textContent = '0 New';
             }
+            
             if (label) label.textContent = count > 0
                 ? `${count} unread notification${count !== 1 ? 's' : ''}`
                 : 'All caught up!';
@@ -687,15 +953,15 @@
                 lastCount = newCount;
                 setBadge(newCount);
 
-                // Render list if panel is open
+                // Render list
                 const list = document.getElementById('notif-list');
-                if (list && panelOpen) {
-                    if (!data.notifications?.length) {
-                        list.innerHTML = '<div class="py-12 text-center text-[0.65rem] font-black uppercase tracking-widest text-slate-300">No notifications yet.</div>';
-                    } else {
-                        list.innerHTML = data.notifications.map(renderItem).join('');
-                    }
-                }
+                if (list) {
+            if (!data.notifications?.length) {
+                list.innerHTML = '<div class="py-12 text-center text-[0.65rem] font-black uppercase tracking-widest text-slate-300">No notifications yet.</div>';
+            } else {
+                list.innerHTML = data.notifications.map(renderItem).join('');
+            }
+        }
             } catch(e) {
                 console.warn('[Notif] Fetch error:', e.message);
             }
@@ -704,9 +970,19 @@
         // ── Toggle panel ──
         window.toggleNotifPanel = function() {
             const panel = document.getElementById('notif-panel');
+            const userPanel = document.getElementById('user-panel');
+            console.log('[Debug] toggleNotifPanel called, panel found:', !!panel);
             if (!panel) return;
+            
+            // Close user panel if open
+            if (userPanel && !userPanel.classList.contains('hidden')) {
+                userPanel.classList.add('hidden');
+                console.log('[Debug] Closed user panel');
+            }
+            
             panelOpen = !panelOpen;
             panel.classList.toggle('hidden', !panelOpen);
+            console.log('[Debug] Notif panel hidden:', panel.classList.contains('hidden'));
             if (panelOpen) loadNotifications();
         };
 
@@ -729,12 +1005,35 @@
             }).then(() => { lastCount = 0; setBadge(0); loadNotifications(); }).catch(() => {});
         };
 
+        // ── Toggle user panel ──
+        window.toggleUserPanel = function() {
+            const panel = document.getElementById('user-panel');
+            const notifPanel = document.getElementById('notif-panel');
+            console.log('[Debug] toggleUserPanel called, panel found:', !!panel);
+            if (!panel) return;
+            
+            // Close notification panel if open
+            if (notifPanel && !notifPanel.classList.contains('hidden')) {
+                notifPanel.classList.add('hidden');
+                panelOpen = false;
+                console.log('[Debug] Closed notif panel');
+            }
+            
+            panel.classList.toggle('hidden');
+            console.log('[Debug] User panel hidden:', panel.classList.contains('hidden'));
+        };
+
         // ── Close on outside click ──
         document.addEventListener('click', (e) => {
-            const wrapper = document.getElementById('notif-wrapper');
-            if (wrapper && !wrapper.contains(e.target) && panelOpen) {
-                panelOpen = false;
+            const notifWrapper = document.getElementById('notif-wrapper');
+            const userWrapper = document.getElementById('user-menu-wrapper');
+            
+            if (notifWrapper && !notifWrapper.contains(e.target)) {
                 document.getElementById('notif-panel')?.classList.add('hidden');
+            }
+            
+            if (userWrapper && !userWrapper.contains(e.target)) {
+                document.getElementById('user-panel')?.classList.add('hidden');
             }
         });
     })();
@@ -743,6 +1042,61 @@
     <style>
         .custom-scrollbar::-webkit-scrollbar { width: 5px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+        
+        /* CRITICAL: Prevent layout flash - these styles must work immediately */
+        html, body { height: 100%; margin: 0; }
+        .flex { display: flex; }
+        .flex-row { flex-direction: row; }
+        .h-screen { height: 100vh; }
+        .overflow-hidden { overflow: hidden; }
+        .flex-1 { flex: 1 1 0%; }
+        .flex-col { flex-direction: column; }
+        .min-w-0 { min-width: 0; }
+        .bg-white { background-color: #ffffff; }
+        .border-r { border-right: 1px solid #f1f5f9; }
+        .z-40 { z-index: 40; }
+        .z-30 { z-index: 30; }
+        .relative { position: relative; }
+        /* End critical CSS */
+        
+        /* Modal z-index fixes */
+        .modal {
+            z-index: 9999 !important;
+        }
+        .modal-backdrop {
+            z-index: 9998 !important;
+        }
+        .modal-dialog {
+            z-index: 9999 !important;
+        }
+        .modal-content {
+            z-index: 9999 !important;
+        }
+        
+        /* Sidebar z-index */
+        #admin-sidebar {
+            z-index: 40;
+        }
+        
+        /* Header z-index */
+        header {
+            z-index: 30;
+        }
+        
+        /* Notification panel z-index */
+        #notif-panel {
+            z-index: 50;
+        }
+        
+        /* DataTable fixes */
+        .dataTables_wrapper {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .modal-open .dataTables_wrapper {
+            z-index: 1;
+        }
     </style>
     <?php echo $__env->yieldPushContent('scripts'); ?>
 </body>

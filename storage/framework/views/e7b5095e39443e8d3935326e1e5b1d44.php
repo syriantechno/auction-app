@@ -1,6 +1,7 @@
 
 
 <?php $__env->startSection('title', 'CMS Control Center'); ?>
+<?php $__env->startSection('page_title', 'CMS Control Center'); ?>
 
 <?php $__env->startSection('styles'); ?>
 <style>
@@ -29,53 +30,81 @@
 <?php $__env->stopSection(); ?>
 
 <?php $__env->startSection('content'); ?>
-<div class="px-1 space-y-8 pb-20" x-init="lucide.createIcons()" x-data="{ 
-    activeTab: 'navbar',
-    lfStep: 1,
-    navbarSticky: <?php echo e(data_get($page->content, 'navbar.sticky', true) ? 'true' : 'false'); ?>,
-    navbarGlass: <?php echo e(data_get($page->content, 'navbar.glass', true) ? 'true' : 'false'); ?>,
-    navbarBg: '<?php echo e(data_get($page->content, 'navbar.bg_color', '#ffffff')); ?>',
-    navbarText: '<?php echo e(data_get($page->content, 'navbar.text_color', '#1d293d')); ?>',
-    isSaving: false,
+<?php if (isset($component)) { $__componentOriginal247ae89654097d25470c0e2135dc9b7d = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal247ae89654097d25470c0e2135dc9b7d = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.admin-page-standard','data' => ['icon' => 'layout','title' => 'CMS','highlight' => 'Control Center','subtitle' => 'Homepage Content Management System']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('admin-page-standard'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['icon' => 'layout','title' => 'CMS','highlight' => 'Control Center','subtitle' => 'Homepage Content Management System']); ?>
+     <?php $__env->slot('actions', null, []); ?> 
+        <a href="/" target="_blank" class="flex items-center gap-2 px-6 py-3 bg-white hover:bg-slate-50 text-slate-500 hover:text-slate-900 rounded-lg border border-slate-200 text-[0.65rem] font-bold uppercase tracking-widest transition-all shadow-sm">
+            <i data-lucide="external-link" class="w-4 h-4"></i> Live Preview
+        </a>
+     <?php $__env->endSlot(); ?>
 
-    async saveForm(e) {
-        this.isSaving = true;
-        const form = e.target;
-        const formData = new FormData(form);
-        
-        try {
-            console.log('Synchronizing infrastructure...', formData);
-            const response = await fetch(form.action, {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'Accept': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content
-                }
+    <div x-data="{ 
+        activeTab: 'navbar',
+        lfStep: 1,
+        navbarSticky: <?php echo e(data_get($page->content, 'navbar.sticky', true) ? 'true' : 'false'); ?>,
+        navbarGlass: <?php echo e(data_get($page->content, 'navbar.glass', true) ? 'true' : 'false'); ?>,
+        navbarBg: '<?php echo e(data_get($page->content, 'navbar.bg_color', '#ffffff')); ?>',
+        navbarText: '<?php echo e(data_get($page->content, 'navbar.text_color', '#1d293d')); ?>',
+        isSaving: false,
+
+        async saveForm(e) {
+            this.isSaving = true;
+            const form = e.target;
+            
+            // Show all tabs temporarily so FormData captures hidden fields
+            const hiddenTabs = form.querySelectorAll('[x-show]');
+            const originalStyles = [];
+            hiddenTabs.forEach((tab, i) => {
+                originalStyles[i] = tab.style.cssText;
+                tab.style.display = 'block';
             });
             
-            const data = await response.json();
-            console.log('Infrastructure response:', data);
+            const formData = new FormData(form);
             
-            if (response.ok) {
-                window.showToast(data.message || 'Homepage infrastructure synchronized!', 'success');
-            } else {
-                let errorMsg = 'Synchronization Failed: ';
-                if (data.errors) {
-                    errorMsg += Object.values(data.errors).flat().join(', ');
+            // Restore original styles
+            hiddenTabs.forEach((tab, i) => {
+                tab.style.cssText = originalStyles[i];
+            });
+            
+            try {
+                const response = await fetch(form.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    window.showToast(data.message || 'Homepage infrastructure synchronized!', 'success');
                 } else {
-                    errorMsg += data.message || 'Unknown server error';
+                    let errorMsg = 'Synchronization Failed: ';
+                    if (data.errors) {
+                        errorMsg += Object.values(data.errors).flat().join(', ');
+                    } else {
+                        errorMsg += data.message || 'Unknown server error';
+                    }
+                    window.showToast(errorMsg, 'error');
                 }
-                window.showToast(errorMsg, 'error');
+            } catch (error) {
+                window.showToast('Network error: Request timed out', 'error');
+            } finally {
+                this.isSaving = false;
             }
-        } catch (error) {
-            window.showToast('Network error: Request timed out', 'error');
-        } finally {
-            this.isSaving = false;
         }
-    }
-}">
+    }" x-init="lucide.createIcons()">
 
     <?php if($errors->any()): ?>
         <div class="bg-red-50 border-2 border-red-100 p-6 rounded-lg mb-8">
@@ -90,18 +119,7 @@
             </ul>
         </div>
     <?php endif; ?>
-    <!-- Header -->
-    <div class="px-1 group">
-        <div class="flex items-center justify-between">
-            <div>
-                <h1 class="text-2xl font-medium text-slate-900 tracking-tight">CMS Control Center</h1>
-                <p class="text-slate-500 text-[0.7rem] font-bold uppercase tracking-[0.2em] mt-1 italic">Homepage Content Management System</p>
-            </div>
-            <a href="/" target="_blank" class="flex items-center gap-2 px-6 py-3 bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-900 rounded-md text-[0.6rem] font-medium uppercase tracking-widest transition-all shadow-sm">
-                <i data-lucide="external-link" class="w-4 h-4"></i> Live Preview
-            </a>
-        </div>
-    </div>
+
 
     <form @submit.prevent="saveForm" action="<?php echo e(route('admin.cms.home.update')); ?>" method="POST" enctype="multipart/form-data" class="w-full">
         <?php echo csrf_field(); ?>
@@ -899,6 +917,7 @@
 
                 <!-- ==================== LOCATION TAB ==================== -->
                 <div x-show="activeTab === 'location'" x-cloak x-transition>
+                    
                     <div class="bg-white p-8 rounded-lg border border-slate-200 shadow-sm space-y-8">
                         <div class="flex items-center gap-4 mb-2">
                             <div class="w-12 h-12 bg-orange-50 rounded-lg flex items-center justify-center border border-orange-100 shadow-sm">
@@ -914,7 +933,21 @@
                             
                             <div class="space-y-6">
                                 <div class="space-y-4">
-                                    <label class="text-[0.62rem] font-medium uppercase tracking-[0.2em] text-slate-400 block ml-1">Copywriting & Header</label>
+                                    <label class="text-[0.62rem] font-medium uppercase tracking-[0.2em] text-slate-400 block ml-1">Homepage Section Header</label>
+                                    <div class="bg-slate-50 p-5 rounded-lg border border-slate-100 space-y-4">
+                                        <div>
+                                            <label class="text-[0.55rem] font-medium uppercase tracking-widest text-slate-500 mb-2 block flex items-center gap-2"><i data-lucide="type" class="w-3 h-3"></i> Section Title (Above Map)</label>
+                                            <input type="text" name="location[section_header_title]" value="<?php echo e(old('location.section_header_title', data_get($page->content, 'location.section_header_title', 'Find Us Section'))); ?>" class="w-full bg-white border border-slate-200 rounded-md px-4 py-2.5 text-[0.8rem] font-bold text-slate-700 focus:border-[#ff6900] outline-none transition-all" placeholder="Find Us Section">
+                                        </div>
+                                        <div>
+                                            <label class="text-[0.55rem] font-medium uppercase tracking-widest text-slate-500 mb-2 block flex items-center gap-2"><i data-lucide="text" class="w-3 h-3"></i> Section Subtitle</label>
+                                            <input type="text" name="location[section_header_subtitle]" value="<?php echo e(old('location.section_header_subtitle', data_get($page->content, 'location.section_header_subtitle', 'Visit our showroom and explore premium vehicles'))); ?>" class="w-full bg-white border border-slate-200 rounded-md px-4 py-2.5 text-[0.8rem] font-bold text-slate-700 focus:border-[#ff6900] outline-none transition-all" placeholder="Visit our showroom...">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="space-y-4">
+                                    <label class="text-[0.62rem] font-medium uppercase tracking-[0.2em] text-slate-400 block ml-1">Card Copywriting</label>
                                     <div class="bg-slate-50 p-5 rounded-lg border border-slate-100 space-y-4">
                                         <div>
                                             <label class="text-[0.55rem] font-medium uppercase tracking-widest text-slate-500 mb-2 block">Small Top Label</label>
@@ -1234,6 +1267,24 @@
                                 </div>
                             </div>
 
+                            <!-- Footer Appearance -->
+                            <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+                                <div class="text-[0.6rem] font-black uppercase tracking-widest text-indigo-500 mb-4 flex items-center gap-2">
+                                    <div class="w-4 h-px bg-indigo-300"></div> Footer Appearance
+                                </div>
+                                <div class="space-y-3">
+                                    <div>
+                                        <label class="text-[0.5rem] font-black uppercase tracking-widest text-slate-400 mb-1 block flex items-center gap-2">
+                                            <i data-lucide="palette" class="w-3 h-3"></i> Background Color
+                                        </label>
+                                        <div class="flex items-center gap-2">
+                                            <input type="color" name="footer_background_color" value="<?php echo e(data_get($page->content, 'footer.background_color', '#eef3f9')); ?>" class="w-10 h-10 rounded-lg border border-gray-200 cursor-pointer">
+                                            <input type="text" value="<?php echo e(data_get($page->content, 'footer.background_color', '#eef3f9')); ?>" class="flex-1 bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-xs font-bold text-slate-700" readonly>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                             <!-- Bottom Bar -->
                             <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
                                 <div class="text-[0.6rem] font-black uppercase tracking-widest text-indigo-500 mb-4 flex items-center gap-2">
@@ -1347,30 +1398,22 @@
                         </div>
                     </div>
 
-                    <div class="bg-white p-8 rounded-lg border border-slate-200 shadow-sm space-y-6 mt-4">
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="text-[0.6rem] font-medium uppercase tracking-widest text-slate-400 mb-1.5 block">Footer Background</label>
-                                <div class="flex items-center gap-2">
-                                    <input type="color" name="footer_background_color" value="<?php echo e(data_get($page->content, 'footer.background_color', '#031629')); ?>" class="w-10 h-10 rounded-lg border border-gray-200 cursor-pointer">
-                                    <input type="text" value="<?php echo e(data_get($page->content, 'footer.background_color', '#031629')); ?>" class="flex-1 bg-slate-50 border border-slate-100 rounded-md px-4 py-2.5 text-xs font-bold" readonly>
-                                </div>
-                            </div>
-                            <div>
-                                <label class="text-[0.6rem] font-medium uppercase tracking-widest text-slate-400 mb-1.5 block">Theme Accent</label>
-                                <div class="flex items-center gap-2">
-                                    <div class="w-10 h-10 rounded-lg bg-[#ff6900] shadow-lg shadow-orange-500/20"></div>
-                                    <span class="text-[0.65rem] font-medium text-slate-400 uppercase tracking-widest">Orange Bazaar</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
                 
             </div>
         </div>
     </form>
-</div>
+    </div>
+     <?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal247ae89654097d25470c0e2135dc9b7d)): ?>
+<?php $attributes = $__attributesOriginal247ae89654097d25470c0e2135dc9b7d; ?>
+<?php unset($__attributesOriginal247ae89654097d25470c0e2135dc9b7d); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal247ae89654097d25470c0e2135dc9b7d)): ?>
+<?php $component = $__componentOriginal247ae89654097d25470c0e2135dc9b7d; ?>
+<?php unset($__componentOriginal247ae89654097d25470c0e2135dc9b7d); ?>
+<?php endif; ?>
 
 
 <div id="icon-picker-modal" class="hidden fixed inset-0 bg-[#1d293d]/40 backdrop-blur-sm z-[999] items-center justify-center p-4">

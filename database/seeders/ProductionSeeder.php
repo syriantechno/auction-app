@@ -72,16 +72,16 @@ class ProductionSeeder extends Seeder
             [
                 'title' => 'من نحن',
                 'slug' => 'about-us',
-                'content' => json_encode(['text' => 'Automazad هو منصة رائدة لمزادات السيارات الفاخرة...']),
+                'content' => ['text' => 'Automazad هو منصة رائدة لمزادات السيارات الفاخرة...'],
                 'is_published' => true,
             ],
             [
                 'title' => 'شروط الاستخدام',
                 'slug' => 'terms-of-service',
-                'content' => json_encode(['text' => 'الشروط والأحكام المنظمة لاستخدام المنصة...']),
+                'content' => ['text' => 'الشروط والأحكام المنظمة لاستخدام المنصة...'],
                 'is_published' => true,
             ],
-        ])->each(fn ($page) => Page::create($page));
+        ])->each(fn ($page) => Page::updateOrCreate(['slug' => $page['slug']], $page));
 
         // Create CMS Menu
         $mainMenu = Menu::create([

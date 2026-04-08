@@ -4,7 +4,7 @@
     "name": "bootstrap"
   },
   "resources/css/admin.css": {
-    "file": "assets/admin-C9jIHOEA.css",
+    "file": "assets/admin-liE6hfY4.css",
     "name": "admin",
     "names": [
       "admin.css"
@@ -13,7 +13,7 @@
     "isEntry": true
   },
   "resources/css/app.css": {
-    "file": "assets/app-CEVsYmNQ.css",
+    "file": "assets/app-g3JKcQDa.css",
     "name": "app",
     "names": [
       "app.css"

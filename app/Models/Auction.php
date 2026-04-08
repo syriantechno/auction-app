@@ -42,6 +42,11 @@ class Auction extends Model
         'anti_snipe_enabled',
         'time_extension_threshold',
         'time_extension_seconds',
+        'seo_title',
+        'seo_description',
+        'seo_keywords',
+        'seo_schema',
+        'seo_score',
     ];
 
     protected $casts = [
@@ -51,6 +56,8 @@ class Auction extends Model
         'anti_snipe_enabled'       => 'boolean',
         'time_extension_threshold' => 'integer',
         'time_extension_seconds'   => 'integer',
+        'seo_schema'               => 'json',
+        'seo_score'                => 'integer',
     ];
 
     public function invoices()

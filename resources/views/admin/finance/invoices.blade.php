@@ -1,20 +1,23 @@
 @extends('admin.layout')
 @section('title', 'Invoices')
 @section('content')
-<div class="px-1 space-y-5 animate-in fade-in duration-500">
-
-    <x-admin-header icon="file-text" title="Invoices" subtitle="All auction invoices">
+    <x-admin-page-standard 
+        icon="file-text" 
+        title="Financial" 
+        highlight="Invoices" 
+        subtitle="All auction invoices and lifecycle states"
+        dot="orange">
+        
         <x-slot name="actions">
-            <div class="flex gap-2">
+            <div class="flex items-center gap-2">
                 @foreach([''=>'All','pending'=>'Pending','partial'=>'Partial','paid'=>'Paid'] as $val=>$lbl)
                 <a href="{{ route('admin.finance.invoices', $val ? ['status'=>$val] : []) }}"
-                   class="px-4 h-9 rounded-lg text-[0.6rem] font-black uppercase tracking-widest flex items-center transition-all {{ request('status')===$val ? 'bg-[#1d293d] text-white' : 'bg-white border border-slate-200 text-slate-500 hover:border-slate-300' }}">
+                   class="px-5 h-10 rounded-xl text-[0.65rem] font-black uppercase tracking-widest flex items-center transition-all duration-300 {{ request('status')===$val ? 'bg-slate-900 text-white shadow-lg' : 'bg-white border-2 border-slate-100 text-slate-500 hover:border-slate-200' }}">
                     {{ $lbl }}
                 </a>
                 @endforeach
             </div>
         </x-slot>
-    </x-admin-header>
 
     <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
         <table class="w-full">
@@ -73,8 +76,7 @@
     </div>
 
     @if($invoices->hasPages())
-    <div class="flex justify-center">{{ $invoices->withQueryString()->links() }}</div>
+    <div class="flex justify-center mt-6">{{ $invoices->withQueryString()->links() }}</div>
     @endif
-
-</div>
+    </x-admin-page-standard>
 @endsection

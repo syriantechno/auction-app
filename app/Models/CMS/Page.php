@@ -12,6 +12,9 @@ class Page extends Model
         'content',
         'hero_image',
         'is_published',
+        'seo_title',
+        'seo_description',
+        'seo_keywords',
     ];
 
     protected $casts = [

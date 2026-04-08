@@ -18,7 +18,7 @@ use Illuminate\Database\Eloquent\Model;
 class FinancialAccount extends Model
 {
     protected $fillable = [
-        'name', 'type', 'bank_name', 'account_number',
+        'company_id', 'name', 'type', 'bank_name', 'account_number',
         'opening_balance', 'current_balance', 'is_active', 'notes',
     ];
 
@@ -27,6 +27,11 @@ class FinancialAccount extends Model
         'current_balance'  => 'decimal:2',
         'is_active'        => 'boolean',
     ];
+
+    public function company()
+    {
+        return $this->belongsTo(Company::class);
+    }
 
     public function receipts()
     {

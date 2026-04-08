@@ -21,7 +21,7 @@ use Illuminate\Database\Eloquent\Model;
 class PaymentVoucher extends Model
 {
     protected $fillable = [
-        'voucher_number', 'auction_id', 'financial_account_id',
+        'company_id', 'voucher_number', 'auction_id', 'financial_account_id',
         'paid_to_name', 'amount', 'payment_method', 'reference',
         'voucher_date', 'category', 'description', 'created_by',
     ];
@@ -57,6 +57,11 @@ class PaymentVoucher extends Model
                 'net_profit'     => $netProfit,
             ]);
         }
+    }
+
+    public function company()
+    {
+        return $this->belongsTo(Company::class);
     }
 
     public function auction()

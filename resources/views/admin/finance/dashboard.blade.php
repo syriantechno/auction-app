@@ -1,22 +1,29 @@
 @extends('admin.layout')
 @section('title', 'Accounting Overview')
 @section('content')
-<div class="px-1 space-y-6 animate-in fade-in duration-500">
-
-    <x-admin-header icon="landmark" title="Accounting Overview"
-        subtitle="Financial summary & cash flow">
+    <x-admin-page-standard 
+        icon="landmark" 
+        title="Accounting" 
+        highlight="Overview"
+        subtitle="Financial summary & cash flow"
+        dot="emerald">
+        
         <x-slot name="actions">
-            <a href="{{ route('admin.finance.receipts') }}" class="px-5 h-10 bg-emerald-600 text-white rounded-lg font-black text-[0.65rem] uppercase tracking-widest flex items-center gap-2 hover:bg-emerald-700 transition-all shadow-lg">
-                <i data-lucide="plus" class="w-4 h-4"></i> New Receipt
-            </a>
-            <a href="{{ route('admin.finance.vouchers') }}" class="px-5 h-10 bg-red-500 text-white rounded-lg font-black text-[0.65rem] uppercase tracking-widest flex items-center gap-2 hover:bg-red-600 transition-all shadow-lg">
-                <i data-lucide="minus" class="w-4 h-4"></i> New Voucher
-            </a>
-            <a href="{{ route('admin.finance.invoices') }}" class="px-5 h-10 bg-[#1d293d] text-white rounded-lg font-black text-[0.65rem] uppercase tracking-widest flex items-center gap-2 hover:bg-[#111827] transition-all shadow-lg">
-                <i data-lucide="file-text" class="w-4 h-4"></i> Invoices
-            </a>
+            <div class="flex items-center gap-4">
+                <a href="{{ route('admin.finance.receipts') }}" class="group h-14 px-6 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl font-black text-[0.7rem] uppercase tracking-widest flex items-center gap-2 transition-all shadow-lg shadow-emerald-500/20 active:scale-95">
+                    <i data-lucide="plus" class="w-4 h-4"></i>
+                    <span>New Receipt</span>
+                </a>
+                <a href="{{ route('admin.finance.vouchers') }}" class="group h-14 px-6 bg-red-500 hover:bg-red-600 text-white rounded-2xl font-black text-[0.7rem] uppercase tracking-widest flex items-center gap-2 transition-all shadow-lg shadow-red-500/20 active:scale-95">
+                    <i data-lucide="minus" class="w-4 h-4"></i>
+                    <span>New Voucher</span>
+                </a>
+                <a href="{{ route('admin.finance.invoices') }}" class="group h-14 px-8 bg-slate-900 hover:bg-[#ff6900] text-white rounded-2xl font-black text-[0.7rem] uppercase tracking-[0.2em] transition-all duration-500 flex items-center gap-3 shadow-xl">
+                    <i data-lucide="file-text" class="w-4 h-4 group-hover:scale-110 transition-transform"></i>
+                    <span>Invoices</span>
+                </a>
+            </div>
         </x-slot>
-    </x-admin-header>
 
     {{-- ── KPI CARDS ─────────────────────────────────────────── --}}
     <div class="grid grid-cols-2 lg:grid-cols-5 gap-4">
@@ -145,6 +152,5 @@
             @endforelse
         </div>
     </div>
-
-</div>
+    </x-admin-page-standard>
 @endsection

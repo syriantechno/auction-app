@@ -83,9 +83,23 @@ class SettingsController extends Controller
             $auctionSettings[$key] = SystemSetting::get($key);
         }
 
+        // Tab 14 — Google Reviews
+        $googleReviewSettings = [
+            'enabled' => SystemSetting::get('google_reviews_enabled', '0'),
+            'title' => SystemSetting::get('google_reviews_title', 'Loved by real buyers'),
+            'subtitle' => SystemSetting::get('google_reviews_subtitle', 'Straight from Google Reviews'),
+            'badge' => SystemSetting::get('google_reviews_badge', '4.9 / 5 • Google Reviews'),
+            'place_id' => SystemSetting::get('google_reviews_place_id', ''),
+            'api_key' => SystemSetting::get('google_reviews_api_key', ''),
+            'manual_reviews' => json_decode(SystemSetting::get('google_reviews_manual_list', '[]'), true) ?: [],
+        ];
+
+        // Tab 13 — Companies
+        $companies = \App\Models\Company::latest()->get();
+
         return view('admin.settings.hub', compact(
             'settings', 'roles', 'allPerms', 'users',
-            'notifSettings', 'commSettings', 'auctionSettings'
+            'notifSettings', 'commSettings', 'auctionSettings', 'companies', 'googleReviewSettings'
         ));
     }
 
@@ -109,6 +123,50 @@ class SettingsController extends Controller
 
         return redirect()->route('admin.settings.hub', ['tab' => 'tab3'])
             ->with('success', 'Notification settings saved successfully.');
+    }
+
+
+
+    public function saveGoogleReviewsSettings(Request $request)
+    {
+        $request->validate([
+            'google_reviews_title' => 'nullable|string|max:120',
+            'google_reviews_subtitle' => 'nullable|string|max:200',
+            'google_reviews_badge' => 'nullable|string|max:120',
+            'google_reviews_place_id' => 'nullable|string|max:255',
+            'reviews' => 'nullable|array',
+            'reviews.*.author' => 'required_with:reviews|string|max:80',
+            'reviews.*.rating' => 'nullable|integer|min:1|max:5',
+            'reviews.*.text' => 'nullable|string|max:500',
+            'reviews.*.profile_url' => 'nullable|url|max:255',
+        ]);
+
+        SystemSetting::set('google_reviews_enabled', $request->has('google_reviews_enabled') ? '1' : '0');
+        SystemSetting::set('google_reviews_title', $request->input('google_reviews_title', 'Loved by real buyers'));
+        SystemSetting::set('google_reviews_subtitle', $request->input('google_reviews_subtitle', 'Straight from Google Reviews'));
+        SystemSetting::set('google_reviews_badge', $request->input('google_reviews_badge', '4.9 / 5 • Google Reviews'));
+        SystemSetting::set('google_reviews_place_id', trim($request->input('google_reviews_place_id', '')));
+        SystemSetting::set('google_reviews_api_key', trim($request->input('google_reviews_api_key', '')));
+
+        $manualReviews = collect($request->input('reviews', []))
+            ->filter(fn($review) => filled(data_get($review, 'author')) || filled(data_get($review, 'text')))
+            ->map(function ($review) {
+                return [
+                    'author' => data_get($review, 'author', 'Verified Buyer'),
+                    'rating' => (int) data_get($review, 'rating', 5),
+                    'text' => data_get($review, 'text', ''),
+                    'profile_url' => data_get($review, 'profile_url'),
+                ];
+            })
+            ->values()
+            ->all();
+
+        SystemSetting::set('google_reviews_manual_list', json_encode($manualReviews));
+
+        \Illuminate\Support\Facades\Cache::forget('system_settings_global');
+
+        return redirect()->route('admin.settings.hub', ['tab' => 'tab14'])
+            ->with('success', 'Google reviews settings saved.');
     }
 
 

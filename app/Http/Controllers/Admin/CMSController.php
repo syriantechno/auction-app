@@ -254,6 +254,8 @@ class CMSController extends Controller
         if ($request->has('location')) {
             $loc = $request->input('location', []);
             $content['location'] = [
+                'section_header_title'   => data_get($loc, 'section_header_title', 'Find Us Section'),
+                'section_header_subtitle'=> data_get($loc, 'section_header_subtitle', 'Visit our showroom and explore premium vehicles'),
                 'section_label' => data_get($loc, 'section_label', 'Find Us'),
                 'title'         => data_get($loc, 'title', 'Visit Motor'),
                 'title_accent'  => data_get($loc, 'title_accent', 'Bazar'),
@@ -311,6 +313,7 @@ class CMSController extends Controller
         Cache::forget('homepage.cms.page');
         Cache::forget('homepage.featured.auctions');
         Cache::forget('homepage.stats');
+        Cache::forget('layout.app.globals');
 
         if ($request->wantsJson() || $request->ajax()) {
             return response()->json([

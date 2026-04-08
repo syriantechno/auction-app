@@ -108,6 +108,83 @@
         color: white;
     }
 </style>
+
+{{-- 
+  ── ADVANCED SEO AUTONOMOUS AGENT ──
+  This JSON-LD block transforms this page into a Rich Result candidate for Google.
+  It includes Product, Offer, and BreadcrumbList schemas.
+--}}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org/",
+  "@type": "Product",
+  "name": "{{ ($auction->car->year ?? '') . ' ' . ($auction->car->make ?? '') . ' ' . ($auction->car->model ?? '') }}",
+  "image": [
+    "{{ url($auctionImage) }}"
+  ],
+  "description": "{{ $auction->car->latestInspection->expert_summary ?? 'Premium ' . ($auction->car->make ?? '') . ' car available for auction on Motor Bazar. Certified technical audit included.' }}",
+  "sku": "AUCTION-{{ $auction->id }}",
+  "mpn": "{{ $auction->car->vin ?? 'N/A' }}",
+  "brand": {
+    "@type": "Brand",
+    "name": "{{ $auction->car->make ?? 'Unknown' }}"
+  },
+  @if($auction->car->latestInspection)
+  "review": {
+    "@type": "Review",
+    "reviewRating": {
+      "@type": "Rating",
+      "ratingValue": "{{ ($auction->car->latestInspection->overall_score ?? 0) / 20 }}",
+      "bestRating": "5"
+    },
+    "author": {
+      "@type": "Organization",
+      "name": "Motor Bazar Expert Audit Team"
+    }
+  },
+  @endif
+  "offers": {
+    "@type": "Offer",
+    "url": "{{ url()->current() }}",
+    "priceCurrency": "USD",
+    "price": "{{ $auction->current_price ?? $auction->initial_price }}",
+    "priceValidUntil": "{{ $auction->end_at?->format('Y-m-d') }}",
+    "itemCondition": "https://schema.org/UsedCondition",
+    "availability": "https://schema.org/{{ $auction->status === 'active' ? 'InStock' : 'PreOrder' }}",
+    "seller": {
+      "@type": "Organization",
+      "name": "Motor Bazar"
+    }
+  }
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "{{ url('/') }}"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Auctions",
+      "item": "{{ route('auctions.index') }}"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "{{ $auction->car->make ?? 'Car' }}",
+      "item": "{{ route('auctions.index', ['make' => $auction->car->make ?? '']) }}"
+    }
+  ]
+}
+</script>
 @endsection
 
 @section('content')

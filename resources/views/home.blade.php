@@ -1,14 +1,15 @@
 @extends('layouts.app')
 
 @section('title', 'Motor Bazar - Premium Car Marketplace')
+@section('meta_description', 'أكبر منصة لمزادات السيارات في الخليج. اشترِ سيارتك الآن بأفضل الأسعار مع تقرير فحص فني دقيق لكل سيارة.')
+@section('meta_keywords', 'مزادات السيارات, سيارات مستعملة, حراج السيارات, شراء سيارة, تويوتا, نيسان, الخليج, دبي')
 
 @section('head')
 {{-- Anti-FOUC: hide page until styled. Runs synchronously (no defer/async) --}}
-<script>document.documentElement.classList.add('fouc-guard');</script>
 <style>
     @php
         $page = $page ?? null;
-        $heroContent = $page ? data_get($page->content, 'hero', []) : [];
+        $heroContent = data_get($page?->content, 'hero', []);
         $homepageHeroImage = data_get($heroContent, 'background_image') ?: ($page ? $page->hero_image : null) ?: '/images/cars/navy-mclaren.png';
         $fallbackCarImages = [
             '/images/cars/navy-mclaren.png',
@@ -40,8 +41,6 @@
             : "background-image: url('{$heroBackgroundImage}'); background-size: cover; background-position: center; background-color: {$heroBackgroundColor};";
     @endphp
 
-    /* ── Anti-FOUC: hide page until CSS ready ── */
-    html.fouc-guard { opacity: 0 !important; }
 
     .search-tab {
         padding: 12px 20px;
@@ -277,7 +276,7 @@
 
 @php
     $page = $page ?? null;
-    $heroContent = $page ? data_get($page->content, 'hero', []) : [];
+    $heroContent = data_get($page?->content, 'hero', []);
     $sellCarYears = range((int) date('Y') + 1, 1995);
     $sellCarMakes = $catalogMakes ?? [];
     $popularBrands = $catalogBrands ?? [];
@@ -306,15 +305,15 @@
     {{-- High-Performance Elite Dashboard (Advanced 3-Layer Layout) --}}
 
     @php
-        $heroMode = data_get($page->content, 'hero.background_mode', 'image');
-        $heroBg = data_get($page->content, 'hero.background_image', '/images/hero-bg.png');
-        $heroColor = data_get($page->content, 'hero.background_color', '#e7e7e7');
-        $heroColor2 = data_get($page->content, 'hero.background_color_secondary', '#1a1d26');
-        $heroAngle = data_get($page->content, 'hero.background_gradient_angle', 135);
-        $heroCustomCss = data_get($page->content, 'hero.custom_css', '');
-        $heroOpacity = (float) data_get($page->content, 'hero.background_overlay_opacity', 0.72);
-        $heroOverlayEnabled = data_get($page->content, 'hero.background_overlay_enabled', true);
-        $heroDirection = data_get($page->content, 'hero.background_overlay_direction', 'horizontal');
+        $heroMode = data_get($page?->content, 'hero.background_mode', 'image');
+        $heroBg = data_get($page?->content, 'hero.background_image', '/images/hero-bg.png');
+        $heroColor = data_get($page?->content, 'hero.background_color', '#e7e7e7');
+        $heroColor2 = data_get($page?->content, 'hero.background_color_secondary', '#1a1d26');
+        $heroAngle = data_get($page?->content, 'hero.background_gradient_angle', 135);
+        $heroCustomCss = data_get($page?->content, 'hero.custom_css', '');
+        $heroOpacity = (float) data_get($page?->content, 'hero.background_overlay_opacity', 0.72);
+        $heroOverlayEnabled = data_get($page?->content, 'hero.background_overlay_enabled', true);
+        $heroDirection = data_get($page?->content, 'hero.background_overlay_direction', 'horizontal');
         $gradDir = $heroDirection === 'vertical' ? 'to bottom' : 'to right';
         
         // Helper to convert hex to rgba in blade
@@ -381,9 +380,9 @@
 
                     <div class="flex items-center gap-8 pt-4">
                         <div class="flex -space-x-3 overflow-hidden">
-                            <img class="inline-block h-10 w-10 rounded-full ring-2 ring-[#e7e7e7]" src="https://i.pravatar.cc/100?u=1" alt="">
-                            <img class="inline-block h-10 w-10 rounded-full ring-2 ring-[#e7e7e7]" src="https://i.pravatar.cc/100?u=2" alt="">
-                            <img class="inline-block h-10 w-10 rounded-full ring-2 ring-[#e7e7e7]" src="https://i.pravatar.cc/100?u=3" alt="">
+                            <img class="inline-block h-10 w-10 rounded-full ring-2 ring-[#e7e7e7]" src="https://i.pravatar.cc/100?u=1" alt="Motor Bazar User" loading="lazy">
+                            <img class="inline-block h-10 w-10 rounded-full ring-2 ring-[#e7e7e7]" src="https://i.pravatar.cc/100?u=2" alt="Motor Bazar User" loading="lazy">
+                            <img class="inline-block h-10 w-10 rounded-full ring-2 ring-[#e7e7e7]" src="https://i.pravatar.cc/100?u=3" alt="Motor Bazar User" loading="lazy">
                             <div class="flex items-center justify-center h-10 w-10 rounded-full ring-2 ring-[#e7e7e7] bg-[#1d293d] text-white text-[0.6rem] font-black">+1k</div>
                         </div>
                         <div class="text-[0.7rem] font-black text-slate-400 uppercase tracking-widest leading-none">
@@ -394,16 +393,21 @@
 
                 {{-- Right Side: The Elite Showroom Asset --}}
                 <div class="w-full lg:w-[55%] relative transform hover:scale-[1.05] transition-all duration-1000">
-                    <img src="{{ $page->hero_image ?: '/images/cars/mclaren.png' }}" 
+                    <img src="{{ $page?->hero_image ?: '/images/cars/mclaren.png' }}" 
                         class="w-full h-auto object-contain filter contrast-[1.18] brightness-[1.05] saturate-[1.25] drop-shadow-[0_90px_110px_rgba(3,22,41,0.18)]" 
                         alt="Elite Selection"
-                        style="image-rendering: -webkit-optimize-contrast; transform: scale({{ data_get($page->content, 'hero.car_scale', 1) }}); transform-origin: center bottom;">
+                        style="image-rendering: -webkit-optimize-contrast; transform: scale({{ data_get($page?->content, 'hero.car_scale', 1) }}); transform-origin: center bottom;">
                 </div>
 
             </div>
         </div>
     </section>
 
+    @php
+        $hideSellWizard = auth()->check() && auth()->user()->hasRole('dealer');
+    @endphp
+
+    @unless($hideSellWizard)
     {{-- Sell Car Wizard: Independent Glass Card --}}
     <section class="relative z-40 -mt-[19rem] px-6 lg:px-12 pb-16">
         <div class="mx-auto max-w-[1440px]">
@@ -448,7 +452,7 @@
                                 ->all();
                                 
                             // 2. "Quick Pick" Cards (8 brands): Curated in CMS, don't touch
-                            $cmsLeadBrands = data_get($page->content, 'lead_form_brands', []);
+                            $cmsLeadBrands = data_get($page?->content, 'lead_form_brands', []);
                             
                             if (!empty($cmsLeadBrands)) {
                                 $brandCardBrands = collect($cmsLeadBrands)->map(function($brand) {
@@ -955,12 +959,12 @@
 
             {{-- Trust Badges: Centered Icon + Title + Description --}}
             @php
-                $trustBadges = data_get($page?->content, 'trust_badges', [
+                $trustBadges = array_slice(data_get($page?->content, 'trust_badges', [
                     ['label' => 'Guaranteed Purchase',    'icon' => 'shield-check', 'color' => '#ff4605', 'bg_color' => '#fff7ed', 'desc' => 'We guarantee every transaction is safe, verified, and backed by Motor Bazar.'],
                     ['label' => 'No Costs. No Obligation','icon' => 'wallet',       'color' => '#031629', 'bg_color' => '#f1f5f9', 'desc' => 'Free valuations with zero hidden fees. Walk away any time — no strings attached.'],
                     ['label' => 'Quick and Easy',         'icon' => 'zap',          'color' => '#ff6900', 'bg_color' => '#fff7ed', 'desc' => 'Submit your car in under 3 minutes. Our team contacts you within 24 hours.'],
                     ['label' => 'Fast and Secure',        'icon' => 'lock',         'color' => '#334155', 'bg_color' => '#f8fafc', 'desc' => 'Bank-grade encryption protects your data and payment at every step.'],
-                ]);
+                ]), 0, 3);
                 $badgesTitle = data_get($page?->content, 'trust_badges_title', 'We built our business on trust');
             @endphp
 
@@ -970,12 +974,11 @@
             </div>
 
             {{-- Badges Grid --}}
-            <div class="grid grid-cols-2 xl:grid-cols-4 relative">
+            <div class="grid grid-cols-1 md:grid-cols-3 relative max-w-5xl mx-auto">
                 {{-- Gradient separator lines --}}
-                <div class="hidden xl:block absolute top-[10%] bottom-[10%] left-1/4 w-px" style="background: linear-gradient(to bottom, transparent, #cbd5e1, transparent);"></div>
-                <div class="hidden xl:block absolute top-[10%] bottom-[10%] left-2/4 w-px" style="background: linear-gradient(to bottom, transparent, #cbd5e1, transparent);"></div>
-                <div class="hidden xl:block absolute top-[10%] bottom-[10%] left-3/4 w-px" style="background: linear-gradient(to bottom, transparent, #cbd5e1, transparent);"></div>
-                <div class="xl:hidden absolute left-[10%] right-[10%] top-1/2 h-px" style="background: linear-gradient(to right, transparent, #cbd5e1, transparent);"></div>
+                <div class="hidden md:block absolute top-[10%] bottom-[10%] left-1/3 w-px" style="background: linear-gradient(to bottom, transparent, #cbd5e1, transparent);"></div>
+                <div class="hidden md:block absolute top-[10%] bottom-[10%] left-2/3 w-px" style="background: linear-gradient(to bottom, transparent, #cbd5e1, transparent);"></div>
+                <div class="md:hidden absolute left-[10%] right-[10%] top-1/2 h-px" style="background: linear-gradient(to right, transparent, #cbd5e1, transparent);"></div>
                 @foreach($trustBadges as $i => $badge)
                 @php
                     $bColor = data_get($badge, 'color', '#333');
@@ -1062,6 +1065,24 @@
     <section class="py-16 px-6 lg:px-12 bg-[#e7e7e7] relative z-10">
         <div class="max-w-[1440px] mx-auto">
 
+            {{-- Section Card Title - Premium Design --}}
+            <div class="text-center mb-10">
+                <div class="inline-flex flex-col items-center">
+                    {{-- Icon Badge --}}
+                    <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#ff4605] to-[#ff6900] flex items-center justify-center shadow-lg shadow-orange-500/25 mb-4">
+                        <i data-lucide="map-pin" class="w-7 h-7 text-white"></i>
+                    </div>
+                    {{-- Title with decorative lines --}}
+                    <div class="flex items-center gap-4">
+                        <div class="h-px w-16 bg-gradient-to-r from-transparent via-[#ff4605] to-[#ff4605]"></div>
+                        <h2 class="text-lg font-black uppercase tracking-[0.25em] text-[#031629]">{{ data_get($page?->content, 'location.section_header_title', 'Find Us Section') }}</h2>
+                        <div class="h-px w-16 bg-gradient-to-l from-transparent via-[#ff4605] to-[#ff4605]"></div>
+                    </div>
+                    {{-- Subtitle --}}
+                    <p class="text-sm text-slate-500 font-medium mt-2 tracking-wide">{{ data_get($page?->content, 'location.section_header_subtitle', 'Visit our showroom and explore premium vehicles') }}</p>
+                </div>
+            </div>
+
             {{-- Section Label --}}
             <div class="flex items-center gap-4 mb-8">
                 <div class="h-1 w-10 bg-[#ff4605] rounded-full"></div>
@@ -1134,6 +1155,7 @@
             </div>
         </div>
     </section>
+    @endunless
 
     {{-- Body Type Browser: Dynamic CMS Sync --}}
     <section class="py-20 px-6 lg:px-12 bg-transparent relative z-10">
@@ -1327,7 +1349,10 @@
     {{-- ══════════════════════════════════════════
          LIVE AUCTION SHOWCASE SECTION
     ══════════════════════════════════════════ --}}
-    @if($featuredAuctions->isNotEmpty())
+    @php
+        $showLiveAuctions = $featuredAuctions->isNotEmpty() && auth()->check() && auth()->user()->isAdmin();
+    @endphp
+    @if($showLiveAuctions)
     <section class="py-24 px-6 lg:px-12 bg-white" id="live-auctions">
         <div class="mx-auto max-w-[1440px]">
             <div class="flex items-end justify-between mb-12">
@@ -2755,11 +2780,6 @@
 
     <script>
         /* ── FOUC reveal: called after all scripts load ── */
-        (function revealPage() {
-            var html = document.documentElement;
-            html.style.transition = 'opacity 80ms ease';
-            html.classList.remove('fouc-guard');
-        })();
     </script>
 @endsection
 

@@ -18,6 +18,8 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
             'api.token' => \App\Http\Middleware\AuthenticateApiToken::class,
+            'permission' => \App\Http\Middleware\CheckPermission::class,
+            'track.source' => \App\Http\Middleware\TrackLeadSource::class,
         ]);
 
         $middleware->validateCsrfTokens(except: [
@@ -25,6 +27,11 @@ return Application::configure(basePath: dirname(__DIR__))
             'register',
             'auctions/*/bid',
             'api/*',
+        ]);
+
+        // Apply lead source tracking to all web routes
+        $middleware->web([
+            \App\Http\Middleware\TrackLeadSource::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

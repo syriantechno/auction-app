@@ -8,6 +8,7 @@
                 <th class="py-4 px-6 text-[0.65rem] text-slate-500 font-black uppercase tracking-[0.2em]">Technical Stats</th>
                 <th class="py-4 px-6 text-[0.65rem] text-slate-500 font-black uppercase tracking-[0.2em]">Appointment Hub</th>
                 <th class="py-4 px-6 text-[0.65rem] text-slate-500 font-black uppercase tracking-[0.2em] text-center">Status</th>
+                <th class="py-4 px-6 text-[0.65rem] text-slate-500 font-black uppercase tracking-[0.2em] text-center">Source</th>
                 <th class="py-4 px-8 text-[0.65rem] text-slate-500 font-black uppercase tracking-[0.2em] text-right">Ops Control</th>
             </tr>
         </thead>
@@ -117,28 +118,30 @@
                         {{ str_replace('_', ' ', $lead->status) }}
                     </span>
                 </td>
+                <td class="py-5 px-6 text-center">
+                    @php
+                        $sourceColor = \App\Models\Lead::getSourceColor($lead->source ?? '');
+                        $sourceLabel = \App\Models\Lead::getSourceLabel($lead->source);
+                    @endphp
+                    <span class="px-3 py-1.5 rounded-md text-[0.6rem] font-black uppercase tracking-widest text-white shadow-sm" 
+                          style="background-color: {{ $sourceColor }};">
+                        {{ $sourceLabel }}
+                    </span>
+                </td>
                 <td class="py-5 px-8 text-right">
                     <div class="flex items-center justify-end gap-3">
                         @if($lead->status === 'new' || $lead->status === 'pending' || $lead->status === 'Active')
-                            <button onclick="confirmLead({{ $lead->id }})" title="Confirm & Schedule" class="w-10 h-10 rounded-md bg-orange-50 border border-orange-100 text-[#FF6900] flex items-center justify-center hover:bg-[#FF6900] hover:text-white transition-all shadow-sm active:scale-95 group">
-                                <i data-lucide="calendar-check" class="w-4.5 h-4.5 transition-transform group-hover:scale-110"></i>
-                            </button>
+                            <x-admin-action icon="calendar-check" click="confirmLead({{ $lead->id }})" title="Confirm & Schedule" variant="orange" />
                         @endif
-                        <button onclick="viewLead({{ $lead->id }})" title="Open Node" class="w-10 h-10 rounded-md bg-white border border-slate-200 text-slate-400 flex items-center justify-center hover:bg-[#1d293d] hover:text-white transition-all shadow-sm active:scale-95 group">
-                            <i data-lucide="eye" class="w-4.5 h-4.5 transition-transform group-hover:scale-110"></i>
-                        </button>
-                        <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $details['phone'] ?? '') }}" target="_blank" class="w-10 h-10 rounded-md bg-emerald-50 border border-emerald-100 text-emerald-600 flex items-center justify-center hover:bg-emerald-600 hover:text-white transition-all shadow-sm active:scale-95 group">
-                            <i data-lucide="message-circle" class="w-4.5 h-4.5 transition-transform group-hover:scale-110"></i>
-                        </a>
-                        <button onclick="deleteLead({{ $lead->id }})" class="w-10 h-10 rounded-md bg-white border border-red-100 text-red-400 flex items-center justify-center hover:bg-red-600 hover:text-white transition-all shadow-sm active:scale-95 group">
-                            <i data-lucide="trash-2" class="w-4.5 h-4.5 transition-transform group-hover:scale-110"></i>
-                        </button>
+                        <x-admin-action icon="eye" click="viewLead({{ $lead->id }})" title="Open Node" variant="slate" />
+                        <x-admin-action icon="message-circle" href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $details['phone'] ?? '') }}" title="WhatsApp" variant="emerald" />
+                        <x-admin-action icon="trash" click="deleteLead({{ $lead->id }})" title="Delete Record" variant="red" />
                     </div>
                 </td>
             </tr>
             @empty
             <tr>
-                <td colspan="7" class="py-32 text-center bg-slate-50">
+                <td colspan="8" class="py-32 text-center bg-slate-50">
                     <div class="flex flex-col items-center gap-6">
                         <div class="relative">
                             <div class="w-20 h-20 bg-white rounded-lg flex items-center justify-center border border-slate-200 shadow-xl">
