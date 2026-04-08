@@ -111,34 +111,6 @@
 <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css' rel='stylesheet' />
 <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js'></script>
 
-<style>
-    .fc { font-family: inherit; }
-    .fc .fc-toolbar { margin-bottom: 2rem !important; }
-    .fc-toolbar-title { font-size: 1rem !important; font-weight: 800 !important; color: #1e293b !important; text-transform: uppercase; letter-spacing: 0.1em; }
-    .fc-button { background: #f8fafc !important; border: 1px solid #f1f5f9 !important; color: #94a3b8 !important; font-weight: 800 !important; text-transform: uppercase !important; font-size: 0.6rem !important; letter-spacing: 0.1em !important; border-radius: 12px !important; padding: 10px 16px !important; transition: all 0.2s; }
-    .fc-button-active { background: #ff4605 !important; border-color: #ff4605 !important; color: #fff !important; box-shadow: 0 10px 20px -5px rgba(255, 70, 5, 0.2); }
-    .fc-button:hover:not(.fc-button-active) { background: #fff !important; border-color: #e2e8f0 !important; color: #1e293b !important; }
-    
-    .fc-daygrid-event { 
-        border-radius: 9999px !important; 
-        font-size: 0.7rem !important; 
-        padding: 5px 12px 5px 12px !important; 
-        font-weight: 700 !important; 
-        border: none !important; 
-        margin-top: 5px !important; 
-        box-shadow: 0 4px 12px -2px rgba(0,0,0,0.1) !important;
-        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
-        color: #fff !important;
-    }
-    .fc-daygrid-event:hover {
-        transform: scale(1.03) !important;
-        box-shadow: 0 15px 25px -5px rgba(0,0,0,0.15) !important;
-        z-index: 100 !important;
-    }
-    .fc-event-main { display: flex; align-items: center; justify-content: center; }
-    .fc-daygrid-event-dot { display: none !important; }
-    .fc-day-today { background: rgba(255, 70, 5, 0.02) !important; }
-</style>
 
 <script>
     function closeAuditModal() { document.getElementById('eventModal').classList.add('hidden'); }

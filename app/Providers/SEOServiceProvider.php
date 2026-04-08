@@ -40,19 +40,23 @@ class SEOServiceProvider extends ServiceProvider
 
     private function bootAutoSEOGeneration()
     {
-        // Listen for model events and generate SEO automatically
-        $models = ['Auction', 'Page', 'Blog']; // Add your models here
-        
+        // Auction SEO is handled exclusively by AuctionObserver — do not add it here
+        $models = ['Page', 'Post']; // Blog uses Post model
+
+        $seoFields = ['title', 'content', 'description', 'body', 'excerpt', 'summary', 'slug'];
+
         foreach ($models as $model) {
             $modelClass = "App\\Models\\{$model}";
-            
+
             if (class_exists($modelClass)) {
-                $modelClass::created(function ($model) {
-                    $this->generateSEOForModel($model);
+                $modelClass::created(function ($instance) {
+                    $this->generateSEOForModel($instance);
                 });
-                
-                $modelClass::updated(function ($model) {
-                    $this->generateSEOForModel($model);
+
+                $modelClass::updated(function ($instance) use ($seoFields) {
+                    if ($instance->isDirty($seoFields)) {
+                        $this->generateSEOForModel($instance);
+                    }
                 });
             }
         }

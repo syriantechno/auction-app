@@ -1,4 +1,4 @@
-﻿@extends('admin.layout')
+@extends('admin.layout')
 
 @section('title', 'Master Inventory Catalog')
 
@@ -14,6 +14,18 @@
                 <i data-lucide="eye" class="w-4 h-4 cursor-pointer hover:text-slate-900 transition-colors" onclick="viewCar(${data.id}, '${data.make}', '${data.model}', ${data.year})"></i>
                 <i data-lucide="edit-3" class="w-4 h-4 cursor-pointer hover:text-[#ff6900] transition-colors" onclick="editCar(${data.id}, '${data.make}', '${data.model}', ${data.year})"></i>
                 <i data-lucide="trash-2" class="w-4 h-4 cursor-pointer hover:text-red-500 transition-colors" onclick="deleteCar(${data.id})"></i>
+            </div>
+        `;
+    };
+    window.makeFormatter = function(cell) {
+        const data = cell.getData();
+        const logo = data.brand_logo ? `<img src="${data.brand_logo}" class="w-7 h-7 object-contain rounded-lg bg-white border border-slate-100 p-1 shadow-sm">` : `<div class="w-7 h-7 rounded-lg bg-white border border-slate-100 flex items-center justify-center text-[0.5rem] text-slate-300 font-black uppercase">${data.make.substring(0, 1)}</div>`;
+        return `
+            <div class="flex items-center gap-3">
+                <div class="flex-shrink-0">${logo}</div>
+                <div class="flex flex-col">
+                    <span class="text-[0.8rem] font-black text-slate-900 tracking-tight leading-none">${cell.getValue()}</span>
+                </div>
             </div>
         `;
     };
@@ -33,7 +45,7 @@
     ]"
     :columns="[
         ['title' => 'Database ID', 'field' => 'id', 'width' => 120, 'hozAlign' => 'center', 'formatter' => 'idFormatter'],
-        ['title' => 'Manufacturer', 'field' => 'make', 'widthGrow' => 2],
+        ['title' => 'Manufacturer', 'field' => 'make', 'widthGrow' => 2, 'formatter' => 'makeFormatter'],
         ['title' => 'Model Designation', 'field' => 'model', 'widthGrow' => 2],
         ['title' => 'Prod. Year', 'field' => 'year', 'width' => 150, 'hozAlign' => 'center'],
         ['title' => 'Node Status', 'field' => 'status', 'width' => 150, 'hozAlign' => 'center', 'formatter' => 'statusFormatter'],

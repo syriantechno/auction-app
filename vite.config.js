@@ -15,9 +15,26 @@ export default defineConfig({
         }),
         tailwindcss(),
     ],
+    clearScreen: false,
     server: {
+        host: '127.0.0.1',
+        port: 5190,
+        strictPort: true,
+        hmr: {
+            protocol: 'ws',
+            host: '127.0.0.1',
+            overlay: false,
+        },
         watch: {
-            ignored: ['**/storage/framework/views/**'],
+            usePolling: true,
+            interval: 5000,
+            ignored: [
+                '**/storage/**',
+                '**/bootstrap/cache/**',
+                '**/node_modules/**',
+                '**/vendor/**',
+                '**/public/build/**',
+            ],
         },
     },
 });

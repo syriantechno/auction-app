@@ -262,11 +262,9 @@ class SEOController extends Controller
             'model' => $request->input('agent_router_model'),
         ];
         
-        $settings->ai_providers_config = $config;
-        $settings->save();
-        
-        // Update other fields
-        $settings->update($request->except('ai_providers_config'));
+        $settings->update(
+            array_merge($request->except('ai_providers_config'), ['ai_providers_config' => $config])
+        );
         
         \Log::info('SEO Settings Updated', ['settings' => $settings->fresh()->toArray()]);
 

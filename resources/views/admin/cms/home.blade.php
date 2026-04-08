@@ -257,6 +257,22 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="text-[0.55rem] font-medium uppercase tracking-widest text-orange-500 mb-2 block">Dot Indicator Hue</label>
+                                            <div class="flex gap-2">
+                                                <input type="color" name="navbar[dot_color]" value="{{ old('navbar.dot_color', data_get($page->content, 'navbar.dot_color', '#ff6900')) }}" class="w-10 h-10 rounded-md cursor-pointer border-0 p-0 bg-transparent">
+                                                <input type="text" name="navbar[dot_color_text]" value="{{ old('navbar.dot_color', data_get($page->content, 'navbar.dot_color', '#ff6900')) }}" class="flex-1 bg-white border border-slate-200 rounded-md px-3 text-[0.7rem] font-mono text-slate-500">
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label class="text-[0.55rem] font-medium uppercase tracking-widest text-slate-500 mb-2 block">Logo Scale (%)</label>
+                                            <div class="relative">
+                                                <input type="number" name="navbar[logo_scale]" value="{{ old('navbar.logo_scale', data_get($page->content, 'navbar.logo_scale', 100)) }}" class="w-full bg-white border border-slate-200 rounded-md px-4 py-2.5 text-[0.8rem] font-bold text-slate-700 outline-none focus:border-orange-500 transition-all" placeholder="100">
+                                                <span class="absolute right-3 top-1/2 -translate-y-1/2 text-[0.6rem] font-bold text-slate-300">%</span>
+                                            </div>
+                                        </div>
+                                    </div>
                                     <div class="space-y-4">
                                         <div>
                                             <label class="text-[0.55rem] font-medium uppercase tracking-widest text-slate-500 mb-2 block">Contact Support Line</label>
@@ -396,6 +412,26 @@
                                         </button>
                                     </div>
                                 </div>
+                                <div class="col-span-2 grid grid-cols-2 gap-4 pt-2">
+                                    <div class="space-y-1">
+                                        <label class="text-[0.55rem] font-black text-slate-400 uppercase tracking-widest block">Horizontal Position (Offset-X)</label>
+                                        <input type="range" name="hero_car_right" min="-100" max="100" step="1" value="{{ old('hero_car_right', data_get($page->content, 'hero.car_right', -20)) }}" class="w-full">
+                                        <div class="flex justify-between text-[0.45rem] font-bold text-slate-400">
+                                            <span>Far Left</span>
+                                            <span class="text-blue-600">{{ data_get($page->content, 'hero.car_right', -20) }}%</span>
+                                            <span>Far Right</span>
+                                        </div>
+                                    </div>
+                                    <div class="space-y-1">
+                                        <label class="text-[0.55rem] font-black text-slate-400 uppercase tracking-widest block">Vertical Position (Offset-Y)</label>
+                                        <input type="range" name="hero_car_top" min="0" max="100" step="1" value="{{ old('hero_car_top', data_get($page->content, 'hero.car_top', 50)) }}" class="w-full">
+                                        <div class="flex justify-between text-[0.45rem] font-bold text-slate-400">
+                                            <span>Top</span>
+                                            <span class="text-blue-600">{{ data_get($page->content, 'hero.car_top', 50) }}%</span>
+                                            <span>Bottom</span>
+                                        </div>
+                                    </div>
+                                </div>
                                 <div>
                                     <label class="text-[0.62rem] font-medium uppercase tracking-[0.2em] text-slate-400 mb-2 block">Overlay Blend</label>
                                     <input type="hidden" name="hero_background_overlay_enabled" id="hero_background_overlay_enabled" value="{{ old('hero_background_overlay_enabled', data_get($page->content, 'hero.background_overlay_enabled', true) ? 1 : 0) }}">
@@ -405,6 +441,18 @@
                                         </button>
                                         <button type="button" data-overlay="0" class="hero-overlay-btn flex-1 py-1.5 rounded-lg text-[0.6rem] font-medium border transition-all flex items-center justify-center gap-1 {{ !data_get($page->content, 'hero.background_overlay_enabled', true) ? 'bg-[#031629] text-white border-[#031629]' : 'bg-slate-50 border-slate-100 text-slate-600' }}">
                                             <i data-lucide="eye-off" class="w-2.5 h-2.5"></i> Off
+                                        </button>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="text-[0.62rem] font-medium uppercase tracking-[0.2em] text-slate-400 mb-2 block">Glowing Atmosphere</label>
+                                    <input type="hidden" name="hero_circles_enabled" id="hero_circles_enabled" value="{{ old('hero_circles_enabled', data_get($page->content, 'hero.circles_enabled', true) ? 1 : 0) }}">
+                                    <div class="flex gap-1.5">
+                                        <button type="button" data-circles="1" class="hero-circles-btn flex-1 py-1.5 rounded-lg text-[0.6rem] font-medium border transition-all flex items-center justify-center gap-1 {{ data_get($page->content, 'hero.circles_enabled', true) ? 'bg-[#ff6900] text-white border-[#ff6900]' : 'bg-slate-50 border-slate-100 text-slate-600' }}">
+                                            <i data-lucide="sparkles" class="w-2.5 h-2.5"></i> Enabled
+                                        </button>
+                                        <button type="button" data-circles="0" class="hero-circles-btn flex-1 py-1.5 rounded-lg text-[0.6rem] font-medium border transition-all flex items-center justify-center gap-1 {{ !data_get($page->content, 'hero.circles_enabled', true) ? 'bg-[#031629] text-white border-[#031629]' : 'bg-slate-50 border-slate-100 text-slate-600' }}">
+                                            <i data-lucide="slash" class="w-2.5 h-2.5"></i> Disabled
                                         </button>
                                     </div>
                                 </div>
@@ -1711,6 +1759,20 @@ document.addEventListener('DOMContentLoaded', () => {
             previewPanel.style.backgroundImage = `linear-gradient(rgba(14,16,23,${opacity}), rgba(14,16,23,${opacity})), url('${image}')`;
             previewPanel.style.backgroundSize = 'cover';
         }
+
+        // Preview Car Transformation
+        if (previewImage) {
+            const scale = heroCarScaleInput?.value || 1;
+            const mirror = document.getElementById('hero_car_mirror')?.value === '1';
+            const right = document.querySelector('input[name="hero_car_right"]')?.value || -20;
+            const top = document.querySelector('input[name="hero_car_top"]')?.value || 50;
+            
+            previewImage.style.transform = `scale(${scale}) ${mirror ? 'scaleX(-1)' : ''}`;
+            // Simulating position in preview panel (scaled down)
+            previewImage.style.position = 'relative';
+            previewImage.style.left =  (right * -0.5) + 'px'; // Dummy preview offset
+            previewImage.style.top = (top - 50) + 'px'; // Dummy preview offset
+        }
     };
 
     document.getElementById('hero_custom_css')?.addEventListener('input', applyPreview);
@@ -1747,7 +1809,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             btn.classList.remove('bg-slate-50', 'border-slate-100', 'text-slate-600');
             btn.classList.add('bg-[#031629]', 'text-white', 'border-[#031629]');
-            if (previewImage) previewImage.style.transform = `scale(${btn.dataset.scale})`;
+            applyPreview();
         });
     });
 
@@ -1773,7 +1835,34 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             btn.classList.remove('bg-slate-50', 'border-slate-100', 'text-slate-600');
             btn.classList.add('bg-[#031629]', 'text-white', 'border-[#031629]');
+            applyPreview();
         });
+    });
+
+    document.querySelectorAll('.hero-circles-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+            const circlesInput = document.getElementById('hero_circles_enabled');
+            circlesInput.value = btn.dataset.circles;
+            document.querySelectorAll('.hero-circles-btn').forEach(el => {
+                el.classList.remove('bg-[#ff6900]', 'bg-[#031629]', 'text-white', 'border-[#ff6900]', 'border-[#031629]');
+                el.classList.add('bg-slate-50', 'border-slate-100', 'text-slate-600');
+            });
+            btn.classList.remove('bg-slate-50', 'border-slate-100', 'text-slate-600');
+            if (btn.dataset.circles === '1') {
+                btn.classList.add('bg-[#ff6900]', 'text-white', 'border-[#ff6900]');
+            } else {
+                btn.classList.add('bg-[#031629]', 'text-white', 'border-[#031629]');
+            }
+        });
+    });
+
+    document.querySelector('input[name="hero_car_right"]')?.addEventListener('input', (e) => {
+        e.target.nextElementSibling.querySelector('.text-blue-600').textContent = e.target.value + '%';
+        applyPreview();
+    });
+    document.querySelector('input[name="hero_car_top"]')?.addEventListener('input', (e) => {
+        e.target.nextElementSibling.querySelector('.text-blue-600').textContent = e.target.value + '%';
+        applyPreview();
     });
 
     colorPicker?.addEventListener('input', () => {

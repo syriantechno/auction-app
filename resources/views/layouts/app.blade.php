@@ -102,15 +102,10 @@
     @endif
     
     
-    <script src="https://cdn.tailwindcss.com"></script>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/lucide@latest"></script>
-    @vite(['resources/js/app.js'])
-
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
     @if($googleMapsKey)
         <script src="https://maps.googleapis.com/maps/api/js?key={{ $googleMapsKey }}&libraries=places"></script>
@@ -119,122 +114,12 @@
     <script>
         window.googleMapsKey = "{{ $googleMapsKey }}";
         window.mapProvider = "{{ \App\Models\SystemSetting::get('google_maps_provider', 'google') }}";
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Plus Jakarta Sans', 'sans-serif'],
-                    },
-                    colors: {
-                        bazar: {
-                            500: '#ff4605',
-                            600: '#e03d04',
-                        },
-                        deep: {
-                            800: '#1a1d26',
-                            900: '#12141b',
-                            950: '#0e1017',
-                        }
-                    }
-                }
-            }
-        }
     </script>
 
-    <style>
-        body {
-            background-color: #e7e7e7;
-            color: #12141b;
-            -webkit-font-smoothing: antialiased;
-        }
-        .nav-link {
-            font-size: 0.74rem;
-            font-weight: 800;
-            color: {{ $navbarTextColor }};
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            padding: 8px 10px;
-            position: relative;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-        }
-
-        .nav-link::after {
-            content: '';
-            position: absolute;
-            bottom: 2px;
-            left: 50%;
-            width: 0;
-            height: 2px;
-            background: #ff4605;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            transform: translateX(-50%);
-            border-radius: 99px;
-            box-shadow: 0 4px 12px rgba(255, 70, 5, 0.3);
-        }
-
-        .nav-link:hover::after {
-            width: 14px;
-        }
-
-        .nav-link-active::after {
-            width: 14px !important;
-        }
-
-        /* Extreme Thumping Pulse Animation */
-        @keyframes pulse-orange {
-            0% { box-shadow: 0 0 0 0 rgba(255, 70, 5, 0.6); }
-            70% { box-shadow: 0 0 0 18px rgba(255, 70, 5, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(255, 70, 5, 0); }
-        }
-        .animate-pulse-orange {
-            animation: pulse-orange 2s infinite !important;
-        }
-
-        .nav-link:hover {
-            color: #ff4605;
-        }
-        
-        .sticky-nav {
-            background: {{ $isGlass ? 'rgba(255, 255, 255, 0.7)' : $navbarBgColor }};
-            backdrop-filter: {{ $isGlass ? 'blur(12px)' : 'none' }};
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
-        }
-        
-        .static-nav {
-            background: {{ $navbarBgColor }};
-            position: relative !important;
-            box-shadow: none;
-            border-bottom: 1px solid #f1f5f9;
-        }
-
-        .btn-bazar {
-            background: #ff4605;
-            color: white;
-            padding: 12px 24px;
-            border-radius: 12px;
-            font-weight: 800;
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .btn-bazar:hover {
-            background: #e03d04;
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px -5px rgba(255, 70, 5, 0.4);
-        }
-
-        .floating-card {
-            background: white;
-            border-radius: 24px;
-            box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.1);
-            border: 1px solid #f1f5f9;
-        }
-    </style>
+    
     @yield('head')
 </head>
-<body class="font-sans">
+<body class="font-sans font-light">
 
     {{-- Universal Header: Vehica Style --}}
     <nav class="{{ $isSticky ? 'sticky-nav' : 'static-nav' }} fixed w-full z-50 px-2 lg:px-4 top-0 transition-all duration-300">
@@ -561,11 +446,6 @@
 
         {{-- Decorative Elements --}}
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            lucide.createIcons();
-        });
-    </script>
     @yield('scripts')
 </body>
 </html>

@@ -41,7 +41,7 @@ class AuctionService
             ]);
 
             // 5. إرسال حدث المزايدة (Real-time)
-            event(new \App\Events\BidPlaced($bid));
+            event(new \App\Events\BidPlaced($bid, $auction));
 
             return $bid;
         });

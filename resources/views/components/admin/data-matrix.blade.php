@@ -1,4 +1,4 @@
-﻿@props([
+@props([
     'id', 
     'title', 
     'subtitle', 
@@ -71,61 +71,6 @@
     </div>
 </div>
 
-<style>
-    .matrix-enterprise-table {
-        border: none !important;
-        font-family: 'Plus Jakarta Sans', sans-serif !important;
-        background: transparent !important;
-    }
-
-    .tabulator-header {
-        background: linear-gradient(135deg, #1e293b 0%, #334155 100%) !important;
-        color: #ffffff !important;
-        border-bottom: 3px solid var(--primary-orange) !important;
-        padding: 5px 0 !important;
-    }
-
-    .tabulator-col {
-        background-color: transparent !important;
-        padding: 14px 10px !important;
-        border: none !important;
-    }
-
-    .tabulator-col-title {
-        color: #ffffff !important;
-        font-size: 0.7rem !important;
-        font-weight: 800 !important;
-        text-transform: uppercase !important;
-        letter-spacing: 0.1em !important;
-    }
-
-    .tabulator-row {
-        background-color: #ffffff !important;
-        border-bottom: 1px solid #f1f5f9 !important;
-        min-height: 56px !important;
-        transition: all 0.2s ease;
-    }
-
-    .tabulator-row:hover {
-        background-color: #f8fafc !important;
-        box-shadow: inset 4px 0 0 var(--primary-orange);
-    }
-
-    .tabulator-cell {
-        padding: 14px 10px !important;
-        font-size: 0.8rem !important;
-        color: #111827 !important;
-        font-weight: 600 !important;
-        border: none !important;
-        display: flex;
-        align-items: center;
-    }
-
-    @keyframes loading-bar {
-        0% { transform: translateX(-100%); }
-        100% { transform: translateX(100%); }
-    }
-</style>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {

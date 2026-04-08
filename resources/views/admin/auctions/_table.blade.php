@@ -24,9 +24,33 @@
                     </div>
                 </td>
                 <td class="py-5 px-6">
-                    <div class="flex flex-col">
-                        <span class="text-base font-black text-[#031629] tracking-tight truncate max-w-[200px]">{{ optional($auction->car)->year }} {{ optional($auction->car)->make }} {{ optional($auction->car)->model }}</span>
-                        <span class="text-[0.6rem] text-slate-400 mt-1 font-bold uppercase tracking-widest">#{{ $auction->id }}</span>
+                    @php
+                        $car = $auction->car;
+                        $make = $car->make ?? 'generic';
+                        $makeSlug = \Illuminate\Support\Str::slug($make);
+                        
+                        // Local Check
+                        $localLogo = "images/brands/{$makeSlug}.svg";
+                        $finalLogo = file_exists(public_path($localLogo)) ? asset($localLogo) : null;
+                        
+                        // CDN Check
+                        if (!$finalLogo && $make !== 'generic') {
+                            $cdnSlug = str_replace(' ', '-', $makeSlug);
+                            $finalLogo = "https://cdn.jsdelivr.net/gh/fawazahmed0/car-logos@master/logos/{$cdnSlug}.svg";
+                        }
+                    @endphp
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 rounded-lg bg-white border border-slate-100 flex items-center justify-center p-1.5 shrink-0 shadow-sm">
+                            @if($finalLogo)
+                                <img src="{{ $finalLogo }}" class="w-full h-full object-contain opacity-80 group-hover:opacity-100 transition-opacity">
+                            @else
+                                <i data-lucide="shield" class="w-4 h-4 text-slate-200"></i>
+                            @endif
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="text-base font-black text-[#031629] tracking-tight truncate max-w-[200px]">{{ optional($auction->car)->year }} {{ optional($auction->car)->make }} {{ optional($auction->car)->model }}</span>
+                            <span class="text-[0.6rem] text-slate-400 mt-1 font-bold uppercase tracking-widest">#{{ $auction->id }}</span>
+                        </div>
                     </div>
                 </td>
                 {{-- Reference Code --}}

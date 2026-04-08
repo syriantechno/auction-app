@@ -20,7 +20,7 @@ class TrackLeadSource
             session(['lead_source_detected_at' => now()]);
             
             // Debug logging
-            \Log::info('[Lead Source] Detected: ' . $source . ' | Referrer: ' . ($request->headers->get('referer') ?? 'none'));
+            \Log::info('[Lead Source] Detected: ' . $source . ' | Referrer: ' . ($request->headers->get('referer') ?? 'none') . ' | Session: ' . session()->getId());
         }
 
         // Also check for explicit UTM parameters on every request

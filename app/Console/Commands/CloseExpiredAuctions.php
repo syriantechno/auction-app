@@ -22,13 +22,14 @@ class CloseExpiredAuctions extends Command
         }
 
         foreach ($expired as $auction) {
+            /** @var Auction $auction */
             $auction->update(['status' => 'closed']);
             $auction->refresh();
 
             // Broadcast to all connected clients in real-time
             event(new AuctionUpdated($auction));
 
-            $this->info("Closed auction #{$auction->id} — {$auction->car?->make} {$auction->car?->model}");
+            $this->info("Closed auction #{$auction->id} — {$auction->car->make} {$auction->car->model}");
         }
 
         $this->info("Closed {$expired->count()} expired auction(s).");

@@ -133,6 +133,40 @@ class LeadController extends Controller
             ->with('success', 'Inspection scheduled for ' . ($inspector ? $inspector->name : 'team') . '. Fill in the report when ready.');
     }
 
+    public function store(Request $request)
+    {
+        $request->validate([
+            'name'    => 'required|string|max:100',
+            'phone'   => 'required|string|max:30',
+            'email'   => 'nullable|email|max:100',
+            'make'    => 'required|string|max:60',
+            'model'   => 'required|string|max:60',
+            'year'    => 'required|integer|min:1990|max:' . (date('Y') + 1),
+            'trim'    => 'nullable|string|max:60',
+            'mileage' => 'nullable|integer|min:0',
+            'source'  => 'nullable|string|max:30',
+            'notes'   => 'nullable|string|max:1000',
+        ]);
+
+        Lead::create([
+            'status' => 'new',
+            'source' => $request->input('source', 'direct'),
+            'notes'  => $request->input('notes'),
+            'car_details' => [
+                'name'    => $request->input('name'),
+                'phone'   => $request->input('phone'),
+                'email'   => $request->input('email'),
+                'make'    => $request->input('make'),
+                'model'   => $request->input('model'),
+                'year'    => $request->input('year'),
+                'trim'    => $request->input('trim'),
+                'mileage' => $request->input('mileage'),
+            ],
+        ]);
+
+        return redirect()->route('admin.leads.index')->with('success', 'Lead created successfully.');
+    }
+
     public function destroy(Lead $lead)
     {
         $lead->delete();

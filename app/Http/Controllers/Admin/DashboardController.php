@@ -44,6 +44,7 @@ class DashboardController extends Controller
                 'model' => $car->carModel?->name ?? $car->model,
                 'year' => $car->year,
                 'status' => 'Active Seed',
+                'brand_logo' => $car->brand?->logo_url,
             ];
         });
 
@@ -139,7 +140,7 @@ class DashboardController extends Controller
             'pending_negotiations' => \App\Models\Bid::latest()->take(5)->count(),
         ];
 
-        $recent_bids = \App\Models\Bid::with(['user', 'auction.car'])
+        $recent_bids = \App\Models\Bid::with(['user', 'auction.car.brand'])
             ->latest()
             ->take(6)
             ->get();

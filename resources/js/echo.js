@@ -18,6 +18,22 @@ if (reverbKey && reverbHost) {
         forceTLS: false,
         disableStats: true,
         enabledTransports: ['ws'],
+        authorizer: (channel, options) => {
+            return {
+                authorize: (socketId, callback) => {
+                    window.axios.post('/pusher/auth', {
+                        socket_id: socketId,
+                        channel_name: channel.name
+                    })
+                    .then(response => {
+                        callback(false, response.data);
+                    })
+                    .catch(error => {
+                        callback(true, error);
+                    });
+                }
+            };
+        },
     });
 } else {
     window.Echo = null;

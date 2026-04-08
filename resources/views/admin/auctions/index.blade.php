@@ -398,14 +398,5 @@
     }
 </script>
 
-<style>
-    /* Professional Pagination Navigator (Auctions Matrix Standard) */
-    .pagination { @apply flex items-center gap-1.5 mt-0 MB-0; }
-    .page-item .page-link { 
-        @apply w-10 h-10 rounded-md flex items-center justify-center border-none bg-white text-slate-400 font-medium text-[0.7rem] transition-all shadow-sm; 
-    }
-    .page-item.active .page-link { @apply bg-slate-800 text-white shadow-lg; }
-    .page-item .page-link:hover { @apply bg-[#ff6900] text-white; }
-</style>
 @endsection
 

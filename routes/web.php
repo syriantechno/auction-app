@@ -10,6 +10,12 @@ use App\Http\Controllers\SitemapController;
 use Illuminate\Support\Facades\Auth;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
+
+Route::get('/test-stability', function() {
+    return 'STABILITY TEST: IF YOU SEE THIS WITHOUT RELOADS, THE PAGE SCRIPTS ARE THE CAUSE.';
+});
+
+Route::get('/home2', [HomeController::class, 'home2'])->name('home2');
 Route::get('/sitemap.xml', [SitemapController::class, 'generate'])->name('sitemap');
 Route::view('/home-new', 'home_new')->name('home.new');
 // Admin Routes (Blade)
@@ -83,6 +89,8 @@ Route::prefix('admin')->middleware(['auth'])->name('admin.')->group(function () 
     // ── Dealer Profiles ────────────────────────────────────────────
     Route::get('/dealers',           [\App\Http\Controllers\Admin\DealerController::class, 'index'])->name('dealers.index');
     Route::get('/dealers/{user}',    [\App\Http\Controllers\Admin\DealerController::class, 'show'])->name('dealers.show');
+    Route::get('/dealers/{user}/edit', [\App\Http\Controllers\Admin\DealerController::class, 'edit'])->name('dealers.edit');
+    Route::put('/dealers/{user}',      [\App\Http\Controllers\Admin\DealerController::class, 'update'])->name('dealers.update');
 
     // ── Finance System ─────────────────────────────────────────────
     Route::prefix('finance')->name('finance.')->middleware(['permission:view finance'])->group(function () {
@@ -104,7 +112,7 @@ Route::prefix('admin')->middleware(['auth'])->name('admin.')->group(function () 
     // CRM: Advanced Leads Pipeline
     Route::middleware(['permission:view leads'])->group(function () {
         Route::post('/leads/{lead}/confirm', [\App\Http\Controllers\Admin\LeadController::class, 'confirm'])->name('leads.confirm');
-        Route::resource('/leads', \App\Http\Controllers\Admin\LeadController::class)->names('leads');
+        Route::resource('/leads', \App\Http\Controllers\Admin\LeadController::class)->names('leads')->except(['create', 'edit']);
         Route::get('/leads-api', [\App\Http\Controllers\Admin\LeadController::class, 'api'])->name('leads.api');
     });
 
@@ -146,7 +154,7 @@ Route::prefix('admin')->middleware(['auth'])->name('admin.')->group(function () 
     Route::get('/settings/logo',              fn() => redirect()->route('admin.settings.hub'))->name('settings.logo');
     Route::get('/settings/google-maps',       fn() => redirect()->route('admin.settings.hub'))->name('settings.google-maps');
     Route::get('/settings/map-test',          fn() => redirect()->route('admin.settings.hub'))->name('settings.map-test');
-    Route::get('/settings/inspection-fields', fn() => redirect()->route('admin.settings.hub'))->name('settings.inspection-fields');
+    Route::get('/settings/inspection-fields', [\App\Http\Controllers\Admin\SettingsController::class, 'inspectionFields'])->name('settings.inspection-fields');
     Route::get('/settings/auctions',          fn() => redirect()->route('admin.settings.hub'))->name('settings.auctions');
     Route::get('/settings/communication',     fn() => redirect()->route('admin.settings.hub'))->name('settings.communication');
 
@@ -162,6 +170,7 @@ Route::prefix('admin')->middleware(['auth'])->name('admin.')->group(function () 
     Route::post('/settings/blog',                [\App\Http\Controllers\Admin\SettingsController::class, 'saveBlogSettings'])->name('settings.blog.save');
     Route::post('/settings/navbar',              [\App\Http\Controllers\Admin\SettingsController::class, 'saveNavbarSettings'])->name('settings.navbar.save');
     Route::post('/settings/google-reviews',     [\App\Http\Controllers\Admin\SettingsController::class, 'saveGoogleReviewsSettings'])->name('settings.google-reviews.save');
+    Route::post('/settings/lead-architecture',   [\App\Http\Controllers\Admin\SettingsController::class, 'saveLeadArchitecture'])->name('settings.lead-architecture.save');
     Route::get('/settings/toast-showcase', fn() => view('admin.settings.toast_showcase'))->name('settings.toast-showcase');
 
 
@@ -326,6 +335,18 @@ Route::get('/dealer/{dealer}', [\App\Http\Controllers\DealerProfileController::c
 // Public Blog
 Route::get('/blog', [\App\Http\Controllers\BlogController::class, 'index'])->name('blog.index');
 Route::get('/blog/{slug}', [\App\Http\Controllers\BlogController::class, 'show'])->name('blog.show');
+
+// Storage serving fallback (for filesystems that don't support symlinks like exFAT)
+// We use /st/ as a bypass for /storage/ which is often blocked or misconfigured on servers
+Route::get('/{prefix}/{path}', function ($prefix, $path) {
+    if (str_contains($path, '..')) abort(403);
+    $fullPath = storage_path('app/public/' . $path);
+    if (!file_exists($fullPath)) {
+        \Illuminate\Support\Facades\Log::warning("Storage fallback 404 [$prefix]: " . $path);
+        abort(404);
+    }
+    return response()->file($fullPath);
+})->where('prefix', 'storage|st')->where('path', '.+');
 
 // Dynamic Pages (Catch-all)
 Route::get('/{slug}', [PageController::class, 'show'])->name('page.show');

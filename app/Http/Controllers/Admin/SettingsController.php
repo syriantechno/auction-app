@@ -94,12 +94,29 @@ class SettingsController extends Controller
             'manual_reviews' => json_decode(SystemSetting::get('google_reviews_manual_list', '[]'), true) ?: [],
         ];
 
-        // Tab 13 — Companies
+        // Tab 15 — Lead Architecture
+        $leadKeys = [
+            'lead_header_label', 'lead_header_title',
+            'lead_wizard_w1', 'lead_wizard_w2', 'lead_wizard_w3',
+            'lead_form_brands',
+            'lead_circles_enabled'
+        ];
+        $leadSettings = [];
+        foreach ($leadKeys as $key) {
+            $val = SystemSetting::get($key);
+            if ($key === 'lead_form_brands') {
+                $val = json_decode($val, true) ?: [];
+            }
+            $leadSettings[$key] = $val;
+        }
+
+        $brands = \App\Models\Brand::orderBy('name')->get();
         $companies = \App\Models\Company::latest()->get();
 
         return view('admin.settings.hub', compact(
             'settings', 'roles', 'allPerms', 'users',
-            'notifSettings', 'commSettings', 'auctionSettings', 'companies', 'googleReviewSettings'
+            'notifSettings', 'commSettings', 'auctionSettings', 'companies', 'googleReviewSettings',
+            'leadSettings', 'brands'
         ));
     }
 
@@ -324,30 +341,45 @@ class SettingsController extends Controller
 
     public function inspectionFields()
     {
-        $fields = json_decode(SystemSetting::get('inspection_fields', '[]'), true) ?: [];
-        return view('admin.settings.inspection_fields', compact('fields'));
+        $sections = json_decode(SystemSetting::get('inspection_fields', '[]'), true) ?: [];
+        // If it's the old flat structure, we might need a migration, 
+        // but typically we'll just re-save it in the new format.
+        return view('admin.settings.inspection_fields', compact('sections'));
     }
 
     public function updateInspectionFields(Request $request)
     {
+        // The view sends 'sections' now
         $request->validate([
-            'fields'          => 'nullable|array',
-            'fields.*.label'  => 'required|string|max:80',
-            'fields.*.type'   => 'required|in:text,textarea,image,checkbox',
-            'fields.*.required' => 'nullable',
+            'sections' => 'nullable|array',
+            'sections.*.title' => 'required|string|max:100',
+            'sections.*.fields' => 'nullable|array',
+            'sections.*.fields.*.label' => 'required|string|max:100',
+            'sections.*.fields.*.type' => 'required|string',
         ]);
 
-        $fields = collect($request->input('fields', []))->map(fn($f, $i) => [
-            'id'       => 'field_' . ($i + 1),
-            'label'    => $f['label'],
-            'type'     => $f['type'],
-            'required' => isset($f['required']) && $f['required'] === 'on',
-            'order'    => $i + 1,
-        ])->values()->toArray();
+        $sections = $request->input('sections', []);
 
-        SystemSetting::set('inspection_fields', json_encode($fields));
+        // Clean up or normalize if needed
+        foreach ($sections as $si => &$section) {
+            $section['id'] = $section['id'] ?? ('sec_' . ($si + 1));
+            if (isset($section['fields']) && is_array($section['fields'])) {
+                foreach ($section['fields'] as $fi => &$field) {
+                    $field['id'] = $field['id'] ?? ('fld_' . ($si + 1) . '_' . ($fi + 1));
+                    $field['required'] = isset($field['required']);
+                    $field['allow_attachment'] = isset($field['allow_attachment']);
+                    $field['allow_notes'] = isset($field['allow_notes']);
+                    // Options might need filtering
+                    if (isset($field['options']) && is_array($field['options'])) {
+                        $field['options'] = array_values(array_filter($field['options'], fn($o) => !is_null($o) && trim($o) !== ''));
+                    }
+                }
+            }
+        }
 
-        return back()->with('success', 'Inspection field configuration saved.');
+        SystemSetting::set('inspection_fields', json_encode(array_values($sections)));
+
+        return back()->with('success', 'Inspection field architecture updated successfully.');
     }
 
     public function auctionSettings()
@@ -562,6 +594,28 @@ class SettingsController extends Controller
 
         return redirect()->route('admin.settings.hub', ['tab' => 'tab12'])
             ->with('success', 'Navigation settings saved successfully.');
+    }
+
+    public function saveLeadArchitecture(Request $request)
+    {
+        $fields = [
+            'lead_header_label', 'lead_header_title',
+            'lead_wizard_w1', 'lead_wizard_w2', 'lead_wizard_w3',
+            'lead_circles_enabled'
+        ];
+
+        foreach ($fields as $field) {
+            SystemSetting::set($field, $request->input($field, ''));
+        }
+
+        // Handle brands array
+        $brands = $request->input('lead_form_brands', []);
+        SystemSetting::set('lead_form_brands', json_encode($brands));
+
+        \Illuminate\Support\Facades\Cache::forget('system_settings_global');
+
+        return redirect()->route('admin.settings.hub', ['tab' => 'tab15'])
+            ->with('success', 'Lead architecture synchronized with global mesh.');
     }
 
     /** Apply SMTP config from DB into Laravel runtime */

@@ -29,6 +29,9 @@
     $h2CarLabel = data_get($heroContent, 'car_label') ?: 'Premium SUV';
     $h2CarMirror = (bool) data_get($heroContent, 'car_mirror', false);
     $h2CarScale = (float) data_get($heroContent, 'car_scale', 1);
+    $h2CarRight = data_get($heroContent, 'car_right', -20);
+    $h2CarTop = data_get($heroContent, 'car_top', 50);
+    $h2CirclesEnabled = (bool) data_get($heroContent, 'circles_enabled', true);
     // Lead Form CMS
     $lfContent = data_get($page?->content, 'lead_form', []);
     $lfHeaderLabel = $leadArchitecture['header'] ?? 'Ready to sell?';
@@ -90,6 +93,31 @@
     $lfSuccessMsg = data_get($lfContent, 'success_message', 'Valuation request submitted successfully!');
     $lfFinalBtn = data_get($lfContent, 'final_btn_label', 'COMPLETE VALUATION');
 
+    // Hero Atmosphere & Background
+    $heroBgMode = data_get($heroContent, 'background_mode', 'image'); 
+    $heroBgColor = data_get($heroContent, 'background_color', '#e7e7e7');
+    $heroBgColorSecondary = data_get($heroContent, 'background_color_secondary', '#cbd5e1');
+    $heroBgAngle = data_get($heroContent, 'background_gradient_angle', 135);
+    $heroBgImage = data_get($heroContent, 'background_image', '/images/hero-bg.png');
+    $heroOverlayEnabled = (bool) data_get($heroContent, 'background_overlay_enabled', true);
+    $heroOverlayOpacity = data_get($heroContent, 'background_overlay_opacity', 0.72);
+    $heroCustomCss = data_get($heroContent, 'custom_css');
+
+    // Build Hero Background Style
+    $heroStyleFinal = "";
+    if ($heroBgMode === 'solid') {
+        $heroStyleFinal = "background: {$heroBgColor} !important;";
+    } elseif ($heroBgMode === 'gradient') {
+        $heroStyleFinal = "background: linear-gradient({$heroBgAngle}deg, {$heroBgColor} 0%, {$heroBgColorSecondary} 100%) !important;";
+    } elseif ($heroBgMode === 'image') {
+        $overlay = $heroOverlayEnabled ? "linear-gradient(rgba(14,16,23,{$heroOverlayOpacity}), rgba(14,16,23,{$heroOverlayOpacity})), " : "";
+        $heroStyleFinal = "background: {$overlay} url('{$heroBgImage}') !important; background-size: cover !important; background-position: center !important;";
+    } elseif ($heroBgMode === 'custom' && $heroCustomCss) {
+        $heroStyleFinal = "{$heroCustomCss} !important;";
+    } else {
+        $heroStyleFinal = "background: #e7e7e7 !important;";
+    }
+
     // Trust Badges Data
     $trustBadges = data_get($page?->content, 'trust_badges', []);
     if (empty($trustBadges)) {
@@ -133,6 +161,8 @@
     $navHours = data_get($navbarContent, 'hours');
     $navBgColor = data_get($navbarContent, 'bg_color', '#ffffff');
     $navTxtColor = data_get($navbarContent, 'text_color', '#031629');
+    $navDotColor = data_get($navbarContent, 'dot_color', '#ff6900');
+    $navLogoScale = data_get($navbarContent, 'logo_scale', 100) / 100;
     $navSticky = (bool) data_get($navbarContent, 'sticky', true);
     $headerMenu = \App\Models\Menu::where('location', 'header')->with(['items' => fn($q) => $q->orderBy('order')])->first();
     $navMenuItems = $headerMenu?->items ?? collect();
@@ -162,12 +192,27 @@
         rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
+        :root {
+            --h2-nav-bg: {{ $navBgColor }};
+            --h2-nav-txt: {{ $navTxtColor }};
+            --h2-nav-dot: {{ $navDotColor }};
+            --h2-nav-pos: {{ $navSticky ? 'sticky' : 'relative' }};
+            --h2-nav-top: {{ $navSticky ? '0' : 'auto' }};
+            --h2-nav-z: 1000;
+            --h2-hero-form-width: {{ $lfHeroWidth }}px;
+        }
+
+        .nav-logo img {
+            transform: scale({{ $navLogoScale }});
+            transform-origin: left center;
+        }
+
         body {
             background: #e7e7e7 !important;
         }
 
         .hero {
-            background: #e7e7e7 !important;
+            {!! $heroStyleFinal !!}
             height: calc(100vh - 80px) !important;
             min-height: 700px !important;
             display: flex !important;
@@ -189,7 +234,7 @@
         }
 
         .hero-form-col {
-            flex: 0 0 520px !important;
+            flex: 0 0 var(--h2-hero-form-width) !important;
             position: relative !important;
             z-index: 100 !important;
         }
@@ -204,8 +249,8 @@
 
         .hero-car {
             position: absolute !important;
-            right: -20% !important;
-            top: 50% !important;
+            right: {{ $h2CarRight }}% !important;
+            top: {{ $h2CarTop }}% !important;
             transform: translateY(-50%) !important;
             width: 70% !important;
             z-index: 0 !important;
@@ -1298,6 +1343,15 @@
 
                 {{-- Right: Car (absolute) --}}
                 <div class="hero-car">
+                    @if($h2CirclesEnabled)
+                    <div class="hero-car-decor">
+                        <div class="decor-circle decor-1"></div>
+                        <div class="decor-circle decor-2"></div>
+                        <div class="decor-circle decor-3"></div>
+                        <div class="decor-circle decor-4"></div>
+                        <div class="decor-circle decor-5"></div>
+                    </div>
+                    @endif
 
                     <img src="{{ $h2CarImage }}" onerror="this.src='/images/cars/mclaren.png'" alt="Featured Car"
                         style="transform: scale({{ $h2CarScale }}) {{ $h2CarMirror ? 'scaleX(-1)' : '' }}; transform-origin: center bottom;">

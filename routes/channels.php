@@ -22,7 +22,10 @@ Broadcast::channel('notifications.{userId}', function ($user, $userId) {
 // For secretaries, admins, and super admins to receive new leads instantly
 
 Broadcast::channel('leads.admin', function ($user) {
-    return $user->can('view leads') || $user->hasRole(['admin', 'super-admin', 'secretary']);
+    return $user->isAdmin() 
+        || in_array($user->role, ['admin', 'super-admin', 'secretary']) 
+        || $user->can('view leads') 
+        || $user->hasRole(['admin', 'super-admin', 'secretary']);
 });
 
 Broadcast::channel('leads.secretary', function ($user) {

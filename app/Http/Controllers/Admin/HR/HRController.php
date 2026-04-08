@@ -9,6 +9,7 @@ use App\Models\HR\Leave;
 use App\Models\HR\Payroll;
 use App\Models\HR\Advance;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 
 class HRController extends Controller
 {
@@ -160,7 +161,7 @@ class HRController extends Controller
             ->whereBetween('created_at', [$startDate, $endDate])
             ->get()
             ->groupBy(function ($payroll) {
-                return $payroll->year . '-' . str_pad($payroll->month, 2, '0', STR_PAD_LEFT);
+                return $payroll->year . '-' . str_pad((string)$payroll->month, 2, '0', STR_PAD_LEFT);
             })
             ->map(function ($payrolls) {
                 return [

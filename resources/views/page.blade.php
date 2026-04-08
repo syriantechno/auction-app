@@ -1,37 +1,7 @@
 @extends('layouts.app')
 
 @section('title', $page->title . ' - Motor Bazar')
-@section('head')
-<style>
-    /* ── Jodit-generated HTML rendering ── */
-    .page-content h1 { font-size: 2.25rem; font-weight: 900; color: #0f172a; margin-bottom: 1.25rem; line-height: 1.2; }
-    .page-content h2 { font-size: 1.75rem; font-weight: 800; color: #1e293b; margin: 2rem 0 1rem; line-height: 1.25; }
-    .page-content h3 { font-size: 1.35rem; font-weight: 700; color: #334155; margin: 1.75rem 0 0.75rem; }
-    .page-content h4 { font-size: 1.1rem;  font-weight: 700; color: #475569; margin: 1.5rem 0 0.5rem; }
-    .page-content p  { font-size: 1.05rem; line-height: 1.85; color: #475569; margin-bottom: 1.25rem; }
-    .page-content ul, .page-content ol { padding-left: 1.75rem; margin-bottom: 1.25rem; color: #475569; }
-    .page-content li { margin-bottom: 0.5rem; line-height: 1.7; }
-    .page-content ul li { list-style-type: disc; }
-    .page-content ol li { list-style-type: decimal; }
-    .page-content blockquote {
-        border-left: 4px solid #ff4605; padding: 1rem 1.5rem;
-        background: #fff8f5; border-radius: 0 0.5rem 0.5rem 0;
-        margin: 1.5rem 0; color: #374151; font-style: italic;
-    }
-    .page-content strong { color: #0f172a; font-weight: 700; }
-    .page-content em { color: #64748b; }
-    .page-content a { color: #ff4605; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
-    .page-content a:hover { color: #e03d04; }
-    .page-content img { max-width: 100%; border-radius: 1rem; margin: 1.5rem 0; box-shadow: 0 20px 40px -10px rgba(0,0,0,0.12); }
-    .page-content table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; font-size: 0.95rem; }
-    .page-content th { background: #1e293b; color: #fff; font-weight: 700; padding: 0.75rem 1rem; text-align: left; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; }
-    .page-content td { padding: 0.75rem 1rem; border-bottom: 1px solid #f1f5f9; color: #475569; }
-    .page-content tr:hover td { background: #f8fafc; }
-    .page-content code { background: #f1f5f9; padding: 0.2em 0.5em; border-radius: 0.25rem; font-family: monospace; font-size: 0.88em; color: #ff4605; }
-    .page-content pre { background: #0f172a; color: #e2e8f0; padding: 1.25rem; border-radius: 0.75rem; overflow-x: auto; margin: 1.5rem 0; }
-    .page-content hr { border: none; border-top: 2px solid #f1f5f9; margin: 2.5rem 0; }
-</style>
-@endsection
+
 
 @section('content')
     {{-- Hero --}}

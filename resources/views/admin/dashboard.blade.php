@@ -1,34 +1,7 @@
-﻿@extends('admin.layout')
+@extends('admin.layout')
 
 @section('title', 'Enterprise Overview')
 
-@section('head')
-<style>
-    /* Global Lean Style Overrides */
-    main.bg-\[\#fcfdfe\], main {
-        background-color: #f8fafc !important;
-    }
-    
-    .enterprise-card {
-        background-color: #ffffff !important;
-        border: 1px solid #e2e8f0 !important;
-        border-radius: 1rem !important;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
-        transition: all 0.2s ease;
-    }
-    
-    .enterprise-card:hover {
-        border-color: #ff4605 !important;
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
-    }
-
-    .dark-panel {
-        background-color: #1e293b !important;
-        border: 1px solid #334155 !important;
-        border-radius: 1rem !important;
-    }
-</style>
-@endsection
 
 @section('content')
     <div class="space-y-8 animate-in fade-in duration-500">
@@ -153,10 +126,11 @@
                             </thead>
                             <tbody class="divide-y divide-slate-50">
                                 @forelse($recent_bids ?? [] as $bid)
+                                    {{-- @var \App\Models\Bid $bid --}}
                                     @php
                                         $bidUser = $bid->user ?? null;
-                                        $bidAuction = $bid->auction ?? null;
-                                        $bidCar = $bidAuction->car ?? null;
+                                        $bidAuction = optional($bid)->auction;
+                                        $bidCar = optional($bidAuction)->car;
                                     @endphp
                                     <tr class="hover:bg-slate-50/50 transition-colors">
                                         <td class="py-4 px-8">
@@ -164,12 +138,27 @@
                                                 <div class="w-9 h-9 rounded-full border border-slate-100 overflow-hidden shadow-sm">
                                                     <img src="https://i.pravatar.cc/100?u={{ $bid->user_id ?? 'default' }}" class="w-full h-full object-cover grayscale-[30%] hover:grayscale-0 transition-all">
                                                 </div>
-                                                <div class="font-medium text-slate-700 text-sm">{{ $bidUser->name ?? 'Operator' }}</div>
+                                                <div class="font-medium text-slate-700 text-sm">{{ optional($bidUser)->name ?? 'Operator' }}</div>
                                             </div>
                                         </td>
                                         <td class="py-4 px-8 text-[0.85rem] font-normal text-slate-600">
                                             @if($bidCar)
-                                                {{ $bidCar->make }} {{ $bidCar->model }}
+                                                <div class="flex items-center gap-3">
+                                                    @php
+                                                        $logo = $bidCar->brand?->logo_url;
+                                                    @endphp
+                                                    <div class="w-8 h-8 rounded-lg bg-slate-50 border border-slate-100 flex items-center justify-center p-1.5 shrink-0 shadow-sm">
+                                                        @if($logo)
+                                                            <img src="{{ $logo }}" class="w-full h-full object-contain opacity-70">
+                                                        @else
+                                                            <i data-lucide="car-front" class="w-4 h-4 text-slate-200"></i>
+                                                        @endif
+                                                    </div>
+                                                    <div class="flex flex-col leading-none">
+                                                        <span class="text-sm font-black text-slate-800 tracking-tight">{{ $bidCar->make }} {{ $bidCar->model }}</span>
+                                                        <span class="text-[0.6rem] text-slate-400 font-bold uppercase mt-1">#{{ $bidCar->id }}</span>
+                                                    </div>
+                                                </div>
                                             @else
                                                 <span class="text-slate-400 italic">Unknown Asset</span>
                                             @endif

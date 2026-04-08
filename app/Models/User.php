@@ -11,6 +11,9 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 
+/**
+ * @property-read \Illuminate\Notifications\DatabaseNotificationCollection $unreadNotifications
+ */
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
@@ -21,6 +24,8 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'security_deposit',
+        'bidding_limit',
     ];
 
     public function bids()

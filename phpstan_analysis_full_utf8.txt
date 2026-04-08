@@ -1,0 +1,638 @@
+﻿ ------ ------------------------------------------- 
+  Line   Console\Commands\CloseExpiredAuctions.php  
+ ------ ------------------------------------------- 
+  :31    Using nullsafe                             
+         property access                            
+         on non-nullable                            
+         type                                       
+         App\Models\Car.                            
+         Use -> instead.                            
+  :31    Using nullsafe                             
+         property access                            
+         on non-nullable                            
+         type                                       
+         App\Models\Car.                            
+         Use -> instead.                            
+ ------ ------------------------------------------- 
+
+ ------ -------------------------------------------------------------------------- 
+  Line   Http\Controllers\Admin\DealerController.php                               
+ ------ -------------------------------------------------------------------------- 
+  :43    Anonymous                                                                 
+         function has an                                                           
+         unused use                                                                
+         $user.                                                                    
+  :46    Access to an                                                              
+         undefined                                                                 
+         property                                                                  
+         App\Models\Auction::$user_bid_amount.                                     
+         ≡ƒÆí Learn                                                                  
+            more:                                                                  
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+  :47    Access to an                                                              
+         undefined                                                                 
+         property                                                                  
+         App\Models\Auction::$top_bid_amount.                                      
+         ≡ƒÆí Learn                                                                  
+            more:                                                                  
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+  :48    Access to an                                                              
+         undefined                                                                 
+         property                                                                  
+         App\Models\Auction::$is_leading.                                          
+         ≡ƒÆí Learn                                                                  
+            more:                                                                  
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+ ------ -------------------------------------------------------------------------- 
+
+ ------ ------------------------------------------------- 
+  Line   Http\Controllers\Admin\HR\AdvanceController.php  
+ ------ ------------------------------------------------- 
+  :137   Parameter #1                                     
+         $string of                                       
+         function                                         
+         str_pad expects                                  
+         string, int                                      
+         given.                                           
+ ------ ------------------------------------------------- 
+
+ ------ ---------------------------------------------------- 
+  Line   Http\Controllers\Admin\HR\DepartmentController.php  
+ ------ ---------------------------------------------------- 
+  :147   Parameter #1                                        
+         $string of                                          
+         function                                            
+         str_pad expects                                     
+         string, int                                         
+         given.                                              
+ ------ ---------------------------------------------------- 
+
+ ------ -------------------------------------------------- 
+  Line   Http\Controllers\Admin\HR\EmployeeController.php  
+ ------ -------------------------------------------------- 
+  :163   Parameter #1                                      
+         $string of                                        
+         function                                          
+         str_pad expects                                   
+         string, int                                       
+         given.                                            
+ ------ -------------------------------------------------- 
+
+ ------ -------------------------------------------------------- 
+  Line   Http\Controllers\Admin\HR\EmployeeRewardController.php  
+ ------ -------------------------------------------------------- 
+  :134   Parameter #1                                            
+         $string of                                              
+         function                                                
+         str_pad expects                                         
+         string, int                                             
+         given.                                                  
+ ------ -------------------------------------------------------- 
+
+ ------ -------------------------------------------------------------- 
+  Line   Http\Controllers\Admin\HR\HRController.php                    
+ ------ -------------------------------------------------------------- 
+  :116   Parameter                                                     
+         $request of                                                   
+         method                                                        
+         App\Http\Controllers\Admin\HR\HRController::generateReport()  
+         has invalid                                                   
+         type                                                          
+         App\Http\Controllers\Admin\HR\Request.                        
+  :118   Access to                                                     
+         property                                                      
+         $report_type on                                               
+         an unknown                                                    
+         class                                                         
+         App\Http\Controllers\Admin\HR\Request.                        
+         ≡ƒÆí Learn more                                                 
+            at                                                         
+            https://phpstan.org/user-guide/discovering-symbols         
+  :119   Access to                                                     
+         property                                                      
+         $start_date on                                                
+         an unknown                                                    
+         class                                                         
+         App\Http\Controllers\Admin\HR\Request.                        
+         ≡ƒÆí Learn more                                                 
+            at                                                         
+            https://phpstan.org/user-guide/discovering-symbols         
+  :120   Access to                                                     
+         property                                                      
+         $end_date on an                                               
+         unknown class                                                 
+         App\Http\Controllers\Admin\HR\Request.                        
+         ≡ƒÆí Learn more                                                 
+            at                                                         
+            https://phpstan.org/user-guide/discovering-symbols         
+  :163   Parameter #1                                                  
+         $string of                                                    
+         function                                                      
+         str_pad expects                                               
+         string, int                                                   
+         given.                                                        
+ ------ -------------------------------------------------------------- 
+
+ ------ ----------------------------------------------- 
+  Line   Http\Controllers\Admin\HR\LeaveController.php  
+ ------ ----------------------------------------------- 
+  :171   Parameter #1                                   
+         $string of                                     
+         function                                       
+         str_pad expects                                
+         string, int                                    
+         given.                                         
+ ------ ----------------------------------------------- 
+
+ ------ ------------------------------------------------- 
+  Line   Http\Controllers\Admin\HR\PayrollController.php  
+ ------ ------------------------------------------------- 
+  :291   Parameter #1                                     
+         $string of                                       
+         function                                         
+         str_pad expects                                  
+         string, int                                      
+         given.                                           
+ ------ ------------------------------------------------- 
+
+ ------ ------------------------------------------------- 
+  Line   Http\Controllers\Admin\HR\PenaltyController.php  
+ ------ ------------------------------------------------- 
+  :139   Parameter #1                                     
+         $string of                                       
+         function                                         
+         str_pad expects                                  
+         string, int                                      
+         given.                                           
+ ------ ------------------------------------------------- 
+
+ ------ -------------------------------------------------- 
+  Line   Http\Controllers\Admin\HR\PositionController.php  
+ ------ -------------------------------------------------- 
+  :135   Parameter #1                                      
+         $string of                                        
+         function                                          
+         str_pad expects                                   
+         string, int                                       
+         given.                                            
+ ------ -------------------------------------------------- 
+
+ ------ ----------------------------------------------------- 
+  Line   Http\Controllers\Admin\HR\RecruitmentController.php  
+ ------ ----------------------------------------------------- 
+  :155   Parameter #1                                         
+         $string of                                           
+         function                                             
+         str_pad expects                                      
+         string, int                                          
+         given.                                               
+ ------ ----------------------------------------------------- 
+
+ ------ --------------------------------------------------------- 
+  Line   Http\Controllers\Admin\HR\SalaryStructureController.php  
+ ------ --------------------------------------------------------- 
+  :116   Parameter #1                                             
+         $string of                                               
+         function                                                 
+         str_pad expects                                          
+         string, int                                              
+         given.                                                   
+ ------ --------------------------------------------------------- 
+
+ ------ ----------------------------------------------- 
+  Line   Http\Controllers\Admin\HR\ShiftController.php  
+ ------ ----------------------------------------------- 
+  :131   Parameter #1                                   
+         $string of                                     
+         function                                       
+         str_pad expects                                
+         string, int                                    
+         given.                                         
+ ------ ----------------------------------------------- 
+
+ ------ ------------------------------------------------- 
+  Line   Http\Controllers\Admin\InspectionController.php  
+ ------ ------------------------------------------------- 
+  :239   Parameter #1                                     
+         $string of                                       
+         function                                         
+         str_pad expects                                  
+         string, int                                      
+         given.                                           
+ ------ ------------------------------------------------- 
+
+ ------ -------------------------------------------------------------------------- 
+  Line   Http\Controllers\Admin\NotificationController.php                         
+ ------ -------------------------------------------------------------------------- 
+  :50    Access to an                                                              
+         undefined                                                                 
+         property                                                                  
+         App\Models\User::$unreadNotifications.                                    
+         ≡ƒÆí Learn                                                                  
+            more:                                                                  
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+ ------ -------------------------------------------------------------------------- 
+
+ ------ -------------------------------------------------------------------------- 
+  Line   Http\Controllers\Admin\SEOController.php                                  
+ ------ -------------------------------------------------------------------------- 
+         Ignored error                                                             
+         pattern                                                                   
+         nullCoalesce.expr                                                         
+         in path                                                                   
+         F:\auction_app\app\Http\Controllers\Admin\SEOController.php               
+         was not matched                                                           
+         in reported                                                               
+         errors.                                                                   
+  :127   Strict                                                                    
+         comparison                                                                
+         using ===                                                                 
+         between                                                                   
+         non-falsy-string                                                          
+         and '' will                                                               
+         always evaluate                                                           
+         to false.                                                                 
+         ≡ƒ¬¬                                                                        
+         identical.alwaysFalse                                                     
+  :131   Access to an                                                              
+         undefined                                                                 
+         property                                                                  
+         App\Models\CMS\Page::$seo_title.                                          
+         ≡ƒ¬¬                                                                        
+         property.notFound                                                         
+         ≡ƒÆí Learn                                                                  
+            more:                                                                  
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+  :132   Access to an                                                              
+         undefined                                                                 
+         property                                                                  
+         App\Models\CMS\Page::$seo_description.                                    
+         ≡ƒ¬¬                                                                        
+         property.notFound                                                         
+         ≡ƒÆí Learn                                                                  
+            more:                                                                  
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+  :503   Access to an                                                              
+         undefined                                                                 
+         property                                                                  
+         App\Models\Auction::$seo_title.                                           
+         ≡ƒ¬¬                                                                        
+         property.notFound                                                         
+         ≡ƒÆí Learn                                                                  
+            more:                                                                  
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+  :511   Access to an                                                              
+         undefined                                                                 
+         property                                                                  
+         App\Models\Page::$seo_title.                                              
+         ≡ƒ¬¬                                                                        
+         property.notFound                                                         
+         ≡ƒÆí Learn                                                                  
+            more:                                                                  
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+ ------ -------------------------------------------------------------------------- 
+
+ ------ -------------------------------------------------------------------------- 
+  Line   Http\Controllers\DealerProfileController.php                              
+ ------ -------------------------------------------------------------------------- 
+  :25    Anonymous                                                                 
+         function has an                                                           
+         unused use                                                                
+         $dealer.                                                                  
+  :28    Access to an                                                              
+         undefined                                                                 
+         property                                                                  
+         App\Models\Auction::$user_bid.                                            
+         ≡ƒÆí Learn                                                                  
+            more:                                                                  
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+  :29    Access to an                                                              
+         undefined                                                                 
+         property                                                                  
+         App\Models\Auction::$top_bid.                                             
+         ≡ƒÆí Learn                                                                  
+            more:                                                                  
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+  :30    Access to an                                                              
+         undefined                                                                 
+         property                                                                  
+         App\Models\Auction::$is_leading.                                          
+         ≡ƒÆí Learn                                                                  
+            more:                                                                  
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+ ------ -------------------------------------------------------------------------- 
+
+ ------ ------------------------------------------------------- 
+  Line   Http\Controllers\HomeController.php                    
+ ------ ------------------------------------------------------- 
+  :340   Instantiated                                           
+         class                                                  
+         App\Http\Controllers\NewLeadReceived                   
+         not found.                                             
+         ≡ƒÆí Learn more                                          
+            at                                                  
+            https://phpstan.org/user-guide/discovering-symbols  
+ ------ ------------------------------------------------------- 
+
+ ------ ------------------------------------------------ 
+  Line   Jobs\GenerateSEOContent.php                     
+ ------ ------------------------------------------------ 
+         Ignored error                                   
+         pattern                                         
+         variable.undefined                              
+         in path                                         
+         F:\auction_app\app\Jobs\GenerateSEOContent.php  
+         was not matched                                 
+         in reported                                     
+         errors.                                         
+ ------ ------------------------------------------------ 
+
+ ------ ----------------------- 
+  Line   Models\HR\Advance.php  
+ ------ ----------------------- 
+  :55    Match arm is           
+         unreachable            
+         because                
+         previous               
+         comparison is          
+         always true.           
+ ------ ----------------------- 
+
+ ------ ---------------------------------- 
+  Line   Models\HR\EmployeeEvaluation.php  
+ ------ ---------------------------------- 
+  :56    Match arm is                      
+         unreachable                       
+         because                           
+         previous                          
+         comparison is                     
+         always true.                      
+  :73    Match arm is                      
+         unreachable                       
+         because                           
+         previous                          
+         comparison is                     
+         always true.                      
+ ------ ---------------------------------- 
+
+ ------ ------------------------------ 
+  Line   Models\HR\EmployeeReward.php  
+ ------ ------------------------------ 
+  :52    Match arm is                  
+         unreachable                   
+         because                       
+         previous                      
+         comparison is                 
+         always true.                  
+  :64    Match arm is                  
+         unreachable                   
+         because                       
+         previous                      
+         comparison is                 
+         always true.                  
+ ------ ------------------------------ 
+
+ ------ -------------------------------------------------- 
+  Line   Models\HR\Leave.php                               
+ ------ -------------------------------------------------- 
+  :71    Offset                                            
+         'annual'|'emergency'|'maternity'|'sick'|'unpaid'  
+         on                                                
+         array{annual:                                     
+         'Annual Leave',                                   
+         sick: 'Sick                                       
+         Leave', unpaid:                                   
+         'Unpaid Leave',                                   
+         emergency:                                        
+         'Emergency                                        
+         Leave',                                           
+         maternity:                                        
+         'Maternity                                        
+         Leave'} on left                                   
+         side of ??                                        
+         always exists                                     
+         and is not                                        
+         nullable.                                         
+ ------ -------------------------------------------------- 
+
+ ------ ----------------------- 
+  Line   Models\HR\Payroll.php  
+ ------ ----------------------- 
+  :128   Match arm is           
+         unreachable            
+         because                
+         previous               
+         comparison is          
+         always true.           
+ ------ ----------------------- 
+
+ ------ ----------------------- 
+  Line   Models\HR\Penalty.php  
+ ------ ----------------------- 
+  :49    Match arm is           
+         unreachable            
+         because                
+         previous               
+         comparison is          
+         always true.           
+  :59    Match arm is           
+         unreachable            
+         because                
+         previous               
+         comparison is          
+         always true.           
+ ------ ----------------------- 
+
+ ------ --------------------------- 
+  Line   Models\HR\Recruitment.php  
+ ------ --------------------------- 
+  :69    Match arm is               
+         unreachable                
+         because                    
+         previous                   
+         comparison is              
+         always true.               
+  :76    Parameter #1               
+         $num of                    
+         function                   
+         number_format              
+         expects float,             
+         string given.              
+  :76    Parameter #1               
+         $num of                    
+         function                   
+         number_format              
+         expects float,             
+         string given.              
+ ------ --------------------------- 
+
+ ------ ------------------------------- 
+  Line   Models\HR\SalaryStructure.php  
+ ------ ------------------------------- 
+  :41    Right side of                  
+         && is always                   
+         true.                          
+         ≡ƒÆí Because                     
+            the type is                 
+            coming from a               
+            PHPDoc, you can             
+            turn off this               
+            check by                    
+            setting                     
+            treatPhpDocTypesAsCertain:  
+            false in                    
+            your                        
+            phpstan.neon.               
+ ------ ------------------------------- 
+
+ ------ -------------------- 
+  Line   Models\Invoice.php  
+ ------ -------------------- 
+  :86    Parameter #1        
+         $string of          
+         function            
+         str_pad expects     
+         string, int         
+         given.              
+ ------ -------------------- 
+
+ ------ --------------------------- 
+  Line   Models\PaymentVoucher.php  
+ ------ --------------------------- 
+  :87    Parameter #1               
+         $string of                 
+         function                   
+         str_pad expects            
+         string, int                
+         given.                     
+ ------ --------------------------- 
+
+ ------ -------------------- 
+  Line   Models\Receipt.php  
+ ------ -------------------- 
+  :93    Parameter #1        
+         $string of          
+         function            
+         str_pad expects     
+         string, int         
+         given.              
+ ------ -------------------- 
+
+ ------ ----------------------------------- 
+  Line   Notifications\NewLeadReceived.php  
+ ------ ----------------------------------- 
+  :23    Match arm is                       
+         unreachable                        
+         because                            
+         previous                           
+         comparison is                      
+         always true.                       
+  :24    Match arm is                       
+         unreachable                        
+         because                            
+         previous                           
+         comparison is                      
+         always true.                       
+ ------ ----------------------------------- 
+
+ ------ ---------------------------------------------- 
+  Line   Services\AISEOService.php                     
+ ------ ---------------------------------------------- 
+         Ignored error                                 
+         pattern                                       
+         empty.variable                                
+         in path                                       
+         F:\auction_app\app\Services\AISEOService.php  
+         was not matched                               
+         in reported                                   
+         errors.                                       
+         Ignored error                                 
+         pattern                                       
+         method.unused                                 
+         in path                                       
+         F:\auction_app\app\Services\AISEOService.php  
+         was not matched                               
+         in reported                                   
+         errors.                                       
+         Ignored error                                 
+         pattern                                       
+         nullCoalesce.offset                           
+         in path                                       
+         F:\auction_app\app\Services\AISEOService.php  
+         was not matched                               
+         in reported                                   
+         errors.                                       
+ ------ ---------------------------------------------- 
+
+ ------ ----------------------------- 
+  Line   Services\AuctionService.php  
+ ------ ----------------------------- 
+  :44    Class                        
+         App\Events\BidPlaced         
+         constructor                  
+         invoked with 1               
+         parameter, 2                 
+         required.                    
+ ------ ----------------------------- 
+
+ ------ -------------------------------------------------------------------------- 
+  Line   Services\SeoAutonomousAgent.php                                           
+ ------ -------------------------------------------------------------------------- 
+  :30    Access to an                                                              
+         undefined                                                                 
+         property                                                                  
+         App\Models\Page::$seo_title.                                              
+         ≡ƒÆí Learn                                                                  
+            more:                                                                  
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+  :38    Access to an                                                              
+         undefined                                                                 
+         property                                                                  
+         App\Models\Auction::$seo_title.                                           
+         ≡ƒÆí Learn                                                                  
+            more:                                                                  
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+  :46    Access to an                                                              
+         undefined                                                                 
+         property                                                                  
+         App\Models\Post::$seo_title.                                              
+         ≡ƒÆí Learn                                                                  
+            more:                                                                  
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+  :76    Access to an                                                              
+         undefined                                                                 
+         property                                                                  
+         App\Models\Auction::$seo_description.                                     
+         ≡ƒÆí Learn                                                                  
+            more:                                                                  
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+  :76    Access to an                                                              
+         undefined                                                                 
+         property                                                                  
+         App\Models\Auction::$seo_title.                                           
+         ≡ƒÆí Learn                                                                  
+            more:                                                                  
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+  :96    Right side of                                                             
+         && is always                                                              
+         true.                                                                     
+         ≡ƒÆí Because                                                                
+            the type is                                                            
+            coming from a                                                          
+            PHPDoc, you can                                                        
+            turn off this                                                          
+            check by                                                               
+            setting                                                                
+            treatPhpDocTypesAsCertain:                                             
+            false in                                                               
+            your                                                                   
+            phpstan.neon.                                                          
+  :106   Cannot call                                                               
+         static method                                                             
+         withoutEvents()                                                           
+         on                                                                        
+         class-string|false.                                                       
+ ------ -------------------------------------------------------------------------- 
+
+ [ERROR] Found 65 errors 
+

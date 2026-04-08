@@ -161,37 +161,126 @@
                 </div>
             </div>
 
-            {{-- Component Verification Checklist --}}
+            {{-- Component Verification Checklist (Elite High-Fidelity Rendering) --}}
             @if(!empty($report->detailed_checklists))
-            <div class="bg-white rounded-xl border border-slate-200 overflow-hidden">
-                <div class="flex items-center gap-3 px-5 py-3 bg-slate-50 border-b border-slate-200">
-                    <div class="w-7 h-7 rounded-lg bg-white border border-slate-200 flex items-center justify-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#1d293d" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+            <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+                <div class="flex items-center gap-3 px-6 py-4 bg-slate-50 border-b border-slate-200">
+                    <div class="w-8 h-8 rounded-xl bg-[#1d293d] flex items-center justify-center border border-slate-200 shadow-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ff6900" stroke-width="2.5"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
                     </div>
-                    <div class="text-[0.62rem] font-black text-[#1d293d] uppercase tracking-widest">Component Verification</div>
-                    <div class="ml-auto">
+                    <div>
+                        <div class="text-[0.68rem] font-black text-[#031629] uppercase tracking-wider italic">Technical Audit Details</div>
+                        <div class="text-[0.52rem] text-slate-400 font-bold uppercase tracking-widest mt-0.5">Comprehensive Component Verification Matrix</div>
+                    </div>
+                    <div class="ml-auto flex items-center gap-2">
                         @php
-                            $passed = collect($report->detailed_checklists)->filter()->count();
-                            $total  = count($report->detailed_checklists);
+                            $totalFields = count($report->detailed_checklists);
                         @endphp
-                        <span class="text-[0.52rem] font-black px-2 py-0.5 rounded-md {{ $passed === $total ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600' }}">
-                            {{ $passed }}/{{ $total }} Passed
+                        <span class="text-[0.55rem] font-black px-3 py-1 bg-white border border-slate-200 rounded-lg text-slate-500 shadow-sm">
+                            {{ $totalFields }} DATA POINTS LOGGED
                         </span>
                     </div>
                 </div>
-                <div class="p-4 bg-[#f0f2f5]">
-                    <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
-                        @foreach($report->detailed_checklists as $key => $pass)
-                        <div class="flex items-center gap-2.5 bg-white border border-slate-200 px-3 py-2.5 rounded-lg">
-                            <div class="w-5 h-5 rounded-md flex items-center justify-center flex-shrink-0 {{ $pass ? 'bg-emerald-50 border border-emerald-200 text-emerald-600' : 'bg-red-50 border border-red-100 text-red-500' }}">
-                                @if($pass)
-                                <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
-                                @else
-                                <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                                @endif
+
+                <div class="p-0">
+                    <div class="divide-y divide-slate-100">
+                        @foreach($report->detailed_checklists as $field)
+                            @php 
+                                $fType = $field['type'] ?? 'text';
+                                $fVal  = $field['value'] ?? null;
+                                $fNotes = $field['notes'] ?? null;
+                                $fAttach = $field['attachment'] ?? null;
+                            @endphp
+                            <div class="p-5 flex flex-col md:flex-row gap-4 hover:bg-slate-50/50 transition-colors">
+                                {{-- Field Identity --}}
+                                <div class="md:w-1/3">
+                                    <div class="flex items-center gap-2 mb-1.5">
+                                        <div class="w-1.5 h-1.5 rounded-full bg-[#ff6900]"></div>
+                                        <h3 class="text-[0.65rem] font-black text-slate-500 uppercase tracking-widest leading-none">{{ $field['label'] ?? 'Unknown Component' }}</h3>
+                                    </div>
+                                    <div class="text-[0.5rem] font-mono font-bold text-slate-300 uppercase tracking-tighter">
+                                        Type: {{ strtoupper(str_replace('_', ' ', $fType)) }}
+                                    </div>
+                                </div>
+
+                                {{-- Field Value Rendering --}}
+                                <div class="flex-1">
+                                    @if($fType === 'image')
+                                        @if($fVal)
+                                            <div class="max-w-sm rounded-xl overflow-hidden border border-slate-200 shadow-xl group/img relative">
+                                                <img src="{{ $fVal }}" class="w-full h-auto object-cover max-h-64">
+                                                <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover/img:opacity-100 transition-opacity flex flex-col justify-end p-4">
+                                                    <span class="text-[0.5rem] text-white font-black uppercase tracking-widest">High-Res Capture</span>
+                                                </div>
+                                            </div>
+                                        @else
+                                            <span class="text-xs font-bold text-slate-300 italic">No image captured</span>
+                                        @endif
+
+                                    @elseif($fType === 'checkbox')
+                                        <div class="flex items-center gap-2">
+                                            <div class="w-5 h-5 rounded-lg flex items-center justify-center {{ $fVal ? 'bg-emerald-50 border border-emerald-200 text-emerald-600' : 'bg-red-50 border border-red-100 text-red-500' }}">
+                                                @if($fVal)
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><polyline points="20 6 9 17 4 12"/></svg>
+                                                @else
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                                                @endif
+                                            </div>
+                                            <span class="text-xs font-bold text-slate-700">{{ $fVal ? 'PASS / VERIFIED' : 'FAIL / ATTENTION REQUIRED' }}</span>
+                                        </div>
+
+                                    @elseif($fType === 'multi_checkbox' || $fType === 'multi_select' || $fType === 'dropdown_multi')
+                                        <div class="flex flex-wrap gap-1.5">
+                                            @if(is_array($fVal) && count($fVal) > 0)
+                                                @foreach($fVal as $chip)
+                                                    <span class="px-2.5 py-1 bg-slate-100 border border-slate-200 rounded-lg text-[0.58rem] font-bold text-slate-700 uppercase tracking-tighter">
+                                                        {{ $chip }}
+                                                    </span>
+                                                @endforeach
+                                            @elseif($fVal && is_string($fVal))
+                                                <span class="px-2.5 py-1 bg-slate-100 border border-slate-200 rounded-lg text-[0.58rem] font-bold text-slate-700 uppercase tracking-tighter">
+                                                    {{ $fVal }}
+                                                </span>
+                                            @else
+                                                <span class="text-xs font-bold text-slate-300 italic">No selections recorded</span>
+                                            @endif
+                                        </div>
+
+                                    @elseif($fType === 'radio' || $fType === 'dropdown')
+                                         @if($fVal)
+                                            <div class="inline-flex items-center gap-2 px-3 py-1.5 bg-orange-50 border border-orange-100 rounded-lg">
+                                                <div class="w-2 h-2 rounded-full bg-[#ff6900]"></div>
+                                                <span class="text-xs font-black text-[#ff6900] uppercase">{{ is_array($fVal) ? implode(', ', $fVal) : $fVal }}</span>
+                                            </div>
+                                         @else
+                                            <span class="text-xs font-bold text-slate-300 italic">No value selected</span>
+                                         @endif
+
+                                    @else
+                                        <div class="text-[0.7rem] font-bold text-[#031629] leading-relaxed">
+                                            {{ $fVal ?: 'No data specified' }}
+                                        </div>
+                                    @endif
+
+                                    {{-- Notes & Attachments Footer --}}
+                                    @if($fNotes || $fAttach)
+                                        <div class="mt-4 flex flex-col gap-2 border-t border-slate-50 pt-3">
+                                            @if($fNotes)
+                                                <div class="text-[0.62rem] text-slate-500 italic flex items-start gap-2 bg-slate-50 p-2.5 rounded-lg border border-slate-100">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="mt-0.5 shrink-0 opacity-40"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                                                    <span>"{{ $fNotes }}"</span>
+                                                </div>
+                                            @endif
+                                            @if($fAttach)
+                                                <a href="{{ $fAttach }}" target="_blank" class="inline-flex items-center gap-2 text-[0.58rem] font-black text-[#ff6900] uppercase hover:underline">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.51a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+                                                    View External Evidence Attachment
+                                                </a>
+                                            @endif
+                                        </div>
+                                    @endif
+                                </div>
                             </div>
-                            <span class="text-[0.58rem] font-bold text-slate-600 uppercase tracking-tighter leading-tight">{{ ucwords(str_replace('_', ' ', $key)) }}</span>
-                        </div>
                         @endforeach
                     </div>
                 </div>

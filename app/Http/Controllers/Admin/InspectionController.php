@@ -8,6 +8,7 @@ use App\Models\Car;
 use App\Models\CarModel;
 use App\Models\InspectionReport;
 use App\Services\ReferenceCodeService;
+use App\Support\InspectionFieldsConfig;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -108,20 +109,45 @@ class InspectionController extends Controller
             }
         }
 
-        // Process Settings-Driven Custom Fields
-        $configFields = json_decode(\App\Models\SystemSetting::get('inspection_fields', '[]'), true) ?: [];
+        // Process Settings-Driven Custom Fields (sections → flat field list)
+        $configSections = InspectionFieldsConfig::normalizeSections(
+            json_decode(\App\Models\SystemSetting::get('inspection_fields', '[]'), true) ?: []
+        );
+        $configFields = InspectionFieldsConfig::flattenFields($configSections);
         $checklist = [];
         foreach ($configFields as $cf) {
             $fid = $cf['id'];
+
+            // Resolve attachment for any field type
+            $attachUrl = null;
+            if ($request->hasFile("custom_field_attach.{$fid}")) {
+                $attachPath = $request->file("custom_field_attach.{$fid}")->store('inspections/attachments', 'public');
+                $attachUrl  = asset('storage/' . $attachPath);
+            }
+
+            // Resolve optional notes for any field type
+            $notes = ($cf['allow_notes'] ?? false)
+                ? ($request->input("custom_field_notes.{$fid}") ?: null)
+                : null;
+
             if ($cf['type'] === 'image' && $request->hasFile("custom_field_img.{$fid}")) {
                 $path = $request->file("custom_field_img.{$fid}")->store('inspections/custom', 'public');
-                $checklist[] = ['id' => $fid, 'label' => $cf['label'], 'type' => 'image', 'value' => asset('storage/' . $path)];
+                $checklist[] = ['id' => $fid, 'label' => $cf['label'], 'type' => 'image', 'value' => asset('storage/' . $path), 'attachment' => $attachUrl, 'notes' => $notes];
             } elseif ($cf['type'] === 'checkbox') {
-                $checklist[] = ['id' => $fid, 'label' => $cf['label'], 'type' => 'checkbox', 'value' => $request->has("custom_field.{$fid}") ? true : false];
+                $checklist[] = ['id' => $fid, 'label' => $cf['label'], 'type' => 'checkbox', 'value' => $request->has("custom_field.{$fid}") ? true : false, 'attachment' => $attachUrl, 'notes' => $notes];
+            } elseif ($cf['type'] === 'multi_checkbox') {
+                $selected = $request->input("custom_field.{$fid}");
+                $checklist[] = ['id' => $fid, 'label' => $cf['label'], 'type' => 'multi_checkbox', 'value' => $selected ?? '', 'attachment' => $attachUrl, 'notes' => $notes];
+            } elseif ($cf['type'] === 'dropdown') {
+                $selected = $request->input("custom_field.{$fid}", []);
+                $checklist[] = ['id' => $fid, 'label' => $cf['label'], 'type' => 'dropdown', 'value' => array_values(array_filter((array) $selected)), 'attachment' => $attachUrl, 'notes' => $notes];
+            } elseif ($cf['type'] === 'multi_select') {
+                $selected = $request->input("custom_field.{$fid}", []);
+                $checklist[] = ['id' => $fid, 'label' => $cf['label'], 'type' => 'multi_select', 'value' => array_values(array_filter((array) $selected)), 'attachment' => $attachUrl, 'notes' => $notes];
             } else {
                 $val = $request->input("custom_field.{$fid}");
                 if ($val !== null) {
-                    $checklist[] = ['id' => $fid, 'label' => $cf['label'], 'type' => $cf['type'], 'value' => $val];
+                    $checklist[] = ['id' => $fid, 'label' => $cf['label'], 'type' => $cf['type'], 'value' => $val, 'attachment' => $attachUrl, 'notes' => $notes];
                 }
             }
         }

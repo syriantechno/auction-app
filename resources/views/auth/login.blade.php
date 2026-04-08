@@ -7,51 +7,12 @@
     <title>Login - {{ \App\Models\SystemSetting::get('site_name', 'Motor Bazar') }}</title>
     
     <!-- Design Foundation -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] },
-                    colors: {
-                        bazar: { DEFAULT: '#ff4605', 500: '#ff4605', 600: '#e03d04' },
-                        slate: { 50: '#f8fafc', 500: '#64748b', 800: '#1e293b', 900: '#0f172a' }
-                    }
-                }
-            }
-        }
-    </script>
-
-    <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; color: #1e293b; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
-        .form-card {
-            background: white;
-            border-radius: 48px;
-            box-shadow: 0 50px 100px -30px rgba(0, 0, 0, 0.08), 0 30px 60px -30px rgba(255, 70, 5, 0.05);
-            border: 1px solid rgba(255, 70, 5, 0.05);
-        }
-        .input-premium {
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .input-premium:focus {
-            background: white;
-            border-color: #ff4605;
-            box-shadow: 0 0 0 4px rgba(255, 70, 5, 0.1);
-        }
-        .orange-blob {
-            background: #ff4605;
-            border-radius: 50%;
-            opacity: 0.1;
-            filter: blur(2px);
-        }
-    </style>
 </head>
-<body class="min-h-screen flex items-center justify-center p-4 lg:p-0">
+<body class="min-h-screen flex items-center justify-center p-4 lg:p-0 login-body">
     
     <!-- Decorative Blobs -->
     <div class="fixed inset-0 z-0 pointer-events-none overflow-hidden">
@@ -66,8 +27,8 @@
             <div class="form-card w-full max-w-[500px] p-10 lg:p-14 text-left">
                 
                 <div class="mb-14">
-                    <h2 class="text-4xl font-black text-[#031629] mb-3 tracking-tight uppercase italic underline decoration-bazar-500 decoration-[6px] underline-offset-[14px]">SIGN IN</h2>
-                    <p class="text-[#031629]/60 font-bold text-[0.8rem] tracking-wide mt-6 uppercase">Access your automotive workspace</p>
+                    <h2 class="text-4xl font-black text-[#031629] mb-3 tracking-tight uppercase italic underline decoration-bazar-500 decoration-[6px] underline-offset-[16px]">SIGN IN</h2>
+                    <p class="text-[#031629]/60 font-bold text-[0.8rem] tracking-wide mt-8 uppercase italic">Access your automotive workspace</p>
                 </div>
 
                 @if($errors->any())
@@ -89,7 +50,7 @@
                                 </div>
                                 <input type="email" name="email" id="email" value="{{ old('email') }}" required autofocus
                                     placeholder="name@domain.com"
-                                    class="w-full pl-12 pr-4 py-5 input-premium rounded-lg outline-none font-bold text-sm text-[#031629] placeholder:text-slate-200">
+                                    class="w-full pl-12 pr-4 py-5 input-premium rounded-3xl outline-none font-bold text-sm text-[#031629] placeholder:text-slate-200">
                             </div>
                         </div>
 
@@ -104,7 +65,7 @@
                                 </div>
                                 <input type="password" name="password" id="password" required 
                                     placeholder="••••••••••••"
-                                    class="w-full pl-12 pr-4 py-5 input-premium rounded-lg outline-none font-bold text-sm text-[#031629] placeholder:text-slate-200">
+                                    class="w-full pl-12 pr-4 py-5 input-premium rounded-3xl outline-none font-bold text-sm text-[#031629] placeholder:text-slate-200">
                             </div>
                         </div>
                     </div>
@@ -146,25 +107,25 @@
                 $primaryWord = explode(' ', $siteName)[0] ?? 'Motor';
                 $secondaryWord = explode(' ', $siteName)[1] ?? 'Bazar';
             @endphp
-            <div class="flex items-center gap-4 mb-16 lg:-ml-24">
-                <div class="w-32 h-32 flex items-center justify-center text-[#031629]">
+            <div class="flex items-center gap-8 mb-16 lg:-ml-24">
+                <div class="w-40 h-40 flex items-center justify-center text-[#031629]">
                     @if($siteLogo)
-                        <img src="{{ asset('storage/' . $siteLogo) }}" class="w-20 h-20 object-contain">
+                        <img src="{{ asset('storage/' . $siteLogo) }}" class="w-40 h-40 object-contain drop-shadow-2xl">
                     @else
-                        <div class="w-24 h-24 rounded-[32px] bg-[#1d293d] shadow-2xl flex items-center justify-center overflow-hidden">
-                            <span class="font-black italic text-5xl text-white">{{ strtoupper(substr($siteName, 0, 1)) }}</span>
+                        <div class="w-32 h-32 rounded-[40px] bg-[#031629] shadow-2xl flex items-center justify-center overflow-hidden">
+                            <span class="font-black italic text-6xl text-white">{{ strtoupper(substr($siteName, 0, 1)) }}</span>
                         </div>
                     @endif
                 </div>
                 <div>
-                    <h1 class="text-4xl font-black text-[#031629] uppercase italic leading-none">{{ $primaryWord }}<span class="text-bazar-500">{{ $secondaryWord }}</span></h1>
-                    <p class="text-[0.65rem] text-[#031629]/60 font-bold uppercase tracking-[0.2em] mt-2 italic">Elite Auction Platform</p>
+                    <h1 class="text-6xl font-black text-[#031629] uppercase italic leading-none tracking-tighter">{{ $primaryWord }}<span class="text-bazar-500">{{ $secondaryWord }}</span></h1>
+                    <p class="text-[0.8rem] text-[#031629]/60 font-black uppercase tracking-[0.3em] mt-3 italic pl-1">Elite Auction Platform</p>
                 </div>
             </div>
 
             <!-- Car Illustration -->
             <img src="{{ asset('images/cars/car-silver.png') }}" 
-                class="w-full h-auto drop-shadow-[0_60px_60px_rgba(0,0,0,0.12)] animate-in fade-in zoom-in slide-in-from-right-12 duration-1000" 
+                class="w-full h-auto drop-shadow-[0_80px_100px_rgba(0,0,0,0.15)] animate-in fade-in zoom-in slide-in-from-right-20 duration-1000" 
                 alt="Motor Bazar Elite Selection">
         </div>
 
@@ -175,4 +136,3 @@
     </script>
 </body>
 </html>
-

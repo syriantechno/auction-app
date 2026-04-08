@@ -11,7 +11,7 @@
         <div class="relative" id="datePicker">
             <input type="hidden" name="{{ $dateName }}" id="{{ $dateId }}">
             <button type="button" id="datePickerToggle"
-                class="group w-full h-[52px] px-5 rounded-md bg-slate-50 border-2 border-slate-100/50 hover:border-[#FF6900]/30 hover:bg-white flex items-center gap-3 text-left transition-all shadow-sm">
+                class="group w-full h-[52px] px-5 rounded-xl bg-slate-50 border-2 border-slate-100/50 hover:border-[#FF6900]/30 hover:bg-white flex items-center gap-3 text-left transition-all shadow-sm">
                 <i data-lucide="calendar" class="w-4 h-4 text-slate-400 shrink-0 group-hover:text-[#FF6900] transition-colors"></i>
                 <span id="datePickerLabel" class="text-[0.85rem] font-black text-slate-400 truncate italic">Select Date</span>
             </button>
@@ -40,7 +40,7 @@
         <div class="relative" id="timePicker">
             <input type="hidden" name="{{ $timeName }}" id="{{ $timeId }}">
             <button type="button" id="timePickerToggle"
-                class="group w-full h-[52px] px-5 rounded-md bg-slate-50 border-2 border-slate-100/50 hover:border-[#FF6900]/30 hover:bg-white flex items-center gap-3 text-left transition-all shadow-sm">
+                class="group w-full h-[52px] px-5 rounded-xl bg-slate-50 border-2 border-slate-100/50 hover:border-[#FF6900]/30 hover:bg-white flex items-center gap-3 text-left transition-all shadow-sm">
                 <i data-lucide="clock" class="w-4 h-4 text-slate-400 shrink-0 group-hover:text-[#FF6900] transition-colors"></i>
                 <span id="timePickerLabel" class="text-[0.85rem] font-black text-slate-400 truncate italic">Time Slot</span>
             </button>

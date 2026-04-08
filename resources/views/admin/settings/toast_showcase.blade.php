@@ -416,14 +416,5 @@ function demo6(type) {
 }
 </script>
 
-<style>
-@keyframes shrinkBar {
-    from { width: 100%; }
-    to { width: 0%; }
-}
-@keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.4; }
-}
-</style>
+
 @endsection

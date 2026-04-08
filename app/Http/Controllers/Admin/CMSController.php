@@ -91,7 +91,7 @@ class CMSController extends Controller
         
         $request->validate([
             'title' => 'required|string|max:255',
-            'hero_title' => 'required|string',
+            'hero_title' => 'nullable|string',
             'hero_subtitle' => 'nullable|string',
             'hero_announcement' => 'nullable|string',
             'hero_image' => 'nullable|string',
@@ -107,6 +107,7 @@ class CMSController extends Controller
             'hero_background_direction' => 'nullable|in:horizontal,vertical',
             'hero_background_overlay_enabled' => 'nullable|boolean',
             'hero_car_scale' => 'nullable|numeric',
+            'hero_car_mirror' => 'nullable|boolean',
             'primary_cta_label' => 'nullable|string',
             'primary_cta_url' => 'nullable|string',
             'secondary_cta_label' => 'nullable|string',
@@ -120,6 +121,7 @@ class CMSController extends Controller
             'lead_form.step3' => 'nullable|array',
             'footer_background_color' => 'nullable|string|max:30',
             'navbar_phone' => 'nullable|string|max:50',
+            'navbar_whatsapp' => 'nullable|string|max:50',
             'navbar_hours' => 'nullable|string|max:100',
             'navbar_sticky' => 'nullable|boolean',
             'navbar_glass' => 'nullable|boolean',
@@ -168,6 +170,7 @@ class CMSController extends Controller
             'background_overlay_enabled' => $request->boolean('hero_background_overlay_enabled', data_get($content, 'hero.background_overlay_enabled', true)),
             'background_image' => $heroBackgroundImage,
             'car_scale' => (float) ($request->input('hero_car_scale') ?? data_get($content, 'hero.car_scale', 1)),
+            'car_mirror' => (bool) ($request->input('hero_car_mirror') ?? data_get($content, 'hero.car_mirror', false)),
         ];
 
         $page->hero_image = $heroCarImage;
@@ -230,6 +233,7 @@ class CMSController extends Controller
         $navbarInput = $request->input('navbar', []);
         $content['navbar'] = [
             'phone'      => $request->input('navbar_phone') ?? data_get($content, 'navbar.phone', '+1 (234) 567 890'),
+            'whatsapp'   => $request->input('navbar_whatsapp') ?? data_get($content, 'navbar.whatsapp', ''),
             'hours'      => $request->input('navbar_hours') ?? data_get($content, 'navbar.hours', 'Mon - Fri: 9:00 - 18:00'),
             'sticky'     => $request->boolean('navbar_sticky', data_get($content, 'navbar.sticky', true)),
             'glass'      => $request->boolean('navbar_glass', data_get($content, 'navbar.glass', true)),
@@ -331,49 +335,22 @@ class CMSController extends Controller
             return '';
         }
 
-        $allowedTags = ['span', 'strong', 'em', 'u', 'br'];
-        $allowedAttributes = ['style'];
-
-        $document = new \DOMDocument();
-        libxml_use_internal_errors(true);
-        $document->loadHTML('<div>' . $value . '</div>', LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
-        libxml_clear_errors();
-
-        $this->cleanNode($document->documentElement, $allowedTags, $allowedAttributes);
-
-        $innerHtml = $document->saveHTML($document->documentElement);
-        // strip wrapper div
-        return preg_replace('~^<div>(.*)</div>$~s', '$1', $innerHtml) ?: '';
-    }
-
-    private function cleanNode(\DOMNode $node, array $allowedTags, array $allowedAttributes): void
-    {
-        if ($node->nodeType === XML_ELEMENT_NODE) {
-            /** @var \DOMElement $element */
-            $element = $node;
-            if (!in_array($element->tagName, $allowedTags, true)) {
-                $fragment = $element->ownerDocument->createDocumentFragment();
-                while ($element->childNodes->length) {
-                    $fragment->appendChild($element->childNodes->item(0));
-                }
-                $element->parentNode?->replaceChild($fragment, $element);
-                return;
+        // Convert legacy <font> tags to <span style="...">
+        $value = preg_replace_callback('/<font([^>]*)>(.*?)<\/font>/is', function ($m) {
+            $attrs = $m[1];
+            $inner = $m[2];
+            $style = '';
+            if (preg_match('/color=["\']?([^"\'>\s]+)/i', $attrs, $c)) {
+                $style .= 'color:' . $c[1] . ';';
             }
-
-            foreach (iterator_to_array($element->attributes) as $attr) {
-                if (!in_array($attr->name, $allowedAttributes, true)) {
-                    $element->removeAttributeNode($attr);
-                    continue;
-                }
-
-                if ($attr->name === 'style') {
-                    $element->setAttribute('style', preg_replace('~[^a-zA-Z0-9\-:, #;.]~', '', $attr->value));
-                }
+            $sizeMap = ['1'=>'.65rem','2'=>'.8rem','3'=>'1rem','4'=>'1.25rem','5'=>'1.6rem','6'=>'2rem','7'=>'2.8rem'];
+            if (preg_match('/size=["\']?([^"\'>\s]+)/i', $attrs, $s)) {
+                $style .= 'font-size:' . ($sizeMap[$s[1]] ?? '1rem') . ';';
             }
-        }
+            return $style ? '<span style="' . $style . '">' . $inner . '</span>' : $inner;
+        }, $value);
 
-        foreach (iterator_to_array($node->childNodes) as $child) {
-            $this->cleanNode($child, $allowedTags, $allowedAttributes);
-        }
+        // Strip disallowed tags but keep content, preserve style attributes on allowed tags
+        return strip_tags($value, '<span><strong><em><u><br><p><ul><ol><li><h1><h2><h3><b><i><div>');
     }
 }

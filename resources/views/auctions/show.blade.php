@@ -3,8 +3,7 @@
 @section('title', ($auction->car->year ?? '') . ' ' . ($auction->car->make ?? '') . ' ' . ($auction->car->model ?? '') . ' - UniteCar')
 
 @section('head')
-<style>
-    @php
+@php
         $defaultAuctionImages = [
             '/images/cars/car-main.png',
             '/images/cars/car-1.png',
@@ -19,95 +18,6 @@
             $defaultAuctionImages[2],
         ];
     @endphp
-
-    .thumb-btn {
-        width: 110px;
-        height: 110px;
-        border-radius: 28px;
-        overflow: hidden;
-        margin-bottom: 20px;
-        background: white;
-        border: 2px solid transparent;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        cursor: pointer;
-        padding: 6px;
-    }
-    .thumb-btn.active { 
-        border-color: #ff4605;
-        box-shadow: 0 10px 15px -3px rgba(255, 70, 5, 0.3);
-    }
-    .thumb-btn img {
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
-        border-radius: 22px;
-    }
-    
-    .bid-input {
-        background: #ffffff;
-        border: 1px solid #e2e8f0;
-        border-radius: 18px;
-        padding: 16px 20px;
-        width: 100%;
-        font-size: 1rem;
-        font-weight: 700;
-        outline: none;
-        margin-bottom: 15px;
-        transition: border-color 0.3s ease;
-    }
-    .bid-input:focus { border-color: #ff4605; }
-
-    .place-bid-btn {
-        background: #ff4605;
-        color: white;
-        font-weight: 800;
-        padding: 18px;
-        border-radius: 18px;
-        width: 100%;
-        text-align: center;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        letter-spacing: -0.01em;
-        font-size: 0.95rem;
-    }
-    .place-bid-btn:hover { 
-        background: #e03d04; 
-        transform: translateY(-2px);
-        box-shadow: 0 10px 20px -5px rgba(255, 70, 5, 0.5);
-    }
-
-    .spec-pill {
-        background: #ffffff;
-        border-radius: 24px;
-        padding: 22px;
-        display: flex;
-        align-items: center;
-        gap: 18px;
-        border: 1px solid rgba(0,0,0,0.02);
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.02);
-    }
-    .spec-icon {
-        width: 48px;
-        height: 48px;
-        background: #f8fafc;
-        border-radius: 14px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
-    }
-    .tab-pill {
-        padding: 10px 24px;
-        border-radius: 999px;
-        font-size: 0.8rem;
-        font-weight: 700;
-        color: #5a6a85;
-        transition: all 0.3s ease;
-    }
-    .tab-pill.active {
-        background: #ff4605;
-        color: white;
-    }
-</style>
 
 {{-- 
   ── ADVANCED SEO AUTONOMOUS AGENT ──

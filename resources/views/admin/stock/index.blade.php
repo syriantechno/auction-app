@@ -83,11 +83,11 @@
             <form id="qcForm" class="space-y-4">
                 @php
                 $checks = [
-                    'paint'        => 'Paint & Exterior',
+                    'paint'        => 'Paint and Exterior',
                     'engine'       => 'Engine',
                     'transmission' => 'Transmission',
                     'interior'     => 'Interior',
-                    'tires'        => 'Tires & Wheels',
+                    'tires'        => 'Tires and Wheels',
                     'body'         => 'Body Structure',
                     'documents'    => 'Documents',
                     'keys_count'   => 'Keys Count',
@@ -122,7 +122,7 @@
                     <i data-lucide="save" class="w-4 h-4"></i> Save Progress
                 </button>
                 <button id="approveQcBtn" onclick="approveQcReport()" class="px-6 py-3 bg-emerald-500 text-white rounded-lg text-[0.65rem] font-black uppercase tracking-widest hover:bg-emerald-600 transition-all flex items-center gap-2">
-                    <i data-lucide="check-circle-2" class="w-4 h-4"></i> Approve QC & Send Dealer Email
+                    <i data-lucide="check-circle-2" class="w-4 h-4"></i> Approve QC and Send Dealer Email
                 </button>
             </div>
         </div>
@@ -299,10 +299,4 @@ async function submitCompleteDeal() {
 function closeCompleteDeal() { document.getElementById('completeDealModal').classList.add('hidden'); currentStockId = null; }
 </script>
 
-<style>
-.pagination { @apply flex items-center gap-1.5; }
-.page-item .page-link { @apply w-10 h-10 rounded-md flex items-center justify-center border-none bg-white text-slate-400 font-medium text-[0.7rem] shadow-sm transition-all; }
-.page-item.active .page-link { @apply bg-slate-800 text-white; }
-.page-item .page-link:hover { @apply bg-[#ff6900] text-white; }
-</style>
 @endsection

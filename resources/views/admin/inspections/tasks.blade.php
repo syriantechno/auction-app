@@ -29,7 +29,7 @@
             </div>
             <div class="h-8 w-px bg-slate-200"></div>
             <div class="flex items-baseline gap-3">
-                <span class="text-3xl font-black text-[#ff6900] tabular-nums tracking-tighter">{{ count($tasks->where('inspection_date', date('Y-m-d'))) ?: '0' }}</span>
+                <span class="text-3xl font-black text-[#ff6900] tabular-nums tracking-tighter">{{ $tasks->filter(fn ($t) => (($t->car_details ?? [])['inspection_date'] ?? '') === date('Y-m-d'))->count() }}</span>
                 <span class="text-[0.65rem] font-black text-orange-400 uppercase tracking-[0.2em] italic">Active Today</span>
             </div>
         </div>
@@ -39,7 +39,7 @@
     <div class="grid grid-cols-1 xl:grid-cols-2 gap-8">
         @forelse($tasks as $task)
             @php 
-                $isToday = ($task->car_details['inspection_date'] ?? '') == date('Y-m-d');
+                $isToday = (($task->car_details ?? [])['inspection_date'] ?? '') == date('Y-m-d');
             @endphp
             <x-admin-mission-card :task="$task" :isToday="$isToday" />
         @empty

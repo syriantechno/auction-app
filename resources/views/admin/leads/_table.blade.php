@@ -2,14 +2,14 @@
     <table class="w-full text-left border-collapse">
         <thead>
             <tr class="bg-slate-50 border-b border-slate-200">
-                <th class="py-4 px-8 text-[0.65rem] text-slate-500 font-black uppercase tracking-[0.2em] w-16 text-center">Node</th>
-                <th class="py-4 px-6 text-[0.65rem] text-slate-500 font-black uppercase tracking-[0.2em]">Customer Identity</th>
-                <th class="py-4 px-6 text-[0.65rem] text-slate-500 font-black uppercase tracking-[0.2em]">Asset Specs</th>
-                <th class="py-4 px-6 text-[0.65rem] text-slate-500 font-black uppercase tracking-[0.2em]">Technical Stats</th>
-                <th class="py-4 px-6 text-[0.65rem] text-slate-500 font-black uppercase tracking-[0.2em]">Appointment Hub</th>
-                <th class="py-4 px-6 text-[0.65rem] text-slate-500 font-black uppercase tracking-[0.2em] text-center">Status</th>
-                <th class="py-4 px-6 text-[0.65rem] text-slate-500 font-black uppercase tracking-[0.2em] text-center">Source</th>
-                <th class="py-4 px-8 text-[0.65rem] text-slate-500 font-black uppercase tracking-[0.2em] text-right">Ops Control</th>
+                <th class="py-4 px-8 text-[0.65rem] text-slate-500 font-semibold uppercase tracking-[0.2em] w-16 text-center">Node</th>
+                <th class="py-4 px-6 text-[0.65rem] text-slate-500 font-semibold uppercase tracking-[0.2em]">Customer Identity</th>
+                <th class="py-4 px-6 text-[0.65rem] text-slate-500 font-semibold uppercase tracking-[0.2em]">Asset Specs</th>
+                <th class="py-4 px-6 text-[0.65rem] text-slate-500 font-semibold uppercase tracking-[0.2em]">Technical Stats</th>
+                <th class="py-4 px-6 text-[0.65rem] text-slate-500 font-semibold uppercase tracking-[0.2em]">Appointment Hub</th>
+                <th class="py-4 px-6 text-[0.65rem] text-slate-500 font-semibold uppercase tracking-[0.2em] text-center">Status</th>
+                <th class="py-4 px-6 text-[0.65rem] text-slate-500 font-semibold uppercase tracking-[0.2em] text-center">Source</th>
+                <th class="py-4 px-8 text-[0.65rem] text-slate-500 font-semibold uppercase tracking-[0.2em] text-right">Ops Control</th>
             </tr>
         </thead>
         <tbody id="tableBody" class="divide-y divide-slate-100">
@@ -31,14 +31,24 @@
                 $isHome = ($details['inspection_type'] ?? 'branch') === 'home';
                 $address = $details['home_address'] ?? 'Hub Branch';
 
-                // Brand Logo Logic (Fix #3)
-                $rawMake = strtolower($details['make'] ?? 'generic');
-                $makeSlug = \Illuminate\Support\Str::slug($rawMake);
+                // Brand Logo Intelligence (Unified Matrix Strategy)
+                $rawMake = trim($details['make'] ?? 'generic');
+                $cleanMake = strtolower($rawMake);
+                $makeSlug = \Illuminate\Support\Str::slug($cleanMake);
+                
+                // 1. Try Local Assets First
                 $searchPaths = ["images/brands/{$makeSlug}.svg", "images/brands/{$makeSlug}.png"];
-                if (str_contains($rawMake, 'mercedes')) $searchPaths[] = "images/brands/mercedes.svg";
+                if (str_contains($cleanMake, 'mercedes')) $searchPaths[] = "images/brands/mercedes.svg";
+                
                 $finalLogo = null;
-                foreach ($searchPaths as $path) {
-                    if (file_exists(public_path($path))) { $finalLogo = $path; break; }
+                foreach ($searchPaths as $p) {
+                    if (file_exists(public_path($p))) { $finalLogo = asset($p); break; }
+                }
+
+                // 2. Fallback to Cloud CDN (Enterprise Grade)
+                if (!$finalLogo && $rawMake !== 'generic') {
+                    $cdnSlug = str_replace(' ', '-', $makeSlug);
+                    $finalLogo = "https://cdn.jsdelivr.net/gh/fawazahmed0/car-logos@master/logos/{$cdnSlug}.svg";
                 }
             @endphp
             <tr class="group hover:bg-slate-50/50 transition-all duration-300 border-l-4 border-l-transparent hover:border-l-[#FF6900]">
@@ -46,11 +56,11 @@
                 <td class="py-5 px-6">
                     <div class="flex items-center gap-3">
                         <div class="w-10 h-10 rounded-md bg-[#1d293d] flex items-center justify-center text-white shadow-lg">
-                            <span class="text-[0.7rem] font-black">{{ mb_substr($name, 0, 1) }}</span>
+                            <span class="text-[0.7rem] font-semibold">{{ mb_substr($name, 0, 1) }}</span>
                         </div>
                         <div class="flex flex-col">
-                            <span class="text-[0.85rem] font-black text-slate-900 tracking-tight">{{ $name }}</span>
-                            <span class="text-[0.6rem] text-slate-400 font-bold uppercase tracking-wider">{{ $details['phone'] ?? 'NO PHONE' }}</span>
+                            <span class="text-[0.85rem] font-semibold text-slate-900 tracking-tight">{{ $name }}</span>
+                            <span class="text-[0.6rem] text-slate-400 font-medium uppercase tracking-wider">{{ $details['phone'] ?? 'NO PHONE' }}</span>
                         </div>
                     </div>
                 </td>
@@ -59,14 +69,14 @@
                         {{-- Brand Logo --}}
                         <div class="w-10 h-10 rounded-lg bg-slate-50 border border-slate-100 flex items-center justify-center p-1.5 shrink-0">
                             @if($finalLogo)
-                                <img src="{{ asset($finalLogo) }}" class="w-full h-full object-contain opacity-60">
+                                <img src="{{ $finalLogo }}" class="w-full h-full object-contain opacity-60">
                             @else
                                 <i data-lucide="car-front" class="w-5 h-5 text-slate-300"></i>
                             @endif
                         </div>
                         <div class="flex flex-col">
-                            <span class="text-[0.85rem] font-black text-slate-900 tracking-tighter uppercase">{{ $details['make'] ?? 'Unknown' }}</span>
-                            <span class="text-[0.65rem] text-slate-500 font-bold">{{ $details['year'] ?? '' }} {{ $details['model'] ?? 'N/A' }}</span>
+                            <span class="text-[0.85rem] font-semibold text-slate-900 tracking-tighter uppercase">{{ $details['make'] ?? 'Unknown' }}</span>
+                            <span class="text-[0.65rem] text-slate-500 font-medium">{{ $details['year'] ?? '' }} {{ $details['model'] ?? 'N/A' }}</span>
                         </div>
                     </div>
                 </td>
@@ -78,7 +88,7 @@
                         </div>
                         <div class="flex items-center gap-2">
                             <div class="w-2 h-2 rounded-full {{ $condition == 'excellent' ? 'bg-emerald-500' : 'bg-orange-400' }}"></div>
-                            <span class="text-[0.6rem] font-black uppercase tracking-widest text-slate-400">{{ $condition }}</span>
+                            <span class="text-[0.6rem] font-semibold uppercase tracking-widest text-slate-400">{{ $condition }}</span>
                         </div>
                     </div>
                 </td>
@@ -86,19 +96,19 @@
                     <div class="flex flex-col">
                         <div class="flex items-center gap-2 mb-1">
                             <i data-lucide="calendar" class="w-3.5 h-3.5 text-blue-500"></i>
-                            <span class="text-[0.8rem] font-black text-slate-900 leading-none">{{ $appDate }}</span>
+                            <span class="text-[0.8rem] font-semibold text-slate-900 leading-none">{{ $appDate }}</span>
                         </div>
                         <div class="flex items-center gap-2">
                             @if($isHome)
-                                <span class="bg-orange-50 text-[#FF6900] px-2 py-0.5 rounded-md text-[0.55rem] font-black uppercase tracking-widest border border-orange-100 flex items-center gap-1">
+                                <span class="bg-orange-50 text-[#FF6900] px-2 py-0.5 rounded-md text-[0.55rem] font-semibold uppercase tracking-widest border border-orange-100 flex items-center gap-1">
                                     <i data-lucide="home" class="w-2.5 h-2.5"></i> Home
                                 </span>
                             @else
-                                <span class="bg-slate-50 text-slate-500 px-2 py-0.5 rounded-md text-[0.55rem] font-black uppercase tracking-widest border border-slate-200 flex items-center gap-1">
+                                <span class="bg-slate-50 text-slate-500 px-2 py-0.5 rounded-md text-[0.55rem] font-semibold uppercase tracking-widest border border-slate-200 flex items-center gap-1">
                                     <i data-lucide="building-2" class="w-2.5 h-2.5"></i> Hub
                                 </span>
                             @endif
-                            <span class="text-[0.6rem] text-slate-400 font-bold uppercase tracking-widest">{{ $appTime ?: 'ASAP' }}</span>
+                            <span class="text-[0.6rem] text-slate-400 font-medium uppercase tracking-widest">{{ $appTime ?: 'ASAP' }}</span>
                         </div>
                     </div>
                 </td>
@@ -114,7 +124,7 @@
                         ];
                         $col = $statusColors[$lead->status] ?? 'bg-slate-50 text-slate-500 border-slate-100';
                     @endphp
-                    <span class="px-4 py-1.5 rounded-md text-[0.65rem] font-black uppercase tracking-widest border shadow-sm {{ $col }}">
+                    <span class="px-4 py-1.5 rounded-md text-[0.65rem] font-semibold uppercase tracking-widest border shadow-sm {{ $col }}">
                         {{ str_replace('_', ' ', $lead->status) }}
                     </span>
                 </td>
@@ -123,7 +133,7 @@
                         $sourceColor = \App\Models\Lead::getSourceColor($lead->source ?? '');
                         $sourceLabel = \App\Models\Lead::getSourceLabel($lead->source);
                     @endphp
-                    <span class="px-3 py-1.5 rounded-md text-[0.6rem] font-black uppercase tracking-widest text-white shadow-sm" 
+                    <span class="px-3 py-1.5 rounded-md text-[0.6rem] font-semibold uppercase tracking-widest text-white shadow-sm" 
                           style="background-color: {{ $sourceColor }};">
                         {{ $sourceLabel }}
                     </span>
@@ -147,11 +157,11 @@
                             <div class="w-20 h-20 bg-white rounded-lg flex items-center justify-center border border-slate-200 shadow-xl">
                                 <i data-lucide="layers" class="w-10 text-slate-200"></i>
                             </div>
-                            <div class="absolute -right-2 -bottom-2 w-8 h-8 bg-[#ff6900] rounded-full flex items-center justify-center text-white text-[0.6rem] font-black border-4 border-slate-50">0</div>
+                            <div class="absolute -right-2 -bottom-2 w-8 h-8 bg-[#ff6900] rounded-full flex items-center justify-center text-white text-[0.6rem] font-semibold border-4 border-slate-50">0</div>
                         </div>
                         <div class="space-y-1">
-                            <h3 class="text-[0.7rem] font-black text-slate-400 uppercase tracking-[0.4em]">No Results</h3>
-                            <p class="text-[0.6rem] text-slate-300 font-bold">Waiting for new incoming lead nodes...</p>
+                            <h3 class="text-[0.7rem] font-semibold text-slate-400 uppercase tracking-[0.4em]">No Results</h3>
+                            <p class="text-[0.6rem] text-slate-300 font-medium">Waiting for new incoming lead nodes...</p>
                         </div>
                     </div>
                 </td>

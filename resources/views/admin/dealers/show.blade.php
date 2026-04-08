@@ -43,13 +43,20 @@
                     </div>
                 </div>
 
+                {{-- Set Limit Button --}}
+                <a href="{{ route('admin.dealers.edit', $user) }}" class="h-12 px-5 bg-[#1d293d] hover:bg-[#ff6900] rounded-xl flex items-center justify-center gap-2 text-white text-[0.6rem] font-black uppercase tracking-widest shadow-lg transition-all whitespace-nowrap">
+                    <i data-lucide="shield-check" class="w-4 h-4"></i> Set Deposit & Limit
+                </a>
+
                 {{-- Quick Stats Row --}}
                 <div class="flex items-center gap-px bg-slate-50 rounded-xl overflow-hidden border border-slate-100">
                     @foreach([
                         ['label' => 'Total Bids',     'value' => number_format($stats['total_bids']),    'color' => 'text-slate-700'],
                         ['label' => 'Auctions Won',   'value' => $stats['auctions_won'],                 'color' => 'text-emerald-600'],
                         ['label' => 'Active Now',     'value' => $stats['active_auctions'],              'color' => 'text-[#ff6900]'],
-                        ['label' => 'Highest Bid',    'value' => '$'.number_format($stats['highest_bid']),'color' => 'text-purple-600'],
+                        ['label' => 'Security Dep.',  'value' => '$'.number_format($user->security_deposit ?? 0, 0), 'color' => 'text-blue-600'],
+                        ['label' => 'Bid Limit',      'value' => '$'.number_format($user->bidding_limit ?? 0, 0),  'color' => 'text-purple-600'],
+                        ['label' => 'Highest Bid',    'value' => '$'.number_format($stats['highest_bid']),'color' => 'text-rose-600'],
                         ['label' => 'Total Spent',    'value' => '$'.number_format($stats['total_spent']),'color' => 'text-[#031629]'],
                     ] as $stat)
                     <div class="px-5 py-4 text-center border-r border-slate-100 last:border-0">

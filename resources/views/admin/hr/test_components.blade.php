@@ -162,6 +162,73 @@
              </div>
         </div>
 
+    {{-- ═══════════════════════════════════ PRICE vs MILEAGE ANALYTICS CHARTS ═══ --}}
+    <div class="mt-10 space-y-3">
+        <div class="flex items-center gap-3 mb-6">
+            <div class="w-1 h-8 bg-gradient-to-b from-[#ff6900] to-orange-300 rounded-full"></div>
+            <div>
+                <h2 class="text-xl font-black text-[#031629] tracking-tight">Price vs. Mileage Analytics</h2>
+                <p class="text-[0.65rem] text-slate-400 font-medium uppercase tracking-widest">Pre-owned car market · UAE sample data · 2024</p>
+            </div>
+        </div>
+
+        {{-- Row 1: Scatter + Bar --}}
+        <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+
+            {{-- Chart 1: Scatter Plot --}}
+            <div class="bg-white rounded-[2rem] border border-slate-100 shadow-sm p-6">
+                <div class="flex items-start justify-between mb-1">
+                    <div>
+                        <h3 class="text-[0.85rem] font-black text-[#031629]">Price × Mileage Distribution</h3>
+                        <p class="text-[0.6rem] text-slate-400 font-medium uppercase tracking-widest mt-0.5">Per-vehicle scatter by make</p>
+                    </div>
+                    <span class="px-3 py-1 bg-blue-50 text-blue-500 text-[0.55rem] font-black uppercase tracking-widest rounded-full">Scatter</span>
+                </div>
+                <div id="chart-scatter" class="mt-2"></div>
+            </div>
+
+            {{-- Chart 2: Bar — Avg Price by Mileage Bracket --}}
+            <div class="bg-white rounded-[2rem] border border-slate-100 shadow-sm p-6">
+                <div class="flex items-start justify-between mb-1">
+                    <div>
+                        <h3 class="text-[0.85rem] font-black text-[#031629]">Avg. Price by Mileage Range</h3>
+                        <p class="text-[0.6rem] text-slate-400 font-medium uppercase tracking-widest mt-0.5">Grouped by 20,000 km buckets</p>
+                    </div>
+                    <span class="px-3 py-1 bg-orange-50 text-orange-500 text-[0.55rem] font-black uppercase tracking-widest rounded-full">Bar</span>
+                </div>
+                <div id="chart-bar" class="mt-2"></div>
+            </div>
+        </div>
+
+        {{-- Row 2: Area Line + Bubble --}}
+        <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+
+            {{-- Chart 3: Line — Depreciation Curve --}}
+            <div class="bg-white rounded-[2rem] border border-slate-100 shadow-sm p-6">
+                <div class="flex items-start justify-between mb-1">
+                    <div>
+                        <h3 class="text-[0.85rem] font-black text-[#031629]">Price Depreciation Curve</h3>
+                        <p class="text-[0.6rem] text-slate-400 font-medium uppercase tracking-widest mt-0.5">Luxury vs. economy vs. SUV segments</p>
+                    </div>
+                    <span class="px-3 py-1 bg-violet-50 text-violet-500 text-[0.55rem] font-black uppercase tracking-widest rounded-full">Trend</span>
+                </div>
+                <div id="chart-line" class="mt-2"></div>
+            </div>
+
+            {{-- Chart 4: Bubble — Make × Mileage × Price × Volume --}}
+            <div class="bg-white rounded-[2rem] border border-slate-100 shadow-sm p-6">
+                <div class="flex items-start justify-between mb-1">
+                    <div>
+                        <h3 class="text-[0.85rem] font-black text-[#031629]">Market Bubble Map</h3>
+                        <p class="text-[0.6rem] text-slate-400 font-medium uppercase tracking-widest mt-0.5">Make · avg mileage · avg price · volume</p>
+                    </div>
+                    <span class="px-3 py-1 bg-teal-50 text-teal-500 text-[0.55rem] font-black uppercase tracking-widest rounded-full">Bubble</span>
+                </div>
+                <div id="chart-bubble" class="mt-2"></div>
+            </div>
+        </div>
+    </div>
+
     </x-admin-page-standard>
 
     <!-- Modal Showcase -->
@@ -187,4 +254,149 @@
         </x-slot>
     </x-admin-modal>
 </div>
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/apexcharts@3.46.0/dist/apexcharts.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    const fmt = v => 'AED ' + (v >= 1000 ? (v/1000).toFixed(0)+'k' : v);
+    const palette = {
+        blue:   '#3b82f6',
+        orange: '#ff6900',
+        violet: '#8b5cf6',
+        teal:   '#14b8a6',
+        rose:   '#f43f5e',
+        amber:  '#f59e0b',
+        slate:  '#64748b',
+    };
+
+    /* ─────────────────────────────────────────────────────────────
+       CHART 1 — SCATTER: Price × Mileage by Make
+    ───────────────────────────────────────────────────────────── */
+    new ApexCharts(document.getElementById('chart-scatter'), {
+        chart: { type: 'scatter', height: 340, toolbar: { show: false },
+                 zoom: { enabled: true, type: 'xy' },
+                 fontFamily: 'Plus Jakarta Sans, sans-serif' },
+        colors: [palette.blue, palette.orange, palette.violet, palette.teal, palette.rose],
+        series: [
+            { name: 'Toyota', data: [[12000,88000],[34000,72000],[55000,61000],[78000,52000],[102000,44000],[145000,35000],[188000,26000]] },
+            { name: 'BMW',    data: [[8000,195000],[21000,172000],[44000,148000],[67000,126000],[95000,104000],[130000,88000],[162000,71000]] },
+            { name: 'Mercedes', data: [[5000,245000],[18000,218000],[39000,192000],[60000,168000],[88000,145000],[115000,122000],[150000,98000]] },
+            { name: 'Nissan',   data: [[15000,72000],[38000,62000],[61000,54000],[84000,47000],[110000,40000],[140000,33000],[175000,26000]] },
+            { name: 'Tesla',    data: [[6000,162000],[22000,148000],[40000,136000],[58000,125000],[80000,115000],[105000,104000],[135000,94000]] },
+        ],
+        xaxis: { title: { text: 'Mileage (km)', style: { fontWeight: 700, fontSize: '11px', color: '#94a3b8' } },
+                 type: 'numeric', tickAmount: 6,
+                 labels: { formatter: v => (v/1000).toFixed(0)+'k km', style: { fontSize: '10px' } } },
+        yaxis: { title: { text: 'Price (AED)', style: { fontWeight: 700, fontSize: '11px', color: '#94a3b8' } },
+                 labels: { formatter: fmt, style: { fontSize: '10px' } } },
+        tooltip: { x: { formatter: v => v.toLocaleString() + ' km' }, y: { formatter: fmt } },
+        legend: { position: 'bottom', fontWeight: 700, fontSize: '11px' },
+        grid: { borderColor: '#f1f5f9', strokeDashArray: 4 },
+        markers: { size: 6, strokeWidth: 2, strokeColors: '#fff', hover: { size: 9 } },
+    }).render();
+
+    /* ─────────────────────────────────────────────────────────────
+       CHART 2 — BAR: Avg Price by Mileage Bracket
+    ───────────────────────────────────────────────────────────── */
+    new ApexCharts(document.getElementById('chart-bar'), {
+        chart: { type: 'bar', height: 340, toolbar: { show: false },
+                 fontFamily: 'Plus Jakarta Sans, sans-serif' },
+        plotOptions: { bar: { borderRadius: 8, columnWidth: '55%',
+                              dataLabels: { position: 'top' } } },
+        colors: ['#ff6900'],
+        fill: { type: 'gradient', gradient: { shade: 'light', type: 'vertical',
+                shadeIntensity: 0.4, gradientToColors: ['#fbbf24'], stops: [0, 100] } },
+        series: [{
+            name: 'Avg Price (AED)',
+            data: [187000, 154000, 132000, 114000, 98000, 83000, 70000, 58000, 46000, 35000],
+        }],
+        xaxis: {
+            categories: ['0–20k','20–40k','40–60k','60–80k','80–100k','100–120k','120–140k','140–160k','160–180k','180k+'],
+            title: { text: 'Mileage Range (km)', style: { fontWeight: 700, fontSize: '11px', color: '#94a3b8' } },
+            labels: { style: { fontSize: '10px', fontWeight: 600 } },
+        },
+        yaxis: { title: { text: 'Avg Price (AED)', style: { fontWeight: 700, fontSize: '11px', color: '#94a3b8' } },
+                 labels: { formatter: fmt, style: { fontSize: '10px' } } },
+        dataLabels: { enabled: true, formatter: fmt,
+                      style: { fontSize: '9px', fontWeight: 700, colors: ['#031629'] },
+                      offsetY: -6 },
+        grid: { borderColor: '#f1f5f9', strokeDashArray: 4, yaxis: { lines: { show: true } } },
+        tooltip: { y: { formatter: fmt } },
+    }).render();
+
+    /* ─────────────────────────────────────────────────────────────
+       CHART 3 — AREA LINE: Depreciation Curves by Segment
+    ───────────────────────────────────────────────────────────── */
+    new ApexCharts(document.getElementById('chart-line'), {
+        chart: { type: 'area', height: 340, toolbar: { show: false },
+                 fontFamily: 'Plus Jakarta Sans, sans-serif',
+                 animations: { enabled: true, easing: 'easeinout', speed: 800 } },
+        colors: [palette.violet, palette.orange, palette.teal],
+        stroke: { curve: 'smooth', width: 3 },
+        fill: { type: 'gradient', gradient: { opacityFrom: 0.25, opacityTo: 0.02 } },
+        series: [
+            { name: 'Luxury',  data: [320000, 290000, 258000, 228000, 200000, 175000, 152000, 132000, 114000, 98000] },
+            { name: 'SUV',     data: [185000, 168000, 151000, 136000, 122000, 109000,  97000,  86000,  76000, 67000] },
+            { name: 'Economy', data: [95000,   87000,  80000,  73000,  67000,  61000,  56000,  51000,  46000, 42000] },
+        ],
+        xaxis: {
+            categories: ['0k','20k','40k','60k','80k','100k','120k','140k','160k','180k'],
+            title: { text: 'Mileage (km)', style: { fontWeight: 700, fontSize: '11px', color: '#94a3b8' } },
+            labels: { style: { fontSize: '10px', fontWeight: 600 } },
+        },
+        yaxis: { labels: { formatter: fmt, style: { fontSize: '10px' } } },
+        tooltip: { y: { formatter: fmt }, shared: true, intersect: false },
+        legend: { position: 'bottom', fontWeight: 700, fontSize: '11px' },
+        grid: { borderColor: '#f1f5f9', strokeDashArray: 4 },
+        markers: { size: 4, strokeWidth: 2, strokeColors: '#fff', hover: { size: 7 } },
+        annotations: {
+            yaxis: [{ y: 100000, borderColor: '#94a3b8', borderWidth: 1,
+                      strokeDashArray: 6,
+                      label: { text: 'AED 100k threshold', style: { fontSize: '10px', fontWeight: 700, color: '#64748b', background: '#f8fafc' } } }]
+        },
+    }).render();
+
+    /* ─────────────────────────────────────────────────────────────
+       CHART 4 — BUBBLE: Make × Avg Mileage × Avg Price × Volume
+    ───────────────────────────────────────────────────────────── */
+    new ApexCharts(document.getElementById('chart-bubble'), {
+        chart: { type: 'bubble', height: 340, toolbar: { show: false },
+                 fontFamily: 'Plus Jakarta Sans, sans-serif' },
+        colors: [palette.blue, palette.orange, palette.violet, palette.teal, palette.rose, palette.amber, palette.slate],
+        series: [
+            { name: 'Toyota',   data: [[72000, 68000,  42]] },
+            { name: 'BMW',      data: [[58000, 138000, 28]] },
+            { name: 'Mercedes', data: [[48000, 172000, 22]] },
+            { name: 'Nissan',   data: [[85000, 55000,  38]] },
+            { name: 'Tesla',    data: [[38000, 142000, 18]] },
+            { name: 'Hyundai',  data: [[92000, 46000,  35]] },
+            { name: 'Lexus',    data: [[54000, 118000, 24]] },
+        ],
+        xaxis: { type: 'numeric', tickAmount: 6,
+                 title: { text: 'Avg Mileage (km)', style: { fontWeight: 700, fontSize: '11px', color: '#94a3b8' } },
+                 labels: { formatter: v => (v/1000).toFixed(0)+'k', style: { fontSize: '10px' } } },
+        yaxis: { title: { text: 'Avg Price (AED)', style: { fontWeight: 700, fontSize: '11px', color: '#94a3b8' } },
+                 labels: { formatter: fmt, style: { fontSize: '10px' } } },
+        tooltip: {
+            custom: ({ seriesIndex, dataPointIndex, w }) => {
+                const s = w.config.series[seriesIndex];
+                const d = s.data[dataPointIndex];
+                return `<div class="px-4 py-3 text-xs font-bold">
+                    <div class="text-[0.7rem] font-black text-slate-800 mb-1">${s.name}</div>
+                    <div class="text-slate-500">Avg Mileage: <b>${d[0].toLocaleString()} km</b></div>
+                    <div class="text-slate-500">Avg Price: <b>AED ${d[1].toLocaleString()}</b></div>
+                    <div class="text-slate-500">Listings: <b>${d[2]}</b></div>
+                </div>`;
+            }
+        },
+        legend: { position: 'bottom', fontWeight: 700, fontSize: '11px' },
+        grid: { borderColor: '#f1f5f9', strokeDashArray: 4 },
+        fill: { opacity: 0.85 },
+    }).render();
+
+});
+</script>
+@endpush
+
 @endsection

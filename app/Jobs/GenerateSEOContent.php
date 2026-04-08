@@ -43,13 +43,17 @@ class GenerateSEOContent implements ShouldQueue
             $target = $this->model::find($this->modelId);
             
             if ($target) {
-                $target->update([
-                    'seo_title' => $tags['title'] ?? null,
-                    'seo_description' => $tags['description'] ?? null,
-                    'seo_keywords' => implode(', ', $tags['keywords'] ?? []),
-                    'seo_schema' => $tags['schema'] ?? $seoService->generateStructuredData($this->content, $this->getSchemaType()),
-                    'seo_score' => $tags['score'] ?? rand(80, 95),
-                ]);
+                $schema = $tags['schema'] ?? $seoService->generateStructuredData($this->content, $this->getSchemaType());
+                $modelClass = $this->model;
+                $modelClass::withoutEvents(function () use ($target, $tags, $schema) {
+                    $target->update([
+                        'seo_title' => $tags['title'] ?? null,
+                        'seo_description' => $tags['description'] ?? null,
+                        'seo_keywords' => implode(', ', $tags['keywords'] ?? []),
+                        'seo_schema' => $schema,
+                        'seo_score' => $tags['score'] ?? rand(80, 95),
+                    ]);
+                });
 
                 Log::info('SEO content generated and saved successfully', [
                     'model' => $this->model,

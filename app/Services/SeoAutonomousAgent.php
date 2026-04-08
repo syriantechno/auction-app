@@ -102,13 +102,16 @@ class SeoAutonomousAgent
             $tags = $seoService->generateMetaTags($contentHint, $type);
 
             if (!empty($tags['title']) && !empty($tags['description'])) {
-                $model->update([
-                    'seo_title' => $tags['title'],
-                    'seo_description' => $tags['description'],
-                    'seo_keywords' => implode(', ', $tags['keywords'] ?? []),
-                    'seo_schema' => $tags['schema'] ?? null,
-                    'seo_score' => rand(85, 98), // Predictive score
-                ]);
+                /** @var \Illuminate\Database\Eloquent\Model $model */
+                $model::withoutEvents(function () use ($model, $tags) {
+                    $model->update([
+                        'seo_title' => $tags['title'],
+                        'seo_description' => $tags['description'],
+                        'seo_keywords' => implode(', ', $tags['keywords'] ?? []),
+                        'seo_schema' => $tags['schema'] ?? null,
+                        'seo_score' => rand(85, 98), // Predictive score
+                    ]);
+                });
 
                 // Auto-add keywords to tracking if available
                 if (!empty($tags['keywords'])) {

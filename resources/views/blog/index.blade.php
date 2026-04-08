@@ -126,15 +126,4 @@
 </div>
 @endsection
 
-@section('head')
-<style>
-    .hero-gradient {
-        background: radial-gradient(circle at 10% 20%, rgba(255, 105, 0, 0.05) 0%, transparent 40%),
-                    radial-gradient(circle at 90% 80%, rgba(3, 22, 41, 0.03) 0%, transparent 40%),
-                    linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
-    }
-    .section-border-b {
-        border-bottom: 1px solid #f1f5f9;
-    }
-</style>
-@endsection
+

@@ -23,6 +23,11 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read \App\Models\Car $car
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Bid> $bids
  * @property-read \App\Models\Lead|null $lead
+ * @property float $user_bid
+ * @property float $top_bid
+ * @property float $user_bid_amount
+ * @property float $top_bid_amount
+ * @property bool $is_leading
  */
 class Auction extends Model
 {

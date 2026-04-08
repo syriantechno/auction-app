@@ -27,6 +27,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'register',
             'auctions/*/bid',
             'api/*',
+            'broadcasting/*',
         ]);
 
         // Apply lead source tracking to all web routes

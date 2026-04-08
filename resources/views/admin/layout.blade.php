@@ -9,129 +9,61 @@
         // ── Cached admin settings (5 min) — prevents 6+ DB hits per admin page load ──
         $adminLayoutCache = \Illuminate\Support\Facades\Cache::remember('layout.admin.globals', now()->addMinutes(5), function () {
             return [
-                'siteName'   => \App\Models\SystemSetting::get('site_name', 'Motor Bazar'),
-                'siteLogo'   => \App\Models\SystemSetting::get('site_logo'),
-                'siteFavicon'=> \App\Models\SystemSetting::get('site_favicon'),
-                'currency'   => \App\Models\SystemSetting::get('site_currency', 'AED'),
-                'currencyPos'=> \App\Models\SystemSetting::get('currency_position', 'before'),
+                'siteName' => \App\Models\SystemSetting::get('site_name', 'Motor Bazar'),
+                'siteLogo' => \App\Models\SystemSetting::get('site_logo'),
+                'siteFavicon' => \App\Models\SystemSetting::get('site_favicon'),
+                'currency' => \App\Models\SystemSetting::get('site_currency', 'AED'),
+                'currencyPos' => \App\Models\SystemSetting::get('currency_position', 'before'),
                 'dateFormat' => \App\Models\SystemSetting::get('date_format', 'd/m/Y'),
-                'mapsKey'    => \App\Models\SystemSetting::get('google_maps_api_key', env('GOOGLE_MAPS_API_KEY', '')),
-                'mapProvider'=> \App\Models\SystemSetting::get('google_maps_provider', 'google'),
-                'currSym'    => \App\Helpers\CurrencyHelper::symbol(),
+                'mapsKey' => \App\Models\SystemSetting::get('google_maps_api_key', env('GOOGLE_MAPS_API_KEY', '')),
+                'mapProvider' => \App\Models\SystemSetting::get('google_maps_provider', 'google'),
+                'currSym' => \App\Helpers\CurrencyHelper::symbol(),
             ];
         });
 
-        if (!isset($adminSiteName))     $adminSiteName     = $adminLayoutCache['siteName'];
-        if (!isset($adminSiteLogo))     $adminSiteLogo     = $adminLayoutCache['siteLogo'];
-        if (!isset($adminSiteFavicon))  $adminSiteFavicon  = $adminLayoutCache['siteFavicon'];
-        if (!isset($appCurrencySymbol)) $appCurrencySymbol = $adminLayoutCache['currSym'];
-        if (!isset($appCurrencyCode))   $appCurrencyCode   = $adminLayoutCache['currency'];
-        if (!isset($appCurrencyPos))    $appCurrencyPos    = $adminLayoutCache['currencyPos'];
-        if (!isset($appDateFormat))     $appDateFormat     = $adminLayoutCache['dateFormat'];
+        if (!isset($adminSiteName))
+            $adminSiteName = $adminLayoutCache['siteName'];
+        if (!isset($adminSiteLogo))
+            $adminSiteLogo = $adminLayoutCache['siteLogo'];
+        if (!isset($adminSiteFavicon))
+            $adminSiteFavicon = $adminLayoutCache['siteFavicon'];
+        if (!isset($appCurrencySymbol))
+            $appCurrencySymbol = $adminLayoutCache['currSym'];
+        if (!isset($appCurrencyCode))
+            $appCurrencyCode = $adminLayoutCache['currency'];
+        if (!isset($appCurrencyPos))
+            $appCurrencyPos = $adminLayoutCache['currencyPos'];
+        if (!isset($appDateFormat))
+            $appDateFormat = $adminLayoutCache['dateFormat'];
         $googleMapsKey = $adminLayoutCache['mapsKey'];
     @endphp
     <title>{{ $adminSiteName }} Admin | @yield('title')</title>
     @if($adminSiteFavicon)
-    <link rel="icon" type="image/x-icon" href="{{ asset('storage/' . $adminSiteFavicon) }}">
+        <link rel="icon" type="image/x-icon" href="{{ asset('storage/' . $adminSiteFavicon) }}">
     @endif
 
 
-    <!-- Core Dependencies: jQuery & Jakarta Sans -->
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    
-    <!-- Premium Pickers: Flatpickr Matrix -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
     @vite(['resources/css/admin.css', 'resources/js/admin.js'])
 
-    <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script>
-        window.googleMapsKey = "{{ $googleMapsKey }}";
-        window.mapProvider = "{{ \App\Models\SystemSetting::get('google_maps_provider', 'google') }}";
-        // Currency globals — used by any JS that formats money
+        window.googleMapsKey = "{!! $googleMapsKey !!}";
+        window.mapProvider = "{!! \App\Models\SystemSetting::get('google_maps_provider', 'google') !!}";
         window.appCurrency = {
-            code:     "{{ $appCurrencyCode }}",
-            symbol:   "{{ $appCurrencySymbol }}",
-            position: "{{ $appCurrencyPos }}",
+            code: "{!! $appCurrencyCode !!}",
+            symbol: "{!! $appCurrencySymbol !!}",
+            position: "{!! $appCurrencyPos !!}",
         };
-        window.appDateFormat = "{{ $appDateFormat }}";
-
+        window.appDateFormat = "{!! $appDateFormat !!}";
     </script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-
-    @if($googleMapsKey)
-        <script src="https://maps.googleapis.com/maps/api/js?key={{ $googleMapsKey }}&libraries=places"></script>
-    @endif
-
-    <!-- Alerts & Notifications: SweetAlert2 -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-    <style>
-        :root {
-            --primary-orange: #ff6900;
-            --primary-navy: #1d293d;
-            --bg-slate: #f1f5f9;
-            --text-main: #111827;
-        }
-
-        /* Flatpickr Custom Theme (Bazar-Orange #ff6900) */
-        .flatpickr-day.selected, .flatpickr-day.startRange, .flatpickr-day.endRange {
-            background: #ff6900 !important; border-color: #ff6900 !important;
-        }
-        .flatpickr-calendar {
-            border-radius: 0.5rem !important;
-            box-shadow: 0 25px 50px -12px rgba(255, 105, 0, 0.15) !important;
-            border: 1px solid #f1f5f9 !important;
-        }
-        .flatpickr-calendar.noCalendar {
-            width: 150px !important; min-width: 150px !important; border-radius: 1rem !important;
-        }
-        .flatpickr-time input { font-weight: 800 !important; color: #ff4605 !important; }
-        .flatpickr-time .flatpickr-am-pm { font-weight: 900 !important; color: #64748b !important; }
-
-        /* The Geometric Standard (Compact Policy) */
-        .rounded-lg { border-radius: 0.5rem !important; }
-        .rounded-md { border-radius: 0.375rem !important; }
-
-        [x-cloak] { display: none !important; }
-        .hidden { display: none !important; }
-
-        /*
-         * ANTI-FLASH SIDEBAR: width is controlled by CSS class on <html>,
-         * set synchronously before first paint (see script below).
-         * Alpine only toggles the class — never sets width directly.
-         */
-        html:not(.sidebar-collapsed) #admin-sidebar { width: 260px; }
-        html.sidebar-collapsed        #admin-sidebar { width: 80px;  }
-        /* Transition added only AFTER Alpine loads to prevent initial animation */
-        #admin-sidebar.sidebar-ready  { transition: width 0.25s cubic-bezier(0.4,0,0.2,1); }
-
-        /* Global Typography Policy (Elegant Clean) */
-        body { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 400; }
-        .font-bold, .font-black, .font-extrabold { font-weight: 500 !important; }
-        
-        .sidebar-item { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        .sidebar-scroll::-webkit-scrollbar { width: 0px; }
-        
-        /* Modern Input Global Reset */
-        input, select, textarea { 
-            @apply rounded-md border-slate-200 transition-all focus:border-[#ff6900] focus:ring-4 focus:ring-orange-500/5;
-        }
-    </style>
-
-    @stack('head')
 
     {{-- ANTI-FLASH: runs synchronously before first paint --}}
     <script>
-        (function(){
+        (function () {
             // 1. Set sidebar collapsed class immediately
             if (localStorage.getItem('sidebarOpen') === 'false') {
                 document.documentElement.classList.add('sidebar-collapsed');
@@ -140,16 +72,14 @@
             document.documentElement.classList.add('alpine-loading');
         })();
     </script>
-    <style>
-        /* Hide page until Alpine initializes — prevents ALL x-show/x-cloak flash */
-        html.alpine-loading body { opacity: 0; }
-        html body { transition: opacity 0.1s ease; }
-    </style>
+
+    @stack('head')
 </head>
 
-<body class="antialiased text-[#111827] bg-[#e7e7e7]">
+<body class="antialiased font-light text-[#111827] bg-[#e7e7e7]">
 
-    <div class="flex h-screen overflow-hidden" style="display: flex; flex-direction: row; height: 100vh; overflow: hidden;" x-data="{
+    <div class="flex h-screen overflow-hidden"
+        style="display: flex; flex-direction: row; height: 100vh; overflow: hidden;" x-data="{
         sidebarOpen: !document.documentElement.classList.contains('sidebar-collapsed'),
         openCRM: {{ request()->routeIs('admin.leads.*') || request()->routeIs('admin.inspections.*') ? 'true' : 'false' }}
     }" x-init="
@@ -159,6 +89,9 @@
             // Enable sidebar transition AFTER initial render
             setTimeout(() => document.getElementById('admin-sidebar')?.classList.add('sidebar-ready'), 0);
         });
+        
+        // Safety: Remove loading class even if Alpine hangs
+        setTimeout(() => document.documentElement.classList.remove('alpine-loading'), 2000);
         $watch('sidebarOpen', v => {
             localStorage.setItem('sidebarOpen', v);
             document.documentElement.classList.toggle('sidebar-collapsed', !v);
@@ -168,25 +101,32 @@
         <!-- Sidebar -->
         <aside id="admin-sidebar"
             class="bg-white border-r border-[#f1f5f9] flex flex-col relative z-40 overflow-hidden shadow-[4px_0_24px_rgba(0,0,0,0.02)]">
-            
+
             @php
                 $primaryAdminWord = explode(' ', $adminSiteName)[0] ?? 'Motor';
                 $secondaryAdminWord = explode(' ', $adminSiteName)[1] ?? 'Bazar';
             @endphp
-            <div class="h-[120px] flex items-center px-4 border-b border-[#f1f5f9] overflow-hidden whitespace-nowrap flex-shrink-0">
+            <div
+                class="h-[120px] flex items-center px-4 border-b border-[#f1f5f9] overflow-hidden whitespace-nowrap flex-shrink-0">
                 <div class="flex items-center gap-1 min-w-max">
                     @if($adminSiteLogo)
-                        <img src="{{ asset('storage/' . $adminSiteLogo) }}" class="w-20 h-20 object-contain">
+                        <img src="{{ asset('st/' . $adminSiteLogo) }}" class="w-20 h-20 object-contain">
                     @else
                         <div class="w-16 h-16 bg-slate-800 rounded-lg flex items-center justify-center shadow-lg">
-                            <span class="text-white font-medium text-2xl tracking-tighter italic">{{ strtoupper(substr($adminSiteName, 0, 1)) }}</span>
+                            <span
+                                class="text-white font-medium text-2xl tracking-tighter italic">{{ strtoupper(substr($adminSiteName, 0, 1)) }}</span>
                         </div>
                     @endif
-                    <div x-show="sidebarOpen" x-cloak x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" class="-ml-1">
-                        <h1 class="font-bold text-[1.1rem] tracking-tight leading-none italic uppercase" style="color: #1d293d !important;">
-                            {{ $primaryAdminWord }}<span style="color: #ff6900 !important;">{{ $secondaryAdminWord }}</span>
+                    <div x-show="sidebarOpen" x-cloak x-transition:enter="transition ease-out duration-200"
+                        x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" class="-ml-1">
+                        <h1 class="font-bold text-[1.1rem] tracking-tight leading-none italic uppercase"
+                            style="color: #1d293d !important;">
+                            {{ $primaryAdminWord }}<span
+                                style="color: #ff6900 !important;">{{ $secondaryAdminWord }}</span>
                         </h1>
-                        <span class="text-[0.6rem] text-slate-400 font-bold uppercase tracking-[0.1em] mt-2 block italic opacity-60">Elite Admin Suite</span>
+                        <span
+                            class="text-[0.6rem] text-slate-400 font-bold uppercase tracking-[0.1em] mt-2 block italic opacity-60">Elite
+                            Admin Suite</span>
                     </div>
                 </div>
             </div>
@@ -198,302 +138,428 @@
                 <div class="space-y-1">
                     <a href="{{ route('admin.dashboard') }}"
                         class="sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-bold {{ request()->routeIs('admin.dashboard') ? 'text-slate-900 bg-slate-50 border border-slate-100' : 'text-slate-500 hover:bg-slate-50' }}">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0 {{ request()->routeIs('admin.dashboard') ? 'text-[#ff6900]' : 'text-slate-400' }}"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="flex-shrink-0 {{ request()->routeIs('admin.dashboard') ? 'text-[#ff6900]' : 'text-slate-400' }}">
+                            <rect width="7" height="9" x="3" y="3" rx="1" />
+                            <rect width="7" height="5" x="14" y="3" rx="1" />
+                            <rect width="7" height="9" x="14" y="12" rx="1" />
+                            <rect width="7" height="5" x="3" y="16" rx="1" />
+                        </svg>
                         <span x-show="sidebarOpen" x-cloak class="truncate">Dashboard</span>
                     </a>
                 </div>
 
                 {{-- Group 1: CRM & Operations (Dropdown Mode) --}}
                 @can('view leads')
-                <div class="space-y-1">
-                    <button @click="openCRM = !openCRM" class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-lg text-[0.8rem] font-bold text-slate-500 hover:bg-slate-50 transition-all">
-                        <div class="flex items-center gap-4">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-slate-400 flex-shrink-0"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                            <span x-show="sidebarOpen" x-cloak>CRM & Operations</span>
-                        </div>
-                        <svg x-show="sidebarOpen" x-cloak :class="openCRM ? 'rotate-180' : ''"
-                            xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
-                            fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
-                            class="transition-transform duration-200 text-slate-400 flex-shrink-0">
-                            <path d="m6 9 6 6 6-6"/>
-                        </svg>
-                    </button>
-                    
-                    <ul x-show="openCRM" x-cloak x-collapse class="pl-12 space-y-1 mt-1 border-l-2 border-slate-50 ml-6">
-                        @can('view leads')
-                        <li>
-                            <a href="{{ route('admin.leads.index') }}" class="block py-2 text-[0.75rem] font-medium {{ request()->routeIs('admin.leads.*') ? 'text-[#ff6900]' : 'text-slate-500 hover:text-slate-800' }}">Leads</a>
-                        </li>
-                        @endcan
-                        @can('view inspections')
-                        <li>
-                            <a href="{{ route('admin.inspections.calendar') }}" class="block py-2 text-[0.75rem] font-medium {{ request()->routeIs('admin.inspections.calendar') ? 'text-[#ff6900]' : 'text-slate-500 hover:text-slate-800' }}">Inspections Calendar</a>
-                        </li>
-                        <li>
-                            <a href="{{ route('admin.inspections.tasks') }}" class="block py-2 text-[0.75rem] font-medium {{ request()->routeIs('admin.inspections.tasks') ? 'text-[#ff6900]' : 'text-slate-500 hover:text-slate-800' }}">Field Tasks</a>
-                        </li>
-                        <li>
-                            <a href="{{ route('admin.inspections.index') }}" class="block py-2 text-[0.75rem] font-medium {{ (request()->routeIs('admin.inspections.*') && !request()->routeIs('admin.inspections.calendar') && !request()->routeIs('admin.inspections.tasks')) ? 'text-[#ff6900]' : 'text-slate-500 hover:text-slate-800' }}">Appraisal Reports</a>
-                        </li>
-                        @endcan
-                    </ul>
-                </div>
+                    <div class="space-y-1">
+                        <button @click="openCRM = !openCRM"
+                            class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-lg text-[0.8rem] font-bold text-slate-500 hover:bg-slate-50 transition-all">
+                            <div class="flex items-center gap-4">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" class="text-slate-400 flex-shrink-0">
+                                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                                    <circle cx="9" cy="7" r="4" />
+                                    <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                                    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                                </svg>
+                                <span x-show="sidebarOpen" x-cloak>CRM and Operations</span>
+                            </div>
+                            <svg x-show="sidebarOpen" x-cloak :class="openCRM ? 'rotate-180' : ''"
+                                xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+                                class="transition-transform duration-200 text-slate-400 flex-shrink-0">
+                                <path d="m6 9 6 6 6-6" />
+                            </svg>
+                        </button>
+
+                        <ul x-show="openCRM" x-cloak x-collapse
+                            class="pl-12 space-y-1 mt-1 border-l-2 border-slate-50 ml-6">
+                            @can('view leads')
+                                <li>
+                                    <a href="{{ route('admin.leads.index') }}"
+                                        class="block py-2 text-[0.75rem] font-medium {{ request()->routeIs('admin.leads.*') ? 'text-[#ff6900]' : 'text-slate-500 hover:text-slate-800' }}">Leads</a>
+                                </li>
+                            @endcan
+                            @can('view inspections')
+                                <li>
+                                    <a href="{{ route('admin.inspections.calendar') }}"
+                                        class="block py-2 text-[0.75rem] font-medium {{ request()->routeIs('admin.inspections.calendar') ? 'text-[#ff6900]' : 'text-slate-500 hover:text-slate-800' }}">Inspections
+                                        Calendar</a>
+                                </li>
+                                <li>
+                                    <a href="{{ route('admin.inspections.tasks') }}"
+                                        class="block py-2 text-[0.75rem] font-medium {{ request()->routeIs('admin.inspections.tasks') ? 'text-[#ff6900]' : 'text-slate-500 hover:text-slate-800' }}">Field
+                                        Tasks</a>
+                                </li>
+                                <li>
+                                    <a href="{{ route('admin.inspections.index') }}"
+                                        class="block py-2 text-[0.75rem] font-medium {{ (request()->routeIs('admin.inspections.*') && !request()->routeIs('admin.inspections.calendar') && !request()->routeIs('admin.inspections.tasks')) ? 'text-[#ff6900]' : 'text-slate-500 hover:text-slate-800' }}">Appraisal
+                                        Reports</a>
+                                </li>
+                            @endcan
+                        </ul>
+                    </div>
                 @endcan
 
                 {{-- Group 2.5: HR Management --}}
                 @can('view hr')
-                <div class="space-y-2 pt-2">
-                    <div x-show="sidebarOpen" x-cloak class="text-[0.6rem] text-slate-400 font-bold mb-3 uppercase tracking-[0.2em] pl-3 opacity-70 italic">HR Management</div>
-                    <ul class="space-y-1">
-                        {{-- ── HR Management Dropdown ──────────────────── --}}
-                        <li x-data="{ open: {{ request()->routeIs('admin.hr.*') ? 'true' : 'false' }} }">
-                            {{-- Dropdown Toggle --}}
-                            <button @click="open = !open"
-                                class="w-full sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-bold transition-all
-                                    {{ request()->routeIs('admin.hr.*') ? 'text-slate-900 bg-slate-50 border border-slate-100 shadow-sm' : 'text-slate-500 hover:bg-slate-50' }}">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                                    class="flex-shrink-0 {{ request()->routeIs('admin.hr.*') ? 'text-[#ff6900]' : 'text-slate-400' }}">
-                                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-                                    <circle cx="9" cy="7" r="4"/>
-                                    <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
-                                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-                                </svg>
-                                <span x-show="sidebarOpen" x-cloak class="flex-1 text-left truncate">HR Management</span>
-                                <svg x-show="sidebarOpen" x-cloak :class="open ? 'rotate-180' : ''" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="transition-transform duration-200 text-slate-400 flex-shrink-0"><path d="m6 9 6 6 6-6"/></svg>
-                            </button>
+                    <div class="space-y-2 pt-2">
+                        <div x-show="sidebarOpen" x-cloak
+                            class="text-[0.6rem] text-slate-400 font-bold mb-3 uppercase tracking-[0.2em] pl-3 opacity-70 italic">
+                            HR Management</div>
+                        <ul class="space-y-1">
+                            {{-- ── HR Management Dropdown ──────────────────── --}}
+                            <li x-data="{ open: {{ request()->routeIs('admin.hr.*') ? 'true' : 'false' }} }">
+                                {{-- Dropdown Toggle --}}
+                                <button @click="open = !open"
+                                    class="w-full sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-bold transition-all
+                                        {{ request()->routeIs('admin.hr.*') ? 'text-slate-900 bg-slate-50 border border-slate-100 shadow-sm' : 'text-slate-500 hover:bg-slate-50' }}">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        class="flex-shrink-0 {{ request()->routeIs('admin.hr.*') ? 'text-[#ff6900]' : 'text-slate-400' }}">
+                                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                                        <circle cx="9" cy="7" r="4" />
+                                        <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                                        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                                    </svg>
+                                    <span x-show="sidebarOpen" x-cloak class="flex-1 text-left truncate">HR
+                                        Management</span>
+                                    <svg x-show="sidebarOpen" x-cloak :class="open ? 'rotate-180' : ''"
+                                        xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        class="transition-transform duration-200 text-slate-400 flex-shrink-0">
+                                        <path d="m6 9 6 6 6-6" />
+                                    </svg>
+                                </button>
 
-                            {{-- Sub-items --}}
-                            <ul x-show="open && sidebarOpen" x-cloak
-                                x-transition:enter="transition ease-out duration-150"
-                                x-transition:enter-start="opacity-0 -translate-y-1"
-                                x-transition:enter-end="opacity-100 translate-y-0"
-                                class="mt-1 ml-9 space-y-0.5 border-l-2 border-slate-100 pl-3">
+                                {{-- Sub-items --}}
+                                <ul x-show="open && sidebarOpen" x-cloak
+                                    x-transition:enter="transition ease-out duration-150"
+                                    x-transition:enter-start="opacity-0 -translate-y-1"
+                                    x-transition:enter-end="opacity-100 translate-y-0"
+                                    class="mt-1 ml-9 space-y-0.5 border-l-2 border-slate-100 pl-3">
 
-                                @php
-                                    $hrLinks = [
-                                        ['route' => 'admin.hr.dashboard', 'label' => 'Dashboard', 'icon' => 'layout-dashboard', 'perm' => 'view hr'],
-                                        ['route' => 'admin.hr.departments.index', 'label' => 'Departments', 'icon' => 'building-2', 'perm' => null],
-                                        ['route' => 'admin.hr.positions.index', 'label' => 'Positions', 'icon' => 'briefcase', 'perm' => null],
-                                        ['route' => 'admin.hr.employees.index', 'label' => 'Employee Manager', 'icon' => 'users', 'perm' => null],
-                                        ['route' => 'admin.hr.shifts.index', 'label' => 'Shifts', 'icon' => 'clock', 'perm' => null],
-                                        ['route' => 'admin.hr.attendance.index', 'label' => 'Attendance', 'icon' => 'calendar-check', 'perm' => 'view attendance'],
-                                        ['route' => 'admin.hr.leaves.index', 'label' => 'Leaves', 'icon' => 'calendar-x', 'perm' => 'view leaves'],
-                                        ['route' => 'admin.hr.payrolls.index', 'label' => 'Payrolls', 'icon' => 'banknote', 'perm' => 'view payroll'],
-                                        ['route' => 'admin.hr.salary-structures.index', 'label' => 'Salary Structures', 'icon' => 'banknote', 'perm' => null],
-                                        ['route' => 'admin.hr.advances.index', 'label' => 'Advances', 'icon' => 'hand-coins', 'perm' => null],
-                                        ['route' => 'admin.hr.penalties.index', 'label' => 'Penalties', 'icon' => 'shield-alert', 'perm' => null],
-                                        ['route' => 'admin.hr.documents.index', 'label' => 'Documents', 'icon' => 'file-stack', 'perm' => null],
-                                        ['route' => 'admin.hr.evaluations.index', 'label' => 'Evaluations', 'icon' => 'clipboard-check', 'perm' => null],
-                                        ['route' => 'admin.hr.rewards.index', 'label' => 'Rewards', 'icon' => 'award', 'perm' => null],
-                                        ['route' => 'admin.hr.recruitments.index', 'label' => 'Recruitment', 'icon' => 'user-plus', 'perm' => null],
-                                        ['route' => 'admin.hr.test-components', 'label' => 'Test Page', 'icon' => 'layers', 'perm' => null],
-                                    ];
-                                @endphp
+                                    @php
+                                        $hrLinks = [
+                                            ['route' => 'admin.hr.dashboard', 'label' => 'Dashboard', 'icon' => 'layout-dashboard', 'perm' => 'view hr'],
+                                            ['route' => 'admin.hr.departments.index', 'label' => 'Departments', 'icon' => 'building-2', 'perm' => null],
+                                            ['route' => 'admin.hr.positions.index', 'label' => 'Positions', 'icon' => 'briefcase', 'perm' => null],
+                                            ['route' => 'admin.hr.employees.index', 'label' => 'Employee Manager', 'icon' => 'users', 'perm' => null],
+                                            ['route' => 'admin.hr.shifts.index', 'label' => 'Shifts', 'icon' => 'clock', 'perm' => null],
+                                            ['route' => 'admin.hr.attendance.index', 'label' => 'Attendance', 'icon' => 'calendar-check', 'perm' => 'view attendance'],
+                                            ['route' => 'admin.hr.leaves.index', 'label' => 'Leaves', 'icon' => 'calendar-x', 'perm' => 'view leaves'],
+                                            ['route' => 'admin.hr.payrolls.index', 'label' => 'Payrolls', 'icon' => 'banknote', 'perm' => 'view payroll'],
+                                            ['route' => 'admin.hr.salary-structures.index', 'label' => 'Salary Structures', 'icon' => 'banknote', 'perm' => null],
+                                            ['route' => 'admin.hr.advances.index', 'label' => 'Advances', 'icon' => 'hand-coins', 'perm' => null],
+                                            ['route' => 'admin.hr.penalties.index', 'label' => 'Penalties', 'icon' => 'shield-alert', 'perm' => null],
+                                            ['route' => 'admin.hr.documents.index', 'label' => 'Documents', 'icon' => 'file-stack', 'perm' => null],
+                                            ['route' => 'admin.hr.evaluations.index', 'label' => 'Evaluations', 'icon' => 'clipboard-check', 'perm' => null],
+                                            ['route' => 'admin.hr.rewards.index', 'label' => 'Rewards', 'icon' => 'award', 'perm' => null],
+                                            ['route' => 'admin.hr.recruitments.index', 'label' => 'Recruitment', 'icon' => 'user-plus', 'perm' => null],
+                                            ['route' => 'admin.hr.test-components', 'label' => 'Test Page', 'icon' => 'layers', 'perm' => null],
+                                        ];
+                                    @endphp
 
-                                @foreach($hrLinks as $link)
-                                    @if(empty($link['perm']) || auth()->user()->can($link['perm']))
-                                    <li>
-                                        <a href="{{ route($link['route']) }}"
-                                            class="flex items-center gap-2.5 px-2 py-2 rounded-md text-[0.72rem] font-bold transition-all
-                                                {{ request()->routeIs($link['route']) ? 'text-[#ff6900] bg-orange-50' : 'text-slate-400 hover:text-slate-700 hover:bg-slate-50' }}">
-                                            <i data-lucide="{{ $link['icon'] }}" class="w-4 h-4 flex-shrink-0"></i>
-                                            {{ $link['label'] }}
-                                        </a>
-                                    </li>
-                                    @endif
-                                @endforeach
+                                    @foreach($hrLinks as $link)
+                                        @if(empty($link['perm']) || auth()->user()->can($link['perm']))
+                                            <li>
+                                                <a href="{{ route($link['route']) }}"
+                                                    class="flex items-center gap-2.5 px-2 py-2 rounded-md text-[0.72rem] font-bold transition-all
+                                                            {{ request()->routeIs($link['route']) ? 'text-[#ff6900] bg-orange-50' : 'text-slate-400 hover:text-slate-700 hover:bg-slate-50' }}">
+                                                    <i data-lucide="{{ $link['icon'] }}" class="w-4 h-4 flex-shrink-0"></i>
+                                                    {{ $link['label'] }}
+                                                </a>
+                                            </li>
+                                        @endif
+                                    @endforeach
 
-                            </ul>
-                        </li>
-                    </ul>
-                </div>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
                 @endcan
 
                 {{-- Group 3: Fleet Management --}}
                 @can('view cars')
-                <div class="space-y-2 pt-2">
-                    <div x-show="sidebarOpen" x-cloak class="text-[0.6rem] text-slate-400 font-bold mb-3 uppercase tracking-[0.2em] pl-3 opacity-70 italic">Fleet Management</div>
-                    <ul class="space-y-1">
-                        @can('view cars')
-                        <li>
-                            <a href="{{ route('admin.cars.index') }}"
-                                class="sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-bold {{ request()->routeIs('admin.cars.*') ? 'text-slate-900 bg-slate-50 border border-slate-100 shadow-sm' : 'text-slate-500 hover:bg-slate-50' }}">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0 {{ request()->routeIs('admin.cars.*') ? 'text-[#ff6900]' : 'text-slate-400' }}"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9C2 11 2 11.1 2 11.2V16c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></svg>
-                                <span x-show="sidebarOpen" x-cloak class="truncate">Vehicles</span>
-                            </a>
-                        </li>
-                        @endcan
-                        @can('view auctions')
-                        <li>
-                            <a href="{{ route('admin.auctions.index') }}"
-                                class="sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-bold {{ request()->routeIs('admin.auctions.*') ? 'text-slate-900 bg-slate-50 border border-slate-100 shadow-sm' : 'text-slate-500 hover:bg-slate-50' }}">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0 {{ request()->routeIs('admin.auctions.*') ? 'text-[#ff6900]' : 'text-slate-400' }}"><path d="m6 15-4-4 6.7-6.7a2.1 2.1 0 1 1 3 3L5 14"/><path d="m15 13 4 4"/><path d="m21 11-8 8"/><path d="m21 15-8 8"/><path d="m10 11 8-8"/></svg>
-                                <span x-show="sidebarOpen" x-cloak class="truncate">Auctions</span>
-                            </a>
-                        </li>
-                        @endcan
-                        @can('view stock')
-                        <li>
-                            <a href="{{ route('admin.stock.index') }}"
-                                class="sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-bold {{ request()->routeIs('admin.stock.*') ? 'text-slate-900 bg-slate-50 border border-slate-100 shadow-sm' : 'text-slate-500 hover:bg-slate-50' }}">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0 {{ request()->routeIs('admin.stock.*') ? 'text-[#ff6900]' : 'text-slate-400' }}"><path d="M22 8.35V20a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8.35A2 2 0 0 1 3.26 6.5l8-3.2a2 2 0 0 1 1.48 0l8 3.2A2 2 0 0 1 22 8.35Z"/><path d="M6 18h12"/><path d="M6 14h12"/><rect x="8" y="10" width="8" height="12"/></svg>
-                                <span x-show="sidebarOpen" x-cloak class="truncate">Stock</span>
-                            </a>
-                        </li>
-                        @endcan
-                        @can('view dealers')
-                        <li>
-                            <a href="{{ route('admin.dealers.index') }}"
-                                class="sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-bold {{ request()->routeIs('admin.dealers.*') ? 'text-slate-900 bg-slate-50 border border-slate-100 shadow-sm' : 'text-slate-500 hover:bg-slate-50' }}">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0 {{ request()->routeIs('admin.dealers.*') ? 'text-[#ff6900]' : 'text-slate-400' }}"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                                <span x-show="sidebarOpen" x-cloak class="truncate">Dealers</span>
-                            </a>
-                        </li>
-                        @endcan
-
-                        {{-- ── Accounting Dropdown ──────────────────── --}}
-                        @can('view finance')
-                        <li x-data="{ open: {{ request()->routeIs('admin.finance.*') ? 'true' : 'false' }} }">
-                            {{-- Dropdown Toggle --}}
-                            <button @click="open = !open"
-                                class="w-full sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-bold transition-all
-                                    {{ request()->routeIs('admin.finance.*') ? 'text-slate-900 bg-slate-50 border border-slate-100 shadow-sm' : 'text-slate-500 hover:bg-slate-50' }}">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                                    class="flex-shrink-0 {{ request()->routeIs('admin.finance.*') ? 'text-[#ff6900]' : 'text-slate-400' }}">
-                                    <rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/>
-                                </svg>
-                                <span x-show="sidebarOpen" x-cloak class="flex-1 text-left truncate">Accounting</span>
-                                <svg x-show="sidebarOpen" x-cloak :class="open ? 'rotate-180' : ''" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="transition-transform duration-200 text-slate-400 flex-shrink-0"><path d="m6 9 6 6 6-6"/></svg>
-                            </button>
-
-                            {{-- Sub-items --}}
-                            <ul x-show="open && sidebarOpen" x-cloak
-                                x-transition:enter="transition ease-out duration-150"
-                                x-transition:enter-start="opacity-0 -translate-y-1"
-                                x-transition:enter-end="opacity-100 translate-y-0"
-                                class="mt-1 ml-9 space-y-0.5 border-l-2 border-slate-100 pl-3">
-
-                                @php
-                                    $financeLinks = [
-                                        ['route' => 'admin.finance.dashboard', 'label' => 'Overview',             'svg' => '<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>'],
-                                        ['route' => 'admin.finance.invoices',  'label' => 'Invoices',             'svg' => '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>'],
-                                        ['route' => 'admin.finance.receipts',  'label' => 'Receipts',             'svg' => '<line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/>'],
-                                        ['route' => 'admin.finance.vouchers',  'label' => 'Payment Vouchers',     'svg' => '<line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/>'],
-                                        ['route' => 'admin.finance.accounts',  'label' => 'Cash & Bank Accounts', 'svg' => '<rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/>'],
-                                    ];
-                                @endphp
-
-                                @foreach($financeLinks as $fl)
+                    <div class="space-y-2 pt-2">
+                        <div x-show="sidebarOpen" x-cloak
+                            class="text-[0.6rem] text-slate-400 font-bold mb-3 uppercase tracking-[0.2em] pl-3 opacity-70 italic">
+                            Fleet Management</div>
+                        <ul class="space-y-1">
+                            @can('view cars')
                                 <li>
-                                    <a href="{{ route($fl['route']) }}"
-                                        class="flex items-center gap-2.5 px-2 py-2 rounded-md text-[0.72rem] font-bold transition-all
-                                            {{ request()->routeIs($fl['route']) ? 'text-[#ff6900] bg-orange-50' : 'text-slate-400 hover:text-slate-700 hover:bg-slate-50' }}">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0">{!! $fl['svg'] !!}</svg>
-                                        {{ $fl['label'] }}
+                                    <a href="{{ route('admin.cars.index') }}"
+                                        class="sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-bold {{ request()->routeIs('admin.cars.*') ? 'text-slate-900 bg-slate-50 border border-slate-100 shadow-sm' : 'text-slate-500 hover:bg-slate-50' }}">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            class="flex-shrink-0 {{ request()->routeIs('admin.cars.*') ? 'text-[#ff6900]' : 'text-slate-400' }}">
+                                            <path
+                                                d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9C2 11 2 11.1 2 11.2V16c0 .6.4 1 1 1h2" />
+                                            <circle cx="7" cy="17" r="2" />
+                                            <path d="M9 17h6" />
+                                            <circle cx="17" cy="17" r="2" />
+                                        </svg>
+                                        <span x-show="sidebarOpen" x-cloak class="truncate">Vehicles</span>
                                     </a>
                                 </li>
-                                @endforeach
+                            @endcan
+                            @can('view auctions')
+                                <li>
+                                    <a href="{{ route('admin.auctions.index') }}"
+                                        class="sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-bold {{ request()->routeIs('admin.auctions.*') ? 'text-slate-900 bg-slate-50 border border-slate-100 shadow-sm' : 'text-slate-500 hover:bg-slate-50' }}">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            class="flex-shrink-0 {{ request()->routeIs('admin.auctions.*') ? 'text-[#ff6900]' : 'text-slate-400' }}">
+                                            <path d="m6 15-4-4 6.7-6.7a2.1 2.1 0 1 1 3 3L5 14" />
+                                            <path d="m15 13 4 4" />
+                                            <path d="m21 11-8 8" />
+                                            <path d="m21 15-8 8" />
+                                            <path d="m10 11 8-8" />
+                                        </svg>
+                                        <span x-show="sidebarOpen" x-cloak class="truncate">Auctions</span>
+                                    </a>
+                                </li>
+                            @endcan
+                            @can('view stock')
+                                <li>
+                                    <a href="{{ route('admin.stock.index') }}"
+                                        class="sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-bold {{ request()->routeIs('admin.stock.*') ? 'text-slate-900 bg-slate-50 border border-slate-100 shadow-sm' : 'text-slate-500 hover:bg-slate-50' }}">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            class="flex-shrink-0 {{ request()->routeIs('admin.stock.*') ? 'text-[#ff6900]' : 'text-slate-400' }}">
+                                            <path
+                                                d="M22 8.35V20a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8.35A2 2 0 0 1 3.26 6.5l8-3.2a2 2 0 0 1 1.48 0l8 3.2A2 2 0 0 1 22 8.35Z" />
+                                            <path d="M6 18h12" />
+                                            <path d="M6 14h12" />
+                                            <rect x="8" y="10" width="8" height="12" />
+                                        </svg>
+                                        <span x-show="sidebarOpen" x-cloak class="truncate">Stock</span>
+                                    </a>
+                                </li>
+                            @endcan
+                            @can('view dealers')
+                                <li>
+                                    <a href="{{ route('admin.dealers.index') }}"
+                                        class="sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-bold {{ request()->routeIs('admin.dealers.*') ? 'text-slate-900 bg-slate-50 border border-slate-100 shadow-sm' : 'text-slate-500 hover:bg-slate-50' }}">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            class="flex-shrink-0 {{ request()->routeIs('admin.dealers.*') ? 'text-[#ff6900]' : 'text-slate-400' }}">
+                                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                                            <circle cx="9" cy="7" r="4" />
+                                            <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                                            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                                        </svg>
+                                        <span x-show="sidebarOpen" x-cloak class="truncate">Dealers</span>
+                                    </a>
+                                </li>
+                            @endcan
 
-                            </ul>
-                        </li>
-                        @endcan
+                            {{-- ── Accounting Dropdown ──────────────────── --}}
+                            @can('view finance')
+                                <li x-data="{ open: {{ request()->routeIs('admin.finance.*') ? 'true' : 'false' }} }">
+                                    {{-- Dropdown Toggle --}}
+                                    <button @click="open = !open"
+                                        class="w-full sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-bold transition-all
+                                            {{ request()->routeIs('admin.finance.*') ? 'text-slate-900 bg-slate-50 border border-slate-100 shadow-sm' : 'text-slate-500 hover:bg-slate-50' }}">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            class="flex-shrink-0 {{ request()->routeIs('admin.finance.*') ? 'text-[#ff6900]' : 'text-slate-400' }}">
+                                            <rect width="20" height="14" x="2" y="5" rx="2" />
+                                            <line x1="2" x2="22" y1="10" y2="10" />
+                                        </svg>
+                                        <span x-show="sidebarOpen" x-cloak class="flex-1 text-left truncate">Accounting</span>
+                                        <svg x-show="sidebarOpen" x-cloak :class="open ? 'rotate-180' : ''"
+                                            xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                                            fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            class="transition-transform duration-200 text-slate-400 flex-shrink-0">
+                                            <path d="m6 9 6 6 6-6" />
+                                        </svg>
+                                    </button>
 
-                    </ul>
-                </div>
+                                    {{-- Sub-items --}}
+                                    <ul x-show="open && sidebarOpen" x-cloak
+                                        x-transition:enter="transition ease-out duration-150"
+                                        x-transition:enter-start="opacity-0 -translate-y-1"
+                                        x-transition:enter-end="opacity-100 translate-y-0"
+                                        class="mt-1 ml-9 space-y-0.5 border-l-2 border-slate-100 pl-3">
+
+                                        @php
+                                            $financeLinks = [
+                                                ['route' => 'admin.finance.dashboard', 'label' => 'Overview', 'svg' => '<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>'],
+                                                ['route' => 'admin.finance.invoices', 'label' => 'Invoices', 'svg' => '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>'],
+                                                ['route' => 'admin.finance.receipts', 'label' => 'Receipts', 'svg' => '<line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/>'],
+                                                ['route' => 'admin.finance.vouchers', 'label' => 'Payment Vouchers', 'svg' => '<line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/>'],
+                                                ['route' => 'admin.finance.accounts', 'label' => 'Cash and Bank Accounts', 'svg' => '<rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/>'],
+                                            ];
+                                        @endphp
+
+                                        @foreach($financeLinks as $fl)
+                                            <li>
+                                                <a href="{{ route($fl['route']) }}"
+                                                    class="flex items-center gap-2.5 px-2 py-2 rounded-md text-[0.72rem] font-bold transition-all
+                                                        {{ request()->routeIs($fl['route']) ? 'text-[#ff6900] bg-orange-50' : 'text-slate-400 hover:text-slate-700 hover:bg-slate-50' }}">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13"
+                                                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                                        stroke-linecap="round" stroke-linejoin="round"
+                                                        class="flex-shrink-0">{!! $fl['svg'] !!}</svg>
+                                                    {{ $fl['label'] }}
+                                                </a>
+                                            </li>
+                                        @endforeach
+
+                                    </ul>
+                                </li>
+                            @endcan
+
+                        </ul>
+                    </div>
                 @endcan
 
                 {{-- Group 3: Editorial --}}
                 @can('view cms')
-                <div class="space-y-2 pt-2">
-                    <div x-show="sidebarOpen" x-cloak class="text-[0.6rem] text-slate-400 font-bold mb-3 uppercase tracking-[0.2em] pl-3 opacity-70 italic">Content</div>
-                    <ul class="space-y-1">
-                        @can('view cms')
-                        <li>
-                            <a href="{{ route('admin.cms.home') }}" class="sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-medium {{ request()->routeIs('admin.cms.*') ? 'text-slate-800 bg-slate-50 border border-slate-100' : 'text-slate-500 hover:bg-slate-50' }}">
-                                <i data-lucide="home" class="w-5 h-5"></i>
-                                <span x-show="sidebarOpen" x-cloak>Home CMS</span>
-                            </a>
-                        </li>
-                        @endcan
-                        @can('view posts')
-                        <li>
-                            <a href="{{ route('admin.posts.index') }}" class="sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-medium {{ request()->routeIs('admin.posts.*') ? 'text-slate-800 bg-slate-50 border border-slate-100' : 'text-slate-500 hover:bg-slate-50' }}">
-                                <i data-lucide="file-text" class="w-5 h-5"></i>
-                                <span x-show="sidebarOpen" x-cloak>Blog Posts</span>
-                            </a>
-                        </li>
-                        @endcan
-                        @can('view pages')
-                        <li>
-                            <a href="{{ route('admin.pages.index') }}" class="sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-medium {{ request()->routeIs('admin.pages.*') ? 'text-slate-800 bg-slate-50 border border-slate-100' : 'text-slate-500 hover:bg-slate-50' }}">
-                                <i data-lucide="layers" class="w-5 h-5"></i>
-                                <span x-show="sidebarOpen" x-cloak>Static Pages</span>
-                            </a>
-                        </li>
-                        @endcan
-                        @can('view menus')
-                        <li>
-                            <a href="{{ route('admin.menus.index') }}" class="sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-medium {{ request()->routeIs('admin.menus.*') ? 'text-slate-800 bg-slate-50 border border-slate-100' : 'text-slate-500 hover:bg-slate-50' }}">
-                                <i data-lucide="menu" class="w-5 h-5"></i>
-                                <span x-show="sidebarOpen" x-cloak>Site Navigation</span>
-                            </a>
-                        </li>
-                        @endcan
-                    </ul>
-                </div>
+                    <div class="space-y-2 pt-2">
+                        <div x-show="sidebarOpen" x-cloak
+                            class="text-[0.6rem] text-slate-400 font-bold mb-3 uppercase tracking-[0.2em] pl-3 opacity-70 italic">
+                            Content</div>
+                        <ul class="space-y-1">
+                            @can('view cms')
+                                <li>
+                                    <a href="{{ route('admin.cms.home') }}"
+                                        class="sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-medium {{ request()->routeIs('admin.cms.*') ? 'text-slate-800 bg-slate-50 border border-slate-100' : 'text-slate-500 hover:bg-slate-50' }}">
+                                        <i data-lucide="home" class="w-5 h-5"></i>
+                                        <span x-show="sidebarOpen" x-cloak>Home CMS</span>
+                                    </a>
+                                </li>
+                            @endcan
+                            @can('view posts')
+                                <li>
+                                    <a href="{{ route('admin.posts.index') }}"
+                                        class="sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-medium {{ request()->routeIs('admin.posts.*') ? 'text-slate-800 bg-slate-50 border border-slate-100' : 'text-slate-500 hover:bg-slate-50' }}">
+                                        <i data-lucide="file-text" class="w-5 h-5"></i>
+                                        <span x-show="sidebarOpen" x-cloak>Blog Posts</span>
+                                    </a>
+                                </li>
+                            @endcan
+                            @can('view pages')
+                                <li>
+                                    <a href="{{ route('admin.pages.index') }}"
+                                        class="sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-medium {{ request()->routeIs('admin.pages.*') ? 'text-slate-800 bg-slate-50 border border-slate-100' : 'text-slate-500 hover:bg-slate-50' }}">
+                                        <i data-lucide="layers" class="w-5 h-5"></i>
+                                        <span x-show="sidebarOpen" x-cloak>Static Pages</span>
+                                    </a>
+                                </li>
+                            @endcan
+                            @can('view menus')
+                                <li>
+                                    <a href="{{ route('admin.menus.index') }}"
+                                        class="sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-medium {{ request()->routeIs('admin.menus.*') ? 'text-slate-800 bg-slate-50 border border-slate-100' : 'text-slate-500 hover:bg-slate-50' }}">
+                                        <i data-lucide="menu" class="w-5 h-5"></i>
+                                        <span x-show="sidebarOpen" x-cloak>Site Navigation</span>
+                                    </a>
+                                </li>
+                            @endcan
+                        </ul>
+                    </div>
                 @endcan
 
                 {{-- Group 4: Settings --}}
                 @can('view settings')
-                <div class="space-y-2 pt-2">
-                    <div x-show="sidebarOpen" x-cloak class="text-[0.6rem] text-slate-400 font-bold mb-3 uppercase tracking-[0.2em] pl-3 opacity-70 italic">System</div>
-                    <ul class="space-y-1">
-                        @can('view seo')
-                        <li>
-                            <a href="{{ route('admin.seo.dashboard') }}" class="sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-medium {{ request()->routeIs('admin.seo.dashboard') ? 'text-slate-800 bg-slate-50 border border-slate-100' : 'text-slate-500 hover:bg-slate-50' }}">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0 {{ request()->routeIs('admin.seo.dashboard') ? 'text-[#ff6900]' : 'text-slate-400' }}"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-                                <span x-show="sidebarOpen" x-cloak>SEO Intelligence</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{ route('admin.seo.guide') }}" class="sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-medium {{ request()->routeIs('admin.seo.guide') ? 'text-slate-800 bg-slate-50 border border-slate-100' : 'text-slate-500 hover:bg-slate-50' }}">
-                                <i data-lucide="help-circle" class="w-5 h-5"></i>
-                                <span x-show="sidebarOpen" x-cloak>How it Works (SEO)</span>
-                            </a>
-                        </li>
-                        @endcan
-                        @can('view settings')
-                        <li>
-                            <a href="{{ route('admin.settings.hub') }}" class="sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-bold {{ request()->routeIs('admin.settings.*') ? 'text-slate-900 bg-slate-50 border border-slate-100 shadow-sm' : 'text-slate-500 hover:bg-slate-50' }}">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0 {{ request()->routeIs('admin.settings.*') ? 'text-[#ff6900]' : 'text-slate-400' }}"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
-                                <span x-show="sidebarOpen" x-cloak>Settings</span>
-                            </a>
-                        </li>
-                        @endcan
-                        @can('view roles')
-                        <li>
-                            <a href="{{ route('admin.roles.index') }}" class="sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-bold {{ request()->routeIs('admin.roles.*') ? 'text-slate-900 bg-slate-50 border border-slate-100 shadow-sm' : 'text-slate-500 hover:bg-slate-50' }}">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0 {{ request()->routeIs('admin.roles.*') ? 'text-[#ff6900]' : 'text-slate-400' }}"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                                <span x-show="sidebarOpen" x-cloak>Roles & Users</span>
-                            </a>
-                        </li>
-                        @endcan
-                        <li>
-                            <a href="{{ route('admin.routes.inventory') }}" class="sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-bold {{ request()->routeIs('admin.routes.inventory') ? 'text-slate-900 bg-slate-50 border border-slate-100 shadow-sm' : 'text-slate-500 hover:bg-slate-50' }}">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0 {{ request()->routeIs('admin.routes.inventory') ? 'text-[#ff6900]' : 'text-slate-400' }}"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><path d="M4 9h16"/><path d="M9 16l3-3 3 3"/></svg>
-                                <span x-show="sidebarOpen" x-cloak>Routes Inventory</span>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
+                    <div class="space-y-2 pt-2">
+                        <div x-show="sidebarOpen" x-cloak
+                            class="text-[0.6rem] text-slate-400 font-bold mb-3 uppercase tracking-[0.2em] pl-3 opacity-70 italic">
+                            System</div>
+                        <ul class="space-y-1">
+                            @can('view seo')
+                                <li>
+                                    <a href="{{ route('admin.seo.dashboard') }}"
+                                        class="sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-medium {{ request()->routeIs('admin.seo.dashboard') ? 'text-slate-800 bg-slate-50 border border-slate-100' : 'text-slate-500 hover:bg-slate-50' }}">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            class="flex-shrink-0 {{ request()->routeIs('admin.seo.dashboard') ? 'text-[#ff6900]' : 'text-slate-400' }}">
+                                            <circle cx="11" cy="11" r="8" />
+                                            <path d="m21 21-4.3-4.3" />
+                                        </svg>
+                                        <span x-show="sidebarOpen" x-cloak>SEO Intelligence</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ route('admin.seo.guide') }}"
+                                        class="sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-medium {{ request()->routeIs('admin.seo.guide') ? 'text-slate-800 bg-slate-50 border border-slate-100' : 'text-slate-500 hover:bg-slate-50' }}">
+                                        <i data-lucide="help-circle" class="w-5 h-5"></i>
+                                        <span x-show="sidebarOpen" x-cloak>How it Works (SEO)</span>
+                                    </a>
+                                </li>
+                            @endcan
+                            @can('view settings')
+                                <li>
+                                    <a href="{{ route('admin.settings.hub') }}"
+                                        class="sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-bold {{ request()->routeIs('admin.settings.*') ? 'text-slate-900 bg-slate-50 border border-slate-100 shadow-sm' : 'text-slate-500 hover:bg-slate-50' }}">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            class="flex-shrink-0 {{ request()->routeIs('admin.settings.*') ? 'text-[#ff6900]' : 'text-slate-400' }}">
+                                            <path
+                                                d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
+                                            <circle cx="12" cy="12" r="3" />
+                                        </svg>
+                                        <span x-show="sidebarOpen" x-cloak>Settings</span>
+                                    </a>
+                                </li>
+                            @endcan
+                            @can('view roles')
+                                <li>
+                                    <a href="{{ route('admin.roles.index') }}"
+                                        class="sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-bold {{ request()->routeIs('admin.roles.*') ? 'text-slate-900 bg-slate-50 border border-slate-100 shadow-sm' : 'text-slate-500 hover:bg-slate-50' }}">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            class="flex-shrink-0 {{ request()->routeIs('admin.roles.*') ? 'text-[#ff6900]' : 'text-slate-400' }}">
+                                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                                            <circle cx="9" cy="7" r="4" />
+                                            <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                                            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                                        </svg>
+                                        <span x-show="sidebarOpen" x-cloak>Roles and Users</span>
+                                    </a>
+                                </li>
+                            @endcan
+                            <li>
+                                <a href="{{ route('admin.routes.inventory') }}"
+                                    class="sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-bold {{ request()->routeIs('admin.routes.inventory') ? 'text-slate-900 bg-slate-50 border border-slate-100 shadow-sm' : 'text-slate-500 hover:bg-slate-50' }}">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        class="flex-shrink-0 {{ request()->routeIs('admin.routes.inventory') ? 'text-[#ff6900]' : 'text-slate-400' }}">
+                                        <path
+                                            d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                                        <path d="M4 9h16" />
+                                        <path d="M9 16l3-3 3 3" />
+                                    </svg>
+                                    <span x-show="sidebarOpen" x-cloak>Routes Inventory</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
                 @endcan
 
                 {{-- Group 5: Auth --}}
                 <div class="pt-6 border-t border-slate-50">
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
-                        <button type="submit" class="sidebar-item w-full flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-bold text-red-500 hover:bg-red-50 transition-all italic">
-                                <span x-show="sidebarOpen" x-cloak>Logout</span>
+                        <button type="submit"
+                            class="sidebar-item w-full flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-bold text-red-500 hover:bg-red-50 transition-all italic">
+                            <span x-show="sidebarOpen" x-cloak>Logout</span>
                         </button>
                     </form>
                 </div>
@@ -501,11 +567,13 @@
 
             <!-- Toggle Controller -->
             <div class="p-4 border-t border-[#f1f5f9] flex justify-center flex-shrink-0">
-                <button @click="sidebarOpen = !sidebarOpen" class="w-10 h-10 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-slate-400 hover:text-slate-800 hover:border-slate-300 transition-all shadow-sm active:scale-90">
+                <button @click="sidebarOpen = !sidebarOpen"
+                    class="w-10 h-10 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-slate-400 hover:text-slate-800 hover:border-slate-300 transition-all shadow-sm active:scale-90">
                     {{-- Inline SVG: no Lucide dependency, no re-render --}}
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <path x-show="!sidebarOpen" x-cloak d="m9 18 6-6-6-6"/>
-                        <path x-show="sidebarOpen" x-cloak d="m15 18-6-6 6-6"/>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path x-show="!sidebarOpen" x-cloak d="m9 18 6-6-6-6" />
+                        <path x-show="sidebarOpen" x-cloak d="m15 18-6-6 6-6" />
                     </svg>
                 </button>
             </div>
@@ -513,10 +581,13 @@
 
         <!-- Main Workspace -->
         <main class="flex-1 flex flex-col min-w-0 bg-[#e7e7e7] overflow-hidden">
-            <header class="h-[74px] bg-white border-b border-slate-100 flex items-center justify-between px-8 relative z-30 flex-shrink-0">
+            <header
+                class="h-[74px] bg-white border-b border-slate-100 flex items-center justify-between px-8 relative z-30 flex-shrink-0">
                 <div class="flex items-center gap-4">
-                     <div class="text-slate-500 font-bold text-[0.7rem] uppercase tracking-widest italic flex items-center gap-2">
-                        {{ __('messages.location') }} <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-300"></i> 
+                    <div
+                        class="text-slate-500 font-bold text-[0.7rem] uppercase tracking-widest italic flex items-center gap-2">
+                        {{ __('messages.location') }} <i data-lucide="chevron-right"
+                            class="w-3.5 h-3.5 text-slate-300"></i>
                         <span class="text-slate-900">
                             @if(request()->segment(2) == 'leads') Leads
                             @elseif(request()->segment(2) == 'inspections')
@@ -552,7 +623,7 @@
                             @else @yield('page_title', 'Dashboard')
                             @endif
                         </span>
-                     </div>
+                    </div>
                 </div>
 
                 <div class="flex items-center gap-6">
@@ -560,75 +631,90 @@
                     {{-- ── Notification Bell (Static) ── --}}
                     <div class="relative" id="notif-wrapper">
                         <button id="notif-bell" onclick="toggleNotifPanel()"
-                                class="relative w-10 h-10 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-500 hover:bg-[#1d293d] hover:text-white hover:border-[#1d293d] transition-all">
+                            class="relative w-10 h-10 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-500 hover:bg-[#1d293d] hover:text-white hover:border-[#1d293d] transition-all">
                             <i data-lucide="bell" class="w-5 h-5"></i>
                             <span id="notif-badge"
-                                  class="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] rounded-full bg-[#ff6900] text-white text-[0.5rem] font-black flex items-center justify-center px-1 hidden animate-bounce">0</span>
+                                class="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] rounded-full bg-[#ff6900] text-white text-[0.5rem] font-black flex items-center justify-center px-1 hidden animate-bounce">0</span>
                         </button>
 
                         {{-- Notification Panel (click to open) --}}
                         <div id="notif-panel"
-                             class="hidden absolute top-[calc(100%+12px)] right-0 w-96 bg-white rounded-[1.5rem] shadow-2xl border border-slate-100 overflow-hidden z-50">
+                            class="hidden absolute top-[calc(100%+12px)] right-0 w-96 bg-white rounded-[1.5rem] shadow-2xl border border-slate-100 overflow-hidden z-50">
                             {{-- Header --}}
                             <div class="flex items-center justify-between px-6 py-4 border-b border-slate-50">
                                 <div>
-                                    <div class="text-[0.7rem] font-black uppercase tracking-widest text-[#031629]">Notification Center</div>
-                                    <div class="text-[0.55rem] text-slate-400 font-bold mt-0.5" id="notif-count-label">Loading...</div>
+                                    <div class="text-[0.7rem] font-black uppercase tracking-widest text-[#031629]">
+                                        Notification Center</div>
+                                    <div class="text-[0.55rem] text-slate-400 font-bold mt-0.5" id="notif-count-label">
+                                        Loading...</div>
                                 </div>
                                 <button onclick="markAllRead()"
-                                        class="px-3 py-1.5 bg-slate-50 rounded-lg text-[0.6rem] font-black uppercase tracking-widest text-slate-500 hover:bg-[#1d293d] hover:text-white transition-all">
+                                    class="px-3 py-1.5 bg-slate-50 rounded-lg text-[0.6rem] font-black uppercase tracking-widest text-slate-500 hover:bg-[#1d293d] hover:text-white transition-all">
                                     Mark all read
                                 </button>
                             </div>
 
                             {{-- List --}}
                             <div id="notif-list" class="max-h-[400px] overflow-y-auto divide-y divide-slate-50">
-                                <div class="py-12 text-center text-[0.65rem] font-black uppercase tracking-widest text-slate-300">
+                                <div
+                                    class="py-12 text-center text-[0.65rem] font-black uppercase tracking-widest text-slate-300">
                                     Loading...
                                 </div>
                             </div>
 
                             {{-- Footer --}}
                             <div class="px-6 py-3 border-t border-slate-50 text-center">
-                                <span class="text-[0.55rem] font-black uppercase tracking-widest text-slate-300">Real-time notifications</span>
+                                <span
+                                    class="text-[0.55rem] font-black uppercase tracking-widest text-slate-300">Real-time
+                                    notifications</span>
                             </div>
                         </div>
                     </div>
 
                     <div class="relative" id="user-menu-wrapper">
                         <!-- User Menu Button -->
-                        <button onclick="toggleUserPanel()" class="flex items-center gap-3 pl-6 border-l border-slate-100 hover:opacity-80 transition-all">
+                        <button onclick="toggleUserPanel()"
+                            class="flex items-center gap-3 pl-6 border-l border-slate-100 hover:opacity-80 transition-all">
                             <div class="text-right">
-                                <p class="text-[0.75rem] font-bold text-slate-800 leading-none italic">{{ Auth::user()->name ?? 'Operator' }}</p>
-                                <p class="text-[0.55rem] text-slate-400 uppercase tracking-widest mt-1">Administrator Access</p>
+                                <p class="text-[0.75rem] font-bold text-slate-800 leading-none italic">
+                                    {{ Auth::user()->name ?? 'Operator' }}</p>
+                                <p class="text-[0.55rem] text-slate-400 uppercase tracking-widest mt-1">Administrator
+                                    Access</p>
                             </div>
-                            <div class="w-10 h-10 rounded-lg bg-slate-800 flex items-center justify-center text-white text-xs shadow-md">
-                               {{ strtoupper(substr(Auth::user()->name ?? 'A', 0, 1)) }}
+                            <div
+                                class="w-10 h-10 rounded-lg bg-slate-800 flex items-center justify-center text-white text-xs shadow-md">
+                                {{ strtoupper(substr(Auth::user()->name ?? 'A', 0, 1)) }}
                             </div>
                         </button>
 
                         {{-- User Dropdown Panel (click to open) --}}
                         <div id="user-panel"
-                             class="hidden absolute top-[calc(100%+12px)] right-0 w-60 bg-white rounded-[1.4rem] shadow-2xl border border-slate-100 overflow-hidden z-50 p-2">
-                            
+                            class="hidden absolute top-[calc(100%+12px)] right-0 w-60 bg-white rounded-[1.4rem] shadow-2xl border border-slate-100 overflow-hidden z-50 p-2">
+
                             {{-- User Info Header --}}
                             <div class="p-4 border-b border-slate-100/50 mb-1.5 bg-slate-50/50 rounded-2xl">
-                                <div class="text-[0.85rem] font-black text-slate-950 truncate leading-tight">{{ Auth::user()->name ?? 'Operator' }}</div>
-                                <div class="text-[0.55rem] text-slate-400 font-bold uppercase mt-1 tracking-[0.1em]">Administrator Access</div>
+                                <div class="text-[0.85rem] font-black text-slate-950 truncate leading-tight">
+                                    {{ Auth::user()->name ?? 'Operator' }}</div>
+                                <div class="text-[0.55rem] text-slate-400 font-bold uppercase mt-1 tracking-[0.1em]">
+                                    Administrator Access</div>
                             </div>
-                            
+
                             {{-- Menu Items --}}
                             <div class="space-y-0.5">
-                                <a href="{{ route('dealer.profile', Auth::id()) }}" class="flex items-center gap-3 px-3.5 py-3 rounded-xl text-[0.7rem] font-bold text-slate-600 hover:bg-orange-50 hover:text-[#ff6900] transition-all group/item">
-                                    <div class="w-7 h-7 rounded-lg bg-orange-100/50 flex items-center justify-center text-orange-600 group-hover/item:scale-110 transition-transform">
+                                <a href="{{ route('dealer.profile', Auth::id()) }}"
+                                    class="flex items-center gap-3 px-3.5 py-3 rounded-xl text-[0.7rem] font-bold text-slate-600 hover:bg-orange-50 hover:text-[#ff6900] transition-all group/item">
+                                    <div
+                                        class="w-7 h-7 rounded-lg bg-orange-100/50 flex items-center justify-center text-orange-600 group-hover/item:scale-110 transition-transform">
                                         <i data-lucide="user-circle" class="w-4"></i>
                                     </div>
                                     My Profile
                                 </a>
-                                
+
                                 @if(Auth::user()->is_admin || Auth::user()->hasRole(['admin', 'super-admin']))
-                                    <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3 px-3.5 py-3 rounded-xl text-[0.7rem] font-bold text-slate-600 hover:bg-slate-50 transition-all group/item">
-                                        <div class="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center text-slate-600 group-hover/item:scale-110 transition-transform">
+                                    <a href="{{ route('admin.dashboard') }}"
+                                        class="flex items-center gap-3 px-3.5 py-3 rounded-xl text-[0.7rem] font-bold text-slate-600 hover:bg-slate-50 transition-all group/item">
+                                        <div
+                                            class="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center text-slate-600 group-hover/item:scale-110 transition-transform">
                                             <i data-lucide="cpu" class="w-3"></i>
                                         </div>
                                         Core Systems
@@ -638,8 +724,10 @@
                                 <div class="pt-2 mt-2 border-t border-slate-100/50">
                                     <form action="{{ route('logout') }}" method="POST">
                                         @csrf
-                                        <button type="submit" class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl text-[0.75rem] font-bold text-red-500 hover:bg-red-50 transition-all group/item">
-                                            <div class="w-8 h-8 rounded-lg bg-red-100/50 flex items-center justify-center text-red-600 group-hover/item:scale-110 transition-transform">
+                                        <button type="submit"
+                                            class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl text-[0.75rem] font-bold text-red-500 hover:bg-red-50 transition-all group/item">
+                                            <div
+                                                class="w-8 h-8 rounded-lg bg-red-100/50 flex items-center justify-center text-red-600 group-hover/item:scale-110 transition-transform">
                                                 <i data-lucide="log-out" class="w-4"></i>
                                             </div>
                                             Logout
@@ -658,445 +746,54 @@
         </main>
     </div>
 
-    <!-- Scripts Matrix -->
-    <script>
-        window.initBazarPickers = function(container = document) {
-            if (window.flatpickr) {
-                container.querySelectorAll('.bazar-date').forEach(el => {
-                    flatpickr(el, { dateFormat: "d M Y", minDate: "today", disableMobile: true });
-                });
-                container.querySelectorAll('.bazar-time').forEach(el => {
-                    flatpickr(el, { enableTime: true, noCalendar: true, dateFormat: "h:i K", time_24hr: false, disableMobile: true });
-                });
-            }
-        };
+    <!-- Page Context & Initialization -->
+    @auth
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                if (typeof window.initNotificationCenter === 'function') {
+                    window.initNotificationCenter({
+                        listUrl: '{!! route("admin.notifications.index") !!}',
+                        countUrl: '{!! route("admin.notifications.count") !!}',
+                        readAllUrl: '{!! route("admin.notifications.read-all") !!}',
+                        readUrlTemplate: '{!! url("admin/notifications") !!}/:id/read',
+                        csrf: document.querySelector('meta[name="csrf-token"]')?.content ?? '',
+                        initialCount: {!! auth()->user()->unreadNotifications()->count() !!},
+                        userId: {!! auth()->id() !!},
+                        userRoles: @json(auth()->user()->roles->pluck('name')->toArray())
+                    });
+                }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            lucide.createIcons();
-            window.initBazarPickers();
-        });
-        
-        window.addEventListener('resize', () => {
-             const xDataElement = document.querySelector('[x-data]');
-             if(xDataElement && xDataElement.__x && window.innerWidth < 1024) {
-                 xDataElement.__x.$data.sidebarOpen = false;
-             }
-        });
-    </script>
-
-    <!-- ── Premium Elite Toast Engine: The Rocket Pill ── -->
-    <script>
-        let eliteToastContainer = null;
-        
-        function ensureToastContainer() {
-            if (eliteToastContainer) return eliteToastContainer;
-            eliteToastContainer = document.createElement('div');
-            eliteToastContainer.id = 'eliteToastContainer';
-            eliteToastContainer.style.cssText = 'position:fixed;top:2.5rem;right:2.5rem;z-index:9999999;display:flex;flex-direction:column;gap:1rem;pointer-events:none;';
-            document.body.appendChild(eliteToastContainer);
-            return eliteToastContainer;
-        }
-
-        const toastConfigs = {
-            success: {
-                label: 'Sync Successful',
-                icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="text-emerald-400"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>',
-                bg: 'rgba(2, 6, 23, 0.96)',
-                border: 'rgba(255, 255, 255, 0.15)',
-                subColor: 'rgba(255,255,255,0.4)'
-            },
-            error: {
-                label: 'Sync Failure',
-                icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="text-red-400"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
-                bg: '#dc2626',
-                border: 'rgba(255, 255, 255, 0.2)',
-                subColor: 'rgba(255,255,255,0.6)'
-            }
-        };
-
-        window.showToast = function(msg, type = 'success', duration = 5000) {
-            const config = toastConfigs[type] || toastConfigs.success;
-            const toast = document.createElement('div');
-            toast.style.cssText = `
-                pointer-events: auto;
-                display: flex;
-                align-items: center;
-                gap: 1.25rem;
-                padding: 1.5rem 2.5rem;
-                background: ${config.bg};
-                backdrop-filter: blur(24px);
-                -webkit-backdrop-filter: blur(24px);
-                border: 1px solid ${config.border};
-                border-radius: 5rem;
-                box-shadow: 0 35px 60px -15px rgba(0,0,0,0.3);
-                min-width: 380px;
-                max-width: 500px;
-                opacity: 0;
-                transform: translateX(3rem) scale(0.9) blur(10px);
-                transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-                position: relative;
-                overflow: hidden;
-                font-family: 'Plus Jakarta Sans', sans-serif;
-            `;
-
-            toast.innerHTML = `
-                <div style="width: 3.5rem; height: 3.5rem; border-radius: 1.2rem; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: inset 0 0 12px rgba(0,0,0,0.1);">
-                    ${config.icon}
-                </div>
-                <div style="flex: 1;">
-                    <p style="margin: 0; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3em; color: ${config.subColor}; margin-bottom: 0.25rem;">${config.label}</p>
-                    <p style="margin: 0; font-size: 1.05rem; font-weight: 500; color: white; letter-spacing: -0.02em; line-height: 1.2;">${msg}</p>
-                </div>
-                <div style="position: absolute; top: 0.75rem; right: 2rem; opacity: 0.1; color: white; pointer-events: none;">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-5c1.62-2.2 5-2.5 5-2.5"/><path d="M12 15v5s3.03-.55 5-2c2.2-1.62 2.5-5 2.5-5"/></svg>
-                </div>
-            `;
-
-            const target = ensureToastContainer();
-            target.appendChild(toast);
-            
-            // Animate In
-            requestAnimationFrame(() => {
-                toast.style.opacity = '1';
-                toast.style.transform = 'translateX(0) scale(1) blur(0)';
+                // Session Flash Feedback
+                @if(session('success')) window.showToast("{!! addslashes(session('success')) !!}", 'success'); @endif
+                @if(session('error')) window.showToast("{!! addslashes(session('error')) !!}", 'error'); @endif
             });
+        </script>
+    @endauth
 
-            // Auto Close
-            setTimeout(() => {
-                toast.style.opacity = '0';
-                toast.style.transform = 'translateX(3rem) scale(0.9) blur(10px)';
-                setTimeout(() => toast.remove(), 500);
-            }, duration);
-        };
-
-        // Global Notify API
-        window.notify = {
-            success: (m) => showToast(m, 'success'),
-            error: (m) => showToast(m, 'error'),
-            warning: (m) => showToast(m, 'error'),
-            info: (m) => showToast(m, 'success')
-        };
-
-        // Alpine Event Link
-        window.addEventListener('show-toast', e => {
-            showToast(e.detail.message || e.detail.msg, e.detail.type || 'success');
-        });
-
-        // Session Flash Logic
-        document.addEventListener('DOMContentLoaded', () => {
-            @if(session('success')) showToast("{{ addslashes(session('success')) }}", 'success'); @endif
-            @if(session('error')) showToast("{{ addslashes(session('error')) }}", 'error'); @endif
-        });
-    </script>
-
-    {{-- ══════════════════════════════════════
-         REAL-TIME NOTIFICATIONS (Laravel Reverb)
-    ══════════════════════════════════════ --}}
-    <script src="https://unpkg.com/pusher-js@8.3.0/dist/web/pusher.min.js"></script>
-    <script>
-        // Initialize Pusher directly for Reverb - MAKE IT GLOBAL
-        window.pusher = new Pusher('{{ env('REVERB_APP_KEY', 'local') }}', {
-            wsHost: window.location.hostname,
-            wsPort: {{ env('REVERB_PORT', 8080) }},
-            wssPort: {{ env('REVERB_PORT', 8080) }},
-            forceTLS: {{ env('REVERB_SCHEME', 'http') === 'https' ? 'true' : 'false' }},
-            enabledTransports: ['ws', 'wss'],
-            disableStats: true,
-            cluster: '',  // Empty for Reverb
-            authEndpoint: '/pusher/auth',
-            auth: {
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content ?? ''
-                }
-            }
-        });
-
-        // Subscribe to private channels
-        @auth
-        const userChannel = window.pusher.subscribe('private-notifications.{{ auth()->id() }}');
-        userChannel.bind('notification.sent', (e) => {
-            console.log('[Real-time] Notification received:', e);
-            playAlertTone();
-            showNotifToast(e);
-            lastCount++;
-            setBadge(lastCount);
-            loadNotifications();
-        });
-
-        // Listen for role-based notifications
-        @php
-        $userRoles = auth()->user()->roles->pluck('name')->toArray();
-        @endphp
-        @foreach($userRoles as $role)
-        const roleChannel{{ $loop->index }} = window.pusher.subscribe('private-role.{{ $role }}');
-        roleChannel{{ $loop->index }}.bind('notification.sent', (e) => {
-            console.log('[Real-time] Role notification for {{ $role }}:', e);
-            playAlertTone();
-            showNotifToast(e);
-            lastCount++;
-            setBadge(lastCount);
-            loadNotifications();
-        });
-        @endforeach
-        @endauth
-    </script>
-
-    {{-- ══════════════════════════════════════
-         NOTIFICATION CENTER SYSTEM
-    ══════════════════════════════════════ --}}
-    <script>
-    (function() {
-        const CSRF = document.querySelector('meta[name="csrf-token"]')?.content ?? '';
-        const API  = {
-            list:    '{{ route("admin.notifications.index") }}',
-            count:   '{{ route("admin.notifications.count") }}',
-            readAll: '{{ route("admin.notifications.read-all") }}',
-            read: (id) => '{{ url("admin/notifications") }}/' + id + '/read',
-        };
-        const FETCH_OPTS = { credentials: 'same-origin', headers: { 'Accept': 'application/json' } };
-
-        let panelOpen = false;
-        let audioCtx  = null;
-
-        // ── Server-side initial count (no fetch needed on first load) ──
-        @auth
-        let lastCount = {{ auth()->user()->unreadNotifications()->count() }};
-        @else
-        let lastCount = 0;
-        @endauth
-
-        // ── Tone alert ──
-        function playAlertTone() {
-            try {
-                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
-                osc.connect(gain); gain.connect(audioCtx.destination);
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(880, audioCtx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(440, audioCtx.currentTime + 0.25);
-                gain.gain.setValueAtTime(0.25, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.5);
-                osc.start(audioCtx.currentTime);
-                osc.stop(audioCtx.currentTime + 0.5);
-            } catch(e) {}
-        }
-
-        // ── Badge & Card Text ──
-        function setBadge(count) {
-            const badge = document.getElementById('notif-badge');
-            const label = document.getElementById('notif-count-label');
-            const cardCount = document.getElementById('notif-card-count');
-            
-            if (!badge) return;
-            
-            if (count > 0) {
-                badge.textContent = count > 99 ? '99+' : count;
-                badge.classList.remove('hidden');
-                if (cardCount) cardCount.textContent = count + ' New';
-            } else {
-                badge.textContent = '0';
-                badge.classList.add('hidden');
-                if (cardCount) cardCount.textContent = '0 New';
-            }
-            
-            if (label) label.textContent = count > 0
-                ? `${count} unread notification${count !== 1 ? 's' : ''}`
-                : 'All caught up!';
-        }
-
-        // ── Render one notification row ──
-        function renderItem(n) {
-            const icons  = { 'user-round-plus': '👤', 'gavel': '🔨', 'bell': '🔔', 'dollar-sign': '💰' };
-            const colors = { 'orange': 'bg-orange-50 text-orange-500', 'emerald': 'bg-emerald-50 text-emerald-500' };
-            const icon  = icons[n.icon]  ?? '🔔';
-            const color = colors[n.color] ?? 'bg-slate-50 text-slate-500';
-            const unreadDot = !n.read ? '<span class="w-2 h-2 rounded-full bg-[#ff6900] flex-shrink-0"></span>' : '';
-            const safeUrl = (n.url && n.url !== 'undefined' && n.url !== 'null') ? n.url : '#';
-            return `<div class="flex gap-4 px-6 py-4 hover:bg-slate-50/70 transition-all cursor-pointer ${n.read ? 'opacity-60' : ''}"
-                         onclick="window.readAndGo('${n.id}', '${safeUrl}')">
-                <div class="w-9 h-9 rounded-xl ${color} flex items-center justify-center text-base flex-shrink-0">${icon}</div>
-                <div class="flex-1 min-w-0">
-                    <div class="flex items-center gap-2">
-                        <span class="text-[0.7rem] font-black text-[#031629]">${n.title}</span>
-                        ${unreadDot}
-                    </div>
-                    <p class="text-[0.65rem] text-slate-500 font-medium leading-snug mt-0.5">${n.message}</p>
-                    <span class="text-[0.55rem] text-slate-300 font-bold uppercase tracking-widest">${n.created_at}</span>
-                </div>
-            </div>`;
-        }
-
-        // ── Show toast ──
-        function showNotifToast(n) {
-            if (typeof showToast !== 'function') return;
-            const title = n.title || 'Notification';
-            const body  = (n.message || '').substring(0, 80);
-            showToast(`<strong style="font-size:0.7rem">${title}</strong><br><span style="font-size:0.65rem;opacity:0.75">${body}</span>`, 'info', 6000);
-        }
-
-        // ── Fetch full notification list ──
-        async function loadNotifications() {
-            try {
-                const res  = await fetch(API.list, FETCH_OPTS);
-                if (!res.ok) { console.warn('[Notif] API returned', res.status); return; }
-                const data = await res.json();
-                const newCount = data.unread_count ?? 0;
-
-                // Alert only when count INCREASES (new notification while on page)
-                if (newCount > lastCount) {
-                    playAlertTone();
-                    const newest = (data.notifications ?? []).find(n => !n.read);
-                    if (newest) showNotifToast(newest);
-                }
-
-                lastCount = newCount;
-                setBadge(newCount);
-
-                // Render list
-                const list = document.getElementById('notif-list');
-                if (list) {
-            if (!data.notifications?.length) {
-                list.innerHTML = '<div class="py-12 text-center text-[0.65rem] font-black uppercase tracking-widest text-slate-300">No notifications yet.</div>';
-            } else {
-                list.innerHTML = data.notifications.map(renderItem).join('');
-            }
-        }
-            } catch(e) {
-                console.warn('[Notif] Fetch error:', e.message);
-            }
-        }
-
-        // ── Toggle panel ──
-        window.toggleNotifPanel = function() {
-            const panel = document.getElementById('notif-panel');
-            const userPanel = document.getElementById('user-panel');
-            console.log('[Debug] toggleNotifPanel called, panel found:', !!panel);
-            if (!panel) return;
-            
-            // Close user panel if open
-            if (userPanel && !userPanel.classList.contains('hidden')) {
-                userPanel.classList.add('hidden');
-                console.log('[Debug] Closed user panel');
-            }
-            
-            panelOpen = !panelOpen;
-            panel.classList.toggle('hidden', !panelOpen);
-            console.log('[Debug] Notif panel hidden:', panel.classList.contains('hidden'));
-            if (panelOpen) loadNotifications();
-        };
-
-        // ── Mark read & navigate ──
-        window.readAndGo = function(id, url) {
-            fetch(API.read(id), {
-                method: 'POST',
-                credentials: 'same-origin',
-                headers: { 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' }
-            }).then(() => loadNotifications()).catch(() => {});
-            if (url && url !== '#') window.location.href = url;
-        };
-
-        // ── Mark all read ──
-        window.markAllRead = function() {
-            fetch(API.readAll, {
-                method: 'POST',
-                credentials: 'same-origin',
-                headers: { 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' }
-            }).then(() => { lastCount = 0; setBadge(0); loadNotifications(); }).catch(() => {});
-        };
-
-        // ── Toggle user panel ──
-        window.toggleUserPanel = function() {
-            const panel = document.getElementById('user-panel');
-            const notifPanel = document.getElementById('notif-panel');
-            console.log('[Debug] toggleUserPanel called, panel found:', !!panel);
-            if (!panel) return;
-            
-            // Close notification panel if open
-            if (notifPanel && !notifPanel.classList.contains('hidden')) {
-                notifPanel.classList.add('hidden');
-                panelOpen = false;
-                console.log('[Debug] Closed notif panel');
-            }
-            
-            panel.classList.toggle('hidden');
-            console.log('[Debug] User panel hidden:', panel.classList.contains('hidden'));
-        };
-
-        // ── Close on outside click ──
-        document.addEventListener('click', (e) => {
-            const notifWrapper = document.getElementById('notif-wrapper');
-            const userWrapper = document.getElementById('user-menu-wrapper');
-            
-            if (notifWrapper && !notifWrapper.contains(e.target)) {
-                document.getElementById('notif-panel')?.classList.add('hidden');
-            }
-            
-            if (userWrapper && !userWrapper.contains(e.target)) {
-                document.getElementById('user-panel')?.classList.add('hidden');
-            }
-        });
-    })();
-    </script>
-
+    @stack('scripts')
     <style>
-        .custom-scrollbar::-webkit-scrollbar { width: 5px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
-        
-        /* CRITICAL: Prevent layout flash - these styles must work immediately */
-        html, body { height: 100%; margin: 0; }
-        .flex { display: flex; }
-        .flex-row { flex-direction: row; }
-        .h-screen { height: 100vh; }
-        .overflow-hidden { overflow: hidden; }
-        .flex-1 { flex: 1 1 0%; }
-        .flex-col { flex-direction: column; }
-        .min-w-0 { min-width: 0; }
-        .bg-white { background-color: #ffffff; }
-        .border-r { border-right: 1px solid #f1f5f9; }
-        .z-40 { z-index: 40; }
-        .z-30 { z-index: 30; }
-        .relative { position: relative; }
-        /* End critical CSS */
-        
-        /* Modal z-index fixes */
-        .modal {
-            z-index: 9999 !important;
+        :root {
+            --font-outfit: "Outfit", sans-serif;
         }
-        .modal-backdrop {
-            z-index: 9998 !important;
-        }
-        .modal-dialog {
-            z-index: 9999 !important;
-        }
-        .modal-content {
-            z-index: 9999 !important;
+        body {
+            font-family: var(--font-outfit);
+            font-weight: 300; /* Lighter default for airy feel */
         }
         
-        /* Sidebar z-index */
-        #admin-sidebar {
-            z-index: 40;
+        /* Premium weight mapping to avoid "thickness" */
+        .font-black, .font-extrabold {
+            font-weight: 700 !important; /* Bold instead of Black */
         }
-        
-        /* Header z-index */
-        header {
-            z-index: 30;
+        .font-bold {
+            font-weight: 600 !important; /* Semibold instead of Bold */
         }
-        
-        /* Notification panel z-index */
-        #notif-panel {
-            z-index: 50;
+        .font-semibold {
+            font-weight: 500 !important; /* Medium instead of Semibold */
         }
-        
-        /* DataTable fixes */
-        .dataTables_wrapper {
-            position: relative;
-            z-index: 1;
-        }
-        
-        .modal-open .dataTables_wrapper {
-            z-index: 1;
+        .font-medium {
+            font-weight: 400 !important; /* Regular instead of Medium */
         }
     </style>
-    @stack('scripts')
 </body>
+
 </html>

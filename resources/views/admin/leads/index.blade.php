@@ -12,10 +12,11 @@
         dot="blue">
         
         <x-slot name="actions">
-            <a href="{{ route('admin.leads.create') }}" class="group bg-slate-900 hover:bg-[#ff6900] text-white px-8 py-4 rounded-2xl font-black text-[0.7rem] uppercase tracking-[0.2em] transition-all duration-500 flex items-center gap-3 shadow-xl shadow-blue-500/10">
-                <i data-lucide="plus" class="w-4 h-4 group-hover:rotate-90 transition-transform duration-500 text-blue-400 group-hover:text-white"></i>
+            <button type="button" onclick="document.getElementById('newLeadModal').classList.remove('hidden')"
+                class="group bg-slate-900 hover:bg-[#ff6900] text-white px-8 py-4 rounded-2xl font-black text-[0.7rem] uppercase tracking-[0.2em] transition-all duration-300 flex items-center gap-3 shadow-xl shadow-blue-500/10">
+                <i data-lucide="plus" class="w-4 h-4 group-hover:rotate-90 transition-transform duration-300 text-blue-400 group-hover:text-white"></i>
                 <span>New Lead</span>
-            </a>
+            </button>
         </x-slot>
 
     <!-- Leads Toolbar (Unified Height h-44px) -->
@@ -724,15 +725,6 @@
     // MOVED TO scripts section to ensure Pusher is loaded first
 </script>
 
-<style>
-    /* Professional Pagination Navigator (Leads Custom) */
-    .pagination { @apply flex items-center gap-1.5 mt-0 MB-0; }
-    .page-item .page-link { 
-        @apply w-10 h-10 rounded-md flex items-center justify-center border-none bg-white text-slate-400 font-medium text-[0.7rem] transition-all shadow-sm; 
-    }
-    .page-item.active .page-link { @apply bg-slate-800 text-white shadow-lg; }
-    .page-item .page-link:hover { @apply bg-[#ff6900] text-white; }
-</style>
 
 @push('scripts')
 <script src="https://unpkg.com/pusher-js@8.3.0/dist/web/pusher.min.js"></script>
@@ -823,5 +815,117 @@
     }
 </script>
 @endpush
+
+{{-- ═══════════════════════════════════════════════════════════ NEW LEAD MODAL --}}
+<div id="newLeadModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+    <div class="w-full max-w-2xl bg-white rounded-[2rem] shadow-2xl overflow-hidden">
+
+        {{-- Header --}}
+        <div class="flex items-center justify-between px-8 py-6 border-b border-slate-100">
+            <div>
+                <h2 class="text-lg font-black text-[#031629]">New Lead</h2>
+                <p class="text-[0.65rem] text-slate-400 font-medium uppercase tracking-widest">Manual entry from admin</p>
+            </div>
+            <button type="button" onclick="document.getElementById('newLeadModal').classList.add('hidden')"
+                class="w-9 h-9 rounded-xl bg-slate-100 hover:bg-red-50 hover:text-red-500 text-slate-400 flex items-center justify-center transition-all">
+                <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+        </div>
+
+        {{-- Form --}}
+        <form action="{{ route('admin.leads.store') }}" method="POST" class="px-8 py-6 space-y-5 max-h-[75vh] overflow-y-auto">
+            @csrf
+
+            {{-- Contact Info --}}
+            <div>
+                <p class="text-[0.6rem] font-black uppercase tracking-widest text-[#ff6900] mb-3">Contact Info</p>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-[0.6rem] font-black uppercase tracking-widest text-slate-500 mb-1.5">Name <span class="text-[#ff6900]">*</span></label>
+                        <input type="text" name="name" required placeholder="Full name..."
+                               class="w-full h-11 bg-slate-50 border border-slate-200 px-4 rounded-xl text-sm font-bold text-[#031629] outline-none focus:bg-white focus:border-blue-400 transition-all placeholder:text-slate-300">
+                    </div>
+                    <div>
+                        <label class="block text-[0.6rem] font-black uppercase tracking-widest text-slate-500 mb-1.5">Phone <span class="text-[#ff6900]">*</span></label>
+                        <input type="text" name="phone" required placeholder="+971..."
+                               class="w-full h-11 bg-slate-50 border border-slate-200 px-4 rounded-xl text-sm font-bold text-[#031629] outline-none focus:bg-white focus:border-blue-400 transition-all placeholder:text-slate-300">
+                    </div>
+                    <div>
+                        <label class="block text-[0.6rem] font-black uppercase tracking-widest text-slate-500 mb-1.5">Email</label>
+                        <input type="email" name="email" placeholder="email@..."
+                               class="w-full h-11 bg-slate-50 border border-slate-200 px-4 rounded-xl text-sm font-bold text-[#031629] outline-none focus:bg-white focus:border-blue-400 transition-all placeholder:text-slate-300">
+                    </div>
+                </div>
+            </div>
+
+            {{-- Car Info --}}
+            <div>
+                <p class="text-[0.6rem] font-black uppercase tracking-widest text-[#ff6900] mb-3">Vehicle Info</p>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                    <div>
+                        <label class="block text-[0.6rem] font-black uppercase tracking-widest text-slate-500 mb-1.5">Make <span class="text-[#ff6900]">*</span></label>
+                        <input type="text" name="make" required placeholder="Toyota..."
+                               class="w-full h-11 bg-slate-50 border border-slate-200 px-4 rounded-xl text-sm font-bold text-[#031629] outline-none focus:bg-white focus:border-blue-400 transition-all placeholder:text-slate-300">
+                    </div>
+                    <div>
+                        <label class="block text-[0.6rem] font-black uppercase tracking-widest text-slate-500 mb-1.5">Model <span class="text-[#ff6900]">*</span></label>
+                        <input type="text" name="model" required placeholder="Camry..."
+                               class="w-full h-11 bg-slate-50 border border-slate-200 px-4 rounded-xl text-sm font-bold text-[#031629] outline-none focus:bg-white focus:border-blue-400 transition-all placeholder:text-slate-300">
+                    </div>
+                    <div>
+                        <label class="block text-[0.6rem] font-black uppercase tracking-widest text-slate-500 mb-1.5">Year <span class="text-[#ff6900]">*</span></label>
+                        <input type="number" name="year" required placeholder="{{ date('Y') }}" min="1990" max="{{ date('Y') + 1 }}"
+                               class="w-full h-11 bg-slate-50 border border-slate-200 px-4 rounded-xl text-sm font-bold text-[#031629] outline-none focus:bg-white focus:border-blue-400 transition-all placeholder:text-slate-300">
+                    </div>
+                    <div>
+                        <label class="block text-[0.6rem] font-black uppercase tracking-widest text-slate-500 mb-1.5">Trim</label>
+                        <input type="text" name="trim" placeholder="SE / XLE..."
+                               class="w-full h-11 bg-slate-50 border border-slate-200 px-4 rounded-xl text-sm font-bold text-[#031629] outline-none focus:bg-white focus:border-blue-400 transition-all placeholder:text-slate-300">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4 mt-4">
+                    <div>
+                        <label class="block text-[0.6rem] font-black uppercase tracking-widest text-slate-500 mb-1.5">Mileage (KM)</label>
+                        <input type="number" name="mileage" placeholder="e.g. 45000" min="0"
+                               class="w-full h-11 bg-slate-50 border border-slate-200 px-4 rounded-xl text-sm font-bold text-[#031629] outline-none focus:bg-white focus:border-blue-400 transition-all placeholder:text-slate-300">
+                    </div>
+                    <div>
+                        <label class="block text-[0.6rem] font-black uppercase tracking-widest text-slate-500 mb-1.5">Source</label>
+                        <select name="source"
+                                class="w-full h-11 bg-slate-50 border border-slate-200 px-4 rounded-xl text-sm font-bold text-[#031629] outline-none focus:bg-white focus:border-blue-400 transition-all cursor-pointer">
+                            @foreach(\App\Models\Lead::getSourceOptions() as $val => $label)
+                                <option value="{{ $val }}" {{ $val === 'direct' ? 'selected' : '' }}>{{ $label }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Notes --}}
+            <div>
+                <label class="block text-[0.6rem] font-black uppercase tracking-widest text-slate-500 mb-1.5">Notes</label>
+                <textarea name="notes" rows="2" placeholder="Any additional notes..."
+                          class="w-full bg-slate-50 border border-slate-200 px-4 py-3 rounded-xl text-sm font-medium text-[#031629] outline-none focus:bg-white focus:border-blue-400 transition-all placeholder:text-slate-300 resize-none"></textarea>
+            </div>
+
+            {{-- Actions --}}
+            <div class="flex items-center justify-end gap-3 pt-2 border-t border-slate-100">
+                <button type="button" onclick="document.getElementById('newLeadModal').classList.add('hidden')"
+                    class="px-6 py-3 bg-slate-100 text-slate-600 rounded-xl font-black text-[0.7rem] uppercase tracking-widest hover:bg-slate-200 transition-all">
+                    Cancel
+                </button>
+                <button type="submit"
+                    class="px-8 py-3 bg-[#031629] hover:bg-[#ff6900] text-white rounded-xl font-black text-[0.7rem] uppercase tracking-widest transition-all shadow-lg">
+                    Create Lead
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+document.getElementById('newLeadModal').addEventListener('click', function(e) {
+    if (e.target === this) this.classList.add('hidden');
+});
+</script>
 
 @endsection

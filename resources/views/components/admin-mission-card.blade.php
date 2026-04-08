@@ -1,109 +1,113 @@
 @props([
     'task',
-    'isToday' => false
+    'isToday' => false,
 ])
 
-@php 
-    $details = $task->car_details ?? []; 
+@php
+    $rawDetails = $task->car_details ?? null;
+    $details = is_array($rawDetails) ? $rawDetails : [];
+    if ($details === [] && is_string($rawDetails) && $rawDetails !== '') {
+        $decoded = json_decode($rawDetails, true);
+        $details = is_array($decoded) ? $decoded : [];
+    }
+    $rawMake = strtolower($details['make'] ?? 'generic');
+    $makeSlug = \Illuminate\Support\Str::slug($rawMake);
+    $searchPaths = ["images/brands/{$makeSlug}.svg", "images/brands/{$makeSlug}.png"];
+    if (str_contains($rawMake, 'mercedes')) $searchPaths[] = 'images/brands/mercedes.svg';
+    if (str_contains($rawMake, 'rolls')) $searchPaths[] = 'images/brands/rolls-royce.png';
+    
+    $finalLogo = null;
+    foreach ($searchPaths as $path) {
+        if (file_exists(public_path($path))) { $finalLogo = $path; break; }
+    }
+    $vinRef = strtoupper(substr($details['vin'] ?? 'MB-' . str_pad($task->id, 5, '0', STR_PAD_LEFT), -8));
 @endphp
 
-<div {{ $attributes->merge(['class' => 'group bg-white border border-slate-100 rounded-2xl overflow-hidden hover:shadow-2xl hover:shadow-orange-500/5 transition-all duration-500 flex flex-col md:flex-row shadow-sm hover:translate-y-[-2px]']) }}>
-    <!-- Left: Visual Identity -->
-    <div class="w-full md:w-[180px] relative overflow-hidden shrink-0 bg-[#1d293d]">
+<div {{ $attributes->merge(['class' => 'group relative bg-white rounded-[1.25rem] border border-slate-100 shadow-[0_10px_30px_rgba(0,0,0,0.03)] hover:shadow-[0_20px_40px_rgba(0,0,0,0.06)] transition-all duration-700 overflow-hidden flex flex-col md:flex-row min-h-[220px]']) }}>
+    
+    {{-- Left Visual Section (35%) --}}
+    <div class="relative w-full md:w-[35%] bg-[#1d293d] overflow-hidden flex items-center justify-center border-b md:border-b-0 md:border-r border-slate-50">
+        {{-- Car Image Background --}}
         <img src="{{ $details['image_url'] ?? asset('images/cars/car-silver.png') }}" 
-             class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 brightness-110 saturate-110 opacity-70">
+             class="absolute inset-0 w-full h-full object-cover object-center opacity-90 transition-transform duration-[3s] group-hover:scale-110" alt="">
         
-        <!-- Authentic Brand Logo -->
-        @php
-            $rawMake = strtolower($details['make'] ?? 'generic');
-            $makeSlug = \Illuminate\Support\Str::slug($rawMake);
-            
-            $searchPaths = [
-                "images/brands/{$makeSlug}.svg",
-                "images/brands/{$makeSlug}.png",
-            ];
-            
-            if (str_contains($rawMake, 'mercedes')) { $searchPaths[] = "images/brands/mercedes.svg"; }
-            if (str_contains($rawMake, 'rolls')) { $searchPaths[] = "images/brands/rolls-royce.png"; }
-            
-            $finalLogo = null;
-            foreach ($searchPaths as $path) {
-                if (file_exists(public_path($path))) {
-                    $finalLogo = $path;
-                    break;
-                }
-            }
-        @endphp
+        {{-- Dark Gradient Overlay (Bottom) --}}
+        <div class="absolute inset-0 bg-gradient-to-t from-[#031629]/90 via-transparent to-transparent"></div>
 
-        <div class="absolute inset-0 flex items-center justify-center z-20 transition-transform duration-500 group-hover:scale-125">
-            <div class="w-24 h-24 rounded-full bg-white/80 backdrop-blur-xl border border-white/40 shadow-2xl flex items-center justify-center p-5">
-                @if($finalLogo)
-                    <img src="{{ asset($finalLogo) }}" class="w-full h-full object-contain filter drop-shadow-md">
-                @else
-                    <i data-lucide="car-front" class="w-12 h-12 text-[#ff6900] opacity-80"></i>
-                @endif
-            </div>
+        {{-- Floating Brand Logo (Circle) --}}
+        <div class="relative z-20 w-24 h-24 bg-white/95 backdrop-blur-md rounded-full flex items-center justify-center p-5 shadow-xl border-2 border-white transform transition-transform duration-500 group-hover:scale-105">
+            @if ($finalLogo)
+                <img src="{{ asset($finalLogo) }}" alt="" class="w-full h-full object-contain">
+            @else
+                <i data-lucide="car-front" class="w-full h-full text-slate-300"></i>
+            @endif
         </div>
 
-        @if($isToday)
-        <div class="absolute top-4 left-4 z-30">
-            <span class="bg-[#ff6900] text-white text-[0.6rem] font-black px-3 py-1.5 rounded-full uppercase tracking-widest shadow-lg shadow-orange-500/30 animate-pulse">
-                Today's Mission
-            </span>
-        </div>
-        @endif
-        
-        <div class="absolute bottom-4 left-4 right-4 z-30">
-            <div class="bg-[#1d293d]/60 backdrop-blur-md p-3 rounded-md border border-white/10 uppercase">
-                <div class="text-[0.55rem] text-white/50 font-bold uppercase tracking-widest mb-1">Asset Reference</div>
-                <div class="text-xs font-black text-white font-mono">#{{ strtoupper(substr($details['vin'] ?? 'MB-'.str_pad($task->id, 5, '0', STR_PAD_LEFT), -8)) }}</div>
+        {{-- Asset Reference Badge --}}
+        <div class="absolute left-4 bottom-4 right-4 z-30">
+            <div class="bg-[#031629]/60 backdrop-blur-xl border border-white/20 rounded-2xl px-5 py-3 shadow-2xl">
+                <p class="text-[0.45rem] font-bold text-slate-400 uppercase tracking-[0.3em] leading-none mb-1.5 opacity-80">Asset Reference</p>
+                <p class="text-[1.1rem] font-bold text-white italic tracking-tighter leading-none">#{{ $vinRef }}</p>
             </div>
         </div>
     </div>
 
-    <!-- Right: Actionable Intel -->
-    <div class="flex-1 p-5 flex flex-col justify-between gap-4">
+    {{-- Right Content Section (65%) --}}
+    <div class="flex-1 p-6 lg:p-7 flex flex-col justify-between bg-white relative">
+        {{-- Shield Icon Accent --}}
+        <div class="absolute right-6 top-6 w-12 h-12 rounded-full border border-slate-50 flex items-center justify-center text-slate-200 group-hover:text-[#ff6900] group-hover:border-orange-50 transition-all duration-500">
+            <i data-lucide="shield-check" class="w-6 h-6 opacity-[0.8]"></i>
+        </div>
+
         <div>
-            <div class="flex items-start justify-between mb-4">
-                <div>
-                    <h3 class="text-2xl font-black text-[#031629] leading-none uppercase italic">
-                        {{ $details['make'] ?? 'Unknown' }} <span class="text-[#ff6900]">{{ $details['model'] ?? 'Asset' }}</span>
-                    </h3>
-                    <p class="text-[0.7rem] font-bold text-slate-400 mt-2 uppercase tracking-wide italic">{{ $details['year'] ?? '' }} Production Portfolio</p>
-                </div>
-                <div class="w-12 h-12 rounded-full border border-slate-100 flex items-center justify-center text-slate-300 group-hover:text-[#ff6900] transition-colors">
-                    <i data-lucide="shield-check" class="w-6 h-6"></i>
-                </div>
+            {{-- Title Hub --}}
+            <div class="mb-5">
+                <h3 class="text-2xl font-bold italic tracking-tighter text-[#031629] uppercase leading-none">
+                    {{ $details['make'] ?? 'Unknown' }} <span class="text-[#ff6900] font-medium">{{ $details['model'] ?? 'Vehicle' }}</span>
+                </h3>
+                <p class="text-[0.6rem] font-medium text-slate-400 uppercase tracking-widest mt-2 italic opacity-60">Specifications Data</p>
             </div>
 
-            <div class="grid grid-cols-2 gap-6 pt-4 border-t border-slate-50">
-                <div class="space-y-1">
-                    <span class="text-[0.55rem] font-black text-slate-400 uppercase tracking-widest block">Deployment Point</span>
+            {{-- Data Grid --}}
+            <div class="grid grid-cols-2 gap-x-6 gap-y-4 border-t border-slate-50 pt-5 mt-4">
+                <div class="space-y-1.5">
+                    <p class="text-[0.65rem] font-bold text-slate-500 uppercase tracking-widest opacity-90">Deployment Point</p>
                     <div class="flex items-center gap-2">
-                        <i data-lucide="map-pin" class="w-3.5 h-3.5 text-[#ff6900]"></i>
-                        <span class="text-[0.8rem] font-bold text-slate-700 truncate block">{{ $details['location'] ?? 'Not Specified' }}</span>
+                        <i data-lucide="map-pin" class="w-4 h-4 text-[#ff6900]"></i>
+                        <span class="text-[0.95rem] font-bold text-[#031629] italic truncate">{{ $details['location'] ?? 'Sharjah' }}</span>
                     </div>
                 </div>
-                <div class="space-y-1">
-                    <span class="text-[0.55rem] font-black text-slate-400 uppercase tracking-widest block">Schedule</span>
+                <div class="space-y-1.5">
+                    <p class="text-[0.65rem] font-bold text-slate-500 uppercase tracking-widest opacity-90">Schedule</p>
                     <div class="flex items-center gap-2">
-                        <i data-lucide="clock" class="w-3.5 h-3.5 text-[#ff6900]"></i>
-                        <span class="text-[0.8rem] font-bold text-[#031629] uppercase italic tracking-tighter">{{ $details['inspection_date'] ? \Carbon\Carbon::parse($details['inspection_date'])->format('d-m-Y') : 'TBD' }} @ {{ $details['inspection_time'] ?? 'TBD' }}</span>
+                        <i data-lucide="clock" class="w-4 h-4 text-[#ff6900]"></i>
+                        <span class="text-[0.95rem] font-bold text-[#031629] italic">
+                            {{ $details['inspection_date'] ? \Carbon\Carbon::parse($details['inspection_date'])->format('d M') : 'TBD' }}
+                            <span class="text-[#ff6900] mx-0.5">@</span>{{ $details['inspection_time'] ?? '1:20P' }}
+                        </span>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="flex flex-wrap items-center gap-4">
-             <x-admin-button variant="outline" icon="phone" class="flex-1" onclick="window.location.href='tel:{{ $details['phone'] ?? '#' }}'">
-                 Call Contact
-             </x-admin-button>
-            
-            <x-admin-action icon="navigation" click="openMapModal('{{ addslashes($details['location'] ?? 'Dubai') }}')" title="Navigate" variant="slate" class="!h-14 !w-14" />
+        {{-- Actions Hub --}}
+        <div class="flex items-center gap-3 mt-8">
+            <button onclick="window.location.href='tel:{{ $details['phone'] ?? '#' }}'" 
+                    class="flex-1 h-12 bg-slate-50 hover:bg-[#ff6900]/5 border border-slate-100 rounded-xl flex items-center justify-center gap-2.5 transition-all group/call">
+                <i data-lucide="phone" class="w-4 h-4 text-[#ff6900] group-hover/call:scale-110"></i>
+                <span class="text-[0.65rem] font-bold text-[#031629] uppercase tracking-widest">Call Contact</span>
+            </button>
 
-             <x-admin-button icon="zap" class="flex-1" onclick="window.location.href='{{ route('admin.inspections.create', ['car_id' => $task->car_id, 'lead_id' => $task->id ?? 0]) }}'">
-                 Begin Audit
-             </x-admin-button>
+            <button onclick="openMapModal('{{ addslashes($details['location'] ?? 'Dubai') }}')"
+                    class="w-12 h-12 bg-slate-50 hover:bg-orange-50 border border-slate-100 rounded-xl flex items-center justify-center transition-all group/map">
+                <i data-lucide="map-pin" class="w-4 h-4 text-[#ff6900] group-hover/map:scale-110 transition-transform"></i>
+            </button>
+
+            <button onclick="window.location.href='{{ route('admin.inspections.create', ['car_id' => $task->car_id, 'lead_id' => $task->id ?? 0]) }}'"
+                    class="flex-[1.2] h-12 bg-[#1d293d] hover:bg-[#031629] rounded-xl flex items-center justify-center gap-2.5 shadow-lg shadow-slate-200 transition-all group/audit">
+                <i data-lucide="zap" class="w-4 h-4 text-[#ff6900] fill-current group-hover:scale-110"></i>
+                <span class="text-[0.65rem] font-bold text-white uppercase tracking-widest">Begin Audit</span>
+            </button>
         </div>
     </div>
 </div>

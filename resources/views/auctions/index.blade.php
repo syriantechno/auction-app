@@ -127,18 +127,6 @@
 @endsection
 
 @section('head')
-<style>
-    .hero-gradient {
-        background: radial-gradient(circle at 10% 20%, rgba(217, 230, 133, 0.15) 0%, transparent 40%),
-                    radial-gradient(circle at 90% 80%, rgba(217, 230, 133, 0.1) 0%, transparent 40%);
-    }
-    .card-hover {
-        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    .card-hover:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 30px 50px -12px rgba(0, 0, 0, 0.08);
-    }
-</style>
+
 @endsection
 

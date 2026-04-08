@@ -57,7 +57,7 @@
                 <div class="w-8 h-8 bg-emerald-500 rounded-full flex items-center justify-center text-white font-bold text-sm">1</div>
                 <div>
                     <p class="font-medium text-slate-900">HR Module Ecosystem</p>
-                    <p class="text-sm text-slate-500">Dashboard, Stats, Employees, Payroll & Leaves unified</p>
+                    <p class="text-sm text-slate-500">Dashboard, Stats, Employees, Payroll and Leaves unified</p>
                 </div>
                 <span class="ml-auto px-2 py-1 bg-emerald-500 text-white text-xs font-bold rounded">DONE</span>
             </div>
@@ -65,23 +65,23 @@
                 <div class="w-8 h-8 bg-emerald-500 rounded-full flex items-center justify-center text-white font-bold text-sm">2</div>
                 <div>
                     <p class="font-medium text-slate-900">Finance Module Hub</p>
-                    <p class="text-sm text-slate-500">Invoices, Receipts, Vouchers & Cashflow dashboards unified</p>
+                    <p class="text-sm text-slate-500">Invoices, Receipts, Vouchers and Cashflow dashboards unified</p>
                 </div>
                 <span class="ml-auto px-2 py-1 bg-emerald-500 text-white text-xs font-bold rounded">DONE</span>
             </div>
             <div class="flex items-center gap-3 p-3 bg-emerald-50 rounded-lg border border-emerald-100">
                 <div class="w-8 h-8 bg-emerald-500 rounded-full flex items-center justify-center text-white font-bold text-sm">3</div>
                 <div>
-                    <p class="font-medium text-slate-900">CRM & Sales Protocol</p>
-                    <p class="text-sm text-slate-500">Leads Management, Audit Hub & Inspection Reporting unified</p>
+                    <p class="font-medium text-slate-900">CRM and Sales Protocol</p>
+                    <p class="text-sm text-slate-500">Leads Management, Audit Hub and Inspection Reporting unified</p>
                 </div>
                 <span class="ml-auto px-2 py-1 bg-emerald-500 text-white text-xs font-bold rounded">DONE</span>
             </div>
             <div class="flex items-center gap-3 p-3 bg-emerald-50 rounded-lg border border-emerald-100">
                 <div class="w-8 h-8 bg-emerald-500 rounded-full flex items-center justify-center text-white font-bold text-sm">4</div>
                 <div>
-                    <p class="font-medium text-slate-900">CMS & Engine Overhaul</p>
-                    <p class="text-sm text-slate-500">Page Builder & Editorial Hub successfully synchronized</p>
+                    <p class="font-medium text-slate-900">CMS and Engine Overhaul</p>
+                    <p class="text-sm text-slate-500">Page Builder and Editorial Hub successfully synchronized</p>
                 </div>
                 <span class="ml-auto px-2 py-1 bg-emerald-500 text-white text-xs font-bold rounded">DONE</span>
             </div>

@@ -69,4 +69,28 @@ class DealerController extends Controller
 
         return view('admin.dealers.show', compact('user', 'participating', 'won', 'stats'));
     }
+
+    /**
+     * Show edit form for dealer
+     */
+    public function edit(User $user)
+    {
+        return view('admin.dealers.edit', compact('user'));
+    }
+
+    /**
+     * Update dealer security deposit and bidding limit
+     */
+    public function update(Request $request, User $user)
+    {
+        $validated = $request->validate([
+            'security_deposit' => 'required|numeric|min:0',
+            'bidding_limit'    => 'required|numeric|min:0|gte:security_deposit',
+        ]);
+
+        $user->update($validated);
+
+        return redirect()->route('admin.dealers.show', $user)
+            ->with('success', 'Dealer deposit & limit updated successfully');
+    }
 }
