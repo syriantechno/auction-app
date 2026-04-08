@@ -1089,8 +1089,9 @@ body {
 
         .sc-pill-item {
             display: flex;
+            flex-direction: column;
             align-items: center;
-            gap: 16px;
+            gap: 12px;
             cursor: default;
         }
 
@@ -1140,11 +1141,12 @@ body {
         .sc-pill-content {
             display: flex;
             flex-direction: column;
-            text-align: left;
+            align-items: center;
+            text-align: center;
         }
 
         .sc-pill-label {
-            font-size: .6rem;
+            font-size: .75rem;
             font-weight: 850;
             color: #ff6900;
             text-transform: uppercase;
@@ -1154,7 +1156,7 @@ body {
         }
 
         .sc-pill-val {
-            font-size: .95rem;
+            font-size: 1.15rem;
             font-weight: 950;
             color: #031629;
             line-height: 1.1;
@@ -1162,7 +1164,7 @@ body {
         }
 
         .sc-pill-desc {
-            font-size: .62rem;
+            font-size: .75rem;
             font-weight: 500;
             color: #64748b;
             line-height: 1.4;
@@ -1172,7 +1174,7 @@ body {
 
         .sc-pill-sep {
             width: 1px;
-            height: 30px;
+            height: 90px;
             background: #f1f5f9;
         }
 

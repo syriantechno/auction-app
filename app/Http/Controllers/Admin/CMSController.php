@@ -128,6 +128,8 @@ class CMSController extends Controller
             'navbar.bg_color' => 'nullable|string|max:20',
             'navbar.text_color' => 'nullable|string|max:20',
             'location' => 'nullable|array',
+            'trust_badges_stats_bg' => 'nullable|string',
+            'trust_badges_custom_css' => 'nullable|string',
         ]);
 
         $heroBackgroundImage = data_get($content, 'hero.background_image', '/images/hero-bg.png');
@@ -253,6 +255,9 @@ class CMSController extends Controller
                     'desc'      => data_get($b, 'desc', ''),
                 ])->values()->all();
         }
+        
+        $content['trust_badges_stats_bg'] = $request->input('trust_badges_stats_bg', data_get($content, 'trust_badges_stats_bg', 'rgba(255, 255, 255, 0.92)'));
+        $content['trust_badges_custom_css'] = $request->input('trust_badges_custom_css', data_get($content, 'trust_badges_custom_css', ''));
         
         // Save Location Hub content
         if ($request->has('location')) {

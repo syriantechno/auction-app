@@ -29,8 +29,8 @@
     $h2CarLabel = data_get($heroContent, 'car_label') ?: 'Premium SUV';
     $h2CarMirror = (bool) data_get($heroContent, 'car_mirror', false);
     $h2CarScale = (float) data_get($heroContent, 'car_scale', 1);
-    $h2CarRight = data_get($heroContent, 'car_right', -20);
-    $h2CarTop = data_get($heroContent, 'car_top', 50);
+    $h2CarRight = data_get($heroContent, 'car_right', -7);
+    $h2CarTop = data_get($heroContent, 'car_top', 80);
     $h2CirclesEnabled = (bool) data_get($heroContent, 'circles_enabled', true);
     // Lead Form CMS
     $lfContent = data_get($page?->content, 'lead_form', []);
@@ -215,16 +215,18 @@
             <?php echo $heroStyleFinal; ?>
 
             height: calc(100vh - 80px) !important;
-            min-height: 700px !important;
+            min-height: 950px !important;
             display: flex !important;
             align-items: flex-start !important;
+            position: relative !important;
+            overflow: hidden !important;
         }
 
         .hero-inner {
             width: 100% !important;
-            max-width: 1440px !important;
+            max-width: 1600px !important;
             margin: 0 auto !important;
-            padding: 120px 4% 0 !important;
+            padding: 120px 4% 0 4% !important;
             display: flex !important;
             align-items: flex-start !important;
             justify-content: flex-start !important;
@@ -251,8 +253,8 @@
         .hero-car {
             position: absolute !important;
             right: <?php echo e($h2CarRight); ?>% !important;
-            top: <?php echo e($h2CarTop); ?>% !important;
-            transform: translateY(-50%) !important;
+            top: 635px !important;
+            bottom: auto !important;
             width: 70% !important;
             z-index: 0 !important;
             pointer-events: none !important;
@@ -261,7 +263,8 @@
 
         .sc-pill-container {
             position: absolute !important;
-            bottom: 30px !important;
+            top: 840px !important;
+            bottom: auto !important;
             left: 0 !important;
             right: 0 !important;
             display: flex !important;
@@ -270,15 +273,17 @@
         }
 
         .sc-pill-stats {
-            background: rgba(255, 255, 255, 0.92) !important;
-            backdrop-filter: blur(15px) !important;
-            border: 1px solid rgba(255, 255, 255, 0.4) !important;
-            border-radius: 100px !important;
-            padding: 12px 48px !important;
-            display: flex !important;
-            align-items: center !important;
-            gap: 60px !important;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.06) !important;
+            background: <?php echo e(data_get($page->content, 'trust_badges_stats_bg', 'rgba(255, 255, 255, 0.92)')); ?>;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 1.25rem;
+            padding: 24px 80px;
+            display: flex;
+            align-items: flex-start;
+            gap: 110px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.06);
+            <?php echo data_get($page->content, 'trust_badges_custom_css', ''); ?>
+
         }
 
         .hero-title {
@@ -308,7 +313,7 @@
             align-items: center;
             justify-content: center;
             padding: 0 20px !important;
-            margin: 0 !important;
+            margin: 0;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             border: 2px solid transparent !important;
             cursor: pointer;
@@ -368,7 +373,7 @@
             align-items: center;
             justify-content: center;
             padding: 0 !important;
-            margin: 0 !important;
+            margin: 0;
             cursor: pointer;
             transition: all 0.3s ease;
             box-sizing: border-box !important;
@@ -382,6 +387,10 @@
             border-color: #cbd5e1 !important;
             color: #1e293b !important;
             transform: translateY(-1px);
+        }
+
+        .sc-body .sc-btn {
+            top: 15px !important;
         }
     </style>
 </head>
@@ -1276,7 +1285,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="grid grid-cols-3 gap-2 py-4">
+                                    <div class="grid grid-cols-3 gap-x-2 gap-y-4 pt-4 mb-4">
                                         <?php $__currentLoopData = ['Dubai', 'Abu Dhabi', 'Sharjah', 'Ajman', 'RAK', 'UAQ', 'Fujairah']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $em): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                             <button type="button" 
                                                 class="h-[42px] rounded-xl border text-[0.6rem] font-black uppercase transition-all"
@@ -1356,22 +1365,22 @@
                     <p class="hero-desc"><?php echo $h2Subtitle; ?></p>
                 </div>
 
-                
-                <div class="hero-car">
-                    <?php if($h2CirclesEnabled): ?>
-                    <div class="hero-car-decor">
-                        <div class="decor-circle decor-1"></div>
-                        <div class="decor-circle decor-2"></div>
-                        <div class="decor-circle decor-3"></div>
-                        <div class="decor-circle decor-4"></div>
-                        <div class="decor-circle decor-5"></div>
-                    </div>
-                    <?php endif; ?>
+            </div>
 
-                    <img src="<?php echo e($h2CarImage); ?>" onerror="this.src='/images/cars/mclaren.png'" alt="Featured Car"
-                        style="transform: scale(<?php echo e($h2CarScale); ?>) <?php echo e($h2CarMirror ? 'scaleX(-1)' : ''); ?>; transform-origin: center bottom;">
-
+            
+            <div class="hero-car">
+                <?php if($h2CirclesEnabled): ?>
+                <div class="hero-car-decor">
+                    <div class="decor-circle decor-1"></div>
+                    <div class="decor-circle decor-2"></div>
+                    <div class="decor-circle decor-3"></div>
+                    <div class="decor-circle decor-4"></div>
+                    <div class="decor-circle decor-5"></div>
                 </div>
+                <?php endif; ?>
+
+                <img src="<?php echo e($h2CarImage); ?>" onerror="this.src='/images/cars/mclaren.png'" alt="Featured Car"
+                    style="transform: scale(<?php echo e($h2CarScale); ?>) <?php echo e($h2CarMirror ? 'scaleX(-1)' : ''); ?>; transform-origin: center bottom;">
 
             </div>
 
@@ -2053,6 +2062,146 @@
             </div>
         </div>
     </section>
+
+    
+    <?php
+        $reviewsConfig = $googleReviewBlock ?? [];
+        $showReviews = data_get($reviewsConfig, 'enabled') && count(data_get($reviewsConfig, 'reviews', []));
+        $reviews = data_get($reviewsConfig, 'reviews', []);
+    ?>
+    <?php if($showReviews): ?>
+    <section class="py-24 px-6 lg:px-12 bg-[#031629] relative z-30 overflow-hidden">
+        <div class="absolute inset-0 opacity-30" style="background-image: radial-gradient(circle at top, rgba(255,255,255,0.08), transparent 55%), radial-gradient(circle at bottom, rgba(255,105,0,0.08), transparent 45%);"></div>
+        <div class="relative max-w-[1440px] mx-auto space-y-12">
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+                <div>
+                    <span class="inline-flex items-center gap-3 px-4 py-1.5 rounded-full text-[0.72rem] font-black uppercase tracking-[0.32em] bg-white/10 text-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" class="w-4.5 h-4.5">
+                            <path fill="#EA4335" d="M24 9.5c3.54 0 6.72 1.22 9.23 3.6l6.89-6.89C35.82 2.38 30.41 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.99 6.21C12.12 13.39 17.55 9.5 24 9.5z"/>
+                            <path fill="#4285F4" d="M46.5 24.55c0-1.5-.13-2.94-.38-4.35H24v8.23h12.7c-.55 2.81-2.22 5.19-4.72 6.79l7.62 5.92C44.41 36.58 46.5 30.98 46.5 24.55z"/>
+                            <path fill="#FBBC05" d="M10.55 28.43A14.38 14.38 0 0 1 9.5 24c0-1.52.26-2.99.75-4.36l-7.99-6.21A23.884 23.884 0 0 0 0 24c0 3.82.91 7.42 2.51 10.59l8.04-6.16z"/>
+                            <path fill="#34A853" d="M24 47.5c6.11 0 11.24-2.01 14.99-5.46l-7.62-5.92c-2.12 1.42-4.8 2.25-7.37 2.25-5.64 0-10.42-3.79-12.45-9.02l-8.04 6.16C6.56 42.47 14.51 47.5 24 47.5z"/>
+                        </svg>
+                        Google Reviews
+                    </span>
+                    <h2 class="mt-4 text-4xl lg:text-5xl font-black text-white tracking-tight">
+                        <?php echo e(data_get($reviewsConfig, 'title', 'Loved by real buyers')); ?>
+
+                    </h2>
+                    <p class="mt-3 text-slate-300 font-medium max-w-2xl">
+                        <?php echo e(data_get($reviewsConfig, 'subtitle', 'Straight from verified Google customers.')); ?>
+
+                    </p>
+                </div>
+                <div class="flex flex-col items-start lg:items-end gap-3">
+                    <div class="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-white text-[#031629] font-black text-[0.75rem] uppercase tracking-[0.3em] shadow-lg">
+                        <i data-lucide="badge-check" class="w-4 h-4"></i>
+                        <?php echo e(data_get($reviewsConfig, 'badge', '4.9 / 5 • Google Reviews')); ?>
+
+                    </div>
+                    <p class="text-[0.6rem] text-slate-400 uppercase tracking-[0.35em]">Latest verified testimonials</p>
+                </div>
+            </div>
+
+            <div class="relative" data-review-slider>
+                <div class="overflow-hidden" data-review-scroll>
+                    <div class="flex gap-6">
+                <?php $__currentLoopData = $reviews; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $review): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                <div class="shrink-0 basis-[85vw] md:basis-[48%] xl:basis-[30%]">
+                    <div class="bg-white rounded-[1.75rem] border border-slate-100 shadow-[0_35px_90px_-35px_rgba(3,22,41,0.5)] p-6 h-full flex flex-col gap-5">
+                    <div class="flex items-start justify-between gap-3">
+                        <?php
+                            $photoUrl = data_get($review, 'photo_url');
+                            $initials = strtoupper(\Illuminate\Support\Str::substr(data_get($review, 'author', 'G'), 0, 2));
+                        ?>
+                        <div class="w-12 h-12 rounded-full border-2 border-white shadow-md overflow-hidden flex items-center justify-center bg-gradient-to-br from-[#ff4605] to-[#ff6900] text-white font-black text-sm">
+                            <?php if($photoUrl): ?>
+                                <img src="<?php echo e($photoUrl); ?>" alt="<?php echo e(data_get($review, 'author', 'Reviewer')); ?>" class="w-full h-full object-cover" loading="lazy" referrerpolicy="no-referrer">
+                            <?php else: ?>
+                                <?php echo e($initials); ?>
+
+                            <?php endif; ?>
+                        </div>
+                        <div class="flex-1 pe-6">
+                            <p class="text-[0.95rem] font-black text-[#031629] leading-tight"><?php echo e(data_get($review, 'author')); ?></p>
+                            <p class="text-[0.6rem] font-bold uppercase tracking-[0.3em] text-slate-400"><?php echo e(data_get($review, 'time', 'Recently')); ?></p>
+                        </div>
+                        <div class="flex flex-col items-end text-right">
+                            <span class="inline-flex items-center gap-1 text-[0.55rem] font-black uppercase tracking-[0.35em] text-slate-400">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16">
+                                    <path fill="#4285F4" d="M12 2l2.09 6.26h6.58l-5.32 3.87 2.03 6.24L12 15.5l-5.38 3.87 2.03-6.24-5.32-3.87h6.58z"/>
+                                </svg>
+                                Verified
+                            </span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-1 text-[#ffb703]">
+                        <?php for($i = 0; $i < data_get($review, 'rating', 5); $i++): ?>
+                            <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                        <?php endfor; ?>
+                    </div>
+                    <p class="text-[0.95rem] text-slate-600 leading-relaxed flex-1">“<?php echo e(data_get($review, 'text')); ?>”</p>
+                    <?php if(data_get($review, 'profile_url')): ?>
+                        <a href="<?php echo e(data_get($review, 'profile_url')); ?>" target="_blank" class="inline-flex items-center gap-2 text-[0.65rem] font-black uppercase tracking-[0.3em] text-[#ff4605]">
+                            Read more
+                            <i data-lucide="arrow-up-right" class="w-3.5 h-3.5"></i>
+                        </a>
+                    <?php endif; ?>
+                    </div>
+                </div>
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                    </div>
+                </div>
+                <div class="absolute inset-y-0 flex items-center justify-between pointer-events-none w-full">
+                    <button type="button" class="pointer-events-auto w-11 h-11 rounded-full bg-white/80 text-[#031629] shadow-lg flex items-center justify-center hover:bg-white" data-review-prev>
+                        <i data-lucide="chevron-left" class="w-5 h-5"></i>
+                    </button>
+                    <button type="button" class="pointer-events-auto w-11 h-11 rounded-full bg-white/80 text-[#031629] shadow-lg flex items-center justify-center hover:bg-white" data-review-next>
+                        <i data-lucide="chevron-right" class="w-5 h-5"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const slider = document.querySelector('[data-review-slider]');
+            if (!slider) return;
+            const scrollBox = slider.querySelector('[data-review-scroll]');
+            const prevBtn = slider.querySelector('[data-review-prev]');
+            const nextBtn = slider.querySelector('[data-review-next]');
+
+            const updateState = () => {
+                const maxScroll = scrollBox.scrollWidth - scrollBox.clientWidth;
+                const left = scrollBox.scrollLeft;
+                prevBtn.disabled = left <= 0;
+                nextBtn.disabled = left >= maxScroll - 5;
+                prevBtn.classList.toggle('opacity-30', prevBtn.disabled);
+                nextBtn.classList.toggle('opacity-30', nextBtn.disabled);
+            };
+
+            const scrollByViewport = (direction = 1) => {
+                const amount = scrollBox.clientWidth * direction;
+                scrollBox.scrollBy({ left: amount, behavior: 'smooth' });
+            };
+
+            prevBtn.addEventListener('click', () => scrollByViewport(-1));
+            nextBtn.addEventListener('click', () => scrollByViewport(1));
+            scrollBox.addEventListener('scroll', updateState, { passive: true });
+            window.addEventListener('resize', updateState);
+            updateState();
+        });
+    </script>
+    <?php else: ?>
+    <section class="py-24 px-6 lg:px-12 bg-slate-100 relative z-20 text-center">
+        <div class="max-w-3xl mx-auto space-y-4">
+            <span class="inline-flex items-center justify-center px-3 py-1 rounded-full text-[0.6rem] font-black uppercase tracking-[0.3em] text-slate-500 bg-white shadow">Google Reviews Placeholder</span>
+            <h2 class="text-3xl font-black text-slate-800">This is a placeholder message confirming the reviews block renders.</h2>
+            <p class="text-slate-500 text-sm">Once Google Reviews are enabled and configured, this placeholder will be replaced by the live testimonials card.</p>
+        </div>
+    </section>
+    <?php endif; ?>
+
 
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>

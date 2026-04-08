@@ -421,19 +421,19 @@
                                 <div class="col-span-2 grid grid-cols-2 gap-4 pt-2">
                                     <div class="space-y-1">
                                         <label class="text-[0.55rem] font-black text-slate-400 uppercase tracking-widest block">Horizontal Position (Offset-X)</label>
-                                        <input type="range" name="hero_car_right" min="-100" max="100" step="1" value="<?php echo e(old('hero_car_right', data_get($page->content, 'hero.car_right', -20))); ?>" class="w-full">
+                                        <input type="range" name="hero_car_right" min="-100" max="100" step="1" value="<?php echo e(old('hero_car_right', data_get($page->content, 'hero.car_right', -7))); ?>" class="w-full">
                                         <div class="flex justify-between text-[0.45rem] font-bold text-slate-400">
                                             <span>Far Left</span>
-                                            <span class="text-blue-600"><?php echo e(data_get($page->content, 'hero.car_right', -20)); ?>%</span>
+                                            <span class="text-blue-600"><?php echo e(data_get($page->content, 'hero.car_right', -7)); ?>%</span>
                                             <span>Far Right</span>
                                         </div>
                                     </div>
                                     <div class="space-y-1">
                                         <label class="text-[0.55rem] font-black text-slate-400 uppercase tracking-widest block">Vertical Position (Offset-Y)</label>
-                                        <input type="range" name="hero_car_top" min="0" max="100" step="1" value="<?php echo e(old('hero_car_top', data_get($page->content, 'hero.car_top', 50))); ?>" class="w-full">
+                                        <input type="range" name="hero_car_top" min="0" max="100" step="1" value="<?php echo e(old('hero_car_top', data_get($page->content, 'hero.car_top', 80))); ?>" class="w-full">
                                         <div class="flex justify-between text-[0.45rem] font-bold text-slate-400">
                                             <span>Top</span>
-                                            <span class="text-blue-600"><?php echo e(data_get($page->content, 'hero.car_top', 50)); ?>%</span>
+                                            <span class="text-blue-600"><?php echo e(data_get($page->content, 'hero.car_top', 80)); ?>%</span>
                                             <span>Bottom</span>
                                         </div>
                                     </div>
@@ -1324,11 +1324,35 @@
                         </div>
 
                         
-                        <div class="mt-6 pt-6 border-t border-slate-100">
-                            <label class="text-[0.5rem] font-black uppercase tracking-widest text-slate-500 mb-1.5 block">Section Heading</label>
-                            <input type="text" name="trust_badges_title"
-                                   value="<?php echo e(old('trust_badges_title', data_get($page->content, 'trust_badges_title', 'We built our business on trust'))); ?>"
-                                   class="w-full bg-white border border-slate-200 rounded-lg px-4 py-2.5 text-[0.85rem] font-black text-slate-800 outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100 transition-all shadow-sm">
+                        <div class="mt-6 pt-6 border-t border-slate-100 grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="text-[0.5rem] font-black uppercase tracking-widest text-slate-500 mb-1.5 block">Section Heading</label>
+                                <input type="text" name="trust_badges_title"
+                                       value="<?php echo e(old('trust_badges_title', data_get($page->content, 'trust_badges_title', 'We built our business on trust'))); ?>"
+                                       class="w-full bg-white border border-slate-200 rounded-lg px-4 py-2.5 text-[0.85rem] font-black text-slate-800 outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100 transition-all shadow-sm">
+                            </div>
+                            <div>
+                                <label class="text-[0.5rem] font-black uppercase tracking-widest text-slate-500 mb-1.5 block">Badges Container Background</label>
+                                <div class="flex items-center gap-2">
+                                    <input type="color" name="trust_badges_stats_bg"
+                                           value="<?php echo e(data_get($page->content, 'trust_badges_stats_bg', 'rgba(255, 255, 255, 0.92)')); ?>"
+                                           class="w-10 h-10 rounded-lg border border-slate-200 cursor-pointer p-0.5 shadow-sm">
+                                    <input type="text" value="<?php echo e(data_get($page->content, 'trust_badges_stats_bg', 'rgba(255, 255, 255, 0.92)')); ?>"
+                                           class="flex-1 bg-white border border-slate-200 rounded-lg px-3 py-2.5 text-[0.75rem] font-mono text-slate-500 outline-none focus:border-orange-400"
+                                           oninput="this.previousElementSibling.value=this.value">
+                                </div>
+                            </div>
+                        </div>
+
+                        
+                        <div class="mt-4 pt-4 border-t border-slate-50">
+                            <label class="text-[0.55rem] font-black uppercase tracking-widest text-emerald-500 mb-2 block flex items-center gap-2">
+                                <i data-lucide="code-2" class="w-3.5 h-3.5"></i> Developer Lab (Trust Badges Custom CSS)
+                            </label>
+                            <textarea name="trust_badges_custom_css" rows="3"
+                                      class="w-full bg-[#031629] text-emerald-400 font-mono text-[0.7rem] p-4 rounded-xl border border-white/5 outline-none focus:border-emerald-500/50 transition-all"
+                                      placeholder="e.g. border-color: rgba(255, 105, 0, 0.2) !important;"><?php echo e(old('trust_badges_custom_css', data_get($page->content, 'trust_badges_custom_css'))); ?></textarea>
+                            <p class="text-[0.5rem] text-slate-400 mt-2 italic">Applied directly to .sc-pill-stats container node</p>
                         </div>
                     </div>
                 </div>
