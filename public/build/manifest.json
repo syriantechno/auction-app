@@ -1,10 +1,10 @@
 {
-  "_lucide-D6-4we9q.js": {
-    "file": "assets/lucide-D6-4we9q.js",
+  "_lucide-DhtFymm7.js": {
+    "file": "assets/lucide-DhtFymm7.js",
     "name": "lucide"
   },
   "resources/css/admin.css": {
-    "file": "assets/admin-CJ69nyAu.css",
+    "file": "assets/admin-Bt_vVbeP.css",
     "name": "admin",
     "names": [
       "admin.css"
@@ -13,7 +13,7 @@
     "isEntry": true
   },
   "resources/css/app.css": {
-    "file": "assets/app-C9UqW165.css",
+    "file": "assets/app-BiH1tRUv.css",
     "name": "app",
     "names": [
       "app.css"
@@ -22,24 +22,24 @@
     "isEntry": true
   },
   "resources/js/admin.js": {
-    "file": "assets/admin-8h2cRkUw.js",
+    "file": "assets/admin-Cmmki7dN.js",
     "name": "admin",
     "src": "resources/js/admin.js",
     "isEntry": true,
     "imports": [
-      "_lucide-D6-4we9q.js"
+      "_lucide-DhtFymm7.js"
     ],
     "css": [
       "assets/admin-CveviJq_.css"
     ]
   },
   "resources/js/app.js": {
-    "file": "assets/app-gxllIx7P.js",
+    "file": "assets/app-Cr5K7E3j.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true,
     "imports": [
-      "_lucide-D6-4we9q.js"
+      "_lucide-DhtFymm7.js"
     ]
   }
 }

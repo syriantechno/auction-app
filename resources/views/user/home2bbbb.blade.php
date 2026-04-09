@@ -25,8 +25,6 @@
     $h2Subtitle = $cleanRteHtml(data_get($heroContent, 'subtitle') ?: 'Discover the UAE\'s most trusted pre-owned car marketplace. Every vehicle comes with a certified inspection report, transparent history, and instant offers.');
     $h2CtaLabel = data_get($heroContent, 'primary_cta_label') ?: 'Discover';
     $h2CtaUrl = data_get($heroContent, 'primary_cta_url') ?: route('auctions.index');
-    $h2SecondaryCtaLabel = data_get($heroContent, 'secondary_cta_label');
-    $h2SecondaryCtaUrl = data_get($heroContent, 'secondary_cta_url') ?: '#';
     $h2CarImage = ($page?->hero_image) ?: '/images/cars/car-silver.png';
     $h2CarLabel = data_get($heroContent, 'car_label') ?: 'Premium SUV';
     $h2CarMirror = (bool) data_get($heroContent, 'car_mirror', false);
@@ -52,7 +50,7 @@
     $lfWizardW2 = $leadArchitecture['step2'] ?? 'Customize';
     $lfWizardW3 = $leadArchitecture['step3'] ?? 'Submit';
     $lfShowHero = (bool) data_get($lfContent, 'show_hero_form', true);
-    $lfHeroWidth = (int) data_get($lfContent, 'hero_form_width', 480);
+    $lfHeroWidth = (int) data_get($lfContent, 'hero_form_width', 580);
     $lfCirclesEnabled = $leadArchitecture['circles_enabled'] ?? true;
     $lfFeaturedBrands = data_get($page?->content, 'lead_form_brands', []);
 
@@ -118,12 +116,11 @@
         $heroStyleFinal = "background: {$heroBgColor} !important;";
     } elseif ($heroBgMode === 'gradient') {
         $heroStyleFinal = "background: linear-gradient({$heroBgAngle}deg, {$heroBgColor} 0%, {$heroBgColorSecondary} 100%) !important;";
-    } elseif ($heroBgMode === 'image' || $heroBgMode === 'blend') {
-        $overlayColor = $heroBgMode === 'blend' ? $heroBgColor : 'rgba(14,16,23, ' . ($heroOverlayOpacity ?: '0.72') . ')';
-        $overlay = $heroOverlayEnabled ? "linear-gradient({$overlayColor}, {$overlayColor}), " : "";
+    } elseif ($heroBgMode === 'image') {
+        $overlay = $heroOverlayEnabled ? "linear-gradient(rgba(14,16,23,{$heroOverlayOpacity}), rgba(14,16,23,{$heroOverlayOpacity})), " : "";
         $heroStyleFinal = "background: {$overlay} url('{$heroBgImage}') !important; background-size: cover !important; background-position: center !important;";
     } elseif ($heroBgMode === 'custom' && $heroCustomCss) {
-        $heroStyleFinal = $heroCustomCss;
+        $heroStyleFinal = "{$heroCustomCss} !important;";
     } else {
         $heroStyleFinal = "background: #e7e7e7 !important;";
     }
@@ -180,7 +177,6 @@
     $navDotColor = data_get($navbarContent, 'dot_color', '#ff6900');
     $navLogoScale = data_get($navbarContent, 'logo_scale', 100) / 100;
     $navSticky = (bool) data_get($navbarContent, 'sticky', true);
-    $navGlass = (bool) data_get($navbarContent, 'glass', true);
     $headerMenu = \App\Models\Menu::where('location', 'header')->with(['items' => fn($q) => $q->orderBy('order')])->first();
     $navMenuItems = $headerMenu?->items ?? collect();
     if (isset($featuredAuctions) && $featuredAuctions->first()) {
@@ -222,15 +218,25 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
         :root {
-            --h2-nav-bg: {{ $navBgColor }};
-            --h2-nav-txt: {{ $navTxtColor }};
-            --h2-nav-dot: {{ $navDotColor }};
-            --h2-nav-pos: {{ $navSticky ? 'sticky' : 'relative' }};
-            --h2-nav-top: {{ $navSticky ? '0' : 'auto' }};
+            --h2-nav-bg:
+                {{ $navBgColor }}
+            ;
+            --h2-nav-txt:
+                {{ $navTxtColor }}
+            ;
+            --h2-nav-dot:
+                {{ $navDotColor }}
+            ;
+            --h2-nav-pos:
+                {{ $navSticky ? 'sticky' : 'relative' }}
+            ;
+            --h2-nav-top:
+                {{ $navSticky ? '0' : 'auto' }}
+            ;
             --h2-nav-z: 1000;
-            --h2-hero-form-width: {{ $lfHeroWidth }}px;
-            --h2-hero-text-left: {{ $lfShowHero ? ($lfHeroWidth + 90) : 44 }}px;
-            --h2-hero-car-left: {{ $lfShowHero ? ($lfHeroWidth - 110) : 0 }}px;
+            --h2-hero-form-width:
+                {{ $lfHeroWidth }}
+                px;
         }
 
         .nav-logo img {
@@ -243,62 +249,20 @@
         }
 
         .hero {
-            height: 950px !important;
+            {!! $heroStyleFinal !!}
+            height: calc(100vh - 80px) !important;
             min-height: 950px !important;
             display: flex !important;
             align-items: flex-start !important;
             position: relative !important;
-            overflow: visible !important;
-            @if($heroBgMode !== 'custom')
-                {!! $heroStyleFinal !!}
-            @endif
+            overflow: hidden !important;
         }
-
-        .hub-drawer-header {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 15px 20px;
-            border-bottom: 1px solid rgba(0,0,0,0.05);
-            background: #fff;
-            border-top-left-radius: 1rem;
-            border-top-right-radius: 1rem;
-        }
-
-        .hub-btn-link {
-            background: none;
-            border: none;
-            color: #ff6900;
-            font-size: 0.65rem;
-            font-weight: 1000;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            cursor: pointer;
-            padding: 5px 10px;
-            border-radius: 6px;
-            transition: all 0.2s;
-            flex-shrink: 0;
-        }
-
-        .hub-btn-link:hover {
-            background: rgba(255,105,0,0.05);
-            transform: translateY(-1px);
-        }
-
-        /* Developer Lab Custom Injection */
-        @if($heroCustomCss)
-            @if(strpos($heroCustomCss, '{') !== false)
-                {!! $heroCustomCss !!}
-            @else
-                #hero-master { {!! $heroCustomCss !!} }
-            @endif
-        @endif
 
         .hero-inner {
             width: 100% !important;
             max-width: 1600px !important;
             margin: 0 auto !important;
-            padding: 40px 4% 0 4% !important; /* Removed bottom padding */
+            padding: 120px 4% 0 4% !important;
             display: flex !important;
             align-items: flex-start !important;
             justify-content: flex-start !important;
@@ -324,8 +288,11 @@
 
         .hero-car {
             position: absolute !important;
-            right: {{ $h2CarRight }}% !important;
-            top: 620px !important; /* Fixed vertical position to prevent movement on resize */
+            right:
+                {{ $h2CarRight }}
+                % !important;
+            top: 635px !important;
+            bottom: auto !important;
             width: 70% !important;
             z-index: 0 !important;
             pointer-events: none !important;
@@ -339,56 +306,6 @@
             display: block !important;
             float: none !important;
             clear: both !important;
-        }
-
-        .h2-trust-strip {
-            margin-top: -350px !important; /* Managed overlap */
-            padding: 80px 0 !important;
-            position: relative;
-            z-index: 60; /* Higher than hero (z-50) to show badges on top of car/hero */
-        }
-
-        .h2-trust-strip .grid > div + div {
-            border-left: 1px solid rgba(255, 105, 0, 0.4);
-        }
-
-        .services-card {
-            position: relative;
-            overflow: hidden;
-        }
-        .services-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,105,0,0.15), transparent);
-            transition: left 0.6s ease;
-            pointer-events: none;
-        }
-        .services-card:hover::before {
-            left: 100%;
-        }
-
-        .h2-main-below-hero {
-            display: block !important;
-            width: 100% !important;
-            position: relative;
-            z-index: 20;
-        }
-
-        .h2-main-below-hero section {
-            margin-bottom: 120px !important;
-            width: 100% !important;
-            display: block !important;
-        }
-
-        .h2-section-container {
-            width: 100% !important;
-            max-width: 1600px !important;
-            margin: 0 auto !important;
-            padding: 0 4% !important;
         }
 
         .section-separator {
@@ -406,12 +323,9 @@
 
         .hub-drawer {
             top: calc(100% + 15px) !important;
-            border-radius: 1rem !important;
+            border-radius: 1.25rem !important;
             box-shadow: 0 30px 70px -10px rgba(3, 22, 41, 0.45) !important;
             border: 1px solid rgba(0, 0, 0, 0.05) !important;
-            z-index: 1000 !important;
-            max-height: 480px !important;
-            overflow-y: auto !important;
         }
 
         .sc-btn {
@@ -419,7 +333,7 @@
             height: 54px !important;
             background: linear-gradient(135deg, #ff6900 0%, #ff8c33 100%) !important;
             color: white !important;
-            border-radius: 1rem !important;
+            border-radius: 20px !important;
             font-size: 0.85rem;
             font-weight: 900;
             text-transform: uppercase;
@@ -488,7 +402,7 @@
             background: #ffffff !important;
             border: 2px solid #e2e8f0 !important;
             color: #64748b !important;
-            border-radius: 1rem !important;
+            border-radius: 20px !important;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -518,193 +432,209 @@
             overflow: visible !important;
         }
 
-        /* CENTER MIDDLE SECTIONS & FOOTER (EXCLUDING HERO) */
-        main {
-            display: block !important;
-            width: 100% !important;
-        }
-
-        main section:not(.hero), main footer {
-            width: 100% !important;
-        }
-
-        /* Fix for Body Type Cards clumping */
-        .body-type-card {
-            background: #fff;
-            border: 1px solid #f1f5f9;
-            border-radius: 1rem;
-            padding: 30px 20px;
-            text-align: center;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
-        }
-
-        .body-type-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(3,22,41,0.08);
-            border-color: #ff6900;
-        }
-
-        /* Center the Review Slider content */
-        [data-review-scroll] {
-            display: flex !important;
-            justify-content: flex-start !important;
-            padding-left: calc((100vw - 1600px) / 2);
-        }
-        @media (max-width: 1600px) {
-            [data-review-scroll] { padding-left: 4%; }
-        }
-
-        /* --- ULTRA-PREMIUM FOOTER DESIGN --- */
-        .h2-footer-root {
-            background-color: #e7e7e7 !important;
-            color: #031629 !important;
-            border-top: 1px solid rgba(0,0,0,0.05) !important;
-            padding-top: 100px !important;
-            padding-bottom: 60px !important;
-            width: 100% !important;
-            display: flex !important;
-            flex-direction: column !important;
-            align-items: center !important;
+        body.home2 main>.h2-main-below-hero {
             position: relative;
-            z-index: 50;
+            z-index: 30 !important;
+            isolation: isolate;
         }
 
-        .footer-card {
-            background: #e7e7e7 !important;
-            border-radius: 1rem !important;
-            padding: 40px !important;
-            box-shadow: 0 20px 50px -15px rgba(3,22,41,0.08) !important;
-            border: 1px solid rgba(0,0,0,0.05) !important;
+        /* فوتر home2 — إعادة تصميم للتشخيص: خلفية صلبة، طبقة معزولة، بدون blur/shadow يخلط الطبقات */
+        body.home2 .h2-footer-root {
+            position: relative;
+            z-index: 9999;
+            isolation: isolate;
+            background-color: #0b1220 !important;
+            background-image: none !important;
+            color: #e2e8f0;
+            border-top: 4px solid #ff6900;
+            box-shadow: none !important;
+            -webkit-font-smoothing: antialiased;
         }
 
-        .footer-header-lux {
-            font-size: 0.75rem !important;
-            font-weight: 900 !important;
-            text-transform: uppercase !important;
-            letter-spacing: 0.25em !important;
-            color: #ff6900 !important;
-            margin-bottom: 25px !important;
-            display: block !important;
+        body.home2 .h2-footer-root a {
+            color: #cbd5e1;
         }
 
-        .footer-link-lux {
-            color: #64748b !important;
-            text-decoration: none !important;
-            font-size: 0.95rem !important;
-            font-weight: 600 !important;
-            transition: all 0.3s ease !important;
-            display: inline-block !important;
-            margin-bottom: 12px !important;
-        }
-
-        .footer-link-lux:hover {
-            color: #ff6900 !important;
-            transform: translateX(5px);
-        }
-
-        .footer-bottom-lux {
-            width: 100% !important;
-            max-width: 1600px !important;
-            margin-top: 80px !important;
-            padding: 30px 4% 0 4% !important;
-            border-top: 1px solid rgba(0,0,0,0.05) !important;
-            display: flex !important;
-            justify-content: space-between !important;
-            align-items: center !important;
-            font-size: 0.8rem !important;
-            color: #94a3b8 !important;
-            font-weight: 700 !important;
-        }
-
-        .footer-social-lux {
-            display: flex;
-            gap: 12px;
-        }
-
-        .social-item-lux {
-            width: 42px;
-            height: 42px;
-            border-radius: 12px;
-            background: #fff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #031629;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.04);
-            border: 1px solid #f1f5f9;
-        }
-
-        .social-item-lux:hover {
-            background: #ff6900;
+        body.home2 .h2-footer-root a:hover {
             color: #fff;
-            transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(255, 105, 0, 0.2);
         }
     </style>
 </head>
 
-{{-- Professional Footer: Fully CMS Bound --}}
-@php
-    // CMS Binding: Prioritize /admin/cms/home settings
-    $footerDesc = data_get($page?->content, 'footer.description') ?: \App\Models\SystemSetting::get('footer_description', 'The world\'s most trusted platform for premium car auctions.');
-    
-    $footerSocials = data_get($page?->content, 'footer.socials', []);
-    $footerQuickLinks = data_get($page?->content, 'footer.quick_links', [
-        ['label' => 'Home', 'url' => '/'],
-        ['label' => 'Browse Auctions', 'url' => route('auctions.index')],
-        ['label' => 'Sell Your Car', 'url' => '#'],
-    ]);
-    
-    $footerPages = data_get($page?->content, 'footer.pages', [
-        ['label' => 'Terms of Service', 'url' => '#'],
-        ['label' => 'Privacy Policy', 'url' => '#'],
-    ]);
-    
-    $footerPhone = data_get($page?->content, 'footer.phone') ?: \App\Models\SystemSetting::get('site_phone', '');
-    $footerEmail = data_get($page?->content, 'footer.email') ?: \App\Models\SystemSetting::get('site_email', '');
-    
-    $footerCopy = data_get($page?->content, 'footer.copyright', "© ".now()->year." MOTOR BAZAR. ALL RIGHTS RESERVED.");
-    $footerTerms = data_get($page?->content, 'footer.terms_url', '#');
-    
-    // Site Logo from Global Settings
-    $siteLogo = \App\Models\SystemSetting::get('site_logo');
-    $siteLogoUrl = $siteLogo ? (str_starts_with($siteLogo, 'http') ? $siteLogo : asset('storage/' . $siteLogo)) : null;
-    $siteName = \App\Models\SystemSetting::get('site_name', 'MOTOR BAZAR');
-@endphp
-
 <body class="home2" x-data>
 
     {{-- ═══ NAVBAR ═══ --}}
-    <x-navbar 
-        variant="modern"
-        :siteLogo="$siteLogo ?? null"
-        :siteName="$siteName ?? null"
-        :phone="$navPhone ?? null"
-        :whatsapp="$navWhatsapp ?? null"
-        :menu="(object)['items' => $navMenuItems ?? []]"
-        :bgColor="$navBgColor ?? '#e7e7e7'"
-        :textColor="$navTxtColor ?? '#031629'"
-        :dotColor="$navDotColor ?? '#ff6900'"
-        :logoScale="$navLogoScale ?? 1"
-        :isSticky="$navSticky"
-        :isGlass="$navGlass"
-    />
+    <nav class="nav">
+
+        {{-- ① LEFT: Logo + Pill --}}
+        <div class="nav-left">
+            <a href="{{ route('home2') }}" class="nav-logo">
+                @php
+                    $siteLogo = \App\Models\SystemSetting::get('site_logo');
+                    $siteLogoUrl = $siteLogo ? (str_starts_with($siteLogo, 'http') ? $siteLogo : asset('storage/' . $siteLogo)) : null;
+                @endphp
+                @if($siteLogoUrl)
+                    <img src="{{ $siteLogoUrl }}" alt="{{ \App\Models\SystemSetting::get('site_name', 'Motor Bazar') }}"
+                        style="height:70px;width:auto;object-fit:contain">
+                @else
+                    <div class="nav-dots">
+                        <div class="nav-dot big"></div>
+                        <div class="nav-dot sm"></div>
+                    </div>
+                    <span class="nav-brand">{{ \App\Models\SystemSetting::get('site_name', 'Motor Bazar') }}</span>
+                @endif
+            </a>
+
+            {{-- Pill nav --}}
+            <div class="nav-pill">
+                <a href="{{ route('home2') }}" class="nav-pill-item active" title="Home">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+                    </svg>
+                </a>
+                <div class="nav-pill-sep"></div>
+                <a href="{{ route('auctions.index') }}" class="nav-pill-item" title="Auctions">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z" />
+                    </svg>
+                </a>
+                @if($navPhone)
+                    <div class="nav-pill-sep"></div>
+                    <a href="tel:{{ $navPhone }}" class="nav-pill-item" title="{{ $navPhone }}">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 0 0 2.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 0 1-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 0 0-1.091-.852H4.5A2.25 2.25 0 0 0 2.25 6.75Z" />
+                        </svg>
+                    </a>
+                @endif
+                @if($navWhatsapp)
+                    <div class="nav-pill-sep"></div>
+                    <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $navWhatsapp) }}" target="_blank"
+                        class="nav-pill-item" title="WhatsApp">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                            <path
+                                d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z" />
+                        </svg>
+                    </a>
+                @endif
+                <div class="nav-pill-sep"></div>
+                <a href="#" class="nav-pill-item" title="Location">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
+                    </svg>
+                </a>
+            </div>
+        </div>
+
+        {{-- ② CENTER: Dynamic Menu Links --}}
+        <div class="nav-center">
+            @foreach($navMenuItems as $item)
+                <a href="{{ $item->url }}" class="nav-menu-link">{{ $item->label }}</a>
+            @endforeach
+        </div>
+
+        {{-- ③ RIGHT: Phone + Search + Avatar --}}
+        <div class="nav-right">
+
+            {{-- Search Bar --}}
+            <div class="nav-search">
+                <input type="text" placeholder="Search..."
+                    onkeydown="if(event.key==='Enter') window.location='{{ route('auctions.index') }}?search='+encodeURIComponent(this.value)">
+                <button class="nav-search-btn"
+                    onclick="window.location='{{ route('auctions.index') }}?search='+encodeURIComponent(this.previousElementSibling.value)">
+                    Go
+                </button>
+            </div>
+
+            {{-- User Avatar / Profile --}}
+            @auth
+                <div style="position:relative" x-data="{open:false}">
+                    <button @click="open=!open"
+                        style="width:40px;height:40px;border-radius:50%;border:2px solid #ff6900;overflow:hidden;cursor:pointer;background:#f1f5f9;flex-shrink:0;display:flex;align-items:center;justify-content:center;padding:0">
+                        @if(auth()->user()->profile_photo_path)
+                            <img src="{{ Storage::url(auth()->user()->profile_photo_path) }}"
+                                style="width:100%;height:100%;object-fit:cover" alt="">
+                        @else
+                            <span
+                                style="font-size:.7rem;font-weight:900;color:#031629">{{ strtoupper(substr(auth()->user()->name, 0, 2)) }}</span>
+                        @endif
+                    </button>
+                    <div x-show="open" @click.outside="open=false" x-cloak
+                        style="position:absolute;top:calc(100% + 8px);right:0;background:#fff;border:1px solid #e8ecf0;border-radius:0.75rem;box-shadow:0 16px 40px rgba(3,22,41,.12);min-width:180px;padding:8px;z-index:999">
+                        <div style="padding:10px 12px 8px;border-bottom:1px solid #f1f5f9;margin-bottom:4px">
+                            <p style="font-size:.72rem;font-weight:800;color:#031629">{{ auth()->user()->name }}</p>
+                            <p style="font-size:.62rem;color:#94a3b8">{{ auth()->user()->email }}</p>
+                        </div>
+                        @if(auth()->user()->hasRole('admin') || auth()->user()->hasRole('super-admin'))
+                            <a href="{{ route('admin.dashboard') }}"
+                                style="display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:8px;font-size:.68rem;font-weight:700;color:#031629;text-decoration:none;transition:background .15s"
+                                onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" viewBox="0 0 24 24"
+                                    stroke-width="2" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M10.5 6a7.5 7.5 0 1 0 7.5 7.5h-7.5V6Z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M13.5 10.5H21A7.5 7.5 0 0 0 13.5 3v7.5Z" />
+                                </svg>
+                                Admin Panel
+                            </a>
+                        @endif
+                        <a href="#"
+                            style="display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:8px;font-size:.68rem;font-weight:700;color:#031629;text-decoration:none;transition:background .15s"
+                            onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" viewBox="0 0 24 24"
+                                stroke-width="2" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                            </svg>
+                            My Profile
+                        </a>
+                        <div style="height:1px;background:#f1f5f9;margin:4px 0"></div>
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit"
+                                style="width:100%;display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:8px;font-size:.68rem;font-weight:700;color:#ef4444;background:none;border:none;cursor:pointer;text-align:left;transition:background .15s"
+                                onmouseover="this.style.background='#fff5f5'"
+                                onmouseout="this.style.background='transparent'">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none"
+                                    viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15M12 9l-3 3m0 0 3 3m-3-3h12.75" />
+                                </svg>
+                                Sign Out
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            @else
+                <a href="{{ route('login') }}"
+                    style="display:flex;align-items:center;gap:7px;height:40px;padding:0 18px;background:#031629;color:#fff;border-radius:0.75rem;font-size:.65rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;transition:background .2s"
+                    onmouseover="this.style.background='#ff6900'" onmouseout="this.style.background='#031629'">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" viewBox="0 0 24 24"
+                        stroke-width="2.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9" />
+                    </svg>
+                    Sign In
+                </a>
+            @endauth
+
+        </div>
+
+    </nav>
 
     {{-- ═══ HERO ═══ --}}
     <main class="flex flex-col w-full min-h-screen relative">
-        <section id="hero-master" class="hero w-full block relative z-50">
-            {{-- Ambient Overlay (Optional Blend) --}}
-            @php 
-                $showHeroOverlay = $heroOverlayEnabled && ($heroBgMode !== 'custom');
-                $finalOverlayColor = ($heroBgMode === 'blend') ? $heroBgColor : 'rgba(14,16,23,1)';
-            @endphp
-            @if($showHeroOverlay)
-                <div class="absolute inset-0 z-[1]" 
-                     style="background: {{ $finalOverlayColor }}; opacity: {{ $heroOverlayOpacity }}; pointer-events: none;"></div>
-            @endif
+        <section class="hero w-full block relative z-10">
             <div class="hero-inner">
 
                 @if($lfShowHero)
@@ -715,56 +645,56 @@
                         @endphp
                         <textarea id="h2-models-data" style="display:none">@json($h2Models)</textarea>
                         <div class="search-card" x-cloak x-data="{
-                                            allModels: JSON.parse(document.getElementById('h2-models-data')?.value || '{}'),
-                                            heroWizardTab: 'car',
-                                            heroWizardStep: 1,
-                                            name: '', phone: '', email: '',
-                                            make: '', model: '', year: '', condition: 'good',
-                                            body: '', engine: '', mileage: '', trim: 'Full option', paint: 'Original', gcc: 'GCC',
-                                            inspectionDate: '{{ now()->addDays(1)->format('Y-m-d') }}', inspectionTime: '10:00',
-                                            address: '',
-                                            inspectionType: 'branch',
-                                            plate: '', plateCode: 'A', emirate: 'Dubai',
-                                            search: '', modelSearch: '',
-                                            scCurrentField: null,
-                                            showToast: false,
-                                            toastMsg: '',
-                                            triggerToast(msg) {
-                                                this.toastMsg = msg;
-                                                this.showToast = true;
-                                                setTimeout(() => { this.showToast = false; }, 3000);
-                                            },
-                                            init() {
-                                                window.addEventListener('sync-pickers', (e) => {
-                                                    this.inspectionDate = e.detail.date;
-                                                    this.inspectionTime = e.detail.time;
-                                                });
-                                            },
-                                            plateCodeMap: {
-                                                'Dubai': ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z', 'AA','BB','CC','DD','EE','FF','GG','HH','II','JJ','KK','LL','MM','NN','OO','PP','QQ','RR','SS','TT','UU','VV','WW','XX','YY','ZZ', 'Blank'],
-                                                'Abu Dhabi': ['1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20', '50', 'Blank'],
-                                                'Sharjah': ['1','2','3','Blank'],
-                                                'Ajman': ['A','B','C','D','E','H','Blank'],
-                                                'RAK': ['A','C','D','I','K','M','N','S','V','Y','Blank'],
-                                                'UAQ': ['A','B','C','D','E','F','G','I','X','Blank'],
-                                                'Fujairah': ['A','B','C','D','E','F','G','K','M','P','R','S','T','Blank'],
-                                                'Other': ['Blank']
-                                            },
-                                            get availableCodes() { return this.plateCodeMap[this.emirate] || ['Blank']; },
-                                            get plateFile() {
-                                                const map = { 
-                                                    'UAQ': 'quwain', 
-                                                    'Abu Dhabi': 'abudhabi',
-                                                    'Fujairah': 'fujaira'
-                                                };
-                                                return '/images/plates/' + (map[this.emirate] || this.emirate.toLowerCase().replace(/\s+/g, '')) + '.png';
-                                            },
+                                    allModels: JSON.parse(document.getElementById('h2-models-data')?.value || '{}'),
+                                    heroWizardTab: 'car',
+                                    heroWizardStep: 1,
+                                    name: '', phone: '', email: '',
+                                    make: '', model: '', year: '', condition: 'good',
+                                    body: '', engine: '', mileage: '', trim: 'Full option', paint: 'Original', gcc: 'GCC',
+                                    inspectionDate: '{{ now()->addDays(1)->format('Y-m-d') }}', inspectionTime: '10:00',
+                                    address: '',
+                                    inspectionType: 'branch',
+                                    plate: '', plateCode: 'A', emirate: 'Dubai',
+                                    search: '', modelSearch: '',
+                                    scCurrentField: null,
+                                    showToast: false,
+                                    toastMsg: '',
+                                    triggerToast(msg) {
+                                        this.toastMsg = msg;
+                                        this.showToast = true;
+                                        setTimeout(() => { this.showToast = false; }, 3000);
+                                    },
+                                    init() {
+                                        window.addEventListener('sync-pickers', (e) => {
+                                            this.inspectionDate = e.detail.date;
+                                            this.inspectionTime = e.detail.time;
+                                        });
+                                    },
+                                    plateCodeMap: {
+                                        'Dubai': ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z', 'AA','BB','CC','DD','EE','FF','GG','HH','II','JJ','KK','LL','MM','NN','OO','PP','QQ','RR','SS','TT','UU','VV','WW','XX','YY','ZZ', 'Blank'],
+                                        'Abu Dhabi': ['1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20', '50', 'Blank'],
+                                        'Sharjah': ['1','2','3','Blank'],
+                                        'Ajman': ['A','B','C','D','E','H','Blank'],
+                                        'RAK': ['A','C','D','I','K','M','N','S','V','Y','Blank'],
+                                        'UAQ': ['A','B','C','D','E','F','G','I','X','Blank'],
+                                        'Fujairah': ['A','B','C','D','E','F','G','K','M','P','R','S','T','Blank'],
+                                        'Other': ['Blank']
+                                    },
+                                    get availableCodes() { return this.plateCodeMap[this.emirate] || ['Blank']; },
+                                    get plateFile() {
+                                        const map = { 
+                                            'UAQ': 'quwain', 
+                                            'Abu Dhabi': 'abudhabi',
+                                            'Fujairah': 'fujaira'
+                                        };
+                                        return '/images/plates/' + (map[this.emirate] || this.emirate.toLowerCase().replace(/\s+/g, '')) + '.png';
+                                    },
 
-                                            get models() {
-                                                const k = this.make.toLowerCase().replace(/[^a-z0-9]+/g,'');
-                                                return this.allModels[k] || this.allModels['__all__'] || [];
-                                            }
-                                         }">
+                                    get models() {
+                                        const k = this.make.toLowerCase().replace(/[^a-z0-9]+/g,'');
+                                        return this.allModels[k] || this.allModels['__all__'] || [];
+                                    }
+                                 }">
 
                             {{-- Header --}}
                             <div class="sc-header" style="margin-bottom: 25px;">
@@ -1124,21 +1054,21 @@
 
                                     {{-- 2. Enhanced Visual MAP Section --}}
                                     <div x-data="{ 
-                                                        mapUrl: 'https://maps.googleapis.com/maps/api/staticmap?center=25.07,55.15&zoom=12&size=600x400&scale=2&style=feature:all|element:labels|visibility:off&style=feature:geometry|color:0xf5f5f5&style=feature:water|color:0xc9c9c9&key={{ \App\Models\SystemSetting::get('google_maps_api_key', env('GOOGLE_MAPS_API_KEY')) }}',
-                                                        isLocating: false,
-                                                        locate() {
-                                                            this.isLocating = true;
-                                                            if (navigator.geolocation) {
-                                                                navigator.geolocation.getCurrentPosition((position) => {
-                                                                    const lat = position.coords.latitude;
-                                                                    const lng = position.coords.longitude;
-                                                                    address = `Location: ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
-                                                                    this.mapUrl = `https://maps.googleapis.com/maps/api/staticmap?center=${lat},${lng}&zoom=15&size=600x400&scale=2&markers=color:orange|${lat},${lng}&key={{ \App\Models\SystemSetting::get('google_maps_api_key', env('GOOGLE_MAPS_API_KEY')) }}`;
-                                                                    this.isLocating = false;
-                                                                });
-                                                            }
-                                                        }
-                                                    }"
+                                                mapUrl: 'https://maps.googleapis.com/maps/api/staticmap?center=25.07,55.15&zoom=12&size=600x400&scale=2&style=feature:all|element:labels|visibility:off&style=feature:geometry|color:0xf5f5f5&style=feature:water|color:0xc9c9c9&key={{ \App\Models\SystemSetting::get('google_maps_api_key', env('GOOGLE_MAPS_API_KEY')) }}',
+                                                isLocating: false,
+                                                locate() {
+                                                    this.isLocating = true;
+                                                    if (navigator.geolocation) {
+                                                        navigator.geolocation.getCurrentPosition((position) => {
+                                                            const lat = position.coords.latitude;
+                                                            const lng = position.coords.longitude;
+                                                            address = `Location: ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+                                                            this.mapUrl = `https://maps.googleapis.com/maps/api/staticmap?center=${lat},${lng}&zoom=15&size=600x400&scale=2&markers=color:orange|${lat},${lng}&key={{ \App\Models\SystemSetting::get('google_maps_api_key', env('GOOGLE_MAPS_API_KEY')) }}`;
+                                                            this.isLocating = false;
+                                                        });
+                                                    }
+                                                }
+                                            }"
                                         style="height:270px; position:relative; border-radius:1.5rem; overflow:hidden; border:4px solid #fff; box-shadow:0 25px 60px -20px rgba(3,22,41,0.2); margin-bottom:30px;">
                                         <img :src="mapUrl"
                                             class="w-full h-full object-cover grayscale opacity-80 transition-all duration-700">
@@ -1191,10 +1121,6 @@
                                             </button>
                                         </div>
 
-
-
-
-
                                         <div class="absolute inset-0 flex items-center justify-center pointer-events-none"
                                             x-show="!isLocating">
                                             <div
@@ -1237,11 +1163,11 @@
                                             </svg>
                                         </button>
                                         <button type="button" class="sc-btn flex-1" @click="if(name && phone && email) { 
-                                                                $refs.carForm.submit(); 
-                                                                triggerToast('{{ $lfSuccessMsg }}');
-                                                            } else {
-                                                                triggerToast('Please fill all fields to continue!');
-                                                            }">
+                                                        $refs.carForm.submit(); 
+                                                        triggerToast('{{ $lfSuccessMsg }}');
+                                                    } else {
+                                                        triggerToast('Please fill all fields to continue!');
+                                                    }">
                                             {{ $lfFinalBtn }} &rarr;
                                         </button>
                                     </div>
@@ -1516,11 +1442,11 @@
                                             </svg>
                                         </button>
                                         <button type="button" class="sc-btn w-full" style="flex:1" @click="if(plate && name && phone && email) {
-                                                                $refs.plateForm.submit();
-                                                                triggerToast('{{ $lfSuccessMsg }}');
-                                                            } else {
-                                                                triggerToast('Please complete your contact details!');
-                                                            }">
+                                                        $refs.plateForm.submit();
+                                                        triggerToast('{{ $lfSuccessMsg }}');
+                                                    } else {
+                                                        triggerToast('Please complete your contact details!');
+                                                    }">
                                             {{ $lfFinalBtn }} &rarr;
                                         </button>
                                     </div>
@@ -1536,14 +1462,6 @@
                     <span class="hero-eyebrow">{!! $h2Eyebrow !!}</span>
                     <h1 class="hero-title">{!! $h2Title !!}</h1>
                     <p class="hero-desc">{!! $h2Subtitle !!}</p>
-                    @if($h2SecondaryCtaLabel)
-                    <div class="mt-6">
-                        <a href="{{ $h2SecondaryCtaUrl }}" class="inline-flex items-center gap-3 px-8 py-4 bg-white/10 backdrop-blur border border-white/30 text-white rounded-full text-sm font-bold hover:bg-white/20 transition-all">
-                            {!! $h2SecondaryCtaLabel !!}
-                            <i data-lucide="arrow-right" class="w-4 h-4"></i>
-                        </a>
-                    </div>
-                    @endif
                 </div>
 
             </div>{{-- /hero-inner --}}
@@ -1567,288 +1485,193 @@
 
         </section>
 
-        @if($h2ShowMiddleSections)
+        {{-- Trust badges: قسم مستقل في تدفق الصفحة (بدون absolute) + كاروسيل كرت واحد — يمنع تداخل الفوتر --}}
+        @if($h2ShowMiddleSections && count($formattedBadges) > 0)
             @php
-                $sectionOrder = data_get($page?->content, 'section_order', [
-                    'trust_badges' => 1,
-                    'services' => 2,
-                    'google_reviews' => 3,
-                    'location' => 4,
-                    'featured_cars' => 5,
-                    'brand_logos' => 6,
-                    'blog' => 7,
-                ]);
-                
-                $showSection = function($section, $defaultOrder = 1) use ($sectionOrder) {
-                    $order = (int) ($sectionOrder[$section] ?? $defaultOrder);
-                    return $order > 0;
-                };
-                
-                $sectionSort = function($a, $b) use ($sectionOrder) {
-                    $orderA = (int) ($sectionOrder[$a] ?? 999);
-                    $orderB = (int) ($sectionOrder[$b] ?? 999);
-                    return $orderA <=> $orderB;
-                };
+                $trustStripBg = data_get($page?->content, 'trust_strip_bg', '#f0f2f5');
             @endphp
-            <div class="h2-main-below-hero" id="sectionsContainer" data-section-order='@json($sectionOrder)'>
-
-            {{-- Trust badges: قسم مستقل في تدفق الصفحة --}}
-            @if(count($formattedBadges) > 0 && ($sectionOrder['trust_badges'] ?? 1) > 0)
-        <section
-            id="section-trust_badges"
-            class="h2-trust-strip relative w-full"
-            style="background-color: {{ data_get($page?->content, 'trust_strip_bg', '#e7e7e7') }};"
-            aria-label="Trust badges">
-                @if(data_get($page?->content, 'trust_badges_title'))
-                <div class="text-center pt-6 pb-4">
-                    <h3 class="text-lg font-black text-[#031629] tracking-tight">{{ data_get($page?->content, 'trust_badges_title', 'We built our business on trust') }}</h3>
-                </div>
-                @endif
-                
-                <div class="w-full flex justify-center pt-4 pb-8">
-                    <div class="flex flex-row justify-center items-start gap-24">
+            <section
+                class="h2-trust-strip relative z-10 w-full"
+                style="background-color: {{ $trustStripBg }};"
+                aria-label="Trust badges">
+                <div class="max-w-3xl mx-auto" x-data="{
+                            trustIdx: 0,
+                            trustCount: {{ count($formattedBadges) }},
+                            next() { this.trustIdx = (this.trustIdx + 1) % this.trustCount },
+                            prev() { this.trustIdx = (this.trustIdx - 1 + this.trustCount) % this.trustCount }
+                         }">
+                    <div
+                        class="relative rounded-2xl bg-white shadow-[0_12px_40px_-12px_rgba(3,22,41,0.15)] border border-slate-200/60 p-6 md:p-8 min-h-[180px] flex items-center justify-center">
                         @foreach($formattedBadges as $index => $badge)
-                            <div class="flex flex-col items-center text-center space-y-4 group min-w-[280px]">
-                                <div class="flex items-center justify-center transition-transform duration-300 group-hover:scale-110 mb-4"
-                                    style="color: {{ $badge['color'] }};">
-                                    <i data-lucide="{{ $badge['icon'] }}" class="w-14 h-14 stroke-width-2"></i>
+                            <div x-show="trustIdx === {{ $index }}"
+                                class="w-full flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-10 text-center sm:text-left"
+                                x-cloak>
+                                <div class="flex-shrink-0 w-16 h-16 rounded-2xl flex items-center justify-center shadow-md"
+                                    style="background: {{ $badge['bg'] }}; color: {{ $badge['color'] }};">
+                                    <i data-lucide="{{ $badge['icon'] }}" class="w-8 h-8" stroke-width="2.5"></i>
                                 </div>
-                                <div class="space-y-2">
-                                    <div class="flex flex-col">
-                                        <span class="text-[#ff6900] text-[0.8rem] font-black uppercase tracking-[0.25em] mb-2">{{ $badge['main'] }}</span>
-                                        @if($badge['sub'])
-                                            <span class="text-[1.4rem] font-black text-[#031629] leading-tight block">{{ $badge['sub'] }}</span>
-                                        @endif
-                                    </div>
+                                <div class="space-y-1 max-w-lg">
+                                    <span
+                                        class="block text-[#ff6900] text-[0.65rem] font-black uppercase tracking-[0.12em]">{{ $badge['main'] }}</span>
+                                    @if($badge['sub'])
+                                        <span
+                                            class="block text-2xl md:text-3xl font-black text-[#031629]">{{ $badge['sub'] }}</span>
+                                    @endif
                                     @if($badge['desc'])
-                                        <p class="text-[0.9rem] leading-relaxed text-slate-500 max-w-[280px]">{{ $badge['desc'] }}</p>
+                                        <span class="block text-sm text-slate-500">{{ $badge['desc'] }}</span>
                                     @endif
                                 </div>
                             </div>
                         @endforeach
                     </div>
+                    <div class="flex items-center justify-center gap-4 mt-6">
+                        <button type="button"
+                            class="h-10 w-10 rounded-full border border-slate-200 bg-white shadow-sm flex items-center justify-center text-slate-600 hover:border-[#ff6900] hover:text-[#ff6900] transition"
+                            @click="prev()" aria-label="Previous">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24"
+                                stroke-width="2" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+                            </svg>
+                        </button>
+                        <div class="flex gap-2">
+                            @foreach($formattedBadges as $i => $b)
+                                <button type="button" @click="trustIdx = {{ $i }}" class="w-2.5 h-2.5 rounded-full transition"
+                                    :class="trustIdx === {{ $i }} ? 'bg-[#ff6900]' : 'bg-slate-300'"
+                                    aria-label="Slide {{ $i + 1 }}"></button>
+                            @endforeach
+                        </div>
+                        <button type="button"
+                            class="h-10 w-10 rounded-full border border-slate-200 bg-white shadow-sm flex items-center justify-center text-slate-600 hover:border-[#ff6900] hover:text-[#ff6900] transition"
+                            @click="next()" aria-label="Next">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24"
+                                stroke-width="2" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                            </svg>
+                        </button>
+                    </div>
                 </div>
             </section>
         @endif
 
-        {{-- Services Section --}}
-            @if(($sectionOrder['services'] ?? 2) > 0)
-            <section id="section-services" class="w-full py-4 relative z-30">
-                <div class="h2-section-container flex flex-col items-center">
-                    <div class="text-center relative mb-16">
-                        <i data-lucide="car" class="absolute -top-10 -right-4 w-64 h-64 text-slate-200/40 -z-10 hidden lg:block rotate-12"></i>
-                        @php
-                            $servicesSubtitle = data_get($page?->content, 'services_subtitle', 'We Offer Best Repair Services');
-                            $servicesTitle = data_get($page?->content, 'services_title', 'Our Services');
-                        @endphp
-                        <span class="inline-block text-slate-500 text-[0.65rem] font-bold uppercase tracking-[0.1em] px-4 py-1.5 mb-5">
-                            {{ strtoupper($servicesSubtitle) }}
-                        </span>
-                        <h2 class="text-4xl lg:text-5xl font-black text-[#031629] tracking-tight">{{ $servicesTitle }}</h2>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full justify-items-center">
-                         {{-- Grid Items Centered internally --}}
-                        @php
-                            $defaultServices = [
-                                ['title' => 'Oil Changes', 'icon' => 'droplet', 'description' => 'Curabitur at arcu sed ex venenatis laoreet.'],
-                                ['title' => 'Wash & Clean', 'icon' => 'waves', 'description' => 'Curabitur at arcu sed ex venenatis laoreet.'],
-                                ['title' => 'ABS Brakes', 'icon' => 'disc', 'description' => 'Curabitur at arcu sed ex venenatis laoreet.'],
-                                ['title' => 'Transmission', 'icon' => 'settings-2', 'description' => 'Curabitur at arcu sed ex venenatis laoreet.'],
-                                ['title' => 'Tires & Wheels', 'icon' => 'life-buoy', 'description' => 'Curabitur at arcu sed ex venenatis laoreet.'],
-                                ['title' => 'Engine Tuning', 'icon' => 'activity', 'description' => 'Curabitur at arcu sed ex venenatis laoreet.']
-                            ];
-                            $servicesList = data_get($page?->content, 'services_items', []) ?: $defaultServices;
-                        @endphp
-                        @foreach($servicesList as $service)
-                            <div class="services-card bg-white p-12 rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.02)] hover:shadow-xl transition-all duration-300 flex flex-col items-center text-center group border border-transparent hover:border-[#ff6900]/20 w-full max-w-[420px]">
-                                <div class="w-16 h-16 mb-6 flex items-center justify-center">
-                                    <div class="relative">
-                                        <i data-lucide="{{ $service['icon'] ?? 'settings' }}" class="w-12 h-12 text-[#031629] stroke-[1.5]"></i>
-                                        <div class="absolute bottom-1 right-1 w-2.5 h-2.5 bg-[#ff6900] rounded-full"></div>
-                                    </div>
+        @if($h2ShowMiddleSections)
+            <div class="h2-main-below-hero flex flex-col w-full relative z-20">
+                {{-- Google Reviews Highlight --}}
+                @php
+                    $reviewsConfig = $googleReviewBlock ?? [];
+                    $showReviews = data_get($reviewsConfig, 'enabled') && count(data_get($reviewsConfig, 'reviews', []));
+                    $reviews = data_get($reviewsConfig, 'reviews', []);
+                @endphp
+                @if($showReviews)
+                    <section class="pt-24 pb-48 px-6 lg:px-12 bg-[#031629] relative overflow-hidden">
+                        <div class="absolute inset-0 opacity-30"
+                            style="background-image: radial-gradient(circle at top, rgba(255,255,255,0.08), transparent 55%), radial-gradient(circle at bottom, rgba(255,105,0,0.08), transparent 45%);">
+                        </div>
+                        <div class="relative max-w-[1440px] mx-auto space-y-12">
+                            <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8">
+                                <div class="max-w-full overflow-hidden lg:overflow-visible">
+                                    <span
+                                        class="inline-flex items-center gap-3 px-4 py-2 rounded-full text-[0.72rem] font-black uppercase tracking-[0.32em] bg-white/10 text-white border border-white/5 mb-6">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" class="w-4.5 h-4.5">
+                                            <path fill="#EA4335"
+                                                d="M24 9.5c3.54 0 6.72 1.22 9.23 3.6l6.89-6.89C35.82 2.38 30.41 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.99 6.21C12.12 13.39 17.55 9.5 24 9.5z" />
+                                            <path fill="#4285F4"
+                                                d="M46.5 24.55c0-1.5-.13-2.94-.38-4.35H24v8.23h12.7c-.55 2.81-2.22 5.19-4.72 6.79l7.62 5.92C44.41 36.58 46.5 30.98 46.5 24.55z" />
+                                            <path fill="#FBBC05"
+                                                d="M10.55 28.43A14.38 14.38 0 0 1 9.5 24c0-1.52.26-2.99.75-4.36l-7.99-6.21A23.884 23.884 0 0 0 0 24c0 3.82.91 7.42 2.51 10.59l8.04-6.16z" />
+                                            <path fill="#34A853"
+                                                d="M24 47.5c6.11 0 11.24-2.01 14.99-5.46l-7.62-5.92c-2.12 1.42-4.8 2.25-7.37 2.25-5.64 0-10.42-3.79-12.45-9.02l-8.04 6.16C6.56 42.47 14.51 47.5 24 47.5z" />
+                                        </svg>
+                                        Google Reviews
+                                    </span>
+                                    <h2 class="text-4xl lg:text-6xl font-black text-white tracking-tight leading-[1.1]">
+                                        {{ data_get($reviewsConfig, 'title', 'Loved by real buyers') }}
+                                    </h2>
+                                    <p class="mt-4 text-slate-400 font-bold text-sm tracking-wide max-w-xl">
+                                        {{ data_get($reviewsConfig, 'subtitle', 'Straight from verified Google customers.') }}
+                                    </p>
                                 </div>
-                                <h3 class="text-[1.35rem] font-black text-[#031629] mb-4 group-hover:text-[#ff6900] transition-colors">{{ $service['title'] }}</h3>
-                                <p class="text-slate-500 text-sm leading-relaxed max-w-[260px]">{{ $service['description'] }}</p>
-                            </div>
-                        @endforeach
-                    </div>
-                </div>
-                {{-- Services Separator --}}
-                <div class="w-full flex justify-center py-4 mt-4">
-                     <div class="w-full max-w-5xl h-[2px] bg-gradient-to-r from-transparent via-[#ff6900] to-transparent opacity-60"></div>
-                </div>
-            </section>
-            @endif
-
-            {{-- Google Reviews Highlight --}}
-            @php
-                $reviewsConfig = $googleReviewBlock ?? [];
-                $showReviews = data_get($reviewsConfig, 'enabled') && count(data_get($reviewsConfig, 'reviews', []));
-                $allReviews = data_get($reviewsConfig, 'reviews', []);
-                $reviewsCount = (int) data_get($reviewsConfig, 'reviews_count', 6);
-                $onlyFiveStars = (bool) data_get($reviewsConfig, 'show_only_5_stars', false);
-                $reviews = collect($allReviews);
-                if ($onlyFiveStars) {
-                    $reviews = $reviews->filter(fn($r) => (int) data_get($r, 'rating', 5) === 5);
-                }
-                $reviews = $reviews->sortBy(fn($r) => (int) data_get($r, 'sort_order', 999))->values();
-                $reviews = $reviews->take($reviewsCount);
-            @endphp
-            @if($showReviews && ($sectionOrder['google_reviews'] ?? 3) > 0)
-                <section id="section-google_reviews" class="py-8 relative overflow-hidden bg-[#e7e7e7]">
-                    <div class="h2-section-container relative">
-                        {{-- Centered Header (Restored as requested) --}}
-                        <div class="flex flex-col items-center text-center mb-16 px-6">
-                            <div class="max-w-2xl">
-                                <span class="inline-flex items-center gap-3 px-4 py-2 rounded-full text-[0.72rem] font-black uppercase tracking-[0.32em] bg-white text-slate-600 border border-slate-200 shadow-sm mb-6">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" class="w-4.5 h-4.5">
-                                        <path fill="#EA4335" d="M24 9.5c3.54 0 6.72 1.22 9.23 3.6l6.89-6.89C35.82 2.38 30.41 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.99 6.21C12.12 13.39 17.55 9.5 24 9.5z" />
-                                        <path fill="#4285F4" d="M46.5 24.55c0-1.5-.13-2.94-.38-4.35H24v8.23h12.7c-.55 2.81-2.22 5.19-4.72 6.79l7.62 5.92C44.41 36.58 46.5 30.98 46.5 24.55z" />
-                                        <path fill="#FBBC05" d="M10.55 28.43A14.38 14.38 0 0 1 9.5 24c0-1.52.26-2.99.75-4.36l-7.99-6.21A23.884 23.884 0 0 0 0 24c0 3.82.91 7.42 2.51 10.59l8.04-6.16z" />
-                                        <path fill="#34A853" d="M24 47.5c6.11 0 11.24-2.01 14.99-5.46l-7.62-5.92c-2.12 1.42-4.8 2.25-7.37 2.25-5.64 0-10.42-3.79-12.45-9.02l-8.04 6.16C6.56 42.47 14.51 47.5 24 47.5z" />
-                                    </svg>
-                                    {{ data_get($reviewsConfig, 'badge', 'Google Reviews') }}
-                                </span>
-                                <h2 class="text-4xl lg:text-5xl font-black text-[#031629] tracking-tight leading-[1.1] mb-4">
-                                    {{ data_get($reviewsConfig, 'title', 'Loved by real buyers') }}
-                                </h2>
-                                @if(data_get($reviewsConfig, 'show_rating_badge', true) && (data_get($reviewsConfig, 'average_rating') || data_get($reviewsConfig, 'reviews_count_total')))
-                                    <div class="flex items-center justify-center gap-3 mb-4">
-                                        <div class="flex items-center gap-1">
-                                            @for($i = 0; $i < 5; $i++)
-                                                <i data-lucide="star" class="w-4 h-4 fill-[#ff9900] text-[#ff9900]"></i>
-                                            @endfor
-                                        </div>
-                                        <span class="text-xl font-black text-[#031629]">{{ data_get($reviewsConfig, 'average_rating', '4.9') }}</span>
-                                        <span class="text-sm font-medium text-slate-400">({{ data_get($reviewsConfig, 'reviews_count_total', '500+') }} reviews)</span>
+                                <div class="flex flex-col items-start lg:items-end gap-3">
+                                    <div
+                                        class="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-white text-[#031629] font-black text-[0.75rem] uppercase tracking-[0.3em] shadow-lg">
+                                        <i data-lucide="badge-check" class="w-4 h-4"></i>
+                                        {{ data_get($reviewsConfig, 'badge', '4.9 / 5 • Google Reviews') }}
                                     </div>
-                                @endif
-                                <p class="text-slate-500 font-bold text-sm tracking-wide">
-                                    {{ data_get($reviewsConfig, 'subtitle', 'Straight from verified Google customers.') }}
-                                </p>
+                                    <p class="text-[0.6rem] text-slate-400 uppercase tracking-[0.35em]">Latest verified
+                                        testimonials</p>
+                                </div>
                             </div>
-                        </div>
 
-                        {{-- Slider Area (Keeping the new Card Style) --}}
-                        {{-- 3D Rotary Slider with Autoplay (Alpine.js) --}}
-                        <div 
-                            x-data="{ 
-                                active: 0, 
-                                total: {{ count($reviews) }},
-                                autoplay() {
-                                    this.timer = setInterval(() => {
-                                        this.active = (this.active + 1) % this.total;
-                                    }, 4000);
-                                },
-                                stop() { clearInterval(this.timer); }
-                            }"
-                            x-init="autoplay()"
-                            @mouseenter="stop()"
-                            @mouseleave="autoplay()"
-                            class="relative min-h-[400px] flex items-center justify-center overflow-hidden py-8"
-                        >
-                            <div class="relative w-full max-w-5xl h-[320px]">
-                                @foreach($reviews as $idx => $review)
-                                    <div 
-                                        class="absolute inset-0 flex items-center justify-center transition-all duration-700 ease-in-out cursor-pointer"
-                                        x-cloak
-                                        :class="{
-                                            'z-30 opacity-100 scale-100 blur-0 translate-x-0 brightness-100': active === {{ $idx }},
-                                            'z-20 opacity-50 scale-[0.88] translate-x-[-15%] md:translate-x-[-25%] brightness-90 grayscale-[0.2] pointer-events-none': active === ({{ $idx }} + 1) % total || (active === 0 && {{ $idx }} === total - 1),
-                                            'z-20 opacity-50 scale-[0.88] translate-x-[15%] md:translate-x-[25%] brightness-90 grayscale-[0.2] pointer-events-none': active === ({{ $idx }} - 1 + total) % total || (active === total - 1 && {{ $idx }} === 0),
-                                            'z-10 opacity-30 scale-[0.75] translate-x-[-40%] md:translate-x-[-50%] translate-y-[10px] brightness-85 grayscale-[0.3] pointer-events-none': active === ({{ $idx }} + 2) % total || (active === 0 && {{ $idx }} === total - 2) || (active === 1 && {{ $idx }} === total - 1),
-                                            'z-10 opacity-30 scale-[0.75] translate-x-[40%] md:translate-x-[50%] translate-y-[10px] brightness-85 grayscale-[0.3] pointer-events-none': active === ({{ $idx }} - 2 + total) % total || (active === total - 2 && {{ $idx }} === 0) || (active === total - 1 && {{ $idx }} === 1),
-                                            'z-0 opacity-0 scale-50 blur-sm': active !== {{ $idx }} && active !== ({{ $idx }} + 1) % total && active !== ({{ $idx }} - 1 + total) % total && active !== ({{ $idx }} + 2) % total && active !== ({{ $idx }} - 2 + total) % total
-                                        }"
-                                        @click="active = {{ $idx }}"
-                                    >
-                                        <div class="bg-white rounded-2xl border border-slate-100 shadow-[0_20px_50px_rgba(0,0,0,0.08)] p-6 md:p-8 w-[90vw] md:w-[400px] flex flex-col h-full relative">
-                                             {{-- Top-right Google Logo --}}
-                                             <div class="absolute top-5 right-5 opacity-20">
-                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" class="w-4 h-4">
-                                                    <path fill="#757575" d="M24 9.5c3.54 0 6.72 1.22 9.23 3.6l6.89-6.89C35.82 2.38 30.41 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.99 6.21C12.12 13.39 17.55 9.5 24 9.5z" />
-                                                    <path fill="#757575" d="M46.5 24.55c0-1.5-.13-2.94-.38-4.35H24v8.23h12.7c-.55 2.81-2.22 5.19-4.72 6.79l7.62 5.92C44.41 36.58 46.5 30.98 46.5 24.55z" />
-                                                    <path fill="#757575" d="M10.55 28.43A14.38 14.38 0 0 1 9.5 24c0-1.52.26-2.99.75-4.36l-7.99-6.21A23.884 23.884 0 0 0 0 24c0 3.82.91 7.42 2.51 10.59l8.04-6.16z" />
-                                                    <path fill="#757575" d="M24 47.5c6.11 0 11.24-2.01 14.99-5.46l-7.62-5.92c-2.12 1.42-4.8 2.25-7.37 2.25-5.64 0-10.42-3.79-12.45-9.02l-8.04 6.16C6.56 42.47 14.51 47.5 24 47.5z" />
-                                                </svg>
-                                            </div>
-
-                                            <div class="flex items-center gap-4 mb-4">
-                                                <div class="relative">
-                                                    <div class="w-14 h-14 rounded-full bg-slate-50 overflow-hidden border border-slate-100 flex items-center justify-center shadow-inner">
-                                                        @if(data_get($review, 'photo_url'))
-                                                            <img src="{{ data_get($review, 'photo_url') }}" class="w-full h-full object-cover">
-                                                        @else
-                                                            <span class="text-xs font-bold text-slate-400">{{ strtoupper(substr(data_get($review, 'author', 'G'), 0, 1)) }}</span>
-                                                        @endif
+                            <div class="relative group" data-review-slider>
+                                <div class="flex gap-6 overflow-x-auto pb-8 snap-x snap-mandatory no-scrollbar scroll-smooth"
+                                    data-review-scroll>
+                                    @foreach($reviews as $review)
+                                        <div class="flex-shrink-0 w-full md:w-[450px] snap-center">
+                                            <div
+                                                class="bg-white rounded-[1.75rem] border border-slate-100 shadow-[0_20px_60px_-20px_rgba(3,22,41,0.3)] p-8 h-full flex flex-col gap-6">
+                                                <div class="flex justify-between items-start">
+                                                    <div class="flex items-center gap-4">
+                                                        <div
+                                                            class="w-14 h-14 rounded-full bg-slate-100 overflow-hidden border-2 border-slate-50 shadow-sm flex items-center justify-center">
+                                                            @if(data_get($review, 'profile_photo_url'))
+                                                                <img src="{{ data_get($review, 'profile_photo_url') }}"
+                                                                    class="w-full h-full object-cover">
+                                                            @else
+                                                                <span
+                                                                    class="text-sm font-black text-slate-400">{{ strtoupper(substr(data_get($review, 'author_name', 'G'), 0, 1)) }}</span>
+                                                            @endif
+                                                        </div>
+                                                        <div>
+                                                            <h4 class="font-bold text-slate-800 text-lg">
+                                                                {{ data_get($review, 'author_name', 'Anonymous User') }}
+                                                            </h4>
+                                                            <span
+                                                                class="text-[0.62rem] font-black uppercase tracking-widest text-[#ff6900]">{{ data_get($review, 'relative_time_description', 'Recent') }}</span>
+                                                        </div>
                                                     </div>
-                                                    <div class="absolute -bottom-0.5 -right-0.5 w-6 h-6 bg-[#ff6900] rounded-full border-2 border-white flex items-center justify-center shadow-sm">
-                                                        <i data-lucide="star" class="w-3 h-3 text-white fill-current"></i>
+                                                    <div class="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 rounded-full">
+                                                        <i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-emerald-500"></i>
+                                                        <span
+                                                            class="text-[0.6rem] font-black uppercase tracking-widest text-emerald-600">Verified</span>
                                                     </div>
                                                 </div>
-                                                <div>
-                                                    <h4 class="font-bold text-[#3366cc] text-[1.05rem] leading-none mb-1">
-                                                        {{ data_get($review, 'author', 'Anonymous') }}
-                                                    </h4>
-                                                    <div class="flex items-center gap-3">
-                                                        <span class="text-xs font-medium text-slate-400">
-                                                            {{ data_get($review, 'time', 'Recently') }}
-                                                        </span>
-                                                        @if(data_get($reviewsConfig, 'reviews_count_total') || data_get($reviewsConfig, 'average_rating'))
-                                                            <span class="text-xs text-slate-300">|</span>
-                                                            <span class="text-xs font-bold text-[#ff6900]">
-                                                                {{ data_get($reviewsConfig, 'average_rating', '4.9') }} {{ data_get($reviewsConfig, 'reviews_count_total') ? '/ ' . data_get($reviewsConfig, 'reviews_count_total') . ' reviews' : '' }}
-                                                            </span>
-                                                        @endif
-                                                    </div>
+                                                <div class="flex gap-1">
+                                                    @for($i = 0; $i < 5; $i++)
+                                                        <i data-lucide="star" class="w-4 h-4 fill-[#ff6900] text-[#ff6900]"></i>
+                                                    @endfor
+                                                </div>
+                                                <p class="text-slate-600 font-medium leading-relaxed text-[0.95rem]">
+                                                    "{{ data_get($review, 'text', 'No review text provided.') }}"
+                                                </p>
+                                                <div
+                                                    class="mt-auto pt-4 flex items-center justify-between border-t border-slate-50">
+                                                    <a href="https://google.com/search?q=motorbazar+reviews" target="_blank"
+                                                        class="text-[0.65rem] font-black uppercase tracking-widest text-slate-400 hover:text-[#ff6900] transition-colors flex items-center gap-2">
+                                                        Read More <i data-lucide="arrow-right" class="w-3 h-3"></i>
+                                                    </a>
                                                 </div>
                                             </div>
-
-                                            <div class="flex gap-0.5 mb-4">
-                                                @php $rating = (int) data_get($review, 'rating', 5); @endphp
-                                                @for($i = 0; $i < 5; $i++)
-                                                    <i data-lucide="star" class="w-4 h-4 {{ $i < $rating ? 'fill-[#ff9900] text-[#ff9900]' : 'text-slate-200' }}"></i>
-                                                @endfor
-                                            </div>
-
-                                            <p class="text-slate-600 font-normal leading-relaxed text-[0.95rem] flex-grow italic">
-                                                “{{ data_get($review, 'text', '') }}”
-                                                @if(strlen(data_get($review, 'text', '')) > 100)
-                                                    <a href="https://google.com/search?q=motorbazar+reviews" target="_blank" class="text-[#3366cc] font-bold hover:underline ml-1">read more</a>
-                                                @endif
-                                            </p>
                                         </div>
-                                    </div>
-                                @endforeach
-                            </div>
+                                    @endforeach
+                                </div>
 
-                            {{-- Custom Navigation Arrows --}}
-                            <div class="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-between px-4 md:px-12 pointer-events-none">
-                                <button @click="active = (active - 1 + total) % total" class="w-12 h-12 rounded-full bg-white shadow-xl border border-slate-100 flex items-center justify-center text-slate-400 hover:text-[#ff6900] transition-colors pointer-events-auto">
-                                    <i data-lucide="chevron-left" class="w-6 h-6"></i>
-                                </button>
-                                <button @click="active = (active + 1) % total" class="w-12 h-12 rounded-full bg-white shadow-xl border border-slate-100 flex items-center justify-center text-slate-400 hover:text-[#ff6900] transition-colors pointer-events-auto">
-                                    <i data-lucide="chevron-right" class="w-6 h-6"></i>
-                                </button>
+                                {{-- Navigation Buttons --}}
+                                <div
+                                    class="absolute top-1/2 -translate-y-1/2 -left-4 -right-4 flex justify-between pointer-events-none">
+                                    <button data-review-prev
+                                        class="w-12 h-12 bg-white rounded-full shadow-xl border border-slate-100 flex items-center justify-center text-slate-400 hover:text-[#ff6900] transition-all pointer-events-auto opacity-0 group-hover:opacity-100 -translate-x-4 group-hover:translate-x-0">
+                                        <i data-lucide="chevron-left" class="w-6 h-6"></i>
+                                    </button>
+                                    <button data-review-next
+                                        class="w-12 h-12 bg-white rounded-full shadow-xl border border-slate-100 flex items-center justify-center text-slate-400 hover:text-[#ff6900] transition-all pointer-events-auto opacity-0 group-hover:opacity-100 translate-x-4 group-hover:translate-x-0">
+                                        <i data-lucide="chevron-right" class="w-6 h-6"></i>
+                                    </button>
+                                </div>
                             </div>
-
-                            {{-- Dots Pagination --}}
-                            <div class="absolute bottom-4 flex justify-center gap-2">
-                                <template x-for="(r, i) in total" :key="i">
-                                    <button 
-                                        @click="active = i"
-                                        class="w-2.5 h-2.5 rounded-full transition-all duration-300"
-                                        :class="active === i ? 'bg-[#ff6900] w-6' : 'bg-slate-300'"
-                                    ></button>
-                                </template>
-                            </div>
-                        </div>
                         </div>
                     </section>
 
                 @else
-                    <section class="py-6 px-6 lg:px-12 bg-[#e7e7e7] relative z-20 text-center">
+                    <section class="py-24 px-6 lg:px-12 bg-slate-100 relative z-20 text-center">
                         <div class="max-w-3xl mx-auto space-y-4">
                             <span
                                 class="inline-flex items-center justify-center px-3 py-1 rounded-full text-[0.6rem] font-black uppercase tracking-[0.3em] text-slate-500 bg-white shadow">Google
@@ -1861,485 +1684,244 @@
                     </section>
                 @endif
 
-                {{-- Reviews Separator --}}
-                <div class="w-full flex justify-center py-4">
-                    <div class="w-full max-w-5xl h-[2px] bg-gradient-to-r from-transparent via-[#ff6900] to-transparent opacity-60"></div>
-                </div>
-
                 {{-- Body Type Browser: Dynamic CMS Sync --}}
-                @if(($sectionOrder['featured_cars'] ?? 5) > 0)
-                <section id="section-featured_cars"
-                    class="block w-full clear-both relative z-30 py-6 px-6 lg:px-12 border-t border-slate-200/50">
+                <section
+                    class="block w-full clear-both bg-white relative z-30 py-24 px-6 lg:px-12 border-t border-slate-100 shadow-sm">
                     <div class="max-w-[1440px] mx-auto">
-                        <div class="flex flex-col items-center text-center mb-12">
-                            <span
-                                class="text-[#ff6900] font-black uppercase tracking-[0.35em] text-[0.65rem] mb-3 block">Browse
-                                by category</span>
-                            <h2 class="text-3xl lg:text-4xl font-black tracking-tight text-[#031629] mb-4">Search cars by
-                                body type</h2>
+                        <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-4 mb-10">
+                            <div>
+                                <span
+                                    class="text-[#ff6900] font-black uppercase tracking-[0.35em] text-[0.65rem] mb-3 block">Browse
+                                    by category</span>
+                                <h2 class="text-3xl lg:text-4xl font-black tracking-tight text-[#031629]">Search cars by
+                                    body type</h2>
+                            </div>
                             <a href="{{ route('auctions.index') }}"
                                 class="text-[#031629] font-black text-xs uppercase tracking-[0.22em] border-b-2 border-[#ff6900] pb-1 w-fit">View
                                 all inventory</a>
                         </div>
-                        @php
-                            $defaultBodyTypes = [
-                                ['label' => 'Sedan', 'icon' => 'car', 'slug' => 'sedan'],
-                                ['label' => 'SUV', 'icon' => 'shield', 'slug' => 'suv'],
-                                ['label' => 'Coupe', 'icon' => 'zap', 'slug' => 'coupe'],
-                                ['label' => 'Hatch', 'icon' => 'box', 'slug' => 'hatchback'],
-                                ['label' => 'Cabrio', 'icon' => 'sun', 'slug' => 'cabrio'],
-                                ['label' => 'Pickup', 'icon' => 'truck', 'slug' => 'pickup'],
-                            ];
-                            $bodyTypes = data_get($page?->content, 'body_types', []) ?: $defaultBodyTypes;
-                            $bodyTypesDisplayMode = data_get($page?->content, 'body_types_display_mode', 'cards');
-                            $bodyTypesShowGrid = data_get($page?->content, 'body_types_show_grid', true);
-                        @endphp
-                        
-                        @if($bodyTypesDisplayMode === 'images_only')
-                        <style>
-                            .body-type-grid {
-                                display: grid;
-                                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-                                gap: 1.5rem;
-                            }
-                            .body-type-grid.with-grid {
-                                gap: 0;
-                            }
-                            .body-type-grid.with-grid .type-image-item {
-                                border: 1px solid #e5e7eb;
-                            }
-                            .type-image-item {
-                                position: relative;
-                                aspect-ratio: 16/10;
-                                border-radius: 1rem;
-                                overflow: hidden;
-                                background: #f3f4f6;
-                            }
-                            .type-image-item img {
-                                width: 100%;
-                                height: 100%;
-                                object-fit: cover;
-                                transition: transform 0.5s ease;
-                            }
-                            .type-image-item:hover img {
-                                transform: scale(1.08);
-                            }
-                            .type-image-overlay {
-                                position: absolute;
-                                bottom: 0;
-                                left: 0;
-                                right: 0;
-                                background: linear-gradient(transparent, rgba(0,0,0,0.8));
-                                padding: 2rem 1rem 1rem;
-                                color: white;
-                            }
-                        </style>
-                        <div class="body-type-grid {{ $bodyTypesShowGrid ? 'with-grid' : '' }}">
+                        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6" id="body-types-container">
+                            @php
+                                $defaultBodyTypes = [
+                                    ['label' => 'Sedan', 'icon' => 'car', 'slug' => 'sedan'],
+                                    ['label' => 'SUV', 'icon' => 'shield', 'slug' => 'suv'],
+                                    ['label' => 'Coupe', 'icon' => 'zap', 'slug' => 'coupe'],
+                                    ['label' => 'Hatch', 'icon' => 'box', 'slug' => 'hatchback'],
+                                    ['label' => 'Cabrio', 'icon' => 'sun', 'slug' => 'cabrio'],
+                                    ['label' => 'Pickup', 'icon' => 'truck', 'slug' => 'pickup'],
+                                ];
+                                $bodyTypes = data_get($page?->content, 'body_types', []) ?: $defaultBodyTypes;
+                            @endphp
                             @foreach($bodyTypes as $type)
-                                @if(!empty($type['image']))
-                                <a href="{{ route('auctions.index', ['body_type' => $type['slug']]) }}" class="type-image-item group">
-                                    <img src="{{ $type['image'] }}" alt="{{ $type['label'] }}">
-                                    <div class="type-image-overlay">
-                                        <span class="text-sm font-black tracking-tight">{{ $type['label'] }}</span>
-                                    </div>
-                                </a>
-                                @endif
+                                <div class="body-type-card"
+                                    onclick="window.location.href='{{ route('auctions.index', ['body_type' => $type['slug']]) }}'">
+                                    <i data-lucide="{{ $type['icon'] ?? 'car' }}"
+                                        class="w-10 h-10 mx-auto mb-4 text-[#ff6900]"></i>
+                                    <span
+                                        class="text-sm font-black uppercase tracking-widest text-[#031629]">{{ $type['label'] }}</span>
+                                </div>
                             @endforeach
                         </div>
-                        @else
-                        <div class="flex flex-col lg:flex-row gap-12" x-data="{ activeType: '{{ $bodyTypes[0]['slug'] }}' }">
-                            <!-- Sidebar List -->
-                            <div class="w-full lg:w-1/3 flex flex-col gap-4">
-                                @foreach($bodyTypes as $type)
-                                <button 
-                                    @click="activeType = '{{ $type['slug'] }}'"
-                                    :class="activeType === '{{ $type['slug'] }}' ? 'bg-[#031629] text-white ring-4 ring-[#ff6900]/10 scale-[1.02]' : 'bg-white/80 text-[#031629] hover:bg-white hover:shadow-lg'"
-                                    class="flex items-center justify-between p-6 rounded-2xl border border-black/5 transition-all duration-500 text-left group">
-                                    <div class="flex items-center gap-6">
-                                        <div :class="activeType === '{{ $type['slug'] }}' ? 'bg-[#ff6900]' : 'bg-slate-100 group-hover:bg-[#ff6900]/10'" 
-                                             class="w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-500">
-                                            <i data-lucide="{{ $type['icon'] ?? 'car' }}" 
-                                               :class="activeType === '{{ $type['slug'] }}' ? 'text-white rotate-0' : 'text-[#ff6900] -rotate-12 group-hover:rotate-0'" 
-                                               class="w-6 h-6 transition-all duration-500"></i>
+                    </div>
+                </section>
+
+                {{-- Live Auctions: Direct Migration from Home 1 --}}
+                @php
+                    $showLiveAuctions = $featuredAuctions->isNotEmpty();
+                @endphp
+                @if($showLiveAuctions)
+                    <section
+                        class="block w-full clear-both bg-white relative z-40 py-32 px-6 lg:px-12 border-t border-slate-100 min-h-[600px]"
+                        id="live-auctions">
+                        <div class="mx-auto max-w-[1440px]">
+                            <div class="flex flex-col lg:flex-row lg:items-end justify-between mb-16 gap-6">
+                                <div>
+                                    <span
+                                        class="text-[0.65rem] font-black uppercase tracking-[0.35em] text-[#ff6900] block mb-3">Live
+                                        Now</span>
+                                    <h2 class="text-4xl lg:text-5xl font-black text-[#031629] tracking-tighter leading-none">
+                                        Active <span class="text-[#ff6900]">Auctions</span>
+                                    </h2>
+                                    <p class="text-slate-400 font-bold text-sm mt-3">Real-time bidding — prices update live</p>
+                                </div>
+                                <a href="{{ route('auctions.index') }}"
+                                    class="inline-flex items-center gap-2 px-6 py-3 bg-[#031629] text-white rounded-xl font-black text-[0.7rem] uppercase tracking-widest hover:bg-black transition-all">
+                                    View All <i data-lucide="arrow-right" class="w-4 h-4 text-[#ff6900]"></i>
+                                </a>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                                @foreach($featuredAuctions as $fa)
+                                    @php
+                                        $faImgs = optional($fa->car)->photos;
+                                        $faImg = is_string($faImgs) ? (json_decode($faImgs, true)[0] ?? null) : ($faImgs[0] ?? null);
+                                        $faImageUrl = $faImg ? asset('storage/' . $faImg) : '/images/cars/navy-mclaren.png';
+                                        $isLive = $fa->status === 'active';
+                                        $faPrice = $fa->current_price ?? $fa->initial_price;
+                                    @endphp
+                                    <a href="{{ route('auctions.show', $fa) }}"
+                                        class="group block bg-white rounded-[2rem] overflow-hidden border border-slate-100 shadow-xl hover:shadow-2xl hover:-translate-y-2 transition-all duration-500">
+                                        <div class="relative h-64 bg-slate-50 overflow-hidden">
+                                            <img src="{{ $faImageUrl }}"
+                                                alt="{{ optional($fa->car)->make }} {{ optional($fa->car)->model }}"
+                                                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                                            <div class="absolute top-4 left-4">
+                                                @if($isLive)
+                                                    <span
+                                                        class="flex items-center gap-1.5 px-3 py-1.5 bg-white/90 backdrop-blur-md rounded-full text-[0.6rem] font-black uppercase tracking-widest text-emerald-600 shadow-lg">
+                                                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Live Now
+                                                    </span>
+                                                @else
+                                                    <span
+                                                        class="flex items-center gap-1.5 px-3 py-1.5 bg-white/90 backdrop-blur-md rounded-full text-[0.6rem] font-black uppercase tracking-widest text-[#ff6900] shadow-lg">
+                                                        <span class="w-2 h-2 rounded-full bg-[#ff6900] animate-pulse"></span> Coming
+                                                        Soon
+                                                    </span>
+                                                @endif
+                                            </div>
+                                            <div class="absolute top-4 right-4">
+                                                <span
+                                                    class="px-3 py-1.5 bg-[#031629]/90 text-white rounded-full text-[0.6rem] font-black tracking-widest backdrop-blur-sm">
+                                                    {{ $fa->bids_count }} Bids
+                                                </span>
+                                            </div>
                                         </div>
-                                        <div>
-                                            <span class="block text-lg font-black tracking-tight leading-none mb-1">{{ $type['label'] }}</span>
-                                            <span class="text-[0.6rem] font-bold uppercase tracking-[0.2em] opacity-50">Explore Collection</span>
+                                        <div class="p-8">
+                                            <div class="text-[0.6rem] font-black uppercase tracking-widest text-slate-400 mb-2">
+                                                {{ optional($fa->car)->year }} · Ref: {{ $fa->reference_code }}
+                                            </div>
+                                            <h3 class="text-2xl font-black text-[#031629] tracking-tight leading-tight mb-6">
+                                                {{ optional($fa->car)->make }} {{ optional($fa->car)->model }}
+                                            </h3>
+                                            <div class="flex items-end justify-between pt-4 border-t border-slate-50">
+                                                <div>
+                                                    <div
+                                                        class="text-[0.6rem] font-black uppercase text-slate-400 tracking-widest mb-1">
+                                                        {{ $isLive ? 'Current Bid' : 'Starting Price' }}
+                                                    </div>
+                                                    <div class="text-2xl font-black text-[#031629]">
+                                                        ${{ number_format($faPrice, 0) }}</div>
+                                                </div>
+                                                <div class="text-right">
+                                                    <div
+                                                        class="text-[0.6rem] font-black uppercase text-slate-400 tracking-widest mb-1">
+                                                        {{ $isLive ? 'Ends In' : 'Opens In' }}
+                                                    </div>
+                                                    <div class="text-sm font-black text-[#ff6900] tabular-nums auction-timer"
+                                                        data-expires="{{ $isLive ? $fa->end_at?->toIso8601String() : $fa->start_at?->toIso8601String() }}">
+                                                        --:--:--</div>
+                                                </div>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div :class="activeType === '{{ $type['slug'] }}' ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'"
-                                         class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center transition-all duration-500">
-                                        <i data-lucide="arrow-right" class="w-4 h-4 text-[#ff6900]"></i>
-                                    </div>
-                                </button>
+                                    </a>
                                 @endforeach
                             </div>
 
-                            <!-- Cars Panel -->
-                            <div class="w-full lg:w-2/3">
-                                <div class="bg-white/50 backdrop-blur-xl rounded-2xl p-4 md:p-12 border border-white/50 shadow-2xl h-full min-h-[600px] relative overflow-hidden">
-                                    {{-- Background Decoration --}}
-                                    <div class="absolute top-0 right-0 w-64 h-64 bg-[#ff6900]/5 blur-[100px] rounded-full"></div>
-                                    
-                                    @foreach($bodyTypes as $type)
-                                    <div x-show="activeType === '{{ $type['slug'] }}'" 
-                                         x-transition:enter="transition cubic-bezier(0.4, 0, 0.2, 1) duration-700" 
-                                         x-transition:enter-start="opacity-0 translate-y-8"
-                                         x-transition:enter-end="opacity-100 translate-y-0"
-                                         class="relative z-10">
-                                        
-                                        <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
-                                            <div>
-                                                <div class="flex items-center gap-3 mb-2">
-                                                    <span class="w-8 h-1 bg-[#ff6900] rounded-full"></span>
-                                                    <span class="text-[0.65rem] font-black uppercase tracking-[0.3em] text-[#ff6900]">Premium Inventory</span>
-                                                </div>
-                                                <h3 class="text-3xl md:text-4xl font-black text-[#031629] tracking-tight">
-                                                    The <span class="italic text-[#ff6900]">{{ $type['label'] }}</span> Experience
-                                                </h3>
-                                            </div>
-                                            <a href="{{ route('auctions.index', ['body_type' => $type['slug']]) }}" 
-                                               class="px-8 py-4 bg-[#031629] text-white rounded-full text-[0.65rem] font-black uppercase tracking-widest flex items-center gap-3 hover:bg-[#ff6900] transition-all duration-500 shadow-lg hover:shadow-[#ff6900]/25">
-                                                View Catalog
-                                                <i data-lucide="chevron-right" class="w-4 h-4"></i>
-                                            </a>
-                                        </div>
-
-                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                            @php
-                                                // Ideally this would be dynamic, but for now we show featured ones
-                                                $filtered = $featuredAuctions->shuffle()->take(2);
-                                            @endphp
-
-                                            @foreach($filtered as $auction)
-                                            <a href="{{ route('auctions.show', $auction) }}" class="group block">
-                                                <div class="bg-white rounded-2xl p-8 border border-black/5 shadow-xl transition-all duration-500 group-hover:-translate-y-4 group-hover:shadow-2xl">
-                                                    <div class="aspect-[16/10] mb-8 overflow-hidden rounded-2xl bg-[#f8fafc] relative">
-                                                        <img src="{{ $auction->car->image_url ?? '/images/cars/car-main.jpg' }}" 
-                                                             class="w-full h-full object-contain p-4 transition-transform duration-700 group-hover:scale-110">
-                                                        <div class="absolute bottom-4 left-4">
-                                                            <span class="px-4 py-2 bg-white/90 backdrop-blur rounded-full text-[0.6rem] font-black uppercase tracking-widest shadow-sm">
-                                                                {{ $auction->car->year }} Model
-                                                            </span>
-                                                        </div>
-                                                    </div>
-                                                    <div class="flex items-center justify-between gap-4">
-                                                        <div class="flex-1 min-w-0">
-                                                            <span class="text-[0.6rem] font-black uppercase tracking-[0.25em] text-[#ff6900] block mb-1">
-                                                                {{ $auction->car->brand?->name ?? $auction->car->make }}
-                                                            </span>
-                                                            <h4 class="text-xl font-black text-[#031629] tracking-tight truncate">
-                                                                {{ $auction->car->carModel?->name ?? $auction->car->model }}
-                                                            </h4>
-                                                        </div>
-                                                        <div class="text-right shrink-0">
-                                                            <span class="text-[0.55rem] font-bold text-slate-400 block uppercase tracking-tighter mb-1">Starting at</span>
-                                                            <span class="text-xl font-black text-[#031629] tabular-nums">${{ number_format($auction->initial_price) }}</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </a>
-                                            @endforeach
-                                        </div>
-                                    </div>
-                                    @endforeach
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                {{-- Body Types Separator --}}
-                <div class="w-full flex justify-center py-12">
-                    <div class="w-full max-w-5xl h-[2px] bg-gradient-to-r from-transparent via-[#ff6900] to-transparent opacity-60"></div>
-                </div>
-                @endif
-
-                {{-- Location Map Section (Migrated from Home 1 with Premium Home 2 Style) --}}
-                @php
-                    $locHeaderTitle = data_get($page?->content, 'location.section_header_title', 'Find Our Hub');
-                    $locHeaderSub = data_get($page?->content, 'location.section_header_subtitle', 'Visit our main showroom in the heart of Dubai');
-                    $locLabel = data_get($page?->content, 'location.section_label', 'Location');
-                    $locIframe = data_get($page?->content, 'location.iframe_url', 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3610.1234!2d55.2708!3d25.2048!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjXCsDEyJzE3LjMiTiA1NcKwMTYnMTQuOSJF!5e0!3m2!1sen!2sae!4v1680000000000!5m2!1sen!2sae');
-                    $locTitle = data_get($page?->content, 'location.title', 'Visit Motor');
-                    $locTitleAccent = data_get($page?->content, 'location.title_accent', 'Bazar');
-                    $locSub = data_get($page?->content, 'location.subtitle', 'Our team of experts is ready to welcome you and assist with your luxury car needs.');
-                    $locAddr = data_get($page?->content, 'location.address', 'Al Quoz Industrial Area 3, Dubai, UAE');
-                    $locPhone = data_get($page?->content, 'location.phone', \App\Models\SystemSetting::get('site_phone', '+971 4 000 0000'));
-                    $locHours = data_get($page?->content, 'location.hours', 'Mon – Sat: 9:00 AM – 7:00 PM');
-                    $locMapsUrl = data_get($page?->content, 'location.maps_url', 'https://maps.google.com');
-                    $locBtnLabel = data_get($page?->content, 'location.button_label', 'Get Directions');
-                @endphp
-                @if(($sectionOrder['location'] ?? 4) > 0)
-                <section id="section-location" class="w-full py-6 relative z-30 overflow-hidden">
-                    <div class="h2-section-container">
-                        {{-- Section Header --}}
-                        <div class="text-center mb-16 relative">
-                            <span class="inline-block border border-slate-300 text-[#ff6900] text-[0.65rem] font-black uppercase tracking-[0.3em] px-5 py-2 mb-6 rounded-full bg-white shadow-sm">
-                                {{ $locLabel }}
-                            </span>
-                            <h2 class="text-4xl lg:text-5xl font-extrabold text-[#031629] tracking-tight mb-4">{{ $locHeaderTitle }}</h2>
-                            <p class="text-slate-500 font-bold text-sm tracking-wide max-w-xl mx-auto">{{ $locHeaderSub }}</p>
-                        </div>
-
-                        {{-- Map Card --}}
-                        <div class="relative rounded-2xl overflow-hidden shadow-[0_45px_100px_-30px_rgba(3,22,41,0.25)] border-[6px] border-white min-h-[550px] group">
-                            {{-- Map Iframe --}}
-                            <iframe 
-                                src="{{ $locIframe }}" 
-                                width="100%" height="100%" 
-                                class="absolute inset-0 w-full h-full object-cover grayscale opacity-80 group-hover:grayscale-0 transition-all duration-1000"
-                                style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
-                            </iframe>
-
-                            {{-- Grey Overlay for Info Block --}}
-                            <div class="absolute inset-0 bg-gradient-to-r from-[#e7e7e7]/95 via-[#e7e7e7]/40 to-transparent flex items-center px-10 pointer-events-none">
-                                <div class="w-full max-w-md bg-white/5 backdrop-blur-xl border border-white/20 p-10 rounded-2xl shadow-2xl pointer-events-auto transition-transform duration-700 group-hover:translate-x-4">
-                                    <h3 class="text-3xl lg:text-4xl font-black text-[#031629] leading-tight mb-4">
-                                        {{ $locTitle }} <span class="text-[#ff6900]">{{ $locTitleAccent }}</span>
-                                    </h3>
-                                    <p class="text-slate-500 text-sm font-medium leading-relaxed mb-10">
-                                        {{ $locSub }}
-                                    </p>
-
-                                    <div class="space-y-6 mb-10">
-                                        <div class="flex items-center gap-5 group/item">
-                                            <div class="w-11 h-11 rounded-2xl bg-[#ff6900]/10 border border-[#ff6900]/20 flex items-center justify-center text-[#ff6900] group-hover/item:bg-[#ff6900] group-hover/item:text-white transition-all">
-                                                <i data-lucide="map-pin" class="w-5 h-5"></i>
-                                            </div>
-                                            <div>
-                                                <span class="block text-[0.55rem] font-black uppercase tracking-widest text-[#ff6900] mb-0.5">Physical HQ</span>
-                                                <span class="text-sm font-bold text-[#031629]">{{ $locAddr }}</span>
-                                            </div>
-                                        </div>
-
-                                        <div class="flex items-center gap-5 group/item">
-                                            <div class="w-11 h-11 rounded-2xl bg-[#ff6900]/10 border border-[#ff6900]/20 flex items-center justify-center text-[#ff6900] group-hover/item:bg-[#ff6900] group-hover/item:text-white transition-all">
-                                                <i data-lucide="phone" class="w-5 h-5"></i>
-                                            </div>
-                                            <div>
-                                                <span class="block text-[0.55rem] font-black uppercase tracking-widest text-[#ff6900] mb-0.5">Support Center</span>
-                                                <span class="text-sm font-bold text-[#031629]">{{ $locPhone }}</span>
-                                            </div>
-                                        </div>
-
-                                        <div class="flex items-center gap-5 group/item">
-                                            <div class="w-11 h-11 rounded-2xl bg-[#ff6900]/10 border border-[#ff6900]/20 flex items-center justify-center text-[#ff6900] group-hover/item:bg-[#ff6900] group-hover/item:text-white transition-all">
-                                                <i data-lucide="clock" class="w-5 h-5"></i>
-                                            </div>
-                                            <div>
-                                                <span class="block text-[0.55rem] font-black uppercase tracking-widest text-[#ff6900] mb-0.5">Opening Hours</span>
-                                                <span class="text-sm font-bold text-[#031629]">{{ $locHours }}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <a href="{{ $locMapsUrl }}" target="_blank" class="flex items-center justify-center gap-3 bg-[#ff6900] text-white font-black text-xs uppercase tracking-[0.2em] py-4 px-8 rounded-xl hover:bg-white hover:text-[#031629] transition-all shadow-xl shadow-orange-500/20 group/btn">
-                                        <i data-lucide="navigation" class="w-4 h-4 group-hover/btn:scale-125 transition-transform"></i>
-                                        {{ $locBtnLabel }}
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                {{-- Final Map Separator --}}
-                <div class="w-full flex justify-center py-4">
-                    <div class="w-full max-w-5xl h-[2px] bg-gradient-to-r from-transparent via-[#ff6900] to-transparent opacity-60"></div>
-                </div>
-                @endif
-
-            </div>{{-- /h2-main-below-hero --}}
-        @endif
-
-        {{-- Blog Section --}}
-        @isset($latestPosts)
-            @if(count($latestPosts) > 0 && ($sectionOrder['blog'] ?? 7) > 0)
-                <section id="section-blog" class="py-6 bg-[#e7e7e7] relative overflow-hidden">
-                    <div class="h2-section-container relative z-10">
-                        <div class="flex flex-col items-center text-center mb-16 px-6">
-                            <span class="text-[#ff6900] text-[0.7rem] font-black uppercase tracking-[0.3em] mb-4">
-                                {{ data_get($page?->content, 'blog_title', 'Latest Insights') }}
-                            </span>
-                            <h2 class="text-4xl lg:text-5xl font-black text-[#031629] tracking-tight">
-                                {{ data_get($page?->content, 'blog_subtitle', 'Blog & Articles') }}
-                            </h2>
-                        </div>
-
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 px-6">
-                            @foreach($latestPosts as $post)
-                                <a href="/blog/{{ $post->slug }}" class="group">
-                                    <div class="bg-white rounded-2xl overflow-hidden border border-black/5 shadow-xl transition-all duration-500 group-hover:-translate-y-4 group-hover:shadow-[0_40px_80px_-20px_rgba(0,0,0,0.15)] h-full flex flex-col">
-                                        <div class="aspect-[16/10] overflow-hidden relative">
-                                            @if($post->featured_image)
-                                                <img src="{{ asset('storage/'.$post->featured_image) }}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
-                                            @else
-                                                <div class="w-full h-full bg-slate-50 flex items-center justify-center">
-                                                    <i data-lucide="image" class="w-12 h-12 text-slate-200"></i>
-                                                </div>
-                                            @endif
-                                            <div class="absolute inset-0 bg-gradient-to-t from-[#031629]/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                                        </div>
-                                        <div class="p-8 flex-1 flex flex-col">
-                                            <div class="flex items-center gap-3 mb-4">
-                                                <span class="px-3 py-1 bg-[#ff6900]/10 text-[#ff6900] text-[0.6rem] font-black uppercase tracking-widest rounded-full">
-                                                    {{ $post->category->name ?? 'Article' }}
-                                                </span>
-                                                <span class="text-[0.65rem] font-bold text-slate-400 uppercase tracking-widest">
-                                                    {{ $post->published_at ? $post->published_at->format('M d, Y') : $post->created_at->format('M d, Y') }}
-                                                </span>
-                                            </div>
-                                            <h3 class="text-xl font-black text-[#031629] leading-tight group-hover:text-[#ff6900] transition-colors line-clamp-2 mb-6">
-                                                {{ $post->title }}
-                                            </h3>
-                                            <div class="mt-auto flex items-center gap-2 text-[#ff6900] text-[0.7rem] font-black uppercase tracking-widest">
-                                                Read More
-                                                <i data-lucide="arrow-right" class="w-3 h-3 transition-transform group-hover:translate-x-1"></i>
-                                            </div>
-                                        </div>
-                                    </div>
+                            <div class="mt-16 flex justify-center lg:hidden">
+                                <a href="{{ route('auctions.index') }}"
+                                    class="px-8 py-4 bg-[#031629] text-white rounded-2xl font-black text-[0.7rem] uppercase tracking-widest flex items-center gap-3">
+                                    View All Inventory <i data-lucide="arrow-right" class="w-4 h-4 text-[#ff6900]"></i>
                                 </a>
-                            @endforeach
+                            </div>
                         </div>
-                    </div>
-                </section>
+                    </section>
                 @endif
-
-                {{-- Blog Separator --}}
-                <div class="w-full flex justify-center py-12">
-                    <div class="w-full max-w-5xl h-px bg-gradient-to-r from-transparent via-[#ff6900] to-transparent opacity-20"></div>
-                </div>
-            @endif
-        @endisset
-
-        {{-- Elite Brand Slider (CMS Bound) --}}
-        @php
-            $eliteBrands = data_get($page?->content, 'brands', []);
-            $eliteBrandImages = [
-                'mercedes-benz' => '/images/brands/mercedes.svg',
-                'bmw' => '/images/brands/bmw.svg',
-                'audi' => '/images/brands/audi.svg',
-                'porsche' => '/images/brands/porsche.svg',
-                'toyota' => '/images/brands/toyota.svg',
-                'honda' => '/images/brands/honda.svg',
-                'ford' => '/images/brands/ford.svg',
-                'nissan' => '/images/brands/nissan.svg',
-                'hyundai' => '/images/brands/hyundai.svg',
-                'mazda' => '/images/brands/mazda.svg',
-                'tesla' => '/images/brands/tesla.svg',
-                'volkswagen' => '/images/brands/volkswagen.svg',
-                'suzuki' => '/images/brands/suzuki.svg',
-                'lamborghini' => '/images/brands/lamborghini.svg',
-                'land-rover' => '/images/brands/land-rover.svg',
-            ];
-        @endphp
-        @if(count($eliteBrands) > 0 && ($sectionOrder['brand_logos'] ?? 6) > 0)
-            <div id="section-brand_logos">
-            <style>
-                @keyframes lux-marquee {
-                    0% { transform: translateX(0); }
-                    100% { transform: translateX(calc(-240px * {{ count($eliteBrands) }} - 4rem * {{ count($eliteBrands) }})); }
-                }
-                .lux-slider-track {
-                    display: flex;
-                    width: max-content;
-                    animation: lux-marquee 40s linear infinite;
-                    padding: 2rem 0;
-                }
-                .lux-slider-track:hover {
-                    animation-play-state: paused;
-                }
-                .lux-brand-item {
-                    width: 240px;
-                    flex-shrink: 0;
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    justify-content: center;
-                    margin-right: 4rem;
-                    gap: 1.5rem;
-                    cursor: pointer;
-                }
-                .lux-brand-logo {
-                    height: 100px;
-                    width: 180px;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-                    filter: grayscale(100%) brightness(0) opacity(0.35);
-                    transform: scale(0.95);
-                }
-                .lux-brand-item:hover .lux-brand-logo {
-                    filter: grayscale(0%) brightness(1) opacity(1) drop-shadow(0 10px 15px rgba(255,105,0,0.15));
-                    transform: scale(1.1) translateY(-5px);
-                }
-                .lux-brand-logo img {
-                    width: 100%;
-                    height: 100%;
-                    object-fit: contain;
-                }
-                .lux-brand-name {
-                    font-size: 0.75rem;
-                    font-weight: 900;
-                    text-transform: uppercase;
-                    letter-spacing: 0.25em;
-                    color: #64748b;
-                    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-                }
-                .lux-brand-item:hover .lux-brand-name {
-                    color: #ff6900;
-                }
-            </style>
-            <div class="w-full relative z-40 bg-transparent pb-6">
-                <div class="text-center mb-4">
-                    <span class="text-[0.65rem] font-black uppercase tracking-[0.2em] text-[#ff6900]">Elite Architecture</span>
-                    <h3 class="text-xl font-black text-[#031629] mt-1 tracking-tight">Trusted by Premium Brands</h3>
-                </div>
-                <div class="overflow-hidden w-full relative group">
-                    {{-- Edge-to-edge fade matching the #e7e7e7 footer root bg --}}
-                    <div class="absolute left-0 top-0 bottom-0 w-32 md:w-64 bg-gradient-to-r from-[#e7e7e7] to-transparent z-10 pointer-events-none"></div>
-                    <div class="absolute right-0 top-0 bottom-0 w-32 md:w-64 bg-gradient-to-l from-[#e7e7e7] to-transparent z-10 pointer-events-none"></div>
-                    
-                    <div class="lux-slider-track">
-                        {{-- Double the items for seamless loop --}}
-                        @for ($i = 0; $i < 2; $i++)
-                            @foreach($eliteBrands as $brand)
-                                <div class="lux-brand-item">
-                                    <div class="lux-brand-logo">
-                                        @if(isset($eliteBrandImages[$brand['slug']]))
-                                            <img src="{{ $eliteBrandImages[$brand['slug']] }}" alt="{{ $brand['name'] }}">
-                                        @else
-                                            <span class="text-sm font-black text-slate-400 uppercase tracking-widest">{{ $brand['name'] }}</span>
-                                        @endif
-                                    </div>
-                                    <span class="lux-brand-name">{{ $brand['name'] }}</span>
-                                </div>
-                            @endforeach
-                        @endfor
-                    </div>
-                </div>
-            </div>
             </div>
         @endif
-        <x-footer 
-            variant="modern"
-            :siteLogo="$siteLogo ?? null"
-            :siteName="$siteName ?? null"
-            :description="$footerDesc ?? null"
-            :address="$footerAddress ?? null"
-            :email="$footerEmail ?? null"
-            :phone="$footerPhone ?? null"
-            :socials="$footerSocials ?? null"
-            :quickLinks="$footerQuickLinks ?? []"
-            :pages="$footerPages ?? []"
-            :copyright="$footerCopy ?? null"
-            :termsUrl="$footerTerms ?? '#'"
-            :privacyUrl="$footerPrivacy ?? '#'"
-            :cookiesUrl="$footerCookies ?? '#'"
-            :bgColor="'#e7e7e7'"
-        />
+
+        {{-- Professional Footer: CMS Controlled --}}
+        @php
+            $footerColor = data_get($page?->content, 'footer.background_color', '#eef3f9');
+            $footerDesc = data_get($page?->content, 'footer.description', "The world's most trusted platform for premium car auctions. We bring the auction room to your screen with transparency and class.");
+            $footerAddress = data_get($page?->content, 'footer.address', '123 Luxury Drive, Dubai, UAE');
+            $footerEmail = data_get($page?->content, 'footer.email', 'contact@motorbazar.com');
+            $footerPhone = data_get($page?->content, 'footer.phone', '+971 4 000 0000');
+            $footerCopy = data_get($page?->content, 'footer.copyright', '&copy; ' . date('Y') . ' MOTOR BAZAR. ALL RIGHTS RESERVED.');
+            $footerTerms = data_get($page?->content, 'footer.terms_url', '#');
+            $footerPrivacy = data_get($page?->content, 'footer.privacy_url', '#');
+            $footerCookies = data_get($page?->content, 'footer.cookies_url', '#');
+            $footerQuickLinks = data_get($page?->content, 'footer.quick_links', [
+                ['label' => 'Home', 'url' => '/'],
+                ['label' => 'Browse Auctions', 'url' => route('auctions.index')],
+                ['label' => 'How it Works', 'url' => route('how-it-works')],
+                ['label' => 'Sell Your Car', 'url' => '#'],
+            ]);
+            $footerPages = data_get($page?->content, 'footer.pages', []);
+        @endphp
+
+        {{-- فوتر مبسّط للتشخيص: بدون blur، بدون ظلال معقّدة، خلفية صلبة + z-index عالٍ --}}
+        <footer id="h2-footer-root" class="h2-footer-root block w-full" role="contentinfo">
+            <div class="max-w-6xl mx-auto px-5 sm:px-8 py-14">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-12">
+                    <div class="space-y-4">
+                        <p class="text-lg font-black uppercase tracking-tight text-white">
+                            Motor <span class="text-[#ff6900]">Bazar</span>
+                        </p>
+                        <p class="text-sm text-slate-400 leading-relaxed max-w-sm">{{ $footerDesc }}</p>
+                        @if(count($footerSocials))
+                            <div class="flex flex-wrap gap-2 pt-2">
+                                @foreach($footerSocials as $fsk => $fsurl)
+                                    <a href="{{ $fsurl }}" target="_blank" rel="noopener noreferrer"
+                                        class="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-[#1e293b] text-slate-300 hover:bg-[#ff6900] hover:text-white transition-colors">
+                                        <i data-lucide="{{ $fsk === 'x' ? 'twitter' : 'share-2' }}" class="w-4 h-4"></i>
+                                    </a>
+                                @endforeach
+                            </div>
+                        @endif
+                    </div>
+                    <div>
+                        <p class="text-[0.65rem] font-black uppercase tracking-[0.25em] text-[#ff6900] mb-4">Navigation
+                        </p>
+                        <ul class="space-y-2 text-sm font-semibold">
+                            @foreach($footerQuickLinks as $link)
+                                <li><a href="{{ data_get($link, 'url', '#') }}">{{ data_get($link, 'label', '') }}</a></li>
+                            @endforeach
+                        </ul>
+                    </div>
+                    <div>
+                        <p class="text-[0.65rem] font-black uppercase tracking-[0.25em] text-[#ff6900] mb-4">Resources
+                        </p>
+                        <ul class="space-y-2 text-sm font-semibold">
+                            @foreach($footerPages as $pg)
+                                <li><a href="{{ data_get($pg, 'url', '#') }}">{{ data_get($pg, 'label', '') }}</a></li>
+                            @endforeach
+                            <li><a href="{{ $footerTerms }}">Terms</a></li>
+                        </ul>
+                    </div>
+                    <div class="rounded-xl border border-slate-700 bg-[#111c2e] p-5 lg:p-6">
+                        <p class="text-[0.65rem] font-black uppercase tracking-[0.25em] text-[#ff6900] mb-4">Contact</p>
+                        <ul class="space-y-4 text-sm">
+                            @if($footerPhone)
+                                <li>
+                                    <span
+                                        class="block text-[0.6rem] uppercase tracking-wider text-slate-500 mb-0.5">Phone</span>
+                                    <a href="tel:{{ preg_replace('/\s+/', '', $footerPhone) }}"
+                                        class="font-bold text-white">{{ $footerPhone }}</a>
+                                </li>
+                            @endif
+                            @if($footerEmail)
+                                <li>
+                                    <span
+                                        class="block text-[0.6rem] uppercase tracking-wider text-slate-500 mb-0.5">Email</span>
+                                    <a href="mailto:{{ $footerEmail }}"
+                                        class="font-bold text-white break-all">{{ $footerEmail }}</a>
+                                </li>
+                            @endif
+                            @if($footerAddress)
+                                <li class="text-slate-400 text-xs leading-relaxed">{{ $footerAddress }}</li>
+                            @endif
+                        </ul>
+                    </div>
+                </div>
+                <div
+                    class="mt-12 pt-8 border-t border-slate-700 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 text-[0.65rem] text-slate-500 uppercase tracking-wider font-bold">
+                    <div>{!! $footerCopy !!}</div>
+                    <div class="flex items-center gap-2 text-slate-600">
+                        <span class="h-2 w-2 rounded-full bg-emerald-500"></span>
+                        SSL
+                    </div>
+                </div>
+            </div>
+        </footer>
     </main>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
@@ -2384,40 +1966,7 @@
                 updateState();
             }
         });
-
-        // Section Order Reordering
-        (function() {
-            const container = document.getElementById('sectionsContainer');
-            if (!container) return;
-            
-            const sectionOrder = JSON.parse(container.dataset.sectionOrder || '{}');
-            const sectionIds = ['trust_badges', 'services', 'google_reviews', 'location', 'featured_cars', 'brand_logos', 'blog'];
-            
-            // Get all section elements
-            const sectionElements = [];
-            sectionIds.forEach(key => {
-                const el = document.getElementById('section-' + key);
-                if (el) {
-                    sectionElements.push({
-                        key,
-                        el,
-                        order: parseInt(sectionOrder[key]) || 999
-                    });
-                }
-            });
-            
-            // Sort by order
-            sectionElements.sort((a, b) => a.order - b.order);
-            
-            // Reorder inside container
-            sectionElements.forEach((section) => {
-                container.appendChild(section.el);
-            });
-        })();
     </script>
 </body>
 
 </html>
-@php
-    $trustStripBg = data_get($page?->content, 'trust_strip_bg', '#e7e7e7');
-@endphp

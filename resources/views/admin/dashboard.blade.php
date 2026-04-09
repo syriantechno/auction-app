@@ -191,7 +191,7 @@
     {{-- Chart Protocol: Normal Weight Calibration --}}
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            Chart.defaults.font.family = "'Plus Jakarta Sans', sans-serif";
+            Chart.defaults.font.family = "'Inter', sans-serif";
             Chart.defaults.font.weight = '400';
             Chart.defaults.color = '#94a3b8';
 

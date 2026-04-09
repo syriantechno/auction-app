@@ -3,8 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\CMS\Page;
 use App\Models\Brand;
+use App\Models\Car;
+use App\Models\CMS\Page;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
@@ -59,19 +60,19 @@ class CMSController extends Controller
                         'hours' => 'Mon - Fri: 9:00 - 18:00',
                         'sticky' => true,
                         'glass' => true,
-                    ]
-                ]
+                    ],
+                ],
             ]
         );
 
-        $recentCars = \App\Models\Car::with('brand')->latest()->limit(12)->get();
+        $recentCars = Car::with('brand')->latest()->limit(12)->get();
         $brands = Brand::orderBy('name')->get();
-        
+
         // Check if this is the new layout route
         if (request()->routeIs('admin.cms.home.fixed')) {
             return view('admin.cms.home_fixed', compact('page', 'recentCars'));
         }
-        
+
         return view('admin.cms.home', compact('page', 'recentCars', 'brands'));
     }
 
@@ -80,7 +81,7 @@ class CMSController extends Controller
         Cache::forget('homepage.cms.page');
         Cache::forget('homepage.featured.auctions');
         Cache::forget('homepage.stats');
-        
+
         return response()->json(['success' => true]);
     }
 
@@ -88,7 +89,7 @@ class CMSController extends Controller
     {
         $page = Page::where('slug', 'home')->firstOrFail();
         $content = $page->content ?? [];
-        
+
         $request->validate([
             'title' => 'required|string|max:255',
             'hero_title' => 'nullable|string',
@@ -101,13 +102,16 @@ class CMSController extends Controller
             'hero_background_color' => 'nullable|string|max:30',
             'hero_background_color_secondary' => 'nullable|string|max:30',
             'hero_background_gradient_angle' => 'nullable|numeric',
-            'hero_background_mode' => 'nullable|string|in:solid,gradient,image,custom',
+            'hero_background_mode' => 'nullable|string|in:solid,gradient,image,custom,blend',
             'hero_custom_css' => 'nullable|string',
             'hero_background_opacity' => 'nullable|numeric|between:0,1',
             'hero_background_direction' => 'nullable|in:horizontal,vertical',
             'hero_background_overlay_enabled' => 'nullable|boolean',
             'hero_car_scale' => 'nullable|numeric',
+            'hero_car_right' => 'nullable|numeric',
+            'hero_car_top' => 'nullable|numeric',
             'hero_car_mirror' => 'nullable|boolean',
+            'hero_circles_enabled' => 'nullable|boolean',
             'primary_cta_label' => 'nullable|string',
             'primary_cta_url' => 'nullable|string',
             'secondary_cta_label' => 'nullable|string',
@@ -127,9 +131,21 @@ class CMSController extends Controller
             'navbar_glass' => 'nullable|boolean',
             'navbar.bg_color' => 'nullable|string|max:20',
             'navbar.text_color' => 'nullable|string|max:20',
+            'navbar.dot_color' => 'nullable|string|max:20',
+            'navbar.logo_scale' => 'nullable|numeric|min:10|max:300',
             'location' => 'nullable|array',
             'trust_badges_stats_bg' => 'nullable|string',
             'trust_badges_custom_css' => 'nullable|string',
+            'trust_strip_bg' => 'nullable|string',
+            'services_subtitle' => 'nullable|string|max:255',
+            'services_title' => 'nullable|string|max:255',
+            'services_items' => 'nullable|array',
+            'body_types' => 'nullable|array',
+            'blog_title' => 'nullable|string|max:255',
+            'blog_subtitle' => 'nullable|string|max:255',
+            'google_reviews' => 'nullable|array',
+            'section_order' => 'nullable|array',
+            'theme' => 'nullable|array',
         ]);
 
         $heroBackgroundImage = data_get($content, 'hero.background_image', '/images/hero-bg.png');
@@ -172,17 +188,19 @@ class CMSController extends Controller
             'background_overlay_enabled' => $request->boolean('hero_background_overlay_enabled', data_get($content, 'hero.background_overlay_enabled', true)),
             'background_image' => $heroBackgroundImage,
             'car_scale' => (float) ($request->input('hero_car_scale') ?? data_get($content, 'hero.car_scale', 1)),
+            'car_right' => (float) ($request->input('hero_car_right') ?? data_get($content, 'hero.car_right', -7)),
+            'car_top' => (float) ($request->input('hero_car_top') ?? data_get($content, 'hero.car_top', 90)),
             'car_mirror' => (bool) ($request->input('hero_car_mirror') ?? data_get($content, 'hero.car_mirror', false)),
+            'circles_enabled' => $request->boolean('hero_circles_enabled', data_get($content, 'hero.circles_enabled', true)),
         ];
 
         $page->hero_image = $heroCarImage;
         $page->title = $request->input('title');
-        
-        
+
         if ($request->has('body_types')) {
             $content['body_types'] = $request->input('body_types');
         }
-        
+
         if ($request->has('brands')) {
             $content['brands'] = $request->input('brands');
         }
@@ -195,123 +213,198 @@ class CMSController extends Controller
         if ($request->has('lead_form')) {
             $leadFormInput = $request->input('lead_form', []);
             $content['lead_form'] = [
-                'wizard_w1'    => data_get($leadFormInput, 'wizard_w1', data_get($content, 'lead_form.wizard_w1', 'Select')),
-                'wizard_w2'    => data_get($leadFormInput, 'wizard_w2', data_get($content, 'lead_form.wizard_w2', 'Customize')),
-                'wizard_w3'    => data_get($leadFormInput, 'wizard_w3', data_get($content, 'lead_form.wizard_w3', 'Submit')),
+                'wizard_w1' => data_get($leadFormInput, 'wizard_w1', data_get($content, 'lead_form.wizard_w1', 'Select')),
+                'wizard_w2' => data_get($leadFormInput, 'wizard_w2', data_get($content, 'lead_form.wizard_w2', 'Customize')),
+                'wizard_w3' => data_get($leadFormInput, 'wizard_w3', data_get($content, 'lead_form.wizard_w3', 'Submit')),
                 'step1' => [
-                    'title'        => data_get($leadFormInput, 'step1.title', 'Choose brand, model, and year'),
-                    'subtitle'     => data_get($leadFormInput, 'step1.subtitle', 'Pick a brand first. The model list updates automatically.'),
-                    'brand_label'  => data_get($leadFormInput, 'step1.brand_label', 'Brand Selection'),
-                    'model_label'  => data_get($leadFormInput, 'step1.model_label', 'Model'),
-                    'year_label'   => data_get($leadFormInput, 'step1.year_label', 'Year'),
+                    'title' => data_get($leadFormInput, 'step1.title', 'Choose brand, model, and year'),
+                    'subtitle' => data_get($leadFormInput, 'step1.subtitle', 'Pick a brand first. The model list updates automatically.'),
+                    'brand_label' => data_get($leadFormInput, 'step1.brand_label', 'Brand Selection'),
+                    'model_label' => data_get($leadFormInput, 'step1.model_label', 'Model'),
+                    'year_label' => data_get($leadFormInput, 'step1.year_label', 'Year'),
                     'button_label' => data_get($leadFormInput, 'step1.button_label', 'Get Free Valuation'),
                 ],
                 'step2' => [
-                    'specs_label'     => data_get($leadFormInput, 'step2.specs_label', 'Regional Specs'),
-                    'body_label'      => data_get($leadFormInput, 'step2.body_label', 'Body Type'),
-                    'engine_label'    => data_get($leadFormInput, 'step2.engine_label', 'Engine Size'),
-                    'mileage_label'   => data_get($leadFormInput, 'step2.mileage_label', 'Mileage (KM)'),
+                    'specs_label' => data_get($leadFormInput, 'step2.specs_label', 'Regional Specs'),
+                    'body_label' => data_get($leadFormInput, 'step2.body_label', 'Body Type'),
+                    'engine_label' => data_get($leadFormInput, 'step2.engine_label', 'Engine Size'),
+                    'mileage_label' => data_get($leadFormInput, 'step2.mileage_label', 'Mileage (KM)'),
                     'condition_label' => data_get($leadFormInput, 'step2.condition_label', 'Overall Condition Matrix'),
-                    'back_label'      => data_get($leadFormInput, 'step2.back_label', 'Back'),
-                    'next_label'      => data_get($leadFormInput, 'step2.next_label', 'Next Stage'),
+                    'back_label' => data_get($leadFormInput, 'step2.back_label', 'Back'),
+                    'next_label' => data_get($leadFormInput, 'step2.next_label', 'Next Stage'),
                 ],
                 'step3' => [
-                    'name_label'    => data_get($leadFormInput, 'step3.name_label', 'Full Identity'),
-                    'phone_label'   => data_get($leadFormInput, 'step3.phone_label', 'Mobile Number'),
-                    'email_label'   => data_get($leadFormInput, 'step3.email_label', 'Email Address'),
-                    'notes_label'   => data_get($leadFormInput, 'step3.notes_label', 'Additional Notes'),
-                    'submit_label'  => data_get($leadFormInput, 'step3.submit_label', 'Request Free Valuation'),
-                    'back_label'    => data_get($leadFormInput, 'step3.back_label', 'Back'),
+                    'name_label' => data_get($leadFormInput, 'step3.name_label', 'Full Identity'),
+                    'phone_label' => data_get($leadFormInput, 'step3.phone_label', 'Mobile Number'),
+                    'email_label' => data_get($leadFormInput, 'step3.email_label', 'Email Address'),
+                    'notes_label' => data_get($leadFormInput, 'step3.notes_label', 'Additional Notes'),
+                    'submit_label' => data_get($leadFormInput, 'step3.submit_label', 'Request Free Valuation'),
+                    'back_label' => data_get($leadFormInput, 'step3.back_label', 'Back'),
                 ],
             ];
 
         }
-        
+
         // Footer settings
         $content['footer'] = [
             'background_color' => $request->input('footer_background_color') ?? data_get($content, 'footer.background_color', '#031629'),
         ];
-        
+
         $navbarInput = $request->input('navbar', []);
         $content['navbar'] = [
-            'phone'      => $request->input('navbar_phone') ?? data_get($content, 'navbar.phone', '+1 (234) 567 890'),
-            'whatsapp'   => $request->input('navbar_whatsapp') ?? data_get($content, 'navbar.whatsapp', ''),
-            'hours'      => $request->input('navbar_hours') ?? data_get($content, 'navbar.hours', 'Mon - Fri: 9:00 - 18:00'),
-            'sticky'     => $request->boolean('navbar_sticky', data_get($content, 'navbar.sticky', true)),
-            'glass'      => $request->boolean('navbar_glass', data_get($content, 'navbar.glass', true)),
-            'bg_color'   => data_get($navbarInput, 'bg_color', data_get($content, 'navbar.bg_color', '#ffffff')),
-            'text_color' => data_get($navbarInput, 'text_color', data_get($content, 'navbar.text_color', '#1d293d')),
+            'phone' => $request->input('navbar_phone') ?? data_get($content, 'navbar.phone', '+1 (234) 567 890'),
+            'whatsapp' => $request->input('navbar_whatsapp') ?? data_get($content, 'navbar.whatsapp', ''),
+            'hours' => $request->input('navbar_hours') ?? data_get($content, 'navbar.hours', 'Mon - Fri: 9:00 - 18:00'),
+            'sticky' => $request->boolean('navbar_sticky', data_get($content, 'navbar.sticky', true)),
+            'glass' => $request->boolean('navbar_glass', data_get($content, 'navbar.glass', true)),
+            'bg_color' => data_get($navbarInput, 'bg_color', data_get($content, 'navbar.bg_color', '#ffffff')),
+            'dot_color' => data_get($navbarInput, 'dot_color', data_get($content, 'navbar.dot_color', '#ff6900')),
+            'logo_scale' => data_get($navbarInput, 'logo_scale', data_get($content, 'navbar.logo_scale', 100)),
         ];
+
+        // Google Reviews
+        if ($request->has('google_reviews_title')) {
+            $content['google_reviews'] = [
+                'enabled' => $request->boolean('google_reviews_enabled'),
+                'title' => $request->input('google_reviews_title'),
+                'subtitle' => $request->input('google_reviews_subtitle'),
+                'badge' => $request->input('google_reviews_badge'),
+                'place_id' => $request->input('google_reviews_place_id'),
+                'api_key' => $request->input('google_reviews_api_key'),
+                'manual_reviews' => $request->input('google_reviews.manual_reviews', []),
+                'reviews_count' => $request->input('google_reviews.reviews_count', 6),
+                'show_only_5_stars' => $request->boolean('google_reviews.show_only_5_stars', false),
+                'reviews_count_total' => $request->input('google_reviews.reviews_count_total', '500+'),
+                'average_rating' => $request->input('google_reviews.average_rating', '4.9'),
+                'show_rating_badge' => $request->boolean('google_reviews.show_rating_badge', true),
+            ];
+        }
 
         // Trust Badges
         $content['trust_badges_title'] = $request->input('trust_badges_title', data_get($content, 'trust_badges_title', 'We built our business on trust'));
         if ($request->has('trust_badges')) {
             $content['trust_badges'] = collect($request->input('trust_badges', []))
-                ->map(fn($b) => [
-                    'label'     => data_get($b, 'label', ''),
-                    'icon'      => data_get($b, 'icon', 'star'),
-                    'color'     => data_get($b, 'color', '#333333'),
-                    'bg_color'  => data_get($b, 'bg_color', '#f1f5f9'),
-                    'desc'      => data_get($b, 'desc', ''),
+                ->map(fn ($b) => [
+                    'label' => data_get($b, 'label', ''),
+                    'icon' => data_get($b, 'icon', 'star'),
+                    'color' => data_get($b, 'color', '#333333'),
+                    'bg_color' => data_get($b, 'bg_color', '#f1f5f9'),
+                    'desc' => data_get($b, 'desc', ''),
                 ])->values()->all();
         }
-        
+
         $content['trust_badges_stats_bg'] = $request->input('trust_badges_stats_bg', data_get($content, 'trust_badges_stats_bg', 'rgba(255, 255, 255, 0.92)'));
         $content['trust_badges_custom_css'] = $request->input('trust_badges_custom_css', data_get($content, 'trust_badges_custom_css', ''));
-        
+        $content['trust_strip_bg'] = $request->input('trust_strip_bg', data_get($content, 'trust_strip_bg', '#e7e7e7'));
+
         // Save Location Hub content
         if ($request->has('location')) {
             $loc = $request->input('location', []);
             $content['location'] = [
-                'section_header_title'   => data_get($loc, 'section_header_title', 'Find Us Section'),
-                'section_header_subtitle'=> data_get($loc, 'section_header_subtitle', 'Visit our showroom and explore premium vehicles'),
+                'section_header_title' => data_get($loc, 'section_header_title', 'Find Us Section'),
+                'section_header_subtitle' => data_get($loc, 'section_header_subtitle', 'Visit our showroom and explore premium vehicles'),
                 'section_label' => data_get($loc, 'section_label', 'Find Us'),
-                'title'         => data_get($loc, 'title', 'Visit Motor'),
-                'title_accent'  => data_get($loc, 'title_accent', 'Bazar'),
-                'subtitle'      => data_get($loc, 'subtitle', 'Come see our full inventory in person — our team is ready to help.'),
-                'address'       => data_get($loc, 'address', 'Dubai, United Arab Emirates'),
-                'phone'         => data_get($loc, 'phone', '+971 4 000 0000'),
-                'hours'         => data_get($loc, 'hours', 'Mon – Sat: 9:00 AM – 7:00 PM'),
-                'button_label'  => data_get($loc, 'button_label', 'Get Directions'),
-                'maps_url'      => data_get($loc, 'maps_url', 'https://maps.google.com'),
-                'iframe_url'    => data_get($loc, 'iframe_url', ''),
+                'title' => data_get($loc, 'title', 'Visit Motor'),
+                'title_accent' => data_get($loc, 'title_accent', 'Bazar'),
+                'subtitle' => data_get($loc, 'subtitle', 'Come see our full inventory in person — our team is ready to help.'),
+                'address' => data_get($loc, 'address', 'Dubai, United Arab Emirates'),
+                'phone' => data_get($loc, 'phone', '+971 4 000 0000'),
+                'hours' => data_get($loc, 'hours', 'Mon – Sat: 9:00 AM – 7:00 PM'),
+                'button_label' => data_get($loc, 'button_label', 'Get Directions'),
+                'maps_url' => data_get($loc, 'maps_url', 'https://maps.google.com'),
+                'iframe_url' => data_get($loc, 'iframe_url', ''),
             ];
         }
 
         // Footer settings
         $content['footer'] = array_merge(data_get($content, 'footer', []), [
             'background_color' => $request->input('footer.background_color', data_get($content, 'footer.background_color', '#eef3f9')),
-            'description'      => $request->input('footer.description', data_get($content, 'footer.description', '')),
-            'address'          => $request->input('footer.address', data_get($content, 'footer.address', '')),
-            'email'            => $request->input('footer.email', data_get($content, 'footer.email', '')),
-            'phone'            => $request->input('footer.phone', data_get($content, 'footer.phone', '')),
-            'copyright'        => $request->input('footer.copyright', data_get($content, 'footer.copyright', '')),
-            'terms_url'        => $request->input('footer.terms_url', data_get($content, 'footer.terms_url', '#')),
-            'privacy_url'      => $request->input('footer.privacy_url', data_get($content, 'footer.privacy_url', '#')),
-            'cookies_url'      => $request->input('footer.cookies_url', data_get($content, 'footer.cookies_url', '#')),
+            'description' => $request->input('footer.description', data_get($content, 'footer.description', '')),
+            'address' => $request->input('footer.address', data_get($content, 'footer.address', '')),
+            'email' => $request->input('footer.email', data_get($content, 'footer.email', '')),
+            'phone' => $request->input('footer.phone', data_get($content, 'footer.phone', '')),
+            'copyright' => $request->input('footer.copyright', data_get($content, 'footer.copyright', '')),
+            'terms_url' => $request->input('footer.terms_url', data_get($content, 'footer.terms_url', '#')),
+            'privacy_url' => $request->input('footer.privacy_url', data_get($content, 'footer.privacy_url', '#')),
+            'cookies_url' => $request->input('footer.cookies_url', data_get($content, 'footer.cookies_url', '#')),
             'social' => [
-                'facebook'  => $request->input('footer.social.facebook', data_get($content, 'footer.social.facebook', '')),
+                'facebook' => $request->input('footer.social.facebook', data_get($content, 'footer.social.facebook', '')),
                 'instagram' => $request->input('footer.social.instagram', data_get($content, 'footer.social.instagram', '')),
-                'whatsapp'  => $request->input('footer.social.whatsapp', data_get($content, 'footer.social.whatsapp', '')),
-                'youtube'   => $request->input('footer.social.youtube', data_get($content, 'footer.social.youtube', '')),
+                'whatsapp' => $request->input('footer.social.whatsapp', data_get($content, 'footer.social.whatsapp', '')),
+                'youtube' => $request->input('footer.social.youtube', data_get($content, 'footer.social.youtube', '')),
             ],
         ]);
 
         // Footer quick links
         if ($request->has('footer_quick_links')) {
             $content['footer']['quick_links'] = collect($request->input('footer_quick_links', []))
-                ->filter(fn($l) => !empty(data_get($l, 'label')))
-                ->map(fn($l) => ['label' => data_get($l, 'label', ''), 'url' => data_get($l, 'url', '#')])
+                ->filter(fn ($l) => ! empty(data_get($l, 'label')))
+                ->map(fn ($l) => ['label' => data_get($l, 'label', ''), 'url' => data_get($l, 'url', '#')])
                 ->values()->all();
         }
 
         // Footer pages (internal pages from page builder)
         if ($request->has('footer_pages')) {
             $content['footer']['pages'] = collect($request->input('footer_pages', []))
-                ->filter(fn($p) => !empty(data_get($p, 'label')))
-                ->map(fn($p) => ['label' => data_get($p, 'label', ''), 'url' => data_get($p, 'url', '#')])
+                ->filter(fn ($p) => ! empty(data_get($p, 'label')))
+                ->map(fn ($p) => ['label' => data_get($p, 'label', ''), 'url' => data_get($p, 'url', '#')])
                 ->values()->all();
         }
+
+        // Services
+        $content['services_subtitle'] = $request->input('services_subtitle', data_get($content, 'services_subtitle', 'We Offer Best Repair Services'));
+        $content['services_title'] = $request->input('services_title', data_get($content, 'services_title', 'Our Services'));
+        if ($request->has('services_items')) {
+            $content['services_items'] = collect($request->input('services_items', []))
+                ->map(fn ($s) => [
+                    'title' => data_get($s, 'title', ''),
+                    'icon' => data_get($s, 'icon', 'wrench'),
+                    'description' => data_get($s, 'description', ''),
+                ])->values()->all();
+        }
+
+        // Body Types
+        if ($request->has('body_types')) {
+            $content['body_types'] = collect($request->input('body_types', []))
+                ->map(fn ($bt) => [
+                    'label' => data_get($bt, 'label', ''),
+                    'icon' => data_get($bt, 'icon', 'car'),
+                    'slug' => data_get($bt, 'slug', ''),
+                    'image' => data_get($bt, 'image', ''),
+                ])->values()->all();
+        }
+        $content['body_types_display_mode'] = $request->input('body_types_display_mode', 'cards');
+        $content['body_types_show_grid'] = $request->boolean('body_types_show_grid', true);
+
+        // Theme Settings
+        $themeInput = $request->input('theme', []);
+        $content['theme'] = [
+            'primary_color' => $themeInput['primary_color'] ?? '#ff6900',
+            'secondary_color' => $themeInput['secondary_color'] ?? '#031629',
+            'accent_color' => $themeInput['accent_color'] ?? '#4285F4',
+            'success_color' => $themeInput['success_color'] ?? '#34A853',
+            'heading_color' => $themeInput['heading_color'] ?? '#031629',
+            'body_color' => $themeInput['body_color'] ?? '#64748b',
+            'light_color' => $themeInput['light_color'] ?? '#94a3b8',
+            'button_radius' => $request->input('theme_button_radius', $themeInput['button_radius'] ?? '8'),
+            'card_radius' => $request->input('theme_card_radius', $themeInput['card_radius'] ?? '16'),
+        ];
+
+        // Section Order
+        $sectionOrderInput = $request->input('section_order', []);
+        $content['section_order'] = [
+            'trust_badges' => (int) ($sectionOrderInput['trust_badges'] ?? 1),
+            'services' => (int) ($sectionOrderInput['services'] ?? 2),
+            'google_reviews' => (int) ($sectionOrderInput['google_reviews'] ?? 3),
+            'location' => (int) ($sectionOrderInput['location'] ?? 4),
+            'featured_cars' => (int) ($sectionOrderInput['featured_cars'] ?? 5),
+            'brand_logos' => (int) ($sectionOrderInput['brand_logos'] ?? 6),
+            'blog' => (int) ($sectionOrderInput['blog'] ?? 7),
+        ];
+
+        // Blog titles
+        $content['blog_title'] = $request->input('blog_title', data_get($content, 'blog_title', 'Latest Insights'));
+        $content['blog_subtitle'] = $request->input('blog_subtitle', data_get($content, 'blog_subtitle', 'Stay updated with the latest news and guides'));
 
         $page->update([
             'title' => $request->input('title'),
@@ -325,9 +418,11 @@ class CMSController extends Controller
         Cache::forget('layout.app.globals');
 
         if ($request->wantsJson() || $request->ajax()) {
+            \Illuminate\Support\Facades\Cache::forget('homepage.cms.page');
+
             return response()->json([
                 'success' => true,
-                'message' => 'Infrastructure Synchronized Successfully!',
+                'message' => 'Home page architecture updated successfully.'
             ]);
         }
 
@@ -346,13 +441,14 @@ class CMSController extends Controller
             $inner = $m[2];
             $style = '';
             if (preg_match('/color=["\']?([^"\'>\s]+)/i', $attrs, $c)) {
-                $style .= 'color:' . $c[1] . ';';
+                $style .= 'color:'.$c[1].';';
             }
-            $sizeMap = ['1'=>'.65rem','2'=>'.8rem','3'=>'1rem','4'=>'1.25rem','5'=>'1.6rem','6'=>'2rem','7'=>'2.8rem'];
+            $sizeMap = ['1' => '.65rem', '2' => '.8rem', '3' => '1rem', '4' => '1.25rem', '5' => '1.6rem', '6' => '2rem', '7' => '2.8rem'];
             if (preg_match('/size=["\']?([^"\'>\s]+)/i', $attrs, $s)) {
-                $style .= 'font-size:' . ($sizeMap[$s[1]] ?? '1rem') . ';';
+                $style .= 'font-size:'.($sizeMap[$s[1]] ?? '1rem').';';
             }
-            return $style ? '<span style="' . $style . '">' . $inner . '</span>' : $inner;
+
+            return $style ? '<span style="'.$style.'">'.$inner.'</span>' : $inner;
         }, $value);
 
         // Strip disallowed tags but keep content, preserve style attributes on allowed tags

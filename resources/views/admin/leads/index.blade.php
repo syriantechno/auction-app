@@ -119,7 +119,22 @@
                 </div>
 
                 <!-- Data Segment 2: Assignment & Ops -->
-                <div class="col-span-12 md:col-span-7 space-y-8">
+                <div class="col-span-12 md:col-span-7 space-y-6">
+                    <div class="bg-slate-50 rounded-lg border border-slate-100 overflow-hidden">
+                        <label class="text-[0.6rem] font-black uppercase text-slate-500 tracking-widest ml-4 mt-4 block">Location on Map</label>
+                        <div id="schedMap" class="w-full h-52 bg-slate-100 relative">
+                            @if(\App\Models\SystemSetting::get('map_provider') == 'osm')
+                                <iframe id="osmFrame" width="100%" height="100%" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="https://www.openstreetmap.org/export/embed.html?bbox=55,25,56,25.5" class="opacity-60"></iframe>
+                            @else
+                                <div id="googleMapPlaceholder" class="w-full h-full flex items-center justify-center text-slate-400">
+                                    <div class="text-center">
+                                        <i data-lucide="map" class="w-8 h-8 mx-auto mb-2 opacity-50"></i>
+                                        <span class="text-xs">Enter address to show map</span>
+                                    </div>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
                     <div class="grid grid-cols-2 gap-6">
                         <div class="space-y-2">
                             <label class="text-[0.65rem] font-black uppercase text-slate-500 tracking-widest ml-1">Assigned Inspector</label>
@@ -134,7 +149,11 @@
                             <label class="text-[0.65rem] font-black uppercase text-slate-500 tracking-widest ml-1">Inspection Venue</label>
                             <div class="relative">
                                 <i data-lucide="map-pin" class="w-4.5 h-4.5 absolute left-4.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                                <input type="text" name="location" placeholder="Dubai Oasis, Lot 4..." class="w-full h-[52px] bg-slate-50 border-2 border-slate-100 rounded-lg pl-12 pr-5 text-[0.9rem] font-medium text-slate-700 outline-none focus:border-orange-500/40 transition-all shadow-sm">
+                                <input type="text" id="schedLocation" name="location" placeholder="Dubai Oasis, Lot 4..." class="w-full h-[52px] bg-slate-50 border-2 border-slate-100 rounded-lg pl-12 pr-5 text-[0.9rem] font-medium text-slate-700 outline-none focus:border-orange-500/40 transition-all shadow-sm">
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-[0.6rem] font-black uppercase text-slate-500 tracking-widest ml-1">Address</label>
+                                <textarea id="schedAddress" name="address" rows="2" placeholder="Full address for inspection..." class="w-full bg-slate-50 border-2 border-slate-100 rounded-lg px-4 py-3 text-[0.85rem] text-slate-700 outline-none focus:border-orange-500/40 transition-all shadow-sm resize-none"></textarea>
                             </div>
                         </div>
                     </div>
@@ -381,7 +400,7 @@
                             </div>
                             <div class="flex items-center justify-between text-[0.65rem] font-black uppercase tracking-widest text-slate-400 pt-2 border-t border-slate-100">
                                 <span>Source</span>
-                                <span id="auditSource" class="px-2 py-1 rounded-md text-white text-[0.55rem]">Unknown</span>
+                                <span id="auditSource" class="w-7 h-7 rounded-full flex items-center justify-center text-white text-[0.65rem] font-bold">?</span>
                             </div>
                         </div>
                     </div>
@@ -585,7 +604,8 @@
                 
                 // Update source badge
                 const sourceEl = document.getElementById('auditSource');
-                sourceEl.textContent = lead.source_label || 'Unknown';
+                const srcLabel = lead.source_label || 'Unknown';
+                sourceEl.textContent = srcLabel.charAt(0).toUpperCase();
                 sourceEl.style.backgroundColor = lead.source_color || '#6B7280';
 
                 document.getElementById('auditModal').classList.remove('hidden');
@@ -614,6 +634,13 @@
                 // Fix #4: Auto-fill location from lead
                 const locInput = document.querySelector('#scheduleForm input[name="location"]');
                 if (locInput) locInput.value = details.location || details.home_address || '';
+                
+                const addrInput = document.getElementById('schedAddress');
+                if (addrInput) addrInput.value = details.address || details.home_address || '';
+
+                // Update map with address
+                const fullAddress = (details.address || details.home_address || details.location || '') + ', Dubai, UAE';
+                updateInspectionMap(fullAddress);
 
                 document.getElementById('schedulingModal').classList.remove('hidden');
                 if(window.initBazarPickers) window.initBazarPickers(document.getElementById('schedulingModal'));
@@ -925,6 +952,41 @@
 <script>
 document.getElementById('newLeadModal').addEventListener('click', function(e) {
     if (e.target === this) this.classList.add('hidden');
+});
+
+// Update map when address changes
+const mapProvider = '{{ \App\Models\SystemSetting::get('map_provider', 'google') }}';
+const googleMapsKey = '{{ \App\Models\SystemSetting::get('google_maps_api_key', '') }}';
+
+function updateInspectionMap(address) {
+    if (!address) return;
+    
+    const osmFrame = document.getElementById('osmFrame');
+    if (osmFrame && mapProvider === 'osm') {
+        // Use Nominatim for OpenStreetMap
+        fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data && data[0]) {
+                    const lat = data[0].lat;
+                    const lon = data[0].lon;
+                    const bbox = (lon - 0.01) + ',' + (lat - 0.01) + ',' + (lon + 0.01) + ',' + (lat + 0.01);
+                    osmFrame.src = `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${lat},${lon}`;
+                    osmFrame.style.opacity = '1';
+                }
+            })
+            .catch(() => {});
+    }
+}
+
+// Update map when address input changes
+document.addEventListener('DOMContentLoaded', function() {
+    const addrInput = document.getElementById('schedAddress');
+    if (addrInput) {
+        addrInput.addEventListener('change', function() {
+            updateInspectionMap(this.value + ', Dubai, UAE');
+        });
+    }
 });
 </script>
 

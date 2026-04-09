@@ -53,7 +53,6 @@
                             11 => ['label' => 'Blog', 'sub' => 'Hero and Display', 'color' => 'orange', 'icon' => 'newspaper'],
                             12 => ['label' => 'Navigation', 'sub' => 'Header and Style', 'color' => 'blue', 'icon' => 'layout-panel-top'],
                             13 => ['label' => 'Companies', 'sub' => 'Multi-Company', 'color' => 'amber', 'icon' => 'building-2'],
-                            14 => ['label' => 'Google Reviews', 'sub' => 'Social Proof', 'color' => 'emerald', 'icon' => 'star'],
                             15 => ['label' => 'Lead Architecture', 'sub' => 'Funnel Steps', 'color' => 'orange', 'icon' => 'car'],
                         ];
 
@@ -2271,121 +2270,6 @@
                             </div>
                         </div>
                     </div>
-                </div>
-
-                
-                <div x-show="activeTab === 'tab14'" x-cloak x-transition
-                    x-data='{
-                        reviews: <?php echo json_encode($googleReviewSettings["manual_reviews"], 15, 512) ?>,
-                        addReview() {
-                            this.reviews.push({ author: "", rating: 5, text: "", profile_url: "" });
-                        },
-                        removeReview(idx) {
-                            this.reviews.splice(idx, 1);
-                        }
-                    }">
-                    <form action="<?php echo e(route('admin.settings.google-reviews.save')); ?>" method="POST">
-                        <?php echo csrf_field(); ?>
-                        <input type="hidden" name="active_tab" value="tab14">
-
-                        <div class="space-y-6">
-                            <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-                                <div class="flex items-center gap-4">
-                                    <div class="w-12 h-12 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-500">
-                                        <i data-lucide="star" class="w-6 h-6"></i>
-                                    </div>
-                                    <div>
-                                        <h3 class="text-[0.95rem] font-black text-[#031629] uppercase tracking-wide">Google Reviews Card</h3>
-                                        <p class="text-[0.6rem] text-slate-400 font-bold uppercase tracking-widest mt-0.5">Control the social-proof widget on the public site</p>
-                                    </div>
-                                </div>
-                                <label class="inline-flex items-center gap-3 cursor-pointer select-none">
-                                    <input type="checkbox" name="google_reviews_enabled" value="1" class="sr-only peer" <?php echo e($googleReviewSettings['enabled'] === '1' ? 'checked' : ''); ?>>
-                                    <div class="w-12 h-6 rounded-full bg-slate-200 relative transition-colors duration-200 peer-checked:bg-emerald-500">
-                                        <span class="absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform duration-200 peer-checked:translate-x-6"></span>
-                                    </div>
-                                    <span class="text-[0.65rem] font-black uppercase tracking-widest text-slate-500">Display widget on homepage</span>
-                                </label>
-                            </div>
-
-                            <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div>
-                                    <label class="block text-[0.6rem] font-black uppercase tracking-widest text-slate-500 mb-2">Headline</label>
-                                    <input type="text" name="google_reviews_title" value="<?php echo e(old('google_reviews_title', $googleReviewSettings['title'])); ?>" class="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-semibold focus:border-[#ff6900] focus:ring-4 focus:ring-orange-500/5 outline-none transition-all">
-                                </div>
-                                <div>
-                                    <label class="block text-[0.6rem] font-black uppercase tracking-widest text-slate-500 mb-2">Sub-heading</label>
-                                    <input type="text" name="google_reviews_subtitle" value="<?php echo e(old('google_reviews_subtitle', $googleReviewSettings['subtitle'])); ?>" class="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-semibold focus:border-[#ff6900] focus:ring-4 focus:ring-orange-500/5 outline-none transition-all">
-                                </div>
-                                <div>
-                                    <label class="block text-[0.6rem] font-black uppercase tracking-widest text-slate-500 mb-2">Badge text</label>
-                                    <input type="text" name="google_reviews_badge" value="<?php echo e(old('google_reviews_badge', $googleReviewSettings['badge'])); ?>" class="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-semibold focus:border-[#ff6900] focus:ring-4 focus:ring-orange-500/5 outline-none transition-all" placeholder="e.g. 4.9 / 5 • Google Reviews">
-                                </div>
-                                <div>
-                                    <label class="block text-[0.6rem] font-black uppercase tracking-widest text-slate-500 mb-2">Google Place ID</label>
-                                    <input type="text" name="google_reviews_place_id" value="<?php echo e(old('google_reviews_place_id', $googleReviewSettings['place_id'])); ?>" class="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-semibold focus:border-[#ff6900] focus:ring-4 focus:ring-orange-500/5 outline-none transition-all" placeholder="ChIJ...">
-                                    <p class="text-[0.55rem] text-slate-400 mt-1">Optional. Fill if you plan to fetch live reviews.</p>
-                                </div>
-                                <div>
-                                    <label class="block text-[0.6rem] font-black uppercase tracking-widest text-slate-500 mb-2">Google API Key</label>
-                                    <input type="text" name="google_reviews_api_key" value="<?php echo e(old('google_reviews_api_key', $googleReviewSettings['api_key'])); ?>" class="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-mono focus:border-[#ff6900] focus:ring-4 focus:ring-orange-500/5 outline-none transition-all" placeholder="AIza...">
-                                </div>
-                            </div>
-
-                            <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 space-y-5">
-                                <div class="flex items-center justify-between gap-4 flex-wrap">
-                                    <div>
-                                        <p class="text-[0.7rem] font-black uppercase tracking-[0.3em] text-slate-400">Manual Reviews</p>
-                                        <p class="text-[0.6rem] text-slate-400 max-w-xl">Use this list if you don’t have API access yet. These entries will render exactly as provided.</p>
-                                    </div>
-                                    <button type="button" @click="addReview()" class="px-4 py-2 rounded-lg bg-emerald-500 text-white text-[0.65rem] font-black uppercase tracking-widest shadow-lg shadow-emerald-500/25 hover:scale-[1.02] active:scale-95 transition-all">
-                                        <i data-lucide="plus" class="inline w-4 h-4 mr-1"></i> Add Review
-                                    </button>
-                                </div>
-
-                                <template x-if="!reviews.length">
-                                    <div class="border-2 border-dashed border-slate-200 rounded-2xl p-8 text-center text-slate-400 text-[0.65rem] font-black uppercase tracking-[0.3em]">
-                                        No manual reviews yet. Click “Add Review” to start.
-                                    </div>
-                                </template>
-
-                                <div class="space-y-4" x-show="reviews.length">
-                                    <template x-for="(review, index) in reviews" :key="index">
-                                        <div class="p-4 border border-slate-100 rounded-2xl bg-slate-50/50 grid grid-cols-1 md:grid-cols-4 gap-3">
-                                            <div>
-                                                <label class="text-[0.55rem] font-black uppercase tracking-widest text-slate-400 mb-1 block">Name</label>
-                                                <input type="text" class="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm" x-model="review.author" :name="`reviews[${index}][author]`">
-                                            </div>
-                                            <div>
-                                                <label class="text-[0.55rem] font-black uppercase tracking-widest text-slate-400 mb-1 block">Rating (1-5)</label>
-                                                <input type="number" min="1" max="5" class="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm" x-model="review.rating" :name="`reviews[${index}][rating]`">
-                                            </div>
-                                            <div>
-                                                <label class="text-[0.55rem] font-black uppercase tracking-widest text-slate-400 mb-1 block">Profile URL</label>
-                                                <input type="url" class="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm" x-model="review.profile_url" :name="`reviews[${index}][profile_url]`" placeholder="https://maps.google.com/...">
-                                            </div>
-                                            <div>
-                                                <label class="text-[0.55rem] font-black uppercase tracking-widest text-slate-400 mb-1 block">Photo URL</label>
-                                                <input type="url" class="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm" x-model="review.photo_url" :name="`reviews[${index}][photo_url]`" placeholder="https://cdn.example.com/photo.jpg">
-                                            </div>
-                                            <div class="md:row-span-2">
-                                                <label class="text-[0.55rem] font-black uppercase tracking-widest text-slate-400 mb-1 block">Comment</label>
-                                                <textarea class="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm h-24" x-model="review.text" :name="`reviews[${index}][text]`" placeholder="Amazing experience..."></textarea>
-                                                <button type="button" @click="removeReview(index)" class="mt-2 text-[0.6rem] font-black uppercase tracking-[0.2em] text-red-500 hover:text-red-700">Remove</button>
-                                            </div>
-                                        </div>
-                                    </template>
-                                </div>
-                            </div>
-
-                            <div class="flex items-center justify-end gap-3 pt-6">
-                                <button type="submit" class="flex items-center gap-2.5 px-8 py-3 text-[0.72rem] font-black uppercase tracking-widest text-white bg-[#031629] rounded-xl hover:bg-[#ff6900] transition-all shadow-md">
-                                    <i data-lucide="save" class="w-4 h-4"></i>
-                                    <span>Save Google Reviews Settings</span>
-                                </button>
-                            </div>
-                        </div>
-                    </form>
                 </div>
 
                     <?php $tabId = 'tab15'; ?>

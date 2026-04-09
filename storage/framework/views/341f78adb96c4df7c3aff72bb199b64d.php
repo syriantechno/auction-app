@@ -16,7 +16,7 @@
 <?php endif; ?>
 <?php $component->withAttributes(['icon' => 'layout','title' => 'CMS','highlight' => 'Control Center','subtitle' => 'Homepage Content Management System']); ?>
      <?php $__env->slot('actions', null, []); ?> 
-        <a href="/" target="_blank" class="flex items-center gap-2 px-6 py-3 bg-white hover:bg-slate-50 text-slate-500 hover:text-slate-900 rounded-lg border border-slate-200 text-[0.65rem] font-bold uppercase tracking-widest transition-all shadow-sm">
+        <a href="/" target="_blank" class="flex items-center gap-2 px-6 py-3 bg-white hover:bg-slate-50 text-slate-500 hover:text-slate-900 rounded-lg border border-slate-200 text-[0.65rem] font-medium uppercase tracking-widest transition-all shadow-sm">
             <i data-lucide="external-link" class="w-4 h-4"></i> Live Preview
         </a>
      <?php $__env->endSlot(); ?>
@@ -26,11 +26,11 @@
         $_footerPages = data_get($page->content, 'footer.pages', []);
     ?>
 
-    <div x-data="window.__cmsPageData" x-init="lucide.createIcons()">
+    <div x-data="window.__cmsPageData" x-init="window.lucide && lucide.createIcons()">
 
     <?php if($errors->any()): ?>
         <div class="bg-red-50 border-2 border-red-100 p-6 rounded-lg mb-8">
-            <p class="text-[0.65rem] font-bold text-red-600 uppercase tracking-widest mb-3">Validation Synthesis Error</p>
+            <p class="text-[0.65rem] font-medium text-red-600 uppercase tracking-widest mb-3">Validation Synthesis Error</p>
             <ul class="space-y-1">
                 <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $error): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <li class="text-[0.8rem] font-medium text-red-700 flex items-center gap-2">
@@ -43,7 +43,7 @@
     <?php endif; ?>
 
 
-    <form @submit.prevent="saveForm" x-ref="cmsForm" action="<?php echo e(route('admin.cms.home.update')); ?>" method="POST" enctype="multipart/form-data" class="w-full">
+    <form @submit.prevent="saveForm" x-ref="cmsForm" id="cms-home-form" action="<?php echo e(route('admin.cms.home.update')); ?>" method="POST" enctype="multipart/form-data" class="w-full">
         <?php echo csrf_field(); ?>
         
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
@@ -62,7 +62,7 @@
                         </div>
                         <div>
                             <div class="text-[0.65rem] font-medium uppercase text-slate-900">Navbar</div>
-                            <div class="text-[0.5rem] font-bold uppercase tracking-tighter text-slate-400">Header</div>
+                            <div class="text-[0.5rem] font-medium uppercase tracking-tighter text-slate-400">Header</div>
                         </div>
                     </button>
 
@@ -76,7 +76,7 @@
                         </div>
                         <div>
                             <div class="text-[0.65rem] font-medium uppercase text-slate-900">Hero</div>
-                            <div class="text-[0.5rem] font-bold uppercase tracking-tighter text-slate-400">Banner Hub</div>
+                            <div class="text-[0.5rem] font-medium uppercase tracking-tighter text-slate-400">Banner Hub</div>
                         </div>
                     </button>
 
@@ -90,7 +90,7 @@
                         </div>
                         <div>
                             <div class="text-[0.65rem] font-medium uppercase text-slate-900">Lead Form</div>
-                            <div class="text-[0.5rem] font-bold uppercase tracking-tighter text-slate-400">Conversion</div>
+                            <div class="text-[0.5rem] font-medium uppercase tracking-tighter text-slate-400">Conversion</div>
                         </div>
                     </button>
 
@@ -104,7 +104,7 @@
                         </div>
                         <div>
                             <div class="text-[0.65rem] font-medium uppercase text-slate-900">Trust Badges</div>
-                            <div class="text-[0.5rem] font-bold uppercase tracking-tighter text-slate-400">Icon · Color · Text</div>
+                            <div class="text-[0.5rem] font-medium uppercase tracking-tighter text-slate-400">Icon · Color · Text</div>
                         </div>
                     </button>
 
@@ -118,7 +118,7 @@
                         </div>
                         <div>
                             <div class="text-[0.65rem] font-medium uppercase text-slate-900">Slider Logos</div>
-                            <div class="text-[0.5rem] font-bold uppercase tracking-tighter text-slate-400">Icons Slider</div>
+                            <div class="text-[0.5rem] font-medium uppercase tracking-tighter text-slate-400">Icons Slider</div>
                         </div>
                     </button>
 
@@ -130,7 +130,7 @@
                         </div>
                         <div>
                             <div class="text-[0.65rem] font-medium uppercase text-slate-900">Location Hub</div>
-                            <div class="text-[0.5rem] font-bold uppercase tracking-tighter text-slate-400">Find Us · Map</div>
+                            <div class="text-[0.5rem] font-medium uppercase tracking-tighter text-slate-400">Find Us · Map</div>
                         </div>
                     </button>
 
@@ -144,7 +144,30 @@
                         </div>
                         <div>
                             <div class="text-[0.65rem] font-medium uppercase text-slate-900">Styles</div>
-                            <div class="text-[0.5rem] font-bold uppercase tracking-tighter text-slate-400">Design System</div>
+                            <div class="text-[0.5rem] font-medium uppercase tracking-tighter text-slate-400">Design System</div>
+                        </div>
+                    </button>
+
+                    <button type="button" @click="cmsTab = 'section_order'" 
+                        :class="cmsTab === 'section_order' ? 'bg-violet-50 border-violet-200 text-violet-600' : 'bg-transparent border-transparent text-slate-400 grayscale opacity-60 hover:bg-slate-50 hover:border-slate-100 hover:grayscale-0 hover:opacity-100'"
+                        class="w-full flex items-center gap-2 p-2.5 rounded-lg border-2 transition-all duration-300 text-left active:scale-[0.98] group">
+                        <div class="w-8 h-8 rounded-lg bg-white border border-slate-200 flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow">
+                            <i data-lucide="arrow-up-down" class="w-4 h-4" :class="cmsTab === 'section_order' ? 'text-violet-500' : 'text-slate-400 group-hover:text-violet-500'"></i>
+                        </div>
+                        <div>
+                            <div class="text-[0.65rem] font-medium uppercase text-slate-900">Section Order</div>
+                            <div class="text-[0.5rem] font-medium uppercase tracking-tighter text-slate-400">Page Layout</div>
+                        </div>
+                    </button>
+                    <button type="button" @click="cmsTab = 'services'"
+                        :class="cmsTab === 'services' ? 'bg-red-50 border-red-200 text-red-600' : 'bg-transparent border-transparent text-slate-400 grayscale opacity-60 hover:bg-slate-50 hover:border-slate-100 hover:grayscale-0 hover:opacity-100'"
+                        class="w-full flex items-center gap-2 p-2.5 rounded-lg border-2 transition-all duration-300 text-left active:scale-[0.98] group">
+                        <div class="w-8 h-8 rounded-lg bg-white border border-slate-200 flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow">
+                            <i data-lucide="wrench" class="w-4 h-4" :class="cmsTab === 'services' ? 'text-red-500' : 'text-slate-400 group-hover:text-red-500'"></i>
+                        </div>
+                        <div>
+                            <div class="text-[0.65rem] font-medium uppercase text-slate-900">Services</div>
+                            <div class="text-[0.5rem] font-medium uppercase tracking-tighter text-slate-400">Cards Grid</div>
                         </div>
                     </button>
 
@@ -158,7 +181,43 @@
                         </div>
                         <div>
                             <div class="text-[0.65rem] font-medium uppercase text-slate-900">Footer</div>
-                            <div class="text-[0.5rem] font-bold uppercase tracking-tighter text-slate-400">Links · Social · Info</div>
+                            <div class="text-[0.5rem] font-medium uppercase tracking-tighter text-slate-400">Links · Social · Info</div>
+                        </div>
+                    </button>
+
+                    <button type="button" @click="cmsTab = 'body_types'" 
+                        :class="cmsTab === 'body_types' ? 'bg-orange-50 border-orange-200 text-orange-600' : 'bg-transparent border-transparent text-slate-400 grayscale opacity-60 hover:bg-slate-50 hover:border-slate-100 hover:grayscale-0 hover:opacity-100'"
+                        class="w-full flex items-center gap-2 p-2.5 rounded-lg border-2 transition-all duration-300 text-left active:scale-[0.98] group">
+                        <div class="w-8 h-8 rounded-lg bg-white border border-slate-200 flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow">
+                            <i data-lucide="layers" :class="cmsTab === 'body_types' ? 'text-orange-500' : 'text-slate-400 group-hover:text-orange-500'"></i>
+                        </div>
+                        <div>
+                            <div class="text-[0.65rem] font-medium uppercase text-slate-900">Body Types</div>
+                            <div class="text-[0.5rem] font-medium uppercase tracking-tighter text-slate-400">Icons · Slugs</div>
+                        </div>
+                    </button>
+
+                    <button type="button" @click="cmsTab = 'blog'" 
+                        :class="cmsTab === 'blog' ? 'bg-orange-50 border-orange-200 text-orange-600' : 'bg-transparent border-transparent text-slate-400 grayscale opacity-60 hover:bg-slate-50 hover:border-slate-100 hover:grayscale-0 hover:opacity-100'"
+                        class="w-full flex items-center gap-2 p-2.5 rounded-lg border-2 transition-all duration-300 text-left active:scale-[0.98] group">
+                        <div class="w-8 h-8 rounded-lg bg-white border border-slate-200 flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow">
+                            <i data-lucide="newspaper" :class="cmsTab === 'blog' ? 'text-orange-500' : 'text-slate-400 group-hover:text-orange-500'"></i>
+                        </div>
+                        <div>
+                            <div class="text-[0.65rem] font-medium uppercase text-slate-900">Blog section</div>
+                            <div class="text-[0.5rem] font-medium uppercase tracking-tighter text-slate-400">Headings · Intro</div>
+                        </div>
+                    </button>
+
+                    <button type="button" @click="cmsTab = 'google_reviews'" 
+                        :class="cmsTab === 'google_reviews' ? 'bg-orange-50 border-orange-200 text-orange-600' : 'bg-transparent border-transparent text-slate-400 grayscale opacity-60 hover:bg-slate-50 hover:border-slate-100 hover:grayscale-0 hover:opacity-100'"
+                        class="w-full flex items-center gap-2 p-2.5 rounded-lg border-2 transition-all duration-300 text-left active:scale-[0.98] group">
+                        <div class="w-8 h-8 rounded-lg bg-white border border-slate-200 flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow">
+                            <i data-lucide="star" :class="cmsTab === 'google_reviews' ? 'text-orange-500' : 'text-slate-400 group-hover:text-orange-500'"></i>
+                        </div>
+                        <div>
+                            <div class="text-[0.65rem] font-medium uppercase text-slate-900">Google Reviews</div>
+                            <div class="text-[0.5rem] font-medium uppercase tracking-tighter text-slate-400">Social Proof · Slider</div>
                         </div>
                     </button>
 
@@ -172,7 +231,7 @@
                         </div>
                         <div>
                             <div class="text-[0.65rem] font-medium uppercase text-slate-900">Settings</div>
-                            <div class="text-[0.5rem] font-bold uppercase tracking-tighter text-slate-400">Global Infra</div>
+                            <div class="text-[0.5rem] font-medium uppercase tracking-tighter text-slate-400">Global Infra</div>
                         </div>
                     </button>
                 </div>
@@ -191,12 +250,12 @@
                             class="w-full py-3 bg-[#031629] text-white rounded-lg text-[0.6rem] font-medium uppercase tracking-widest hover:bg-[#ff6900] active:scale-[0.98] transition-all shadow-lg shadow-slate-200 flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed">
                         <template x-if="!isSaving">
                             <div class="flex items-center gap-1.5">
-                                <i data-lucide="save" class="w-3 h-3"></i> Sync Core Infrastructure
+                                <i data-lucide="save" class="w-3 h-3"></i> Save
                             </div>
                         </template>
                         <template x-if="isSaving">
                             <div class="flex items-center gap-1.5">
-                                <i data-lucide="loader-2" class="w-3 h-3 animate-spin"></i> Rocket Saving...
+                                <i data-lucide="loader-2" class="w-3 h-3 animate-spin"></i> Saving...
                             </div>
                         </template>
                     </button>
@@ -214,8 +273,8 @@
                                 <i data-lucide="settings-2" class="w-6 h-6 text-white"></i>
                             </div>
                             <div>
-                                <h3 class="text-sm font-medium uppercase tracking-widest text-slate-800">Global Infrastructure</h3>
-                                <p class="text-[0.6rem] text-slate-400 font-medium uppercase tracking-widest mt-1">SEO & Page-Level Document Properties</p>
+                                <h3 class="text-sm font-medium uppercase tracking-widest text-slate-800">Page Settings</h3>
+                                <p class="text-[0.6rem] text-slate-400 font-medium uppercase tracking-widest mt-1">SEO & Meta Tags</p>
                             </div>
                         </div>
 
@@ -273,23 +332,23 @@
                                         <div>
                                             <label class="text-[0.55rem] font-medium uppercase tracking-widest text-slate-500 mb-2 block">Logo Scale (%)</label>
                                             <div class="relative">
-                                                <input type="number" name="navbar[logo_scale]" value="<?php echo e(old('navbar.logo_scale', data_get($page->content, 'navbar.logo_scale', 100))); ?>" class="w-full bg-white border border-slate-200 rounded-md px-4 py-2.5 text-[0.8rem] font-bold text-slate-700 outline-none focus:border-orange-500 transition-all" placeholder="100">
-                                                <span class="absolute right-3 top-1/2 -translate-y-1/2 text-[0.6rem] font-bold text-slate-300">%</span>
+                                                <input type="number" name="navbar[logo_scale]" value="<?php echo e(old('navbar.logo_scale', data_get($page->content, 'navbar.logo_scale', 100))); ?>" class="w-full bg-white border border-slate-200 rounded-md px-4 py-2.5 text-[0.8rem] font-medium text-slate-700 outline-none focus:border-orange-500 transition-all" placeholder="100">
+                                                <span class="absolute right-3 top-1/2 -translate-y-1/2 text-[0.6rem] font-medium text-slate-300">%</span>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="space-y-4">
                                         <div>
                                             <label class="text-[0.55rem] font-medium uppercase tracking-widest text-slate-500 mb-2 block">Contact Support Line</label>
-                                            <input type="text" name="navbar_phone" value="<?php echo e(old('navbar_phone', data_get($page->content, 'navbar.phone', '+1 (234) 567 890'))); ?>" class="w-full bg-white border border-slate-200 rounded-md px-4 py-2.5 text-[0.8rem] font-bold text-slate-700 focus:border-[#ff6900] outline-none transition-all" placeholder="+1 (234) 567 890">
+                                            <input type="text" name="navbar_phone" value="<?php echo e(old('navbar_phone', data_get($page->content, 'navbar.phone', '+1 (234) 567 890'))); ?>" class="w-full bg-white border border-slate-200 rounded-md px-4 py-2.5 text-[0.8rem] font-medium text-slate-700 focus:border-[#ff6900] outline-none transition-all" placeholder="+1 (234) 567 890">
                                         </div>
                                         <div>
                                             <label class="text-[0.55rem] font-medium uppercase tracking-widest text-slate-500 mb-2 block">WhatsApp Number</label>
-                                            <input type="text" name="navbar_whatsapp" value="<?php echo e(old('navbar_whatsapp', data_get($page->content, 'navbar.whatsapp', ''))); ?>" class="w-full bg-white border border-slate-200 rounded-md px-4 py-2.5 text-[0.8rem] font-bold text-slate-700 focus:border-[#ff6900] outline-none transition-all" placeholder="+971501234567">
+                                            <input type="text" name="navbar_whatsapp" value="<?php echo e(old('navbar_whatsapp', data_get($page->content, 'navbar.whatsapp', ''))); ?>" class="w-full bg-white border border-slate-200 rounded-md px-4 py-2.5 text-[0.8rem] font-medium text-slate-700 focus:border-[#ff6900] outline-none transition-all" placeholder="+971501234567">
                                         </div>
                                         <div>
                                             <label class="text-[0.55rem] font-medium uppercase tracking-widest text-slate-500 mb-2 block">Business Operations Time</label>
-                                            <input type="text" name="navbar_hours" value="<?php echo e(old('navbar_hours', data_get($page->content, 'navbar.hours', 'Mon - Fri: 9:00 - 18:00'))); ?>" class="w-full bg-white border border-slate-200 rounded-md px-4 py-2.5 text-[0.8rem] font-bold text-slate-700 focus:border-[#ff6900] outline-none transition-all" placeholder="Mon - Fri: 9:00 - 18:00">
+                                            <input type="text" name="navbar_hours" value="<?php echo e(old('navbar_hours', data_get($page->content, 'navbar.hours', 'Mon - Fri: 9:00 - 18:00'))); ?>" class="w-full bg-white border border-slate-200 rounded-md px-4 py-2.5 text-[0.8rem] font-medium text-slate-700 focus:border-[#ff6900] outline-none transition-all" placeholder="Mon - Fri: 9:00 - 18:00">
                                         </div>
                                     </div>
                                 </div>
@@ -383,8 +442,8 @@
                                                 <i data-lucide="info" class="w-3 h-3"></i> Secondary CTA
                                             </label>
                                             <div class="flex gap-2">
-                                                <input type="text" name="secondary_cta_label" value="<?php echo e(old('secondary_cta_label', data_get($page->content, 'hero.secondary_cta_label'))); ?>" class="flex-1 bg-white border border-slate-200 rounded-md px-4 py-3 text-[0.75rem] font-medium" placeholder="Label">
-                                                <input type="text" name="secondary_cta_url" value="<?php echo e(old('secondary_cta_url', data_get($page->content, 'hero.secondary_cta_url'))); ?>" class="flex-1 bg-white border border-slate-200 rounded-md px-4 py-3 text-[0.75rem] font-medium" placeholder="URL">
+                                                <input type="text" name="hero[secondary_cta_label]" value="<?php echo e(old('hero.secondary_cta_label', data_get($page->content, 'hero.secondary_cta_label'))); ?>" class="flex-1 bg-white border border-slate-200 rounded-md px-4 py-3 text-[0.75rem] font-medium" placeholder="Label">
+                                                <input type="text" name="hero[secondary_cta_url]" value="<?php echo e(old('hero.secondary_cta_url', data_get($page->content, 'hero.secondary_cta_url'))); ?>" class="flex-1 bg-white border border-slate-200 rounded-md px-4 py-3 text-[0.75rem] font-medium" placeholder="URL">
                                             </div>
                                         </div>
                                     </div>
@@ -420,20 +479,20 @@
                                 </div>
                                 <div class="col-span-2 grid grid-cols-2 gap-4 pt-2">
                                     <div class="space-y-1">
-                                        <label class="text-[0.55rem] font-black text-slate-400 uppercase tracking-widest block">Horizontal Position (Offset-X)</label>
+                                        <label class="text-[0.55rem] font-medium text-slate-400 uppercase tracking-widest block">Horizontal Position (Offset-X)</label>
                                         <input type="range" name="hero_car_right" min="-100" max="100" step="1" value="<?php echo e(old('hero_car_right', data_get($page->content, 'hero.car_right', -7))); ?>" class="w-full">
-                                        <div class="flex justify-between text-[0.45rem] font-bold text-slate-400">
+                                        <div class="flex justify-between text-[0.45rem] font-medium text-slate-400">
                                             <span>Far Left</span>
                                             <span class="text-blue-600"><?php echo e(data_get($page->content, 'hero.car_right', -7)); ?>%</span>
                                             <span>Far Right</span>
                                         </div>
                                     </div>
                                     <div class="space-y-1">
-                                        <label class="text-[0.55rem] font-black text-slate-400 uppercase tracking-widest block">Vertical Position (Offset-Y)</label>
-                                        <input type="range" name="hero_car_top" min="0" max="100" step="1" value="<?php echo e(old('hero_car_top', data_get($page->content, 'hero.car_top', 80))); ?>" class="w-full">
-                                        <div class="flex justify-between text-[0.45rem] font-bold text-slate-400">
+                                        <label class="text-[0.55rem] font-medium text-slate-400 uppercase tracking-widest block">Vertical Position (Offset-Y)</label>
+                                        <input type="range" name="hero_car_top" min="0" max="100" step="1" value="<?php echo e(old('hero_car_top', data_get($page->content, 'hero.car_top', 90))); ?>" class="w-full">
+                                        <div class="flex justify-between text-[0.45rem] font-medium text-slate-400">
                                             <span>Top</span>
-                                            <span class="text-blue-600"><?php echo e(data_get($page->content, 'hero.car_top', 80)); ?>%</span>
+                                            <span class="text-blue-600"><?php echo e(data_get($page->content, 'hero.car_top', 90)); ?>%</span>
                                             <span>Bottom</span>
                                         </div>
                                     </div>
@@ -494,7 +553,7 @@
                                         <label class="text-[0.55rem] font-medium uppercase tracking-widest text-slate-400">Showroom Asset</label>
                                         <button type="button" id="remove-bg-asset" class="text-[0.5rem] font-medium uppercase text-red-500 hover:text-red-600 transition-colors">× Remove Asset</button>
                                     </div>
-                                    <input type="text" name="hero_background_image" id="hero_background_image" value="<?php echo e(old('hero_background_image', data_get($page->content, 'hero.background_image', '/images/hero-bg.png'))); ?>" class="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-[0.65rem] font-bold focus:border-[#031629] outline-none mb-2" placeholder="Image URL">
+                                    <input type="text" name="hero_background_image" id="hero_background_image" value="<?php echo e(old('hero_background_image', data_get($page->content, 'hero.background_image', '/images/hero-bg.png'))); ?>" class="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-[0.65rem] font-medium focus:border-[#031629] outline-none mb-2" placeholder="Image URL">
                                     <input type="file" name="hero_background_upload" id="hero_background_upload" accept="image/*" class="w-full text-[0.55rem] font-medium text-slate-400 file:mr-2 file:rounded file:border-0 file:bg-slate-200 file:px-2 file:py-1 file:text-[0.55rem] file:font-medium">
                                 </div>
 
@@ -556,10 +615,10 @@
                             <div class="relative z-10 h-full flex flex-col">
                                 <div class="flex items-center justify-between mb-4">
                                     <h3 class="text-white font-medium text-[0.65rem] uppercase tracking-widest">Hero Live Preview</h3>
-                                    <span id="hero-preview-mode-label" class="text-[0.55rem] font-medium uppercase tracking-[0.2em] text-white/40 italic">Elite Visual Engine</span>
+                                    <span id="hero-preview-mode-label" class="text-[0.55rem] font-medium uppercase tracking-[0.2em] text-white/40 italic">Hero Preview</span>
                                 </div>
                                 <?php $heroBgImg = data_get($page->content, 'hero.background_image', '/images/hero-bg.png'); ?>
-                                <div id="hero-preview-panel" class="flex-1 rounded-md overflow-hidden border border-white/5 flex items-center justify-center min-h-[140px] transition-all duration-700" style="background: linear-gradient(rgba(14,16,23,.72), rgba(14,16,23,.72)), url('<?php echo e($heroBgImg); ?>'); background-size: cover;">
+                                <div id="hero-preview-panel" class="relative flex-1 rounded-md overflow-hidden border border-white/5 min-h-[140px] transition-all duration-700" style="background: linear-gradient(rgba(14,16,23,.72), rgba(14,16,23,.72)), url('<?php echo e($heroBgImg); ?>'); background-size: cover;">
                                     <img src="<?php echo e($page->hero_image ?: '/images/cars/mclaren.png'); ?>" id="hero-preview-image" class="max-w-[85%] max-h-[85%] object-contain transition-all duration-700">
                                 </div>
                             </div>
@@ -583,7 +642,7 @@
                         <div class="grid grid-cols-1 gap-4">
                             <div class="bg-blue-50/50 p-4 rounded-xl border border-blue-100 flex items-center justify-between">
                                 <div>
-                                    <h4 class="text-[0.65rem] font-black text-blue-800 uppercase tracking-widest flex items-center gap-2">
+                                    <h4 class="text-[0.65rem] font-medium text-blue-800 uppercase tracking-widest flex items-center gap-2">
                                         <i data-lucide="layout-template" class="w-3.5 h-3.5"></i> Hero Layout Architecture
                                     </h4>
                                     <p class="text-[0.55rem] text-blue-600/70 font-medium mt-1 uppercase tracking-wide">Toggle hero lead form visibility and define column width</p>
@@ -591,15 +650,15 @@
                                 <div class="flex items-center gap-3">
                                     <div class="flex bg-white p-1 rounded-lg border border-slate-200 shadow-sm">
                                         <input type="hidden" name="lead_form[show_hero_form]" :value="lfShowHero ? 1 : 0">
-                                        <button type="button" @click="lfShowHero = true" :class="lfShowHero ? 'bg-blue-600 text-white shadow-md' : 'text-slate-400 hover:text-slate-600'" class="px-4 py-1.5 rounded-md text-[0.55rem] font-black uppercase tracking-widest transition-all">Show Form</button>
-                                        <button type="button" @click="lfShowHero = false" :class="!lfShowHero ? 'bg-slate-800 text-white shadow-md' : 'text-slate-400 hover:text-slate-600'" class="px-4 py-1.5 rounded-md text-[0.55rem] font-black uppercase tracking-widest transition-all">Hide Form</button>
+                                        <button type="button" @click="lfShowHero = true" :class="lfShowHero ? 'bg-blue-600 text-white shadow-md' : 'text-slate-400 hover:text-slate-600'" class="px-4 py-1.5 rounded-md text-[0.55rem] font-medium uppercase tracking-widest transition-all">Show Form</button>
+                                        <button type="button" @click="lfShowHero = false" :class="!lfShowHero ? 'bg-slate-800 text-white shadow-md' : 'text-slate-400 hover:text-slate-600'" class="px-4 py-1.5 rounded-md text-[0.55rem] font-medium uppercase tracking-widest transition-all">Hide Form</button>
                                     </div>
                                     <div class="flex items-center gap-3 bg-white px-4 py-1.5 rounded-lg border border-slate-200 shadow-sm">
                                         <div class="flex flex-col">
-                                            <span class="text-[0.45rem] font-black text-slate-400 uppercase tracking-widest mb-0.5">Col Width</span>
+                                            <span class="text-[0.45rem] font-medium text-slate-400 uppercase tracking-widest mb-0.5">Col Width</span>
                                             <div class="flex items-center gap-1">
-                                                <input type="number" name="lead_form[hero_form_width]" value="<?php echo e(old('lead_form.hero_form_width', data_get($page->content, 'lead_form.hero_form_width', 460))); ?>" class="w-12 h-5 text-[0.75rem] font-black text-blue-600 border-none bg-transparent outline-none p-0 focus:ring-0" placeholder="460">
-                                                <span class="text-[0.55rem] font-bold text-slate-300 uppercase">px</span>
+                                                <input type="number" name="lead_form[hero_form_width]" value="<?php echo e(old('lead_form.hero_form_width', data_get($page->content, 'lead_form.hero_form_width', 460))); ?>" class="w-12 h-5 text-[0.75rem] font-medium text-blue-600 border-none bg-transparent outline-none p-0 focus:ring-0" placeholder="460">
+                                                <span class="text-[0.55rem] font-medium text-slate-300 uppercase">px</span>
                                             </div>
                                         </div>
                                     </div>
@@ -609,33 +668,33 @@
 
                         <div class="grid grid-cols-1 gap-6">
                             <div class="bg-slate-50/50 p-5 rounded-xl border border-slate-100 space-y-4">
-                                <h4 class="text-[0.65rem] font-black text-slate-700 uppercase tracking-widest flex items-center gap-2">
+                                <h4 class="text-[0.65rem] font-medium text-slate-700 uppercase tracking-widest flex items-center gap-2">
                                     <i data-lucide="award" class="w-3.5 h-3.5"></i> Branding & Tab Identity
                                 </h4>
                                 <div class="grid grid-cols-2 gap-4">
                                     <div class="space-y-3">
                                         <div>
-                                            <label class="text-[0.5rem] font-black text-slate-400 uppercase tracking-[0.2em] mb-1.5 block">Header Small Label (e.g. Ready to sell?)</label>
-                                            <input type="text" name="lead_form[header_label]" value="<?php echo e(old('lead_form.header_label', data_get($page->content, 'lead_form.header_label', 'Ready to sell?'))); ?>" class="w-full bg-white border border-slate-200 rounded-md px-3 py-2 text-[0.7rem] font-black text-blue-600 outline-none focus:border-blue-500 shadow-sm transition-all" placeholder="Ready to sell?">
+                                            <label class="text-[0.5rem] font-medium text-slate-400 uppercase tracking-[0.2em] mb-1.5 block">Header Small Label (e.g. Ready to sell?)</label>
+                                            <input type="text" name="lead_form[header_label]" value="<?php echo e(old('lead_form.header_label', data_get($page->content, 'lead_form.header_label', 'Ready to sell?'))); ?>" class="w-full bg-white border border-slate-200 rounded-md px-3 py-2 text-[0.7rem] font-medium text-blue-600 outline-none focus:border-blue-500 shadow-sm transition-all" placeholder="Ready to sell?">
                                         </div>
                                         <div>
-                                            <label class="text-[0.5rem] font-black text-slate-400 uppercase tracking-[0.2em] mb-1.5 block">Header Big Title (HTML allowed)</label>
-                                            <input type="text" name="lead_form[header_title]" value="<?php echo e(old('lead_form.header_title', data_get($page->content, 'lead_form.header_title', 'What would you like to <span>sell?</span>'))); ?>" class="w-full bg-white border border-slate-200 rounded-md px-3 py-2 text-[0.7rem] font-black text-slate-700 outline-none focus:border-blue-500 shadow-sm transition-all" placeholder="What would you like to sell?">
+                                            <label class="text-[0.5rem] font-medium text-slate-400 uppercase tracking-[0.2em] mb-1.5 block">Header Big Title (HTML allowed)</label>
+                                            <input type="text" name="lead_form[header_title]" value="<?php echo e(old('lead_form.header_title', data_get($page->content, 'lead_form.header_title', 'What would you like to <span>sell?</span>'))); ?>" class="w-full bg-white border border-slate-200 rounded-md px-3 py-2 text-[0.7rem] font-medium text-slate-700 outline-none focus:border-blue-500 shadow-sm transition-all" placeholder="What would you like to sell?">
                                         </div>
                                     </div>
                                     <div class="space-y-3">
                                         <div>
-                                            <label class="text-[0.5rem] font-black text-slate-400 uppercase tracking-[0.2em] mb-1.5 block">Car Tab Label</label>
-                                            <input type="text" name="lead_form[tab_car_label]" value="<?php echo e(old('lead_form.tab_car_label', data_get($page->content, 'lead_form.tab_car_label', 'My Car'))); ?>" class="w-full bg-white border border-slate-200 rounded-md px-3 py-2 text-[0.7rem] font-black text-slate-700 outline-none focus:border-blue-500 shadow-sm transition-all">
+                                            <label class="text-[0.5rem] font-medium text-slate-400 uppercase tracking-[0.2em] mb-1.5 block">Car Tab Label</label>
+                                            <input type="text" name="lead_form[tab_car_label]" value="<?php echo e(old('lead_form.tab_car_label', data_get($page->content, 'lead_form.tab_car_label', 'My Car'))); ?>" class="w-full bg-white border border-slate-200 rounded-md px-3 py-2 text-[0.7rem] font-medium text-slate-700 outline-none focus:border-blue-500 shadow-sm transition-all">
                                         </div>
                                         <div>
-                                            <label class="text-[0.5rem] font-black text-slate-400 uppercase tracking-[0.2em] mb-1.5 block">Plate Tab Label</label>
-                                            <input type="text" name="lead_form[tab_plate_label]" value="<?php echo e(old('lead_form.tab_plate_label', data_get($page->content, 'lead_form.tab_plate_label', 'Plate Number'))); ?>" class="w-full bg-white border border-slate-200 rounded-md px-3 py-2 text-[0.7rem] font-black text-slate-700 outline-none focus:border-blue-500 shadow-sm transition-all">
+                                            <label class="text-[0.5rem] font-medium text-slate-400 uppercase tracking-[0.2em] mb-1.5 block">Plate Tab Label</label>
+                                            <input type="text" name="lead_form[tab_plate_label]" value="<?php echo e(old('lead_form.tab_plate_label', data_get($page->content, 'lead_form.tab_plate_label', 'Plate Number'))); ?>" class="w-full bg-white border border-slate-200 rounded-md px-3 py-2 text-[0.7rem] font-medium text-slate-700 outline-none focus:border-blue-500 shadow-sm transition-all">
                                         </div>
                                     </div>
                                     <div>
-                                        <label class="text-[0.5rem] font-black text-slate-400 uppercase tracking-[0.2em] mb-1.5 block">Max Brands in Dropdown</label>
-                                        <input type="number" name="lead_form[max_brands]" value="<?php echo e(old('lead_form.max_brands', data_get($page->content, 'lead_form.max_brands', 60))); ?>" class="w-full bg-white border border-slate-200 rounded-md px-3 py-2 text-[0.7rem] font-black text-blue-600 outline-none focus:border-blue-500 shadow-sm transition-all" placeholder="60">
+                                        <label class="text-[0.5rem] font-medium text-slate-400 uppercase tracking-[0.2em] mb-1.5 block">Max Brands in Dropdown</label>
+                                        <input type="number" name="lead_form[max_brands]" value="<?php echo e(old('lead_form.max_brands', data_get($page->content, 'lead_form.max_brands', 60))); ?>" class="w-full bg-white border border-slate-200 rounded-md px-3 py-2 text-[0.7rem] font-medium text-blue-600 outline-none focus:border-blue-500 shadow-sm transition-all" placeholder="60">
                                     </div>
                                 </div>
                             </div>
@@ -649,26 +708,26 @@
                                 <div class="grid grid-cols-3 gap-3">
                                     <div>
                                         <label class="text-[0.5rem] font-medium uppercase tracking-widest text-slate-500 mb-1 block">Step 1 Title (e.g. Select)</label>
-                                        <input type="text" name="lead_form[wizard_w1]" value="<?php echo e(old('lead_form.wizard_w1', data_get($page->content, 'lead_form.wizard_w1', 'Select'))); ?>" class="w-full bg-white border border-slate-200 rounded-md px-3 py-2 text-[0.75rem] font-black text-[#ff6900] outline-none focus:border-[#ff6900] transition-all shadow-sm">
+                                        <input type="text" name="lead_form[wizard_w1]" value="<?php echo e(old('lead_form.wizard_w1', data_get($page->content, 'lead_form.wizard_w1', 'Select'))); ?>" class="w-full bg-white border border-slate-200 rounded-md px-3 py-2 text-[0.75rem] font-medium text-[#ff6900] outline-none focus:border-[#ff6900] transition-all shadow-sm">
                                     </div>
                                     <div>
                                         <label class="text-[0.5rem] font-medium uppercase tracking-widest text-slate-500 mb-1 block">Step 2 Title (e.g. Customize)</label>
-                                        <input type="text" name="lead_form[wizard_w2]" value="<?php echo e(old('lead_form.wizard_w2', data_get($page->content, 'lead_form.wizard_w2', 'Customize'))); ?>" class="w-full bg-white border border-slate-200 rounded-md px-3 py-2 text-[0.75rem] font-black text-slate-400 outline-none focus:border-blue-500 transition-all shadow-sm">
+                                        <input type="text" name="lead_form[wizard_w2]" value="<?php echo e(old('lead_form.wizard_w2', data_get($page->content, 'lead_form.wizard_w2', 'Customize'))); ?>" class="w-full bg-white border border-slate-200 rounded-md px-3 py-2 text-[0.75rem] font-medium text-slate-400 outline-none focus:border-blue-500 transition-all shadow-sm">
                                     </div>
                                     <div>
                                         <label class="text-[0.5rem] font-medium uppercase tracking-widest text-slate-500 mb-1 block">Step 3 Title (e.g. Submit)</label>
-                                        <input type="text" name="lead_form[wizard_w3]" value="<?php echo e(old('lead_form.wizard_w3', data_get($page->content, 'lead_form.wizard_w3', 'Submit'))); ?>" class="w-full bg-white border border-slate-200 rounded-md px-3 py-2 text-[0.75rem] font-black text-slate-400 outline-none focus:border-blue-500 transition-all shadow-sm">
+                                        <input type="text" name="lead_form[wizard_w3]" value="<?php echo e(old('lead_form.wizard_w3', data_get($page->content, 'lead_form.wizard_w3', 'Submit'))); ?>" class="w-full bg-white border border-slate-200 rounded-md px-3 py-2 text-[0.75rem] font-medium text-slate-400 outline-none focus:border-blue-500 transition-all shadow-sm">
                                     </div>
                                     <div class="col-span-3 border-t border-slate-100 pt-3 mt-1">
-                                        <label class="text-[0.5rem] font-black uppercase tracking-widest text-emerald-500 mb-2 block">Global Success Experience</label>
+                                        <label class="text-[0.5rem] font-medium uppercase tracking-widest text-emerald-500 mb-2 block">Global Success Experience</label>
                                         <div class="grid grid-cols-2 gap-4">
                                             <div>
                                                 <label class="text-[0.5rem] font-medium uppercase tracking-widest text-slate-500 mb-1 block">Success Message (Toast)</label>
-                                                <input type="text" name="lead_form[success_message]" value="<?php echo e(old('lead_form.success_message', data_get($page->content, 'lead_form.success_message', 'Valuation request submitted successfully!'))); ?>" class="w-full bg-emerald-50 border border-emerald-100 rounded-md px-3 py-2 text-[0.65rem] font-bold text-emerald-700 outline-none">
+                                                <input type="text" name="lead_form[success_message]" value="<?php echo e(old('lead_form.success_message', data_get($page->content, 'lead_form.success_message', 'Valuation request submitted successfully!'))); ?>" class="w-full bg-emerald-50 border border-emerald-100 rounded-md px-3 py-2 text-[0.65rem] font-medium text-emerald-700 outline-none">
                                             </div>
                                             <div>
                                                 <label class="text-[0.5rem] font-medium uppercase tracking-widest text-slate-500 mb-1 block">Button Final Label</label>
-                                                <input type="text" name="lead_form[final_btn_label]" value="<?php echo e(old('lead_form.final_btn_label', data_get($page->content, 'lead_form.final_btn_label', 'COMPLETE VALUATION'))); ?>" class="w-full bg-white border border-slate-200 rounded-md px-3 py-2 text-[0.65rem] font-bold text-slate-700 outline-none">
+                                                <input type="text" name="lead_form[final_btn_label]" value="<?php echo e(old('lead_form.final_btn_label', data_get($page->content, 'lead_form.final_btn_label', 'COMPLETE VALUATION'))); ?>" class="w-full bg-white border border-slate-200 rounded-md px-3 py-2 text-[0.65rem] font-medium text-slate-700 outline-none">
                                             </div>
                                         </div>
                                     </div>
@@ -684,7 +743,7 @@
                                 <template x-for="i in [1,2,3,'P']">
                                     <button type="button" @click="lfStep = i" 
                                         :class="lfStep === i ? 'bg-blue-600 text-white shadow-md' : 'bg-white text-slate-400 hover:text-slate-600'"
-                                        class="px-4 py-1.5 rounded-md text-[0.6rem] font-black uppercase tracking-widest transition-all" 
+                                        class="px-4 py-1.5 rounded-md text-[0.6rem] font-medium uppercase tracking-widest transition-all" 
                                         x-text="i === 'P' ? 'Plate' : 'Step ' + i"></button>
                                 </template>
                             </div>
@@ -694,15 +753,15 @@
                                 <div x-show="lfStep === 'P'" class="space-y-6 animate-in fade-in slide-in-from-right duration-300">
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                                         <div class="space-y-4">
-                                            <h4 class="text-[0.65rem] font-black text-orange-600 uppercase tracking-widest border-b border-orange-100 pb-2">Plate Funnel: Step 1</h4>
+                                            <h4 class="text-[0.65rem] font-medium text-orange-600 uppercase tracking-widest border-b border-orange-100 pb-2">Plate Funnel: Step 1</h4>
                                             <div class="grid grid-cols-2 gap-4">
                                                 <div>
                                                     <label class="text-[0.5rem] font-medium uppercase tracking-widest text-slate-500 mb-1 block">Plate Code Label</label>
-                                                    <input type="text" name="lead_form[plate][code_label]" value="<?php echo e(old('lead_form.plate.code_label', data_get($page->content, 'lead_form.plate.code_label', 'Plate Code'))); ?>" class="w-full bg-white border border-slate-200 rounded-md px-3 py-2 text-[0.65rem] font-bold text-slate-700 outline-none">
+                                                    <input type="text" name="lead_form[plate][code_label]" value="<?php echo e(old('lead_form.plate.code_label', data_get($page->content, 'lead_form.plate.code_label', 'Plate Code'))); ?>" class="w-full bg-white border border-slate-200 rounded-md px-3 py-2 text-[0.65rem] font-medium text-slate-700 outline-none">
                                                 </div>
                                                 <div>
                                                     <label class="text-[0.5rem] font-medium uppercase tracking-widest text-slate-500 mb-1 block">Plate Number Label</label>
-                                                    <input type="text" name="lead_form[plate][number_label]" value="<?php echo e(old('lead_form.plate.number_label', data_get($page->content, 'lead_form.plate.number_label', 'Plate Number'))); ?>" class="w-full bg-white border border-slate-200 rounded-md px-3 py-2 text-[0.65rem] font-bold text-slate-700 outline-none">
+                                                    <input type="text" name="lead_form[plate][number_label]" value="<?php echo e(old('lead_form.plate.number_label', data_get($page->content, 'lead_form.plate.number_label', 'Plate Number'))); ?>" class="w-full bg-white border border-slate-200 rounded-md px-3 py-2 text-[0.65rem] font-medium text-slate-700 outline-none">
                                                 </div>
                                                 <div class="col-span-2">
                                                     <label class="text-[0.5rem] font-medium uppercase tracking-widest text-slate-500 mb-1 block">Plate Support subtitle</label>
@@ -711,10 +770,10 @@
                                             </div>
                                         </div>
                                         <div class="space-y-4">
-                                            <h4 class="text-[0.65rem] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 pb-2">Plate Actions</h4>
+                                            <h4 class="text-[0.65rem] font-medium text-slate-400 uppercase tracking-widest border-b border-slate-100 pb-2">Plate Actions</h4>
                                             <div>
                                                 <label class="text-[0.5rem] font-medium uppercase tracking-widest text-slate-500 mb-1 block">Plate Button Text</label>
-                                                <input type="text" name="lead_form[plate][button_label]" value="<?php echo e(old('lead_form.plate.button_label', data_get($page->content, 'lead_form.plate.button_label', 'CONTINUE TO CONTACT'))); ?>" class="w-full bg-[#ff6900] border-none rounded-md px-3 py-2 text-[0.65rem] font-black text-white outline-none">
+                                                <input type="text" name="lead_form[plate][button_label]" value="<?php echo e(old('lead_form.plate.button_label', data_get($page->content, 'lead_form.plate.button_label', 'CONTINUE TO CONTACT'))); ?>" class="w-full bg-[#ff6900] border-none rounded-md px-3 py-2 text-[0.65rem] font-medium text-white outline-none">
                                             </div>
                                         </div>
                                     </div>
@@ -723,10 +782,10 @@
                                 <div x-show="lfStep === 1" class="space-y-6 animate-in fade-in slide-in-from-left duration-300">
                                     <div class="grid grid-cols-1 gap-6">
                                         <div class="space-y-4">
-                                            <h4 class="text-[0.65rem] font-black text-blue-600 uppercase tracking-widest border-b border-blue-100 pb-2">Step 1: Introduction</h4>
+                                            <h4 class="text-[0.65rem] font-medium text-blue-600 uppercase tracking-widest border-b border-blue-100 pb-2">Step 1: Introduction</h4>
                                             <div>
                                                 <label class="text-[0.55rem] font-medium uppercase tracking-widest text-slate-500 mb-1.5 block">Main Heading</label>
-                                                <input type="text" name="lead_form[step1][title]" id="lf_title" value="<?php echo e(old('lead_form.step1.title', data_get($page->content, 'lead_form.step1.title', 'Choose brand, model, and year'))); ?>" class="w-full bg-white border border-slate-200 rounded-md px-4 py-2.5 text-[0.75rem] font-bold text-slate-700 outline-none focus:border-blue-500 shadow-sm">
+                                                <input type="text" name="lead_form[step1][title]" id="lf_title" value="<?php echo e(old('lead_form.step1.title', data_get($page->content, 'lead_form.step1.title', 'Choose brand, model, and year'))); ?>" class="w-full bg-white border border-slate-200 rounded-md px-4 py-2.5 text-[0.75rem] font-medium text-slate-700 outline-none focus:border-blue-500 shadow-sm">
                                             </div>
                                             <div>
                                                 <label class="text-[0.55rem] font-medium uppercase tracking-widest text-slate-500 mb-1.5 block">Supportive Subtitle</label>
@@ -734,25 +793,25 @@
                                             </div>
                                         </div>
                                         <div class="space-y-4">
-                                            <h4 class="text-[0.65rem] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 pb-2">Step 1: Field Labels</h4>
+                                            <h4 class="text-[0.65rem] font-medium text-slate-400 uppercase tracking-widest border-b border-slate-100 pb-2">Step 1: Field Labels</h4>
                                             <div class="grid grid-cols-2 gap-3">
                                                 <div>
                                                     <label class="text-[0.5rem] font-medium uppercase tracking-widest text-slate-500 mb-1 block">Brand Selection</label>
-                                                    <input type="text" name="lead_form[step1][brand_label]" id="lf_step1" value="<?php echo e(old('lead_form.step1.brand_label', data_get($page->content, 'lead_form.step1.brand_label', 'Brand Selection'))); ?>" class="w-full bg-white border border-slate-200 rounded-md px-3 py-2 text-[0.65rem] font-bold text-slate-700 outline-none focus:border-blue-500 transition-all">
+                                                    <input type="text" name="lead_form[step1][brand_label]" id="lf_step1" value="<?php echo e(old('lead_form.step1.brand_label', data_get($page->content, 'lead_form.step1.brand_label', 'Brand Selection'))); ?>" class="w-full bg-white border border-slate-200 rounded-md px-3 py-2 text-[0.65rem] font-medium text-slate-700 outline-none focus:border-blue-500 transition-all">
                                                 </div>
                                                 <div>
                                                     <label class="text-[0.5rem] font-medium uppercase tracking-widest text-slate-500 mb-1 block">Model Name</label>
-                                                    <input type="text" name="lead_form[step1][model_label]" value="<?php echo e(old('lead_form.step1.model_label', data_get($page->content, 'lead_form.step1.model_label', 'Model'))); ?>" class="w-full bg-white border border-slate-200 rounded-md px-3 py-2 text-[0.65rem] font-bold text-slate-700 outline-none focus:border-blue-500 transition-all">
+                                                    <input type="text" name="lead_form[step1][model_label]" value="<?php echo e(old('lead_form.step1.model_label', data_get($page->content, 'lead_form.step1.model_label', 'Model'))); ?>" class="w-full bg-white border border-slate-200 rounded-md px-3 py-2 text-[0.65rem] font-medium text-slate-700 outline-none focus:border-blue-500 transition-all">
                                                 </div>
                                             </div>
                                             <div class="grid grid-cols-2 gap-3">
                                                 <div>
                                                     <label class="text-[0.5rem] font-medium uppercase tracking-widest text-slate-500 mb-1 block">Year Choice</label>
-                                                    <input type="text" name="lead_form[step1][year_label]" value="<?php echo e(old('lead_form.step1.year_label', data_get($page->content, 'lead_form.step1.year_label', 'Year'))); ?>" class="w-full bg-white border border-slate-200 rounded-md px-3 py-2 text-[0.65rem] font-bold text-slate-700 outline-none focus:border-blue-500 transition-all">
+                                                    <input type="text" name="lead_form[step1][year_label]" value="<?php echo e(old('lead_form.step1.year_label', data_get($page->content, 'lead_form.step1.year_label', 'Year'))); ?>" class="w-full bg-white border border-slate-200 rounded-md px-3 py-2 text-[0.65rem] font-medium text-slate-700 outline-none focus:border-blue-500 transition-all">
                                                 </div>
                                                 <div>
                                                     <label class="text-[0.5rem] font-medium uppercase tracking-widest text-slate-500 mb-1 block">Button Text</label>
-                                                    <input type="text" name="lead_form[step1][button_label]" value="<?php echo e(old('lead_form.step1.button_label', data_get($page->content, 'lead_form.step1.button_label', 'Get Free Valuation'))); ?>" class="w-full bg-white border-2 border-[#ff6900]/20 rounded-md px-3 py-2 text-[0.65rem] font-black text-[#ff6900] outline-none focus:border-[#ff6900] transition-all">
+                                                    <input type="text" name="lead_form[step1][button_label]" value="<?php echo e(old('lead_form.step1.button_label', data_get($page->content, 'lead_form.step1.button_label', 'Get Free Valuation'))); ?>" class="w-full bg-white border-2 border-[#ff6900]/20 rounded-md px-3 py-2 text-[0.65rem] font-medium text-[#ff6900] outline-none focus:border-[#ff6900] transition-all">
                                                 </div>
                                             </div>
                                         </div>
@@ -763,29 +822,29 @@
                                 <div x-show="lfStep === 2" class="space-y-6 animate-in fade-in slide-in-from-right duration-300">
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                                         <div class="space-y-4">
-                                            <h4 class="text-[0.65rem] font-black text-blue-600 uppercase tracking-widest border-b border-blue-100 pb-2">Step 2: Technical Specs</h4>
+                                            <h4 class="text-[0.65rem] font-medium text-blue-600 uppercase tracking-widest border-b border-blue-100 pb-2">Step 2: Technical Specs</h4>
                                             <div class="grid grid-cols-2 gap-4">
                                                 <div>
                                                     <label class="text-[0.5rem] font-medium uppercase tracking-widest text-slate-500 mb-1 block">Regional Specs Label</label>
-                                                    <input type="text" name="lead_form[step2][specs_label]" value="<?php echo e(old('lead_form.step2.specs_label', data_get($page->content, 'lead_form.step2.specs_label', 'Regional Specs'))); ?>" class="w-full bg-white border border-slate-200 rounded-md px-3 py-2 text-[0.65rem] font-bold text-slate-700 outline-none focus:border-blue-500">
+                                                    <input type="text" name="lead_form[step2][specs_label]" value="<?php echo e(old('lead_form.step2.specs_label', data_get($page->content, 'lead_form.step2.specs_label', 'Regional Specs'))); ?>" class="w-full bg-white border border-slate-200 rounded-md px-3 py-2 text-[0.65rem] font-medium text-slate-700 outline-none focus:border-blue-500">
                                                 </div>
                                                 <div>
                                                     <label class="text-[0.5rem] font-medium uppercase tracking-widest text-slate-500 mb-1 block">Body Type Label</label>
-                                                    <input type="text" name="lead_form[step2][body_label]" id="lf_step2" value="<?php echo e(old('lead_form.step2.body_label', data_get($page->content, 'lead_form.step2.body_label', 'Body Type'))); ?>" class="w-full bg-white border border-slate-200 rounded-md px-3 py-2 text-[0.65rem] font-bold text-slate-700 outline-none focus:border-blue-500">
+                                                    <input type="text" name="lead_form[step2][body_label]" id="lf_step2" value="<?php echo e(old('lead_form.step2.body_label', data_get($page->content, 'lead_form.step2.body_label', 'Body Type'))); ?>" class="w-full bg-white border border-slate-200 rounded-md px-3 py-2 text-[0.65rem] font-medium text-slate-700 outline-none focus:border-blue-500">
                                                 </div>
                                                 <div>
                                                     <label class="text-[0.5rem] font-medium uppercase tracking-widest text-slate-500 mb-1 block">Engine Size Label</label>
-                                                    <input type="text" name="lead_form[step2][engine_label]" value="<?php echo e(old('lead_form.step2.engine_label', data_get($page->content, 'lead_form.step2.engine_label', 'Engine Size'))); ?>" class="w-full bg-white border border-slate-200 rounded-md px-3 py-2 text-[0.65rem] font-bold text-slate-700 outline-none focus:border-blue-500">
+                                                    <input type="text" name="lead_form[step2][engine_label]" value="<?php echo e(old('lead_form.step2.engine_label', data_get($page->content, 'lead_form.step2.engine_label', 'Engine Size'))); ?>" class="w-full bg-white border border-slate-200 rounded-md px-3 py-2 text-[0.65rem] font-medium text-slate-700 outline-none focus:border-blue-500">
                                                 </div>
                                                 <div>
                                                     <label class="text-[0.5rem] font-medium uppercase tracking-widest text-slate-500 mb-1 block">Mileage Label</label>
-                                                    <input type="text" name="lead_form[step2][mileage_label]" value="<?php echo e(old('lead_form.step2.mileage_label', data_get($page->content, 'lead_form.step2.mileage_label', 'Mileage (KM)'))); ?>" class="w-full bg-white border border-slate-200 rounded-md px-3 py-2 text-[0.65rem] font-bold text-slate-700 outline-none focus:border-blue-500">
+                                                    <input type="text" name="lead_form[step2][mileage_label]" value="<?php echo e(old('lead_form.step2.mileage_label', data_get($page->content, 'lead_form.step2.mileage_label', 'Mileage (KM)'))); ?>" class="w-full bg-white border border-slate-200 rounded-md px-3 py-2 text-[0.65rem] font-medium text-slate-700 outline-none focus:border-blue-500">
                                                 </div>
                                             </div>
 
                                             
                                             <div class="space-y-4 pt-4 border-t border-blue-50">
-                                                <p class="text-[0.55rem] font-black uppercase tracking-widest text-blue-500">Technical Options Architecture</p>
+                                                <p class="text-[0.55rem] font-medium uppercase tracking-widest text-blue-500">Technical Options Architecture</p>
                                                 <div class="grid grid-cols-2 gap-4">
                                                     <div>
                                                         <label class="text-[0.5rem] font-medium uppercase tracking-widest text-slate-400 mb-1 block">Regional Specs (One per line)</label>
@@ -815,19 +874,19 @@
                                             </div>
                                         </div>
                                         <div class="space-y-4">
-                                            <h4 class="text-[0.65rem] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 pb-2">Step 2: Condition and Actions</h4>
+                                            <h4 class="text-[0.65rem] font-medium text-slate-400 uppercase tracking-widest border-b border-slate-100 pb-2">Step 2: Condition and Actions</h4>
                                             <div>
                                                 <label class="text-[0.5rem] font-medium uppercase tracking-widest text-slate-500 mb-1 block">Overall Condition Label</label>
-                                                <input type="text" name="lead_form[step2][condition_label]" value="<?php echo e(old('lead_form.step2.condition_label', data_get($page->content, 'lead_form.step2.condition_label', 'Overall Condition'))); ?>" class="w-full bg-white border border-slate-200 rounded-md px-3 py-2 text-[0.65rem] font-bold text-slate-700 outline-none focus:border-blue-500">
+                                                <input type="text" name="lead_form[step2][condition_label]" value="<?php echo e(old('lead_form.step2.condition_label', data_get($page->content, 'lead_form.step2.condition_label', 'Overall Condition'))); ?>" class="w-full bg-white border border-slate-200 rounded-md px-3 py-2 text-[0.65rem] font-medium text-slate-700 outline-none focus:border-blue-500">
                                             </div>
                                             <div class="grid grid-cols-2 gap-3">
                                                 <div>
                                                     <label class="text-[0.5rem] font-medium uppercase tracking-widest text-slate-500 mb-1 block">Back Text</label>
-                                                    <input type="text" name="lead_form[step2][back_label]" value="<?php echo e(old('lead_form.step2.back_label', data_get($page->content, 'lead_form.step2.back_label', 'Back'))); ?>" class="w-full bg-white border border-slate-200 rounded-md px-3 py-2 text-[0.6rem] font-bold text-slate-400 outline-none">
+                                                    <input type="text" name="lead_form[step2][back_label]" value="<?php echo e(old('lead_form.step2.back_label', data_get($page->content, 'lead_form.step2.back_label', 'Back'))); ?>" class="w-full bg-white border border-slate-200 rounded-md px-3 py-2 text-[0.6rem] font-medium text-slate-400 outline-none">
                                                 </div>
                                                 <div>
                                                     <label class="text-[0.5rem] font-medium uppercase tracking-widest text-slate-500 mb-1 block">Next Button</label>
-                                                    <input type="text" name="lead_form[step2][next_label]" value="<?php echo e(old('lead_form.step2.next_label', data_get($page->content, 'lead_form.step2.next_label', 'Next Stage'))); ?>" class="w-full bg-[#031629] border-none rounded-md px-3 py-2 text-[0.65rem] font-black text-white outline-none">
+                                                    <input type="text" name="lead_form[step2][next_label]" value="<?php echo e(old('lead_form.step2.next_label', data_get($page->content, 'lead_form.step2.next_label', 'Next Stage'))); ?>" class="w-full bg-[#031629] border-none rounded-md px-3 py-2 text-[0.65rem] font-medium text-white outline-none">
                                                 </div>
                                             </div>
                                         </div>
@@ -838,19 +897,19 @@
                                 <div x-show="lfStep === 3" class="space-y-6 animate-in fade-in slide-in-from-right duration-300">
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                                         <div class="space-y-4">
-                                            <h4 class="text-[0.65rem] font-black text-blue-600 uppercase tracking-widest border-b border-blue-100 pb-2">Step 3: Identity and Booking</h4>
+                                            <h4 class="text-[0.65rem] font-medium text-blue-600 uppercase tracking-widest border-b border-blue-100 pb-2">Step 3: Identity and Booking</h4>
                                             <div class="grid grid-cols-2 gap-4">
                                                 <div>
                                                     <label class="text-[0.5rem] font-medium uppercase tracking-widest text-slate-500 mb-1 block">Name Field Label</label>
-                                                    <input type="text" name="lead_form[step3][name_label]" value="<?php echo e(old('lead_form.step3.name_label', data_get($page->content, 'lead_form.step3.name_label', 'Full Identity'))); ?>" class="w-full bg-white border border-slate-200 rounded-md px-3 py-2 text-[0.65rem] font-bold text-slate-700 outline-none">
+                                                    <input type="text" name="lead_form[step3][name_label]" value="<?php echo e(old('lead_form.step3.name_label', data_get($page->content, 'lead_form.step3.name_label', 'Full Identity'))); ?>" class="w-full bg-white border border-slate-200 rounded-md px-3 py-2 text-[0.65rem] font-medium text-slate-700 outline-none">
                                                 </div>
                                                 <div>
                                                     <label class="text-[0.5rem] font-medium uppercase tracking-widest text-slate-500 mb-1 block">Name Placeholder</label>
-                                                    <input type="text" name="lead_form[step3][name_placeholder]" value="<?php echo e(old('lead_form.step3.name_placeholder', data_get($page->content, 'lead_form.step3.name_placeholder', 'Expert Name'))); ?>" class="w-full bg-white border border-slate-200 rounded-md px-3 py-2 text-[0.65rem] font-medium text-slate-400 outline-none">
+                                                    <input type="text" name="lead_form[step3][name_placeholder]" value="<?php echo e(old('lead_form.step3.name_placeholder', data_get($page->content, 'lead_form.step3.name_placeholder', 'Your Name'))); ?>" class="w-full bg-white border border-slate-200 rounded-md px-3 py-2 text-[0.65rem] font-medium text-slate-400 outline-none">
                                                 </div>
                                                 <div>
                                                     <label class="text-[0.5rem] font-medium uppercase tracking-widest text-slate-500 mb-1 block">Phone Field Label</label>
-                                                    <input type="text" name="lead_form[step3][phone_label]" value="<?php echo e(old('lead_form.step3.phone_label', data_get($page->content, 'lead_form.step3.phone_label', 'Secure Mobile'))); ?>" class="w-full bg-white border border-slate-200 rounded-md px-3 py-2 text-[0.65rem] font-bold text-slate-700 outline-none">
+                                                    <input type="text" name="lead_form[step3][phone_label]" value="<?php echo e(old('lead_form.step3.phone_label', data_get($page->content, 'lead_form.step3.phone_label', 'Secure Mobile'))); ?>" class="w-full bg-white border border-slate-200 rounded-md px-3 py-2 text-[0.65rem] font-medium text-slate-700 outline-none">
                                                 </div>
                                                 <div>
                                                     <label class="text-[0.5rem] font-medium uppercase tracking-widest text-slate-500 mb-1 block">Phone Placeholder</label>
@@ -859,14 +918,14 @@
                                             </div>
                                         </div>
                                         <div class="space-y-4">
-                                            <h4 class="text-[0.65rem] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 pb-2">Final Action</h4>
+                                            <h4 class="text-[0.65rem] font-medium text-slate-400 uppercase tracking-widest border-b border-slate-100 pb-2">Final Action</h4>
                                             <div>
                                                 <label class="text-[0.5rem] font-medium uppercase tracking-widest text-slate-500 mb-1 block">Complete Button Text</label>
-                                                <input type="text" name="lead_form[step3][submit_label]" id="lf_submit" value="<?php echo e(old('lead_form.step3.submit_label', data_get($page->content, 'lead_form.step3.submit_label', 'Complete Valuation'))); ?>" class="w-full bg-blue-600 border-none rounded-md px-4 py-3 text-[0.8rem] font-black text-white outline-none shadow-lg shadow-blue-200">
+                                                <input type="text" name="lead_form[step3][submit_label]" id="lf_submit" value="<?php echo e(old('lead_form.step3.submit_label', data_get($page->content, 'lead_form.step3.submit_label', 'Complete Valuation'))); ?>" class="w-full bg-blue-600 border-none rounded-md px-4 py-3 text-[0.8rem] font-medium text-white outline-none shadow-lg shadow-blue-200">
                                             </div>
                                             <div>
                                                 <label class="text-[0.5rem] font-medium uppercase tracking-widest text-slate-500 mb-1 block">Map Branch Info Text</label>
-                                                <input type="text" name="lead_form[step3][branch_info]" value="<?php echo e(old('lead_form.step3.branch_info', data_get($page->content, 'lead_form.step3.branch_info', 'HUB AL QUOZ HQ'))); ?>" class="w-full bg-white border border-slate-200 rounded-md px-3 py-2 text-[0.65rem] font-bold text-slate-700 outline-none">
+                                                <input type="text" name="lead_form[step3][branch_info]" value="<?php echo e(old('lead_form.step3.branch_info', data_get($page->content, 'lead_form.step3.branch_info', 'HUB AL QUOZ HQ'))); ?>" class="w-full bg-white border border-slate-200 rounded-md px-3 py-2 text-[0.65rem] font-medium text-slate-700 outline-none">
                                             </div>
                                         </div>
                                     </div>
@@ -884,7 +943,7 @@
                                      <template x-for="s in [1,2,3]">
                                          <button type="button" @click="lfStep = s"
                                              :class="lfStep === s ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-400'"
-                                             class="w-5 h-5 rounded-full text-[0.5rem] font-black transition-all"
+                                             class="w-5 h-5 rounded-full text-[0.5rem] font-medium transition-all"
                                              x-text="s"></button>
                                      </template>
                                  </div>
@@ -894,15 +953,15 @@
                              <div class="flex items-center justify-center gap-1.5 py-2.5 border-b border-slate-50 bg-white">
                                  <span id="pre_title_w1"
                                      :class="lfStep === 1 ? 'text-[#ff6900]' : 'text-slate-300'"
-                                     class="text-[0.55rem] font-black uppercase tracking-[0.2em] transition-colors duration-300">Select</span>
-                                 <span class="text-slate-200 text-[0.55rem] font-black">•</span>
+                                     class="text-[0.55rem] font-medium uppercase tracking-[0.2em] transition-colors duration-300">Select</span>
+                                 <span class="text-slate-200 text-[0.55rem] font-medium">•</span>
                                  <span id="pre_title_w2"
                                      :class="lfStep === 2 ? 'text-[#ff6900]' : 'text-slate-300'"
-                                     class="text-[0.55rem] font-black uppercase tracking-[0.2em] transition-colors duration-300">Customize</span>
-                                 <span class="text-slate-200 text-[0.55rem] font-black">•</span>
+                                     class="text-[0.55rem] font-medium uppercase tracking-[0.2em] transition-colors duration-300">Customize</span>
+                                 <span class="text-slate-200 text-[0.55rem] font-medium">•</span>
                                  <span id="pre_title_w3"
                                      :class="lfStep === 3 ? 'text-[#ff6900]' : 'text-slate-300'"
-                                     class="text-[0.55rem] font-black uppercase tracking-[0.2em] transition-colors duration-300">Submit</span>
+                                     class="text-[0.55rem] font-medium uppercase tracking-[0.2em] transition-colors duration-300">Submit</span>
                              </div>
 
                              
@@ -911,32 +970,32 @@
                                  
                                  <div x-show="lfStep === 1" x-transition class="space-y-3">
                                      <div class="text-center mb-3">
-                                         <p class="text-[0.5rem] font-black uppercase tracking-[0.2em] text-blue-500">Step 1 of 3</p>
+                                         <p class="text-[0.5rem] font-medium uppercase tracking-[0.2em] text-blue-500">Step 1 of 3</p>
                                          <p id="pre_lf_subtitle" class="text-slate-500 text-[0.6rem] font-medium mt-0.5">---</p>
                                      </div>
                                      <div class="grid grid-cols-3 gap-2">
                                          <div class="space-y-1">
-                                             <label class="text-[0.45rem] font-black uppercase tracking-widest text-slate-400 block" id="pre_lf_step1">Brand</label>
+                                             <label class="text-[0.45rem] font-medium uppercase tracking-widest text-slate-400 block" id="pre_lf_step1">Brand</label>
                                              <div class="h-8 bg-slate-50 border border-slate-200 rounded-md flex items-center px-2 gap-1">
                                                  <i data-lucide="chevron-down" class="w-2.5 h-2.5 text-slate-300"></i>
                                                  <span class="text-[0.5rem] text-slate-300">Select</span>
                                              </div>
                                          </div>
                                          <div class="space-y-1">
-                                             <label class="text-[0.45rem] font-black uppercase tracking-widest text-slate-400 block" id="pre_lf_model_label">Model</label>
+                                             <label class="text-[0.45rem] font-medium uppercase tracking-widest text-slate-400 block" id="pre_lf_model_label">Model</label>
                                              <div class="h-8 bg-slate-100 border border-slate-100 rounded-md flex items-center px-2 gap-1 opacity-50">
                                                  <span class="text-[0.5rem] text-slate-300">---</span>
                                              </div>
                                          </div>
                                          <div class="space-y-1">
-                                             <label class="text-[0.45rem] font-black uppercase tracking-widest text-slate-400 block" id="pre_lf_year_label">Year</label>
+                                             <label class="text-[0.45rem] font-medium uppercase tracking-widest text-slate-400 block" id="pre_lf_year_label">Year</label>
                                              <div class="h-8 bg-white border border-slate-200 rounded-md flex items-center px-2 gap-1">
                                                  <i data-lucide="chevron-down" class="w-2.5 h-2.5 text-slate-300"></i>
                                                  <span class="text-[0.5rem] text-slate-300">Select</span>
                                              </div>
                                          </div>
                                      </div>
-                                     <button type="button" class="w-full py-2 bg-[#ff6900] text-white rounded-md text-[0.5rem] font-black uppercase tracking-widest flex items-center justify-center gap-1.5 mt-2">
+                                     <button type="button" class="w-full py-2 bg-[#ff6900] text-white rounded-md text-[0.5rem] font-medium uppercase tracking-widest flex items-center justify-center gap-1.5 mt-2">
                                          <span id="pre_lf_btn1">Get Free Valuation</span>
                                          <i data-lucide="arrow-right" class="w-2.5 h-2.5"></i>
                                      </button>
@@ -945,64 +1004,64 @@
                                  
                                  <div x-show="lfStep === 2" x-transition class="space-y-3">
                                      <div class="text-center mb-3">
-                                         <p class="text-[0.5rem] font-black uppercase tracking-[0.2em] text-blue-500">Step 2 of 3 — Technical Specs</p>
+                                         <p class="text-[0.5rem] font-medium uppercase tracking-[0.2em] text-blue-500">Step 2 of 3 — Technical Specs</p>
                                      </div>
                                      <div class="grid grid-cols-2 gap-2">
                                          <div class="space-y-1">
-                                             <label class="text-[0.45rem] font-black uppercase tracking-widest text-slate-400 block" id="pre_lf_specs_label">Regional Specs</label>
+                                             <label class="text-[0.45rem] font-medium uppercase tracking-widest text-slate-400 block" id="pre_lf_specs_label">Regional Specs</label>
                                              <div class="h-8 bg-white border border-slate-200 rounded-md flex items-center px-2"><span class="text-[0.5rem] text-slate-400">GCC Specs</span></div>
                                          </div>
                                          <div class="space-y-1">
-                                             <label class="text-[0.45rem] font-black uppercase tracking-widest text-slate-400 block" id="pre_lf_body_label">Body Type</label>
+                                             <label class="text-[0.45rem] font-medium uppercase tracking-widest text-slate-400 block" id="pre_lf_body_label">Body Type</label>
                                              <div class="h-8 bg-white border border-slate-200 rounded-md flex items-center px-2"><span class="text-[0.5rem] text-slate-300">Select Type</span></div>
                                          </div>
                                          <div class="space-y-1">
-                                             <label class="text-[0.45rem] font-black uppercase tracking-widest text-slate-400 block" id="pre_lf_engine_label">Engine Size</label>
+                                             <label class="text-[0.45rem] font-medium uppercase tracking-widest text-slate-400 block" id="pre_lf_engine_label">Engine Size</label>
                                              <div class="h-8 bg-white border border-slate-200 rounded-md flex items-center px-2"><span class="text-[0.5rem] text-slate-300">Select Engine</span></div>
                                          </div>
                                          <div class="space-y-1">
-                                             <label class="text-[0.45rem] font-black uppercase tracking-widest text-slate-400 block" id="pre_lf_mileage_label">Mileage</label>
+                                             <label class="text-[0.45rem] font-medium uppercase tracking-widest text-slate-400 block" id="pre_lf_mileage_label">Mileage</label>
                                              <div class="h-8 bg-white border border-slate-200 rounded-md flex items-center px-2"><span class="text-[0.5rem] text-slate-300">Select</span></div>
                                          </div>
                                      </div>
                                      <div class="space-y-1">
-                                         <label class="text-[0.45rem] font-black uppercase tracking-widest text-slate-400 block" id="pre_lf_condition_label">Overall Condition</label>
+                                         <label class="text-[0.45rem] font-medium uppercase tracking-widest text-slate-400 block" id="pre_lf_condition_label">Overall Condition</label>
                                          <div class="grid grid-cols-4 gap-1">
-                                             <?php $__currentLoopData = ['Elite','Good','Fair','Needs Work']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $c): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                             <div class="h-7 rounded border <?php echo e($loop->index === 1 ? 'border-[#ff6900] bg-orange-50 text-[#ff6900]' : 'border-slate-100 bg-white text-slate-300'); ?> flex items-center justify-center text-[0.4rem] font-black uppercase"><?php echo e($c); ?></div>
+                                             <?php $__currentLoopData = ['Excellent','Good','Fair','Poor']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $c): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                             <div class="h-7 rounded border <?php echo e($loop->index === 1 ? 'border-[#ff6900] bg-orange-50 text-[#ff6900]' : 'border-slate-100 bg-white text-slate-300'); ?> flex items-center justify-center text-[0.4rem] font-medium uppercase"><?php echo e($c); ?></div>
                                              <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                          </div>
                                      </div>
                                      <div class="flex gap-2 mt-1">
-                                         <button type="button" class="flex-1 py-1.5 border border-slate-200 text-slate-400 rounded text-[0.45rem] font-black uppercase" id="pre_lf_back2">← Back</button>
-                                         <button type="button" class="flex-[2] py-1.5 bg-[#031629] text-white rounded text-[0.45rem] font-black uppercase" id="pre_lf_next2">Next Stage →</button>
+                                         <button type="button" class="flex-1 py-1.5 border border-slate-200 text-slate-400 rounded text-[0.45rem] font-medium uppercase" id="pre_lf_back2">← Back</button>
+                                         <button type="button" class="flex-[2] py-1.5 bg-[#031629] text-white rounded text-[0.45rem] font-medium uppercase" id="pre_lf_next2">Next Stage →</button>
                                      </div>
                                  </div>
 
                                  
                                  <div x-show="lfStep === 3" x-transition class="space-y-3">
                                      <div class="text-center mb-3">
-                                         <p class="text-[0.5rem] font-black uppercase tracking-[0.2em] text-blue-500">Step 3 of 3 — Your Details</p>
+                                         <p class="text-[0.5rem] font-medium uppercase tracking-[0.2em] text-blue-500">Step 3 of 3 — Your Details</p>
                                      </div>
                                      <div class="space-y-2">
                                          <div class="relative">
-                                             <label class="absolute -top-2 left-3 px-1 bg-white text-[0.4rem] font-black uppercase tracking-widest text-slate-300" id="pre_lf_name_label">Full Identity</label>
+                                             <label class="absolute -top-2 left-3 px-1 bg-white text-[0.4rem] font-medium uppercase tracking-widest text-slate-300" id="pre_lf_name_label">Full Identity</label>
                                              <div class="h-8 bg-white border-2 border-slate-100 rounded-md px-3 flex items-center"><span class="text-[0.5rem] text-slate-200">Enter name...</span></div>
                                          </div>
                                          <div class="relative">
-                                             <label class="absolute -top-2 left-3 px-1 bg-white text-[0.4rem] font-black uppercase tracking-widest text-slate-300" id="pre_lf_phone_label">Mobile Number</label>
+                                             <label class="absolute -top-2 left-3 px-1 bg-white text-[0.4rem] font-medium uppercase tracking-widest text-slate-300" id="pre_lf_phone_label">Mobile Number</label>
                                              <div class="h-8 bg-white border-2 border-slate-100 rounded-md px-3 flex items-center"><span class="text-[0.5rem] text-slate-200">+971...</span></div>
                                          </div>
                                          <div class="relative">
-                                             <label class="absolute -top-2 left-3 px-1 bg-white text-[0.4rem] font-black uppercase tracking-widest text-slate-300" id="pre_lf_email_label">Email Address</label>
+                                             <label class="absolute -top-2 left-3 px-1 bg-white text-[0.4rem] font-medium uppercase tracking-widest text-slate-300" id="pre_lf_email_label">Email Address</label>
                                              <div class="h-8 bg-white border-2 border-slate-100 rounded-md px-3 flex items-center"><span class="text-[0.5rem] text-slate-200">example@...</span></div>
                                          </div>
                                      </div>
-                                     <button type="button" class="w-full py-2.5 bg-[#ff6900] text-white rounded-md text-[0.5rem] font-black uppercase tracking-widest flex items-center justify-center gap-1.5 mt-1 shadow-lg shadow-orange-500/20">
+                                     <button type="button" class="w-full py-2.5 bg-[#ff6900] text-white rounded-md text-[0.5rem] font-medium uppercase tracking-widest flex items-center justify-center gap-1.5 mt-1 shadow-lg shadow-orange-500/20">
                                          <span id="pre_lf_submit">Request Free Valuation</span>
                                          <i data-lucide="arrow-right" class="w-2.5 h-2.5"></i>
                                      </button>
-                                     <button type="button" class="w-full text-center text-[0.45rem] font-black uppercase tracking-widest text-slate-400" id="pre_lf_back3">← Back to Specs</button>
+                                     <button type="button" class="w-full text-center text-[0.45rem] font-medium uppercase tracking-widest text-slate-400" id="pre_lf_back3">← Back to Specs</button>
                                  </div>
 
                              </div>
@@ -1032,7 +1091,7 @@
                                         <button type="button" class="lead-brand-select-btn p-2 rounded-lg border-2 flex flex-col items-center gap-1 <?php echo e(in_array($brand->slug, $selectedLeadBrands) ? 'border-blue-500 bg-white shadow-sm' : 'border-slate-100 bg-white opacity-65 hover:opacity-100'); ?>" data-brand="<?php echo e($brand->slug); ?>" data-name="<?php echo e($brand->name); ?>" data-logo="<?php echo e($brand->logo_url); ?>" data-selected="<?php echo e(in_array($brand->slug, $selectedLeadBrands) ? '1' : '0'); ?>" title="<?php echo e($brand->name); ?>">
                                             <img src="<?php echo e($brand->logo_url); ?>" alt="<?php echo e($brand->name); ?>" class="w-10 h-10 object-contain" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                                             <div class="w-10 h-10 items-center justify-center bg-slate-100 rounded text-[0.5rem] font-medium text-slate-500 hidden"><?php echo e(substr($brand->name, 0, 2)); ?></div>
-                                            <span class="text-[0.5rem] font-bold text-slate-500 truncate w-full text-center"><?php echo e($brand->name); ?></span>
+                                            <span class="text-[0.5rem] font-medium text-slate-500 truncate w-full text-center"><?php echo e($brand->name); ?></span>
                                         </button>
                                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                 </div>
@@ -1073,11 +1132,11 @@
                                     <div class="bg-slate-50 p-5 rounded-lg border border-slate-100 space-y-4">
                                         <div>
                                             <label class="text-[0.55rem] font-medium uppercase tracking-widest text-slate-500 mb-2 block flex items-center gap-2"><i data-lucide="type" class="w-3 h-3"></i> Section Title (Above Map)</label>
-                                            <input type="text" name="location[section_header_title]" value="<?php echo e(old('location.section_header_title', data_get($page->content, 'location.section_header_title', 'Find Us Section'))); ?>" class="w-full bg-white border border-slate-200 rounded-md px-4 py-2.5 text-[0.8rem] font-bold text-slate-700 focus:border-[#ff6900] outline-none transition-all" placeholder="Find Us Section">
+                                            <input type="text" name="location[section_header_title]" value="<?php echo e(old('location.section_header_title', data_get($page->content, 'location.section_header_title', 'Find Us Section'))); ?>" class="w-full bg-white border border-slate-200 rounded-md px-4 py-2.5 text-[0.8rem] font-medium text-slate-700 focus:border-[#ff6900] outline-none transition-all" placeholder="Find Us Section">
                                         </div>
                                         <div>
                                             <label class="text-[0.55rem] font-medium uppercase tracking-widest text-slate-500 mb-2 block flex items-center gap-2"><i data-lucide="text" class="w-3 h-3"></i> Section Subtitle</label>
-                                            <input type="text" name="location[section_header_subtitle]" value="<?php echo e(old('location.section_header_subtitle', data_get($page->content, 'location.section_header_subtitle', 'Visit our showroom and explore premium vehicles'))); ?>" class="w-full bg-white border border-slate-200 rounded-md px-4 py-2.5 text-[0.8rem] font-bold text-slate-700 focus:border-[#ff6900] outline-none transition-all" placeholder="Visit our showroom...">
+                                            <input type="text" name="location[section_header_subtitle]" value="<?php echo e(old('location.section_header_subtitle', data_get($page->content, 'location.section_header_subtitle', 'Visit our showroom and explore premium vehicles'))); ?>" class="w-full bg-white border border-slate-200 rounded-md px-4 py-2.5 text-[0.8rem] font-medium text-slate-700 focus:border-[#ff6900] outline-none transition-all" placeholder="Visit our showroom...">
                                         </div>
                                     </div>
                                 </div>
@@ -1087,16 +1146,16 @@
                                     <div class="bg-slate-50 p-5 rounded-lg border border-slate-100 space-y-4">
                                         <div>
                                             <label class="text-[0.55rem] font-medium uppercase tracking-widest text-slate-500 mb-2 block">Small Top Label</label>
-                                            <input type="text" name="location[section_label]" value="<?php echo e(old('location.section_label', data_get($page->content, 'location.section_label', 'Find Us'))); ?>" class="w-full bg-white border border-slate-200 rounded-md px-4 py-2.5 text-[0.8rem] font-bold text-slate-700 focus:border-[#ff6900] outline-none transition-all" placeholder="Find Us">
+                                            <input type="text" name="location[section_label]" value="<?php echo e(old('location.section_label', data_get($page->content, 'location.section_label', 'Find Us'))); ?>" class="w-full bg-white border border-slate-200 rounded-md px-4 py-2.5 text-[0.8rem] font-medium text-slate-700 focus:border-[#ff6900] outline-none transition-all" placeholder="Find Us">
                                         </div>
                                         <div class="grid grid-cols-2 gap-3">
                                             <div>
                                                 <label class="text-[0.55rem] font-medium uppercase tracking-widest text-slate-500 mb-2 block">Main Title</label>
-                                                <input type="text" name="location[title]" value="<?php echo e(old('location.title', data_get($page->content, 'location.title', 'Visit Motor'))); ?>" class="w-full bg-white border border-slate-200 rounded-md px-4 py-2.5 text-[0.8rem] font-bold text-slate-700 focus:border-[#ff6900] outline-none transition-all" placeholder="Visit Motor">
+                                                <input type="text" name="location[title]" value="<?php echo e(old('location.title', data_get($page->content, 'location.title', 'Visit Motor'))); ?>" class="w-full bg-white border border-slate-200 rounded-md px-4 py-2.5 text-[0.8rem] font-medium text-slate-700 focus:border-[#ff6900] outline-none transition-all" placeholder="Visit Motor">
                                             </div>
                                             <div>
                                                 <label class="text-[0.55rem] font-medium uppercase tracking-widest text-slate-500 mb-2 block">Title Accent (Orange)</label>
-                                                <input type="text" name="location[title_accent]" value="<?php echo e(old('location.title_accent', data_get($page->content, 'location.title_accent', 'Bazar'))); ?>" class="w-full bg-white border border-slate-200 rounded-md px-4 py-2.5 text-[0.8rem] font-bold text-[#ff6900] focus:border-[#ff6900] outline-none transition-all" placeholder="Bazar">
+                                                <input type="text" name="location[title_accent]" value="<?php echo e(old('location.title_accent', data_get($page->content, 'location.title_accent', 'Bazar'))); ?>" class="w-full bg-white border border-slate-200 rounded-md px-4 py-2.5 text-[0.8rem] font-medium text-[#ff6900] focus:border-[#ff6900] outline-none transition-all" placeholder="Bazar">
                                             </div>
                                         </div>
                                         <div>
@@ -1111,7 +1170,7 @@
                                     <div class="bg-slate-50 p-5 rounded-lg border border-slate-100 grid grid-cols-2 gap-4">
                                         <div>
                                             <label class="text-[0.55rem] font-medium uppercase tracking-widest text-slate-500 mb-2 block">Button Label</label>
-                                            <input type="text" name="location[button_label]" value="<?php echo e(old('location.button_label', data_get($page->content, 'location.button_label', 'Get Directions'))); ?>" class="w-full bg-white border border-slate-200 rounded-md px-4 py-2.5 text-[0.8rem] font-bold text-slate-700 focus:border-[#ff6900] outline-none transition-all">
+                                            <input type="text" name="location[button_label]" value="<?php echo e(old('location.button_label', data_get($page->content, 'location.button_label', 'Get Directions'))); ?>" class="w-full bg-white border border-slate-200 rounded-md px-4 py-2.5 text-[0.8rem] font-medium text-slate-700 focus:border-[#ff6900] outline-none transition-all">
                                         </div>
                                         <div>
                                             <label class="text-[0.55rem] font-medium uppercase tracking-widest text-slate-500 mb-2 block">External Maps URL</label>
@@ -1128,15 +1187,15 @@
                                     <div class="bg-slate-50 p-5 rounded-lg border border-slate-100 space-y-4">
                                         <div>
                                             <label class="text-[0.55rem] font-medium uppercase tracking-widest text-slate-500 mb-2 block flex items-center gap-2"><i data-lucide="map-pin" class="w-3 h-3"></i> Physical Address</label>
-                                            <input type="text" name="location[address]" value="<?php echo e(old('location.address', data_get($page->content, 'location.address', 'Dubai, United Arab Emirates'))); ?>" class="w-full bg-white border border-slate-200 rounded-md px-4 py-2.5 text-[0.8rem] font-bold text-slate-700 outline-none focus:border-[#ff6900]">
+                                            <input type="text" name="location[address]" value="<?php echo e(old('location.address', data_get($page->content, 'location.address', 'Dubai, United Arab Emirates'))); ?>" class="w-full bg-white border border-slate-200 rounded-md px-4 py-2.5 text-[0.8rem] font-medium text-slate-700 outline-none focus:border-[#ff6900]">
                                         </div>
                                         <div>
                                             <label class="text-[0.55rem] font-medium uppercase tracking-widest text-slate-500 mb-2 block flex items-center gap-2"><i data-lucide="phone" class="w-3 h-3"></i> Direct Support Line</label>
-                                            <input type="text" name="location[phone]" value="<?php echo e(old('location.phone', data_get($page->content, 'location.phone', '+971 4 000 0000'))); ?>" class="w-full bg-white border border-slate-200 rounded-md px-4 py-2.5 text-[0.8rem] font-bold text-slate-700 outline-none focus:border-[#ff6900]">
+                                            <input type="text" name="location[phone]" value="<?php echo e(old('location.phone', data_get($page->content, 'location.phone', '+971 4 000 0000'))); ?>" class="w-full bg-white border border-slate-200 rounded-md px-4 py-2.5 text-[0.8rem] font-medium text-slate-700 outline-none focus:border-[#ff6900]">
                                         </div>
                                         <div>
                                             <label class="text-[0.55rem] font-medium uppercase tracking-widest text-slate-500 mb-2 block flex items-center gap-2"><i data-lucide="clock" class="w-3 h-3"></i> Operation Hours</label>
-                                            <input type="text" name="location[hours]" value="<?php echo e(old('location.hours', data_get($page->content, 'location.hours', 'Mon – Sat: 9:00 AM – 7:00 PM'))); ?>" class="w-full bg-white border border-slate-200 rounded-md px-4 py-2.5 text-[0.8rem] font-bold text-slate-700 outline-none focus:border-[#ff6900]">
+                                            <input type="text" name="location[hours]" value="<?php echo e(old('location.hours', data_get($page->content, 'location.hours', 'Mon – Sat: 9:00 AM – 7:00 PM'))); ?>" class="w-full bg-white border border-slate-200 rounded-md px-4 py-2.5 text-[0.8rem] font-medium text-slate-700 outline-none focus:border-[#ff6900]">
                                         </div>
                                     </div>
                                 </div>
@@ -1164,7 +1223,7 @@
                                 <i data-lucide="shield-check" class="w-6 h-6 text-white"></i>
                             </div>
                             <div>
-                                <h3 class="text-sm font-medium uppercase tracking-widest text-slate-800">Elite Slider Architecture</h3>
+                                    <h3 class="text-sm font-medium uppercase tracking-widest text-slate-800">Brand Logos</h3>
                                 <p class="text-[0.6rem] text-slate-400 font-medium uppercase tracking-widest mt-1">Homepage Brands</p>
                             </div>
                         </div>
@@ -1172,13 +1231,13 @@
                         <div class="space-y-4">
                             <div class="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 gap-2 p-3 bg-slate-50/50 rounded-md border border-slate-100 max-h-80 overflow-y-auto custom-scrollbar" id="elite-available-brands">
                                 <?php
-                                    $selectedEliteBrands = collect(data_get($page->content, 'brands', []))->pluck('slug')->toArray();
+                                     $selectedBrands = collect(data_get($page->content, 'brands', []))->pluck('slug')->toArray();
                                 ?>
                                 <?php $__currentLoopData = $brands; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $brand): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                    <button type="button" class="brand-select-btn p-2 rounded-lg border-2 flex flex-col items-center gap-1 <?php echo e(in_array($brand->slug, $selectedEliteBrands) ? 'border-emerald-500 bg-white shadow-sm' : 'border-slate-100 bg-white opacity-65 hover:opacity-100'); ?>" data-brand="<?php echo e($brand->slug); ?>" data-name="<?php echo e($brand->name); ?>" data-logo="<?php echo e($brand->logo_url); ?>" data-selected="<?php echo e(in_array($brand->slug, $selectedEliteBrands) ? '1' : '0'); ?>" title="<?php echo e($brand->name); ?>">
+                                     <button type="button" class="brand-select-btn p-2 rounded-lg border-2 flex flex-col items-center gap-1 <?php echo e(in_array($brand->slug, $selectedBrands) ? 'border-emerald-500 bg-white shadow-sm' : 'border-slate-100 bg-white opacity-65 hover:opacity-100'); ?>" data-brand="<?php echo e($brand->slug); ?>" data-name="<?php echo e($brand->name); ?>" data-logo="<?php echo e($brand->logo_url); ?>" data-selected="<?php echo e(in_array($brand->slug, $selectedBrands) ? '1' : '0'); ?>" title="<?php echo e($brand->name); ?>">
                                         <img src="<?php echo e($brand->logo_url); ?>" alt="<?php echo e($brand->name); ?>" class="w-10 h-10 object-contain" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                                         <div class="w-10 h-10 items-center justify-center bg-slate-100 rounded text-[0.5rem] font-medium text-slate-500 hidden"><?php echo e(substr($brand->name, 0, 2)); ?></div>
-                                        <span class="text-[0.5rem] font-bold text-slate-500 truncate w-full text-center"><?php echo e($brand->name); ?></span>
+                                        <span class="text-[0.5rem] font-medium text-slate-500 truncate w-full text-center"><?php echo e($brand->name); ?></span>
                                     </button>
                                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </div>
@@ -1226,7 +1285,7 @@
                                 <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
                             </div>
                             <div>
-                                <h3 class="text-sm font-black uppercase tracking-widest text-slate-800">Trust Badges</h3>
+                                <h3 class="text-sm font-medium uppercase tracking-widest text-slate-800">Trust Badges</h3>
                                 <p class="text-[0.6rem] text-slate-400 font-medium uppercase tracking-widest mt-0.5">Icon • Color • Label — 4 Conversion Trust Signals</p>
                             </div>
                         </div>
@@ -1251,23 +1310,23 @@
                                          style="background-color:<?php echo e(data_get($tb,'bg_color','#f1f5f9')); ?>;color:<?php echo e(data_get($tb,'color','#333')); ?>">
                                         <i data-lucide="<?php echo e(data_get($tb,'icon','star')); ?>" class="w-5 h-5" id="badge-preview-icon-<?php echo e($tbIndex); ?>"></i>
                                     </div>
-                                    <span class="text-sm font-black text-slate-900" id="badge-preview-label-<?php echo e($tbIndex); ?>"><?php echo e(data_get($tb,'label','Badge')); ?></span>
-                                    <span class="ml-auto text-[0.5rem] font-black uppercase tracking-widest text-slate-300 bg-slate-50 px-2 py-1 rounded-full">Badge <?php echo e($tbIndex+1); ?></span>
+                                    <span class="text-sm font-medium text-slate-900" id="badge-preview-label-<?php echo e($tbIndex); ?>"><?php echo e(data_get($tb,'label','Badge')); ?></span>
+                                    <span class="ml-auto text-[0.5rem] font-medium uppercase tracking-widest text-slate-300 bg-slate-50 px-2 py-1 rounded-full">Badge <?php echo e($tbIndex+1); ?></span>
                                 </div>
 
                                 
                                 <div class="mb-4">
-                                    <label class="text-[0.5rem] font-black uppercase tracking-widest text-slate-500 mb-1.5 block">Label Text</label>
+                                    <label class="text-[0.5rem] font-medium uppercase tracking-widest text-slate-500 mb-1.5 block">Label Text</label>
                                     <input type="text"
                                            name="trust_badges[<?php echo e($tbIndex); ?>][label]"
                                            value="<?php echo e(data_get($tb,'label','')); ?>"
                                            oninput="document.getElementById('badge-preview-label-<?php echo e($tbIndex); ?>').textContent=this.value"
-                                           class="w-full bg-white border border-slate-200 rounded-lg px-4 py-2.5 text-[0.78rem] font-black text-slate-800 outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100 transition-all shadow-sm">
+                                           class="w-full bg-white border border-slate-200 rounded-lg px-4 py-2.5 text-[0.78rem] font-medium text-slate-800 outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100 transition-all shadow-sm">
                                 </div>
 
                                 
                                 <div class="mb-4">
-                                    <label class="text-[0.5rem] font-black uppercase tracking-widest text-slate-500 mb-1.5 block">Lucide Icon Name</label>
+                                    <label class="text-[0.5rem] font-medium uppercase tracking-widest text-slate-500 mb-1.5 block">Lucide Icon Name</label>
                                     <div class="relative">
                                         <input type="text"
                                                name="trust_badges[<?php echo e($tbIndex); ?>][icon]"
@@ -1283,7 +1342,7 @@
 
                                 
                                 <div class="mb-4">
-                                    <label class="text-[0.5rem] font-black uppercase tracking-widest text-slate-500 mb-1.5 block">Description (optional)</label>
+                                    <label class="text-[0.5rem] font-medium uppercase tracking-widest text-slate-500 mb-1.5 block">Description (optional)</label>
                                     <textarea name="trust_badges[<?php echo e($tbIndex); ?>][desc]" rows="2"
                                               class="w-full bg-white border border-slate-200 rounded-lg px-4 py-2.5 text-[0.72rem] text-slate-600 outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100 transition-all shadow-sm resize-none"><?php echo e(data_get($tb,'desc','')); ?></textarea>
                                 </div>
@@ -1291,7 +1350,7 @@
                                 
                                 <div class="grid grid-cols-2 gap-3">
                                     <div>
-                                        <label class="text-[0.5rem] font-black uppercase tracking-widest text-slate-500 mb-1.5 block">Icon Color</label>
+                                        <label class="text-[0.5rem] font-medium uppercase tracking-widest text-slate-500 mb-1.5 block">Icon Color</label>
                                         <div class="flex items-center gap-2">
                                             <input type="color"
                                                    name="trust_badges[<?php echo e($tbIndex); ?>][color]"
@@ -1305,7 +1364,7 @@
                                         </div>
                                     </div>
                                     <div>
-                                        <label class="text-[0.5rem] font-black uppercase tracking-widest text-slate-500 mb-1.5 block">BG Color</label>
+                                        <label class="text-[0.5rem] font-medium uppercase tracking-widest text-slate-500 mb-1.5 block">BG Color</label>
                                         <div class="flex items-center gap-2">
                                             <input type="color"
                                                    name="trust_badges[<?php echo e($tbIndex); ?>][bg_color]"
@@ -1326,13 +1385,13 @@
                         
                         <div class="mt-6 pt-6 border-t border-slate-100 grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <label class="text-[0.5rem] font-black uppercase tracking-widest text-slate-500 mb-1.5 block">Section Heading</label>
+                                <label class="text-[0.5rem] font-medium uppercase tracking-widest text-slate-500 mb-1.5 block">Section Heading</label>
                                 <input type="text" name="trust_badges_title"
                                        value="<?php echo e(old('trust_badges_title', data_get($page->content, 'trust_badges_title', 'We built our business on trust'))); ?>"
-                                       class="w-full bg-white border border-slate-200 rounded-lg px-4 py-2.5 text-[0.85rem] font-black text-slate-800 outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100 transition-all shadow-sm">
+                                       class="w-full bg-white border border-slate-200 rounded-lg px-4 py-2.5 text-[0.85rem] font-medium text-slate-800 outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100 transition-all shadow-sm">
                             </div>
                             <div>
-                                <label class="text-[0.5rem] font-black uppercase tracking-widest text-slate-500 mb-1.5 block">Badges Container Background</label>
+                                <label class="text-[0.5rem] font-medium uppercase tracking-widest text-slate-500 mb-1.5 block">Badges Container Background</label>
                                 <div class="flex items-center gap-2">
                                     <input type="color" name="trust_badges_stats_bg"
                                            value="<?php echo e(data_get($page->content, 'trust_badges_stats_bg', 'rgba(255, 255, 255, 0.92)')); ?>"
@@ -1342,17 +1401,438 @@
                                            oninput="this.previousElementSibling.value=this.value">
                                 </div>
                             </div>
+
+                            <div>
+                                <label class="text-[0.5rem] font-medium uppercase tracking-widest text-slate-500 mb-1.5 block">Trust Strip Background</label>
+                                <div class="flex items-center gap-2">
+                                    <input type="color" name="trust_strip_bg"
+                                           value="<?php echo e(data_get($page->content, 'trust_strip_bg', '#e7e7e7')); ?>"
+                                           class="w-10 h-10 rounded-lg border border-slate-200 cursor-pointer p-0.5 shadow-sm">
+                                    <input type="text" value="<?php echo e(data_get($page->content, 'trust_strip_bg', '#e7e7e7')); ?>"
+                                           class="flex-1 bg-white border border-slate-200 rounded-lg px-3 py-2.5 text-[0.75rem] font-mono text-slate-500 outline-none focus:border-orange-400"
+                                           oninput="this.previousElementSibling.value=this.value">
+                                </div>
+                            </div>
                         </div>
 
                         
                         <div class="mt-4 pt-4 border-t border-slate-50">
-                            <label class="text-[0.55rem] font-black uppercase tracking-widest text-emerald-500 mb-2 block flex items-center gap-2">
+                            <label class="text-[0.55rem] font-medium uppercase tracking-widest text-emerald-500 mb-2 block flex items-center gap-2">
                                 <i data-lucide="code-2" class="w-3.5 h-3.5"></i> Developer Lab (Trust Badges Custom CSS)
                             </label>
                             <textarea name="trust_badges_custom_css" rows="3"
                                       class="w-full bg-[#031629] text-emerald-400 font-mono text-[0.7rem] p-4 rounded-xl border border-white/5 outline-none focus:border-emerald-500/50 transition-all"
                                       placeholder="e.g. border-color: rgba(255, 105, 0, 0.2) !important;"><?php echo e(old('trust_badges_custom_css', data_get($page->content, 'trust_badges_custom_css'))); ?></textarea>
                             <p class="text-[0.5rem] text-slate-400 mt-2 italic">Applied directly to .sc-pill-stats container node</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ==================== BODY TYPES TAB ==================== -->
+                <div x-show="cmsTab === 'body_types'" x-cloak x-transition>
+                    <div class="bg-white p-8 rounded-lg border border-slate-200 shadow-sm space-y-8">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 bg-orange-50 rounded-lg flex items-center justify-center border border-orange-100 shadow-sm">
+                                <i data-lucide="layers" class="w-6 h-6 text-orange-500"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-medium uppercase tracking-widest text-[#031629]">Body Type Browser</h3>
+                                <p class="text-[0.6rem] text-slate-400 font-medium uppercase tracking-widest mt-1">Manage Catalog Categories</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-50 p-6 rounded-2xl border border-slate-100 space-y-4">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="text-[0.55rem] font-medium uppercase tracking-widest text-slate-500 mb-2 block">Display Mode</label>
+                                    <select name="body_types_display_mode" class="w-full bg-white border border-slate-200 rounded-lg px-4 py-3 text-sm font-medium focus:border-orange-400 outline-none">
+                                        <option value="images_only" <?php echo e(data_get($page->content, 'body_types_display_mode') == 'images_only' ? 'selected' : ''); ?>>Images Only (No Cards)</option>
+                                        <option value="cards" <?php echo e(!data_get($page->content, 'body_types_display_mode') || data_get($page->content, 'body_types_display_mode') == 'cards' ? 'selected' : ''); ?>>Cards with Info</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="text-[0.55rem] font-medium uppercase tracking-widest text-slate-500 mb-2 block">Show Grid Lines</label>
+                                    <select name="body_types_show_grid" class="w-full bg-white border border-slate-200 rounded-lg px-4 py-3 text-sm font-medium focus:border-orange-400 outline-none">
+                                        <option value="1" <?php echo e(data_get($page->content, 'body_types_show_grid', true) ? 'selected' : ''); ?>>Yes</option>
+                                        <option value="0" <?php echo e(!data_get($page->content, 'body_types_show_grid', true) ? 'selected' : ''); ?>>No</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-50 p-6 rounded-2xl border border-slate-100" 
+                             x-data="{ types: <?php echo e(json_encode(data_get($page->content, 'body_types', [['label'=>'Sedan','icon'=>'car','slug'=>'sedan'],['label'=>'SUV','icon'=>'shield','slug'=>'suv'],['label'=>'Coupe','icon'=>'zap','slug'=>'coupe'],['label'=>'Hatch','icon'=>'box','slug'=>'hatchback'],['label'=>'Cabrio','icon'=>'sun','slug'=>'cabrio'],['label'=>'Pickup','icon'=>'truck','slug'=>'pickup']]))); ?> }">
+                            <div class="flex items-center justify-between mb-4">
+                                <p class="text-[0.6rem] font-medium text-slate-500">Add image URL for each body type (used in Images Only mode)</p>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                <template x-for="(bt, idx) in types" :key="idx">
+                                    <div class="bg-white p-4 rounded-xl border border-slate-200 flex flex-col gap-3">
+                                        <div class="grid grid-cols-2 gap-3">
+                                            <div>
+                                                <label class="text-[0.5rem] font-medium uppercase tracking-widest text-slate-400 mb-1 block">Label</label>
+                                                <input type="text" x-model="bt.label" :name="'body_types['+idx+'][label]'" class="w-full bg-slate-50 border border-slate-200 rounded-md px-3 py-2 text-[0.7rem] font-medium text-slate-800 outline-none focus:border-orange-400">
+                                            </div>
+                                            <div>
+                                                <label class="text-[0.5rem] font-medium uppercase tracking-widest text-slate-400 mb-1 block">Slug (URL)</label>
+                                                <input type="text" x-model="bt.slug" :name="'body_types['+idx+'][slug]'" class="w-full bg-slate-50 border border-slate-200 rounded-md px-3 py-2 text-[0.7rem] font-mono text-slate-500 outline-none focus:border-orange-400">
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label class="text-[0.5rem] font-medium uppercase tracking-widest text-slate-400 mb-1 block">Image URL</label>
+                                            <input type="url" x-model="bt.image" :name="'body_types['+idx+'][image]'" placeholder="https://example.com/car.jpg" class="w-full bg-slate-50 border border-slate-200 rounded-md px-3 py-2 text-[0.7rem] text-slate-600 outline-none focus:border-orange-400">
+                                        </div>
+                                        <div>
+                                            <label class="text-[0.5rem] font-medium uppercase tracking-widest text-slate-400 mb-1 block">Lucide Icon</label>
+                                            <input type="text" x-model="bt.icon" :name="'body_types['+idx+'][icon]'" class="w-full bg-slate-50 border border-slate-200 rounded-md px-3 py-2 text-[0.7rem] font-mono text-slate-500 outline-none focus:border-orange-400">
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ==================== BLOG TAB ==================== -->
+                <div x-show="cmsTab === 'blog'" x-cloak x-transition>
+                    <div class="bg-white p-8 rounded-lg border border-slate-200 shadow-sm space-y-8">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 bg-orange-50 rounded-lg flex items-center justify-center border border-orange-100 shadow-sm">
+                                <i data-lucide="newspaper" class="w-6 h-6 text-orange-500"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-medium uppercase tracking-widest text-[#031629]">Blog Feed Settings</h3>
+                                <p class="text-[0.6rem] text-slate-400 font-medium uppercase tracking-widest mt-1">Homepage Section Control</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-50 p-6 rounded-2xl border border-slate-100 space-y-4">
+                            <div>
+                                <label class="text-[0.55rem] font-medium uppercase tracking-[0.2em] text-slate-400 mb-2 block">Section Heading</label>
+                                <input type="text" name="blog_title" value="<?php echo e(data_get($page->content, 'blog_title', 'Latest Insights')); ?>" class="w-full bg-white border border-slate-200 rounded-lg px-4 py-3 text-[0.85rem] font-medium text-slate-800 outline-none focus:border-orange-400 shadow-sm">
+                            </div>
+                            <div>
+                                <label class="text-[0.55rem] font-medium uppercase tracking-[0.2em] text-slate-400 mb-2 block">Subtitle / Intro</label>
+                                <textarea name="blog_subtitle" rows="3" class="w-full bg-white border border-slate-200 rounded-lg px-4 py-3 text-[0.8rem] text-slate-600 outline-none focus:border-orange-400 shadow-sm"><?php echo e(data_get($page->content, 'blog_subtitle', 'Stay updated with the latest news and guides')); ?></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ==================== GOOGLE REVIEWS TAB ==================== -->
+                <?php
+                    $gReviews = data_get($page->content, 'google_reviews', []);
+                ?>
+                <div x-show="cmsTab === 'google_reviews'" x-cloak x-transition
+                     x-data='{
+                        reviews: <?php echo json_encode(data_get($gReviews, 'manual_reviews', [])) ?>,
+                        syncing: false,
+                        addReview() {
+                            this.reviews.push({ author: "", rating: 5, text: "", profile_url: "", photo_url: "", sort_order: this.reviews.length + 1 });
+                        },
+                        removeReview(idx) {
+                            this.reviews.splice(idx, 1);
+                        },
+                        async syncFromGoogle() {
+                            this.syncing = true;
+                            try {
+                                const r = await fetch("<?php echo e(route('admin.settings.google-reviews.sync')); ?>", {
+                                    method: "POST",
+                                    headers: { "X-CSRF-TOKEN": "<?php echo e(csrf_token()); ?>", "Accept": "application/json" }
+                                });
+                                const d = await r.json();
+                                if (d.success) {
+                                    this.reviews = d.reviews;
+                                    window.showToast(d.message, "success");
+                                } else {
+                                    window.showToast(d.message, "error");
+                                }
+                            } catch(e) { window.showToast("Failed to sync", "error"); }
+                            finally { this.syncing = false; }
+                        }
+                    }'>
+                    <div class="space-y-6">
+                        <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-500">
+                                    <i data-lucide="star" class="w-6 h-6"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-[0.95rem] font-medium text-[#031629] uppercase tracking-wide">Google Reviews Card</h3>
+                                    <p class="text-[0.6rem] text-slate-400 font-medium uppercase tracking-widest mt-0.5">Control the social-proof widget on the public site</p>
+                                </div>
+                            </div>
+                            <label class="inline-flex items-center gap-3 cursor-pointer select-none">
+                                <input type="hidden" name="google_reviews_enabled" value="0">
+                                <input type="checkbox" name="google_reviews_enabled" value="1" class="sr-only peer" <?php echo e(data_get($gReviews, 'enabled') ? 'checked' : ''); ?>>
+                                <div class="w-12 h-6 rounded-full bg-slate-200 relative transition-colors duration-200 peer-checked:bg-emerald-500">
+                                    <span class="absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform duration-200 peer-checked:translate-x-6"></span>
+                                </div>
+                                <span class="text-[0.65rem] font-medium uppercase tracking-widest text-slate-500">Display widget on homepage</span>
+                            </label>
+                        </div>
+
+                        <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-[0.6rem] font-medium uppercase tracking-widest text-slate-500 mb-2">Headline</label>
+                                <input type="text" name="google_reviews_title" value="<?php echo e(data_get($gReviews, 'title', 'Loved by real buyers')); ?>" class="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:border-[#ff6900] focus:ring-4 focus:ring-orange-500/5 outline-none transition-all">
+                            </div>
+                            <div>
+                                <label class="block text-[0.6rem] font-medium uppercase tracking-widest text-slate-500 mb-2">Sub-heading</label>
+                                <input type="text" name="google_reviews_subtitle" value="<?php echo e(data_get($gReviews, 'subtitle', 'Straight from verified Google customers.')); ?>" class="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:border-[#ff6900] focus:ring-4 focus:ring-orange-500/5 outline-none transition-all">
+                            </div>
+                            <div>
+                                <label class="block text-[0.6rem] font-medium uppercase tracking-widest text-slate-500 mb-2">Badge text</label>
+                                <input type="text" name="google_reviews_badge" value="<?php echo e(data_get($gReviews, 'badge', '4.9 / 5 • Google Reviews')); ?>" class="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:border-[#ff6900] focus:ring-4 focus:ring-orange-500/5 outline-none transition-all" placeholder="e.g. 4.9 / 5 • Google Reviews">
+                            </div>
+                            <div>
+                                <label class="block text-[0.6rem] font-medium uppercase tracking-widest text-slate-500 mb-2">Google Place ID</label>
+                                <input type="text" name="google_reviews_place_id" value="<?php echo e(data_get($gReviews, 'place_id', '')); ?>" class="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:border-[#ff6900] focus:ring-4 focus:ring-orange-500/5 outline-none transition-all" placeholder="ChIJ...">
+                            </div>
+                            <div>
+                                <label class="block text-[0.6rem] font-medium uppercase tracking-widest text-slate-500 mb-2">Google API Key</label>
+                                <input type="text" name="google_reviews_api_key" value="<?php echo e(data_get($gReviews, 'api_key', '')); ?>" class="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-mono focus:border-[#ff6900] focus:ring-4 focus:ring-orange-500/5 outline-none transition-all" placeholder="AIza...">
+                            </div>
+                            <div>
+                                <label class="block text-[0.6rem] font-medium uppercase tracking-widest text-slate-500 mb-2">Number of Reviews to Show</label>
+                                <input type="number" name="google_reviews[reviews_count]" value="<?php echo e(data_get($gReviews, 'reviews_count', 6)); ?>" min="1" max="20" class="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:border-[#ff6900] focus:ring-4 focus:ring-orange-500/5 outline-none transition-all">
+                            </div>
+                            <div>
+                                <label class="block text-[0.6rem] font-medium uppercase tracking-widest text-slate-500 mb-2">Show Only 5 Stars Reviews</label>
+                                <select name="google_reviews[show_only_5_stars]" class="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:border-[#ff6900] focus:ring-4 focus:ring-orange-500/5 outline-none transition-all">
+                                    <option value="0" <?php echo e(!data_get($gReviews, 'show_only_5_stars') ? 'selected' : ''); ?>>No</option>
+                                    <option value="1" <?php echo e(data_get($gReviews, 'show_only_5_stars') ? 'selected' : ''); ?>>Yes</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-[0.6rem] font-medium uppercase tracking-widest text-slate-500 mb-2">Total Reviews Count</label>
+                                <input type="text" name="google_reviews[reviews_count_total]" value="<?php echo e(data_get($gReviews, 'reviews_count_total', '500+')); ?>" class="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:border-[#ff6900] focus:ring-4 focus:ring-orange-500/5 outline-none transition-all" placeholder="e.g. 500+">
+                            </div>
+                            <div>
+                                <label class="block text-[0.6rem] font-medium uppercase tracking-widest text-slate-500 mb-2">Average Rating</label>
+                                <input type="text" name="google_reviews[average_rating]" value="<?php echo e(data_get($gReviews, 'average_rating', '4.9')); ?>" class="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:border-[#ff6900] focus:ring-4 focus:ring-orange-500/5 outline-none transition-all" placeholder="e.g. 4.9">
+                            </div>
+                            <div>
+                                <label class="block text-[0.6rem] font-medium uppercase tracking-widest text-slate-500 mb-2">Show Rating Badge</label>
+                                <select name="google_reviews[show_rating_badge]" class="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:border-[#ff6900] focus:ring-4 focus:ring-orange-500/5 outline-none transition-all">
+                                    <option value="1" <?php echo e(data_get($gReviews, 'show_rating_badge', true) ? 'selected' : ''); ?>>Yes</option>
+                                    <option value="0" <?php echo e(!data_get($gReviews, 'show_rating_badge', true) ? 'selected' : ''); ?>>No</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 space-y-5">
+                            <div class="flex items-center justify-between gap-4 flex-wrap">
+                                <div>
+                                    <p class="text-[0.7rem] font-medium uppercase tracking-[0.3em] text-slate-400">Review Registry</p>
+                                    <p class="text-[0.6rem] text-slate-400 max-w-xl">These entries will appear in the slider. You can sync from Google or add manually.</p>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <button type="button" @click="syncFromGoogle()" :disabled="syncing" class="px-4 py-2 rounded-lg bg-blue-50 text-blue-600 text-[0.65rem] font-medium uppercase tracking-widest border border-blue-100 hover:bg-blue-100 transition-all disabled:opacity-50">
+                                        <i data-lucide="refresh-cw" class="inline w-3.5 h-3.5 mr-1" :class="syncing ? 'animate-spin' : ''"></i> 
+                                        <span x-text="syncing ? 'Syncing...' : 'Sync from Google'"></span>
+                                    </button>
+                                    <button type="button" @click="addReview()" class="px-4 py-2 rounded-lg bg-emerald-500 text-white text-[0.65rem] font-medium uppercase tracking-widest shadow-lg shadow-emerald-500/25 hover:scale-[1.02] active:scale-95 transition-all">
+                                        <i data-lucide="plus" class="inline w-4 h-4 mr-1"></i> Add Review
+                                    </button>
+                                </div>
+                            </div>
+
+                            <template x-if="!reviews.length">
+                                <div class="border-2 border-dashed border-slate-200 rounded-2xl p-8 text-center text-slate-400 text-[0.65rem] font-medium uppercase tracking-[0.3em]">
+                                    No manual reviews yet. Click “Add Review” to start.
+                                </div>
+                            </template>
+
+                            <div class="space-y-4" x-show="reviews.length">
+                                <template x-for="(review, index) in reviews" :key="index">
+                                    <div class="p-4 border border-slate-100 rounded-2xl bg-slate-50/50 grid grid-cols-1 md:grid-cols-5 gap-3">
+                                        <div>
+                                            <label class="text-[0.55rem] font-medium uppercase tracking-widest text-slate-400 mb-1 block">Order</label>
+                                            <input type="number" min="1" class="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm" x-model="review.sort_order" :name="`google_reviews[manual_reviews][${index}][sort_order]`" placeholder="1">
+                                        </div>
+                                        <div>
+                                            <label class="text-[0.55rem] font-medium uppercase tracking-widest text-slate-400 mb-1 block">Name</label>
+                                            <input type="text" class="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm" x-model="review.author" :name="`google_reviews[manual_reviews][${index}][author]`">
+                                        </div>
+                                        <div>
+                                            <label class="text-[0.55rem] font-medium uppercase tracking-widest text-slate-400 mb-1 block">Rating (1-5)</label>
+                                            <input type="number" min="1" max="5" class="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm" x-model="review.rating" :name="`google_reviews[manual_reviews][${index}][rating]`">
+                                        </div>
+                                        <div>
+                                            <label class="text-[0.55rem] font-medium uppercase tracking-widest text-slate-400 mb-1 block">Profile URL</label>
+                                            <input type="url" class="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm" x-model="review.profile_url" :name="`google_reviews[manual_reviews][${index}][profile_url]`" placeholder="https://maps.google.com/...">
+                                        </div>
+                                        <div>
+                                            <label class="text-[0.55rem] font-medium uppercase tracking-widest text-slate-400 mb-1 block">Photo URL</label>
+                                            <input type="url" class="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm" x-model="review.photo_url" :name="`google_reviews[manual_reviews][${index}][photo_url]`" placeholder="https://cdn.example.com/photo.jpg">
+                                        </div>
+                                        <div class="md:col-span-5">
+                                            <label class="text-[0.55rem] font-medium uppercase tracking-widest text-slate-400 mb-1 block">Comment</label>
+                                            <textarea class="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm h-24" x-model="review.text" :name="`google_reviews[manual_reviews][${index}][text]`" placeholder="Amazing experience..."></textarea>
+                                            <button type="button" @click="removeReview(index)" class="mt-2 text-[0.6rem] font-medium uppercase tracking-[0.2em] text-red-500 hover:text-red-700">Remove</button>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div x-show="cmsTab === 'services'" x-cloak x-transition>
+                    <div class="bg-white p-8 rounded-[2rem] border border-slate-200 shadow-sm space-y-8 relative overflow-hidden">
+                        <div class="absolute top-0 right-0 p-8 opacity-5 pointer-events-none">
+                            <i data-lucide="wrench" class="w-32 h-32"></i>
+                        </div>
+                        
+                        <div class="flex items-center gap-4 relative z-10">
+                            <div class="w-12 h-12 bg-red-50 rounded-xl flex items-center justify-center border border-red-100 shadow-inner">
+                                <i data-lucide="wrench" class="w-6 h-6 text-red-500"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-medium uppercase tracking-widest text-[#031629]">Services Offerings</h3>
+                                <p class="text-[0.6rem] text-slate-400 font-medium uppercase tracking-widest mt-1">Manage 3x2 Grid Cards</p>
+                            </div>
+                        </div>
+
+                        <div class="space-y-6 relative z-10">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="bg-slate-50 p-6 rounded-2xl border border-slate-100 relative">
+                                    <label class="text-[0.55rem] font-medium uppercase tracking-[0.2em] text-slate-400 mb-2 block">Subtitle Section</label>
+                                    <input type="text" name="services_subtitle" value="<?php echo e(old('services_subtitle', data_get($page->content, 'services_subtitle', 'We Offer Best Repair Services'))); ?>" class="w-full bg-white border border-slate-200 rounded-lg px-4 py-3 text-[0.85rem] font-medium text-slate-800 outline-none focus:border-red-400 transition-all shadow-sm">
+                                </div>
+                                <div class="bg-slate-50 p-6 rounded-2xl border border-slate-100 relative">
+                                    <label class="text-[0.55rem] font-medium uppercase tracking-[0.2em] text-slate-400 mb-2 block">Main Title</label>
+                                    <input type="text" name="services_title" value="<?php echo e(old('services_title', data_get($page->content, 'services_title', 'Our Services'))); ?>" class="w-full bg-white border border-slate-200 rounded-lg px-4 py-3 text-[0.85rem] font-medium text-slate-800 outline-none focus:border-red-400 transition-all shadow-sm">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm relative z-10" x-data="{ services: <?php echo e(json_encode(old('services_items', data_get($page->content, 'services_items', [])) ?: [['title'=>'Oil Changes', 'icon'=>'droplet', 'description'=>'Curabitur at arcu sed ex venenatis laoreet. Ut lobortis, turpis et ultrices, ligula ante hendrerit velit'], ['title'=>'Wash & Clean', 'icon'=>'waves', 'description'=>'Curabitur at arcu sed ex venenatis laoreet. Ut lobortis, turpis et ultrices, ligula ante hendrerit velit'], ['title'=>'ABS Brakes', 'icon'=>'disc', 'description'=>'Curabitur at arcu sed ex venenatis laoreet. Ut lobortis, turpis et ultrices, ligula ante hendrerit velit'], ['title'=>'Transmission', 'icon'=>'settings-2', 'description'=>'Curabitur at arcu sed ex venenatis laoreet. Ut lobortis, turpis et ultrices, ligula ante hendrerit velit'], ['title'=>'Tires & Wheels', 'icon'=>'life-buoy', 'description'=>'Curabitur at arcu sed ex venenatis laoreet. Ut lobortis, turpis et ultrices, ligula ante hendrerit velit'], ['title'=>'Engine Tuning', 'icon'=>'activity', 'description'=>'Curabitur at arcu sed ex venenatis laoreet. Ut lobortis, turpis et ultrices, ligula ante hendrerit velit']])); ?> }">
+                            <div class="flex items-center justify-between mb-6">
+                                <div>
+                                    <label class="text-[0.6rem] font-medium uppercase tracking-widest text-[#031629]">Services List</label>
+                                    <p class="text-[0.5rem] text-slate-400 font-medium">Reorder or edit the 6 core services</p>
+                                </div>
+                            </div>
+
+                            <div class="space-y-4">
+                                <template x-for="(srv, idx) in services" :key="idx">
+                                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 flex flex-col md:flex-row gap-4 items-start">
+                                        
+                                        
+                                        <div class="w-full md:w-1/4">
+                                            <label class="text-[0.5rem] font-medium uppercase tracking-widest text-slate-400 mb-1 block">Lucide Icon</label>
+                                            <input type="text" x-model="srv.icon" :name="'services_items['+idx+'][icon]'" class="w-full bg-white border border-slate-200 rounded-md px-3 py-2 text-[0.7rem] text-slate-700 outline-none focus:border-red-400 font-mono transition-all">
+                                        </div>
+
+                                        
+                                        <div class="w-full md:w-1/4">
+                                            <label class="text-[0.5rem] font-medium uppercase tracking-widest text-slate-400 mb-1 block">Title</label>
+                                            <input type="text" x-model="srv.title" :name="'services_items['+idx+'][title]'" class="w-full bg-white border border-slate-200 rounded-md px-3 py-2 text-[0.7rem] text-slate-700 outline-none focus:border-red-400 transition-all">
+                                        </div>
+
+                                        
+                                        <div class="flex-1">
+                                            <label class="text-[0.5rem] font-medium uppercase tracking-widest text-slate-400 mb-1 block">Description</label>
+                                            <textarea x-model="srv.description" :name="'services_items['+idx+'][description]'" rows="2" class="w-full min-h-[46px] resize-y bg-white border border-slate-200 rounded-md px-3 py-2 text-[0.7rem] text-slate-700 outline-none focus:border-red-400 transition-all"></textarea>
+                                        </div>
+                                        
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ==================== SECTION ORDER TAB ==================== -->
+                <div x-show="cmsTab === 'section_order'" x-cloak x-transition>
+                    <div class="bg-white p-8 rounded-lg border border-slate-200 shadow-sm space-y-6">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 bg-violet-50 rounded-lg flex items-center justify-center border border-violet-100 shadow-sm">
+                                <i data-lucide="arrow-up-down" class="w-6 h-6 text-violet-500"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-medium uppercase tracking-widest text-[#031629]">Section Order</h3>
+                                <p class="text-[0.6rem] text-slate-400 font-medium uppercase tracking-widest mt-1">Drag to reorder or use number inputs</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-50 p-6 rounded-2xl border border-slate-100">
+                            <p class="text-[0.65rem] text-slate-500 mb-4">Enter order number for each section (1 = top, higher = lower). Leave empty to hide.</p>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="bg-white p-4 rounded-xl border border-slate-200 flex items-center justify-between">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-8 h-8 rounded-lg bg-[#ff6900]/10 flex items-center justify-center">
+                                            <i data-lucide="shield-check" class="w-4 h-4 text-[#ff6900]"></i>
+                                        </div>
+                                        <span class="text-sm font-medium text-slate-700">Trust Badges</span>
+                                    </div>
+                                    <input type="number" name="section_order[trust_badges]" value="<?php echo e(data_get($page->content, 'section_order.trust_badges', 1)); ?>" min="0" max="20" class="w-16 px-3 py-2 rounded-lg border border-slate-200 text-sm text-center font-medium" placeholder="1">
+                                </div>
+                                
+                                <div class="bg-white p-4 rounded-xl border border-slate-200 flex items-center justify-between">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center">
+                                            <i data-lucide="wrench" class="w-4 h-4 text-red-500"></i>
+                                        </div>
+                                        <span class="text-sm font-medium text-slate-700">Services</span>
+                                    </div>
+                                    <input type="number" name="section_order[services]" value="<?php echo e(data_get($page->content, 'section_order.services', 2)); ?>" min="0" max="20" class="w-16 px-3 py-2 rounded-lg border border-slate-200 text-sm text-center font-medium" placeholder="2">
+                                </div>
+                                
+                                <div class="bg-white p-4 rounded-xl border border-slate-200 flex items-center justify-between">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center">
+                                            <i data-lucide="star" class="w-4 h-4 text-blue-500"></i>
+                                        </div>
+                                        <span class="text-sm font-medium text-slate-700">Google Reviews</span>
+                                    </div>
+                                    <input type="number" name="section_order[google_reviews]" value="<?php echo e(data_get($page->content, 'section_order.google_reviews', 3)); ?>" min="0" max="20" class="w-16 px-3 py-2 rounded-lg border border-slate-200 text-sm text-center font-medium" placeholder="3">
+                                </div>
+                                
+                                <div class="bg-white p-4 rounded-xl border border-slate-200 flex items-center justify-between">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center">
+                                            <i data-lucide="map-pin" class="w-4 h-4 text-green-500"></i>
+                                        </div>
+                                        <span class="text-sm font-medium text-slate-700">Location Hub</span>
+                                    </div>
+                                    <input type="number" name="section_order[location]" value="<?php echo e(data_get($page->content, 'section_order.location', 4)); ?>" min="0" max="20" class="w-16 px-3 py-2 rounded-lg border border-slate-200 text-sm text-center font-medium" placeholder="4">
+                                </div>
+                                
+                                <div class="bg-white p-4 rounded-xl border border-slate-200 flex items-center justify-between">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-8 h-8 rounded-lg bg-purple-50 flex items-center justify-center">
+                                            <i data-lucide="car" class="w-4 h-4 text-purple-500"></i>
+                                        </div>
+                                        <span class="text-sm font-medium text-slate-700">Featured Cars</span>
+                                    </div>
+                                    <input type="number" name="section_order[featured_cars]" value="<?php echo e(data_get($page->content, 'section_order.featured_cars', 5)); ?>" min="0" max="20" class="w-16 px-3 py-2 rounded-lg border border-slate-200 text-sm text-center font-medium" placeholder="5">
+                                </div>
+                                
+                                <div class="bg-white p-4 rounded-xl border border-slate-200 flex items-center justify-between">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center">
+                                            <i data-lucide="image" class="w-4 h-4 text-amber-500"></i>
+                                        </div>
+                                        <span class="text-sm font-medium text-slate-700">Brand Logos Slider</span>
+                                    </div>
+                                    <input type="number" name="section_order[brand_logos]" value="<?php echo e(data_get($page->content, 'section_order.brand_logos', 6)); ?>" min="0" max="20" class="w-16 px-3 py-2 rounded-lg border border-slate-200 text-sm text-center font-medium" placeholder="6">
+                                </div>
+                                
+                                <div class="bg-white p-4 rounded-xl border border-slate-200 flex items-center justify-between">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center">
+                                            <i data-lucide="file-text" class="w-4 h-4 text-indigo-500"></i>
+                                        </div>
+                                        <span class="text-sm font-medium text-slate-700">Blog / Latest News</span>
+                                    </div>
+                                    <input type="number" name="section_order[blog]" value="<?php echo e(data_get($page->content, 'section_order.blog', 7)); ?>" min="0" max="20" class="w-16 px-3 py-2 rounded-lg border border-slate-200 text-sm text-center font-medium" placeholder="7">
+                                </div>
+                            </div>
+                            
+                            <p class="text-[0.55rem] text-slate-400 mt-4 italic">Set to 0 or leave empty to hide a section from the homepage.</p>
                         </div>
                     </div>
                 </div>
@@ -1368,7 +1848,7 @@
                         <div class="space-y-5">
                             <!-- Brand Description -->
                             <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
-                                <div class="text-[0.6rem] font-black uppercase tracking-widest text-indigo-500 mb-4 flex items-center gap-2">
+                                <div class="text-[0.6rem] font-medium uppercase tracking-widest text-indigo-500 mb-4 flex items-center gap-2">
                                     <div class="w-4 h-px bg-indigo-300"></div> Brand Description
                                 </div>
                                 <textarea name="footer[description]" rows="3"
@@ -1377,22 +1857,22 @@
 
                             <!-- Contact Info -->
                             <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
-                                <div class="text-[0.6rem] font-black uppercase tracking-widest text-indigo-500 mb-4 flex items-center gap-2">
+                                <div class="text-[0.6rem] font-medium uppercase tracking-widest text-indigo-500 mb-4 flex items-center gap-2">
                                     <div class="w-4 h-px bg-indigo-300"></div> Contact Info
                                 </div>
                                 <div class="space-y-3">
                                     <div>
-                                        <label class="text-[0.5rem] font-black uppercase tracking-widest text-slate-400 mb-1 block">Address</label>
+                                        <label class="text-[0.5rem] font-medium uppercase tracking-widest text-slate-400 mb-1 block">Address</label>
                                         <input type="text" name="footer[address]" value="<?php echo e(old('footer.address', data_get($page->content, 'footer.address', ''))); ?>"
                                             class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-[0.8rem] text-slate-700 outline-none focus:border-indigo-400 transition-all">
                                     </div>
                                     <div>
-                                        <label class="text-[0.5rem] font-black uppercase tracking-widest text-slate-400 mb-1 block">Email</label>
+                                        <label class="text-[0.5rem] font-medium uppercase tracking-widest text-slate-400 mb-1 block">Email</label>
                                         <input type="email" name="footer[email]" value="<?php echo e(old('footer.email', data_get($page->content, 'footer.email', ''))); ?>"
                                             class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-[0.8rem] text-slate-700 outline-none focus:border-indigo-400 transition-all">
                                     </div>
                                     <div>
-                                        <label class="text-[0.5rem] font-black uppercase tracking-widest text-slate-400 mb-1 block">Phone</label>
+                                        <label class="text-[0.5rem] font-medium uppercase tracking-widest text-slate-400 mb-1 block">Phone</label>
                                         <input type="text" name="footer[phone]" value="<?php echo e(old('footer.phone', data_get($page->content, 'footer.phone', ''))); ?>"
                                             class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-[0.8rem] text-slate-700 outline-none focus:border-indigo-400 transition-all">
                                     </div>
@@ -1401,13 +1881,13 @@
 
                             <!-- Social Media Links -->
                             <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
-                                <div class="text-[0.6rem] font-black uppercase tracking-widest text-indigo-500 mb-4 flex items-center gap-2">
+                                <div class="text-[0.6rem] font-medium uppercase tracking-widest text-indigo-500 mb-4 flex items-center gap-2">
                                     <div class="w-4 h-px bg-indigo-300"></div> Social Media URLs
                                 </div>
                                 <div class="space-y-3">
                                     <?php $__currentLoopData = [['key'=>'facebook','label'=>'Facebook','ph'=>'https://facebook.com/...'],['key'=>'instagram','label'=>'Instagram','ph'=>'https://instagram.com/...'],['key'=>'whatsapp','label'=>'WhatsApp','ph'=>'https://wa.me/...'],['key'=>'youtube','label'=>'YouTube','ph'=>'https://youtube.com/...']]; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $soc): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                     <div class="flex items-center gap-2">
-                                        <label class="text-[0.55rem] font-black uppercase tracking-widest text-slate-400 w-20 shrink-0"><?php echo e($soc['label']); ?></label>
+                                        <label class="text-[0.55rem] font-medium uppercase tracking-widest text-slate-400 w-20 shrink-0"><?php echo e($soc['label']); ?></label>
                                         <input type="url" name="footer[social][<?php echo e($soc['key']); ?>]"
                                             value="<?php echo e(old('footer.social.'.$soc['key'], data_get($page->content, 'footer.social.'.$soc['key'], ''))); ?>"
                                             placeholder="<?php echo e($soc['ph']); ?>"
@@ -1419,17 +1899,17 @@
 
                             <!-- Footer Appearance -->
                             <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
-                                <div class="text-[0.6rem] font-black uppercase tracking-widest text-indigo-500 mb-4 flex items-center gap-2">
+                                <div class="text-[0.6rem] font-medium uppercase tracking-widest text-indigo-500 mb-4 flex items-center gap-2">
                                     <div class="w-4 h-px bg-indigo-300"></div> Footer Appearance
                                 </div>
                                 <div class="space-y-3">
                                     <div>
-                                        <label class="text-[0.5rem] font-black uppercase tracking-widest text-slate-400 mb-1 block flex items-center gap-2">
+                                        <label class="text-[0.5rem] font-medium uppercase tracking-widest text-slate-400 mb-1 block flex items-center gap-2">
                                             <i data-lucide="palette" class="w-3 h-3"></i> Background Color
                                         </label>
                                         <div class="flex items-center gap-2">
                                             <input type="color" name="footer_background_color" value="<?php echo e(data_get($page->content, 'footer.background_color', '#eef3f9')); ?>" class="w-10 h-10 rounded-lg border border-gray-200 cursor-pointer">
-                                            <input type="text" value="<?php echo e(data_get($page->content, 'footer.background_color', '#eef3f9')); ?>" class="flex-1 bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-xs font-bold text-slate-700" readonly>
+                                            <input type="text" value="<?php echo e(data_get($page->content, 'footer.background_color', '#eef3f9')); ?>" class="flex-1 bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-xs font-medium text-slate-700" readonly>
                                         </div>
                                     </div>
                                 </div>
@@ -1437,28 +1917,28 @@
 
                             <!-- Bottom Bar -->
                             <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
-                                <div class="text-[0.6rem] font-black uppercase tracking-widest text-indigo-500 mb-4 flex items-center gap-2">
+                                <div class="text-[0.6rem] font-medium uppercase tracking-widest text-indigo-500 mb-4 flex items-center gap-2">
                                     <div class="w-4 h-px bg-indigo-300"></div> Bottom Bar
                                 </div>
                                 <div class="space-y-3">
                                     <div>
-                                        <label class="text-[0.5rem] font-black uppercase tracking-widest text-slate-400 mb-1 block">Copyright Text</label>
+                                        <label class="text-[0.5rem] font-medium uppercase tracking-widest text-slate-400 mb-1 block">Copyright Text</label>
                                         <input type="text" name="footer[copyright]" value="<?php echo e(old('footer.copyright', data_get($page->content, 'footer.copyright', '&copy; ' . date('Y') . ' MOTOR BAZAR. ALL RIGHTS RESERVED.'))); ?>"
                                             class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-[0.8rem] text-slate-700 outline-none focus:border-indigo-400 transition-all">
                                     </div>
                                     <div class="grid grid-cols-3 gap-2">
                                         <div>
-                                            <label class="text-[0.5rem] font-black uppercase tracking-widest text-slate-400 mb-1 block">Terms URL</label>
+                                            <label class="text-[0.5rem] font-medium uppercase tracking-widest text-slate-400 mb-1 block">Terms URL</label>
                                             <input type="text" name="footer[terms_url]" value="<?php echo e(old('footer.terms_url', data_get($page->content, 'footer.terms_url', '#'))); ?>"
                                                 class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-[0.7rem] outline-none focus:border-indigo-400 transition-all">
                                         </div>
                                         <div>
-                                            <label class="text-[0.5rem] font-black uppercase tracking-widest text-slate-400 mb-1 block">Privacy URL</label>
+                                            <label class="text-[0.5rem] font-medium uppercase tracking-widest text-slate-400 mb-1 block">Privacy URL</label>
                                             <input type="text" name="footer[privacy_url]" value="<?php echo e(old('footer.privacy_url', data_get($page->content, 'footer.privacy_url', '#'))); ?>"
                                                 class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-[0.7rem] outline-none focus:border-indigo-400 transition-all">
                                         </div>
                                         <div>
-                                            <label class="text-[0.5rem] font-black uppercase tracking-widest text-slate-400 mb-1 block">Cookies URL</label>
+                                            <label class="text-[0.5rem] font-medium uppercase tracking-widest text-slate-400 mb-1 block">Cookies URL</label>
                                             <input type="text" name="footer[cookies_url]" value="<?php echo e(old('footer.cookies_url', data_get($page->content, 'footer.cookies_url', '#'))); ?>"
                                                 class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-[0.7rem] outline-none focus:border-indigo-400 transition-all">
                                         </div>
@@ -1473,10 +1953,10 @@
                             <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5"
                                  x-data="{ links: window.__footerLinks, addLink() { this.links.push({label:'',url:''}); }, removeLink(i) { this.links.splice(i,1); } }">
                                 <div class="flex items-center justify-between mb-4">
-                                    <div class="text-[0.6rem] font-black uppercase tracking-widest text-indigo-500 flex items-center gap-2">
+                                    <div class="text-[0.6rem] font-medium uppercase tracking-widest text-indigo-500 flex items-center gap-2">
                                         <div class="w-4 h-px bg-indigo-300"></div> Quick Links
                                     </div>
-                                    <button type="button" @click="addLink()" class="text-[0.55rem] font-black uppercase tracking-widest text-indigo-500 hover:text-indigo-700 flex items-center gap-1">
+                                    <button type="button" @click="addLink()" class="text-[0.55rem] font-medium uppercase tracking-widest text-indigo-500 hover:text-indigo-700 flex items-center gap-1">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
                                         Add Link
                                     </button>
@@ -1500,11 +1980,11 @@
                             <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5"
                                  x-data="{ pages: window.__footerPages, addPage() { this.pages.push({label:'',url:''}); }, removePage(i) { this.pages.splice(i,1); } }">
                                 <div class="flex items-center justify-between mb-2">
-                                    <div class="text-[0.6rem] font-black uppercase tracking-widest text-indigo-500 flex items-center gap-2">
+                                    <div class="text-[0.6rem] font-medium uppercase tracking-widest text-indigo-500 flex items-center gap-2">
                                         <div class="w-4 h-px bg-indigo-300"></div> Internal Pages
-                                        <span class="bg-indigo-100 text-indigo-600 text-[0.45rem] font-black uppercase tracking-widest px-2 py-0.5 rounded-full">Page Builder</span>
+                                        <span class="bg-indigo-100 text-indigo-600 text-[0.45rem] font-medium uppercase tracking-widest px-2 py-0.5 rounded-full">Page Builder</span>
                                     </div>
-                                    <button type="button" @click="addPage()" class="text-[0.55rem] font-black uppercase tracking-widest text-indigo-500 hover:text-indigo-700 flex items-center gap-1">
+                                    <button type="button" @click="addPage()" class="text-[0.55rem] font-medium uppercase tracking-widest text-indigo-500 hover:text-indigo-700 flex items-center gap-1">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
                                         Add Page
                                     </button>
@@ -1533,23 +2013,93 @@
 
                 <!-- ==================== STYLES TAB ==================== -->
                 <div x-show="cmsTab === 'styles'" x-cloak x-transition>
-                    <div class="bg-emerald-600 p-10 rounded-lg text-white shadow-2xl relative overflow-hidden group">
-                        <div class="absolute right-0 top-0 h-full w-2 bg-emerald-400 opacity-50 z-20"></div>
-                        <div class="flex items-center gap-8 relative z-10">
-                            <div class="w-20 h-20 bg-white/10 rounded-lg flex items-center justify-center border border-white/20 shadow-inner">
-                                <i data-lucide="palette" class="w-10 h-10 text-white"></i>
+                    <div class="bg-white p-8 rounded-lg border border-slate-200 shadow-sm space-y-8">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 bg-emerald-50 rounded-lg flex items-center justify-center border border-emerald-100 shadow-sm">
+                                <i data-lucide="palette" class="w-6 h-6 text-emerald-500"></i>
                             </div>
-                            <div class="space-y-2">
-                                <h3 class="text-2xl font-medium italic tracking-tight">Global Theme Settings</h3>
-                                <p class="text-emerald-100 text-[0.75rem] font-bold leading-relaxed max-w-sm">
-                                    Control **Site-wide Colors** and theme elements. Changes apply across the entire application.
-                                </p>
+                            <div>
+                                <h3 class="text-sm font-medium uppercase tracking-widest text-[#031629]">Global Theme Settings</h3>
+                                <p class="text-[0.6rem] text-slate-400 font-medium uppercase tracking-widest mt-1">Site-wide Colors & Brand Identity</p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                            <div class="bg-slate-50 p-5 rounded-xl border border-slate-200">
+                                <label class="text-[0.55rem] font-medium uppercase tracking-widest text-slate-500 mb-3 block">Primary Brand Color</label>
+                                <div class="flex items-center gap-2">
+                                    <input type="color" name="theme[primary_color]" value="<?php echo e(data_get($page->content, 'theme.primary_color', '#ff6900')); ?>" class="w-10 h-10 rounded-lg border border-slate-200 cursor-pointer">
+                                    <input type="text" value="<?php echo e(data_get($page->content, 'theme.primary_color', '#ff6900')); ?>" class="flex-1 bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs font-mono text-slate-500" readonly>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-slate-50 p-5 rounded-xl border border-slate-200">
+                                <label class="text-[0.55rem] font-medium uppercase tracking-widest text-slate-500 mb-3 block">Secondary Color</label>
+                                <div class="flex items-center gap-2">
+                                    <input type="color" name="theme[secondary_color]" value="<?php echo e(data_get($page->content, 'theme.secondary_color', '#031629')); ?>" class="w-10 h-10 rounded-lg border border-slate-200 cursor-pointer">
+                                    <input type="text" value="<?php echo e(data_get($page->content, 'theme.secondary_color', '#031629')); ?>" class="flex-1 bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs font-mono text-slate-500" readonly>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-slate-50 p-5 rounded-xl border border-slate-200">
+                                <label class="text-[0.55rem] font-medium uppercase tracking-widest text-slate-500 mb-3 block">Accent Color</label>
+                                <div class="flex items-center gap-2">
+                                    <input type="color" name="theme[accent_color]" value="<?php echo e(data_get($page->content, 'theme.accent_color', '#4285F4')); ?>" class="w-10 h-10 rounded-lg border border-slate-200 cursor-pointer">
+                                    <input type="text" value="<?php echo e(data_get($page->content, 'theme.accent_color', '#4285F4')); ?>" class="flex-1 bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs font-mono text-slate-500" readonly>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-slate-50 p-5 rounded-xl border border-slate-200">
+                                <label class="text-[0.55rem] font-medium uppercase tracking-widest text-slate-500 mb-3 block">Success Color</label>
+                                <div class="flex items-center gap-2">
+                                    <input type="color" name="theme[success_color]" value="<?php echo e(data_get($page->content, 'theme.success_color', '#34A853')); ?>" class="w-10 h-10 rounded-lg border border-slate-200 cursor-pointer">
+                                    <input type="text" value="<?php echo e(data_get($page->content, 'theme.success_color', '#34A853')); ?>" class="flex-1 bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs font-mono text-slate-500" readonly>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-50 p-6 rounded-xl border border-slate-200">
+                            <h4 class="text-[0.65rem] font-medium uppercase tracking-widest text-slate-500 mb-4">Text Colors</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div>
+                                    <label class="text-[0.55rem] font-medium uppercase tracking-widest text-slate-500 mb-2 block">Heading Color</label>
+                                    <div class="flex items-center gap-2">
+                                        <input type="color" name="theme[heading_color]" value="<?php echo e(data_get($page->content, 'theme.heading_color', '#031629')); ?>" class="w-10 h-10 rounded-lg border border-slate-200 cursor-pointer">
+                                        <input type="text" value="<?php echo e(data_get($page->content, 'theme.heading_color', '#031629')); ?>" class="flex-1 bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs font-mono text-slate-500" readonly>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="text-[0.55rem] font-medium uppercase tracking-widest text-slate-500 mb-2 block">Body Text Color</label>
+                                    <div class="flex items-center gap-2">
+                                        <input type="color" name="theme[body_color]" value="<?php echo e(data_get($page->content, 'theme.body_color', '#64748b')); ?>" class="w-10 h-10 rounded-lg border border-slate-200 cursor-pointer">
+                                        <input type="text" value="<?php echo e(data_get($page->content, 'theme.body_color', '#64748b')); ?>" class="flex-1 bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs font-mono text-slate-500" readonly>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="text-[0.55rem] font-medium uppercase tracking-widest text-slate-500 mb-2 block">Light Text Color</label>
+                                    <div class="flex items-center gap-2">
+                                        <input type="color" name="theme[light_color]" value="<?php echo e(data_get($page->content, 'theme.light_color', '#94a3b8')); ?>" class="w-10 h-10 rounded-lg border border-slate-200 cursor-pointer">
+                                        <input type="text" value="<?php echo e(data_get($page->content, 'theme.light_color', '#94a3b8')); ?>" class="flex-1 bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs font-mono text-slate-500" readonly>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-50 p-6 rounded-xl border border-slate-200">
+                            <h4 class="text-[0.65rem] font-medium uppercase tracking-widest text-slate-500 mb-4">Border Radius</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="text-[0.55rem] font-medium uppercase tracking-widest text-slate-500 mb-2 block">Button Radius (px)</label>
+                                    <input type="number" form="cms-home-form" name="theme_button_radius" value="<?php echo e(data_get($page->content, 'theme.button_radius', '8')); ?>" min="0" max="50" class="w-full bg-white border border-slate-200 rounded-lg px-4 py-2 text-sm">
+                                </div>
+                                <div>
+                                    <label class="text-[0.55rem] font-medium uppercase tracking-widest text-slate-500 mb-2 block">Card Radius (px)</label>
+                                    <input type="number" form="cms-home-form" name="theme_card_radius" value="<?php echo e(data_get($page->content, 'theme.card_radius', '16')); ?>" min="0" max="50" class="w-full bg-white border border-slate-200 rounded-lg px-4 py-2 text-sm">
+                                </div>
                             </div>
                         </div>
                     </div>
-
                 </div>
-                
             </div>
         </div>
     </form>
@@ -1579,7 +2129,7 @@
 
 <script>
 
-// Elite Brands Hub Logic
+// Brand Logos Logic
 (function() {
     const availableBrands = document.getElementById('elite-available-brands');
     const selectedList = document.getElementById('elite-selected-brands-list');
@@ -1624,7 +2174,7 @@
         }
         
         reindexBrands();
-        lucide.createIcons();
+        if (window.lucide) lucide.createIcons();
     }
 
     function removeBrand(slug) {
@@ -1706,7 +2256,7 @@
         
         reindexBrands();
         updateSelectedCount();
-        lucide.createIcons();
+        if (window.lucide) lucide.createIcons();
     }
 
     function removeBrand(slug) {
@@ -1775,6 +2325,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Reset dynamic styles before applying mode
         previewPanel.style.backgroundColor = '';
         previewPanel.style.backgroundImage = '';
+        previewPanel.style.cssText = '';
         
         if (mode === 'solid') {
             previewPanel.style.backgroundColor = hexToRgba(color1, 1);
@@ -1783,16 +2334,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const angle = document.getElementById('hero_background_gradient_angle')?.value || '135';
             previewPanel.style.backgroundImage = `linear-gradient(${angle}deg, ${hexToRgba(color1, 1)}, ${hexToRgba(color2, 1)})`;
         } else if (mode === 'custom') {
-            const customCss = document.getElementById('hero_custom_css')?.value || '';
-            const stylePairs = customCss.split(';').filter(p => p.trim());
-            stylePairs.forEach(pair => {
-                const parts = pair.split(':');
-                if (parts.length >= 2) {
-                    const prop = parts[0].trim();
-                    const val = parts.slice(1).join(':').trim();
-                    previewPanel.style.setProperty(prop, val);
-                }
-            });
+            const rawCss = document.getElementById('hero_custom_css')?.value || '';
+            previewPanel.style.cssText = `min-height: 140px; position: relative; border: 1px solid rgba(255,255,255,0.05); border-radius: 0.375rem; overflow: hidden; display: flex; align-items: center; justify-content: center; ${rawCss}`;
+        } else if (mode === 'blend') {
+            const image = imageInput?.value || '/images/hero-bg.png';
+            previewPanel.style.backgroundImage = `linear-gradient(${hexToRgba(color1, 0.7)}, ${hexToRgba(color1, 0.7)}), url('${image}')`;
+            previewPanel.style.backgroundSize = 'cover';
         } else {
             const image = imageInput?.value || '/images/hero-bg.png';
             previewPanel.style.backgroundImage = `linear-gradient(rgba(14,16,23,${opacity}), rgba(14,16,23,${opacity})), url('${image}')`;
@@ -1807,14 +2354,21 @@ document.addEventListener('DOMContentLoaded', () => {
             const top = document.querySelector('input[name="hero_car_top"]')?.value || 50;
             
             previewImage.style.transform = `scale(${scale}) ${mirror ? 'scaleX(-1)' : ''}`;
-            // Simulating position in preview panel (scaled down)
-            previewImage.style.position = 'relative';
-            previewImage.style.left =  (right * -0.5) + 'px'; // Dummy preview offset
-            previewImage.style.top = (top - 50) + 'px'; // Dummy preview offset
+            // Simulating position in preview panel
+            previewImage.style.position = 'absolute';
+            previewImage.style.right = right + '%';
+            previewImage.style.bottom = (100 - top) + '%';
+            previewImage.style.top = 'auto';
         }
     };
 
-    document.getElementById('hero_custom_css')?.addEventListener('input', applyPreview);
+    ['hero_announcement', 'hero_title', 'hero_subtitle', 'hero_image_input', 'hero_car_scale', 'hero_car_right', 'hero_car_top', 'hero_background_mode', 'hero_custom_css', 'hero_background_color', 'hero_background_opacity'].forEach(id => {
+        const el = document.getElementById(id) || document.getElementsByName(id)[0];
+        if (el) {
+            el.addEventListener('input', applyPreview);
+        }
+    });
+
     document.getElementById('hero_background_color_secondary_picker')?.addEventListener('input', (e) => {
         document.getElementById('hero_background_color_secondary').value = e.target.value;
         applyPreview();

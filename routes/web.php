@@ -9,13 +9,15 @@ use App\Http\Controllers\PageController;
 use App\Http\Controllers\SitemapController;
 use Illuminate\Support\Facades\Auth;
 
-Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/', [HomeController::class, 'home2'])->name('home');
+Route::get('/home-legacy', [HomeController::class, 'index'])->name('home.legacy');
+Route::get('/home.modern', [HomeController::class, 'home2'])->name('home.modern');
 
 Route::get('/test-stability', function() {
     return 'STABILITY TEST: IF YOU SEE THIS WITHOUT RELOADS, THE PAGE SCRIPTS ARE THE CAUSE.';
 });
 
-Route::get('/home2', [HomeController::class, 'home2'])->name('home2');
+
 Route::get('/sitemap.xml', [SitemapController::class, 'generate'])->name('sitemap');
 Route::view('/home-new', 'home_new')->name('home.new');
 // Admin Routes (Blade)
@@ -170,6 +172,7 @@ Route::prefix('admin')->middleware(['auth'])->name('admin.')->group(function () 
     Route::post('/settings/blog',                [\App\Http\Controllers\Admin\SettingsController::class, 'saveBlogSettings'])->name('settings.blog.save');
     Route::post('/settings/navbar',              [\App\Http\Controllers\Admin\SettingsController::class, 'saveNavbarSettings'])->name('settings.navbar.save');
     Route::post('/settings/google-reviews',     [\App\Http\Controllers\Admin\SettingsController::class, 'saveGoogleReviewsSettings'])->name('settings.google-reviews.save');
+    Route::post('/settings/google-reviews/sync', [\App\Http\Controllers\Admin\SettingsController::class, 'syncGoogleReviews'])->name('settings.google-reviews.sync');
     Route::post('/settings/lead-architecture',   [\App\Http\Controllers\Admin\SettingsController::class, 'saveLeadArchitecture'])->name('settings.lead-architecture.save');
     Route::get('/settings/toast-showcase', fn() => view('admin.settings.toast_showcase'))->name('settings.toast-showcase');
 

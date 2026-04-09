@@ -25,6 +25,8 @@
     $h2Subtitle = $cleanRteHtml(data_get($heroContent, 'subtitle') ?: 'Discover the UAE\'s most trusted pre-owned car marketplace. Every vehicle comes with a certified inspection report, transparent history, and instant offers.');
     $h2CtaLabel = data_get($heroContent, 'primary_cta_label') ?: 'Discover';
     $h2CtaUrl = data_get($heroContent, 'primary_cta_url') ?: route('auctions.index');
+    $h2SecondaryCtaLabel = data_get($heroContent, 'secondary_cta_label');
+    $h2SecondaryCtaUrl = data_get($heroContent, 'secondary_cta_url') ?: '#';
     $h2CarImage = ($page?->hero_image) ?: '/images/cars/car-silver.png';
     $h2CarLabel = data_get($heroContent, 'car_label') ?: 'Premium SUV';
     $h2CarMirror = (bool) data_get($heroContent, 'car_mirror', false);
@@ -50,7 +52,7 @@
     $lfWizardW2 = $leadArchitecture['step2'] ?? 'Customize';
     $lfWizardW3 = $leadArchitecture['step3'] ?? 'Submit';
     $lfShowHero = (bool) data_get($lfContent, 'show_hero_form', true);
-    $lfHeroWidth = (int) data_get($lfContent, 'hero_form_width', 580);
+    $lfHeroWidth = (int) data_get($lfContent, 'hero_form_width', 480);
     $lfCirclesEnabled = $leadArchitecture['circles_enabled'] ?? true;
     $lfFeaturedBrands = data_get($page?->content, 'lead_form_brands', []);
 
@@ -60,41 +62,48 @@
     $lfMileageLabel = data_get($lfContent, 'step2.mileage_label', 'Mileage (KM)');
     $lfSpecsLabel = data_get($lfContent, 'step2.specs_label', 'Regional Specs');
 
-    $parseList = function($str, $sep = "\n") {
-        if (!$str) return [];
+    $parseList = function ($str, $sep = "\n") {
+        if (!$str)
+            return [];
         return array_filter(array_map('trim', explode($sep, $str)));
     };
 
     $lfBodyOptions = $parseList(data_get($lfContent, 'step2.body_options'));
-    if (empty($lfBodyOptions)) $lfBodyOptions = ['Sedan','SUV','Crossover','Coupe','Convertible','Hatchback','Van','Pickup'];
-    
+    if (empty($lfBodyOptions))
+        $lfBodyOptions = ['Sedan', 'SUV', 'Crossover', 'Coupe', 'Convertible', 'Hatchback', 'Van', 'Pickup'];
+
     $lfEngineOptions = $parseList(data_get($lfContent, 'step2.engine_options'), ',');
-    if (empty($lfEngineOptions)) $lfEngineOptions = ['1.0L','1.2L','1.4L','1.6L','1.8L','2.0L','2.4L','3.0L','4.0L','5.0L','6.0L','Other'];
+    if (empty($lfEngineOptions))
+        $lfEngineOptions = ['1.0L', '1.2L', '1.4L', '1.6L', '1.8L', '2.0L', '2.4L', '3.0L', '4.0L', '5.0L', '6.0L', 'Other'];
 
     $lfMileageOptions = $parseList(data_get($lfContent, 'step2.mileage_options'));
-    if (empty($lfMileageOptions)) $lfMileageOptions = ['Up to 10,000 KM','Up to 30,000 KM','Up to 60,000 KM','Up to 100,000 KM','Up to 150,000 KM','More than 200,000 KM'];
+    if (empty($lfMileageOptions))
+        $lfMileageOptions = ['Up to 10,000 KM', 'Up to 30,000 KM', 'Up to 60,000 KM', 'Up to 100,000 KM', 'Up to 150,000 KM', 'More than 200,000 KM'];
 
     $lfSpecsOptions = $parseList(data_get($lfContent, 'step2.specs_options'));
-    if (empty($lfSpecsOptions)) $lfSpecsOptions = ['GCC Specs','American Specs','Japanese Specs','European Specs','Other'];
+    if (empty($lfSpecsOptions))
+        $lfSpecsOptions = ['GCC Specs', 'American Specs', 'Japanese Specs', 'European Specs', 'Other'];
 
     $lfPaintOptions = $parseList(data_get($lfContent, 'step2.paint_options'));
-    if (empty($lfPaintOptions)) $lfPaintOptions = ['Original Paint','1-2 Panels Repaint','Total Repaint','Unknown'];
+    if (empty($lfPaintOptions))
+        $lfPaintOptions = ['Original Paint', '1-2 Panels Repaint', 'Total Repaint', 'Unknown'];
 
     $lfTrimOptions = $parseList(data_get($lfContent, 'step2.trim_options'));
-    if (empty($lfTrimOptions)) $lfTrimOptions = ['Basic','Mid','Full','Unknown'];
+    if (empty($lfTrimOptions))
+        $lfTrimOptions = ['Basic', 'Mid', 'Full', 'Unknown'];
 
     // Plate Funnel Labels
     $lfPlateCodeLabel = data_get($lfContent, 'plate.code_label', 'Plate Code');
     $lfPlateNumLabel = data_get($lfContent, 'plate.number_label', 'Plate Number');
     $lfPlateSubtitle = data_get($lfContent, 'plate.subtitle', 'Plate Details');
     $lfPlateBtn = data_get($lfContent, 'plate.button_label', 'CONTINUE TO CONTACT');
-    
+
     // Global Success Message
     $lfSuccessMsg = data_get($lfContent, 'success_message', 'Valuation request submitted successfully!');
     $lfFinalBtn = data_get($lfContent, 'final_btn_label', 'COMPLETE VALUATION');
 
     // Hero Atmosphere & Background
-    $heroBgMode = data_get($heroContent, 'background_mode', 'image'); 
+    $heroBgMode = data_get($heroContent, 'background_mode', 'image');
     $heroBgColor = data_get($heroContent, 'background_color', '#e7e7e7');
     $heroBgColorSecondary = data_get($heroContent, 'background_color_secondary', '#cbd5e1');
     $heroBgAngle = data_get($heroContent, 'background_gradient_angle', 135);
@@ -109,11 +118,12 @@
         $heroStyleFinal = "background: {$heroBgColor} !important;";
     } elseif ($heroBgMode === 'gradient') {
         $heroStyleFinal = "background: linear-gradient({$heroBgAngle}deg, {$heroBgColor} 0%, {$heroBgColorSecondary} 100%) !important;";
-    } elseif ($heroBgMode === 'image') {
-        $overlay = $heroOverlayEnabled ? "linear-gradient(rgba(14,16,23,{$heroOverlayOpacity}), rgba(14,16,23,{$heroOverlayOpacity})), " : "";
+    } elseif ($heroBgMode === 'image' || $heroBgMode === 'blend') {
+        $overlayColor = $heroBgMode === 'blend' ? $heroBgColor : 'rgba(14,16,23, ' . ($heroOverlayOpacity ?: '0.72') . ')';
+        $overlay = $heroOverlayEnabled ? "linear-gradient({$overlayColor}, {$overlayColor}), " : "";
         $heroStyleFinal = "background: {$overlay} url('{$heroBgImage}') !important; background-size: cover !important; background-position: center !important;";
     } elseif ($heroBgMode === 'custom' && $heroCustomCss) {
-        $heroStyleFinal = "{$heroCustomCss} !important;";
+        $heroStyleFinal = $heroCustomCss;
     } else {
         $heroStyleFinal = "background: #e7e7e7 !important;";
     }
@@ -143,6 +153,12 @@
         ];
     }
 
+    /**
+     * عطّل كل الأقسام بين الهيرو والفوتر (شريط الثقة، Google Reviews، فئات الهيكل، المزادات) مع الإبقاء على الهيرو والفوتر فقط — للتشخيص.
+     * غيّر إلى true لإعادة تفعيل كل الأقسام.
+     */
+    $h2ShowMiddleSections = true;
+
     // Brand Logo Helper
     $getBrandLogo = function ($slug) {
         $variants = [$slug, str_replace(['-', '_'], '', $slug), explode('-', $slug)[0]];
@@ -164,6 +180,7 @@
     $navDotColor = data_get($navbarContent, 'dot_color', '#ff6900');
     $navLogoScale = data_get($navbarContent, 'logo_scale', 100) / 100;
     $navSticky = (bool) data_get($navbarContent, 'sticky', true);
+    $navGlass = (bool) data_get($navbarContent, 'glass', true);
     $headerMenu = \App\Models\Menu::where('location', 'header')->with(['items' => fn($q) => $q->orderBy('order')])->first();
     $navMenuItems = $headerMenu?->items ?? collect();
     if (isset($featuredAuctions) && $featuredAuctions->first()) {
@@ -177,6 +194,16 @@
     $brandCardBrands2 = $leadArchitecture['featured_brands'] ?? [];
     $wizardStartStep2 = $wizardStartStep ?? 1;
     $h2Years = range(date('Y') + 1, 1970);
+
+    // Social links for footer
+    $allSocialKeys = ['facebook', 'instagram', 'tiktok', 'youtube', 'x', 'linkedin', 'whatsapp'];
+    $footerSocials = [];
+    foreach ($allSocialKeys as $sk) {
+        $url = \App\Models\SystemSetting::get('social_' . $sk, '');
+        if ($url && \App\Models\SystemSetting::get('social_' . $sk . '_show_footer', '0') === '1') {
+            $footerSocials[$sk] = $url;
+        }
+    }
 ?>
 
 <!DOCTYPE html>
@@ -186,6 +213,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo e(strip_tags($h2Title)); ?> — <?php echo e(\App\Models\SystemSetting::get('site_name', 'Motor Bazar')); ?></title>
+    
+    <meta name="app-home-template" content="home2">
     <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@700;800;900&family=Saira+Condensed:wght@700;800;900&family=Bebas+Neue&display=swap"
@@ -200,6 +229,8 @@
             --h2-nav-top: <?php echo e($navSticky ? '0' : 'auto'); ?>;
             --h2-nav-z: 1000;
             --h2-hero-form-width: <?php echo e($lfHeroWidth); ?>px;
+            --h2-hero-text-left: <?php echo e($lfShowHero ? ($lfHeroWidth + 90) : 44); ?>px;
+            --h2-hero-car-left: <?php echo e($lfShowHero ? ($lfHeroWidth - 110) : 0); ?>px;
         }
 
         .nav-logo img {
@@ -212,21 +243,64 @@
         }
 
         .hero {
-            <?php echo $heroStyleFinal; ?>
-
-            height: calc(100vh - 80px) !important;
+            height: 950px !important;
             min-height: 950px !important;
             display: flex !important;
             align-items: flex-start !important;
             position: relative !important;
-            overflow: hidden !important;
+            overflow: visible !important;
+            <?php if($heroBgMode !== 'custom'): ?>
+                <?php echo $heroStyleFinal; ?>
+
+            <?php endif; ?>
         }
+
+        .hub-drawer-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 15px 20px;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            background: #fff;
+            border-top-left-radius: 1rem;
+            border-top-right-radius: 1rem;
+        }
+
+        .hub-btn-link {
+            background: none;
+            border: none;
+            color: #ff6900;
+            font-size: 0.65rem;
+            font-weight: 1000;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 6px;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .hub-btn-link:hover {
+            background: rgba(255,105,0,0.05);
+            transform: translateY(-1px);
+        }
+
+        /* Developer Lab Custom Injection */
+        <?php if($heroCustomCss): ?>
+            <?php if(strpos($heroCustomCss, '{') !== false): ?>
+                <?php echo $heroCustomCss; ?>
+
+            <?php else: ?>
+                #hero-master { <?php echo $heroCustomCss; ?> }
+            <?php endif; ?>
+        <?php endif; ?>
 
         .hero-inner {
             width: 100% !important;
             max-width: 1600px !important;
             margin: 0 auto !important;
-            padding: 120px 4% 0 4% !important;
+            padding: 40px 4% 0 4% !important; /* Removed bottom padding */
             display: flex !important;
             align-items: flex-start !important;
             justify-content: flex-start !important;
@@ -253,37 +327,77 @@
         .hero-car {
             position: absolute !important;
             right: <?php echo e($h2CarRight); ?>% !important;
-            top: 635px !important;
-            bottom: auto !important;
+            top: 620px !important; /* Fixed vertical position to prevent movement on resize */
             width: 70% !important;
             z-index: 0 !important;
             pointer-events: none !important;
             opacity: 0.8 !important;
         }
 
-        .sc-pill-container {
-            position: absolute !important;
-            top: 840px !important;
-            bottom: auto !important;
-            left: 0 !important;
-            right: 0 !important;
-            display: flex !important;
-            justify-content: center !important;
-            z-index: 120 !important;
+        /* شريط الثقة أصبح قسماً عادياً تحت الهيرو (.h2-trust-strip) — لا absolute داخل .hero */
+
+        /* Forced Stacking for Sections */
+        main section {
+            display: block !important;
+            float: none !important;
+            clear: both !important;
         }
 
-        .sc-pill-stats {
-            background: <?php echo e(data_get($page->content, 'trust_badges_stats_bg', 'rgba(255, 255, 255, 0.92)')); ?>;
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            border-radius: 1.25rem;
-            padding: 24px 80px;
-            display: flex;
-            align-items: flex-start;
-            gap: 110px;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.06);
-            <?php echo data_get($page->content, 'trust_badges_custom_css', ''); ?>
+        .h2-trust-strip {
+            margin-top: -350px !important; /* Managed overlap */
+            padding: 80px 0 !important;
+            position: relative;
+            z-index: 60; /* Higher than hero (z-50) to show badges on top of car/hero */
+        }
 
+        .h2-trust-strip .grid > div + div {
+            border-left: 1px solid rgba(255, 105, 0, 0.4);
+        }
+
+        .services-card {
+            position: relative;
+            overflow: hidden;
+        }
+        .services-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,105,0,0.15), transparent);
+            transition: left 0.6s ease;
+            pointer-events: none;
+        }
+        .services-card:hover::before {
+            left: 100%;
+        }
+
+        .h2-main-below-hero {
+            display: block !important;
+            width: 100% !important;
+            position: relative;
+            z-index: 20;
+        }
+
+        .h2-main-below-hero section {
+            margin-bottom: 120px !important;
+            width: 100% !important;
+            display: block !important;
+        }
+
+        .h2-section-container {
+            width: 100% !important;
+            max-width: 1600px !important;
+            margin: 0 auto !important;
+            padding: 0 4% !important;
+        }
+
+        .section-separator {
+            height: 100px;
+            background: white;
+            position: relative;
+            z-index: 5;
         }
 
         .hero-title {
@@ -294,9 +408,12 @@
 
         .hub-drawer {
             top: calc(100% + 15px) !important;
-            border-radius: 1.25rem !important;
+            border-radius: 1rem !important;
             box-shadow: 0 30px 70px -10px rgba(3, 22, 41, 0.45) !important;
             border: 1px solid rgba(0, 0, 0, 0.05) !important;
+            z-index: 1000 !important;
+            max-height: 480px !important;
+            overflow-y: auto !important;
         }
 
         .sc-btn {
@@ -304,7 +421,7 @@
             height: 54px !important;
             background: linear-gradient(135deg, #ff6900 0%, #ff8c33 100%) !important;
             color: white !important;
-            border-radius: 20px !important;
+            border-radius: 1rem !important;
             font-size: 0.85rem;
             font-weight: 900;
             text-transform: uppercase;
@@ -347,8 +464,13 @@
         }
 
         @keyframes sc-shine {
-            0% { transform: translateX(-150%) rotate(30deg); }
-            100% { transform: translateX(150%) rotate(30deg); }
+            0% {
+                transform: translateX(-150%) rotate(30deg);
+            }
+
+            100% {
+                transform: translateX(150%) rotate(30deg);
+            }
         }
 
         .sc-btn:active:not(:disabled) {
@@ -368,7 +490,7 @@
             background: #ffffff !important;
             border: 2px solid #e2e8f0 !important;
             color: #64748b !important;
-            border-radius: 20px !important;
+            border-radius: 1rem !important;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -392,208 +514,205 @@
         .sc-body .sc-btn {
             top: 15px !important;
         }
+
+        /* يفصل طبقة الهيرو عن بقية الصفحة — كان app.css يكرر .sc-pill-container ويلغي position:absolute */
+        body.home2 main>section.hero {
+            overflow: visible !important;
+        }
+
+        /* CENTER MIDDLE SECTIONS & FOOTER (EXCLUDING HERO) */
+        main {
+            display: block !important;
+            width: 100% !important;
+        }
+
+        main section:not(.hero), main footer {
+            width: 100% !important;
+        }
+
+        /* Fix for Body Type Cards clumping */
+        .body-type-card {
+            background: #fff;
+            border: 1px solid #f1f5f9;
+            border-radius: 1rem;
+            padding: 30px 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+        }
+
+        .body-type-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(3,22,41,0.08);
+            border-color: #ff6900;
+        }
+
+        /* Center the Review Slider content */
+        [data-review-scroll] {
+            display: flex !important;
+            justify-content: flex-start !important;
+            padding-left: calc((100vw - 1600px) / 2);
+        }
+        @media (max-width: 1600px) {
+            [data-review-scroll] { padding-left: 4%; }
+        }
+
+        /* --- ULTRA-PREMIUM FOOTER DESIGN --- */
+        .h2-footer-root {
+            background-color: #e7e7e7 !important;
+            color: #031629 !important;
+            border-top: 1px solid rgba(0,0,0,0.05) !important;
+            padding-top: 100px !important;
+            padding-bottom: 60px !important;
+            width: 100% !important;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            position: relative;
+            z-index: 50;
+        }
+
+        .footer-card {
+            background: #e7e7e7 !important;
+            border-radius: 1rem !important;
+            padding: 40px !important;
+            box-shadow: 0 20px 50px -15px rgba(3,22,41,0.08) !important;
+            border: 1px solid rgba(0,0,0,0.05) !important;
+        }
+
+        .footer-header-lux {
+            font-size: 0.75rem !important;
+            font-weight: 900 !important;
+            text-transform: uppercase !important;
+            letter-spacing: 0.25em !important;
+            color: #ff6900 !important;
+            margin-bottom: 25px !important;
+            display: block !important;
+        }
+
+        .footer-link-lux {
+            color: #64748b !important;
+            text-decoration: none !important;
+            font-size: 0.95rem !important;
+            font-weight: 600 !important;
+            transition: all 0.3s ease !important;
+            display: inline-block !important;
+            margin-bottom: 12px !important;
+        }
+
+        .footer-link-lux:hover {
+            color: #ff6900 !important;
+            transform: translateX(5px);
+        }
+
+        .footer-bottom-lux {
+            width: 100% !important;
+            max-width: 1600px !important;
+            margin-top: 80px !important;
+            padding: 30px 4% 0 4% !important;
+            border-top: 1px solid rgba(0,0,0,0.05) !important;
+            display: flex !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+            font-size: 0.8rem !important;
+            color: #94a3b8 !important;
+            font-weight: 700 !important;
+        }
+
+        .footer-social-lux {
+            display: flex;
+            gap: 12px;
+        }
+
+        .social-item-lux {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #031629;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.04);
+            border: 1px solid #f1f5f9;
+        }
+
+        .social-item-lux:hover {
+            background: #ff6900;
+            color: #fff;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(255, 105, 0, 0.2);
+        }
     </style>
 </head>
 
-<body x-data>
+
+<?php
+    // CMS Binding: Prioritize /admin/cms/home settings
+    $footerDesc = data_get($page?->content, 'footer.description') ?: \App\Models\SystemSetting::get('footer_description', 'The world\'s most trusted platform for premium car auctions.');
+    
+    $footerSocials = data_get($page?->content, 'footer.socials', []);
+    $footerQuickLinks = data_get($page?->content, 'footer.quick_links', [
+        ['label' => 'Home', 'url' => '/'],
+        ['label' => 'Browse Auctions', 'url' => route('auctions.index')],
+        ['label' => 'Sell Your Car', 'url' => '#'],
+    ]);
+    
+    $footerPages = data_get($page?->content, 'footer.pages', [
+        ['label' => 'Terms of Service', 'url' => '#'],
+        ['label' => 'Privacy Policy', 'url' => '#'],
+    ]);
+    
+    $footerPhone = data_get($page?->content, 'footer.phone') ?: \App\Models\SystemSetting::get('site_phone', '');
+    $footerEmail = data_get($page?->content, 'footer.email') ?: \App\Models\SystemSetting::get('site_email', '');
+    
+    $footerCopy = data_get($page?->content, 'footer.copyright', "© ".now()->year." MOTOR BAZAR. ALL RIGHTS RESERVED.");
+    $footerTerms = data_get($page?->content, 'footer.terms_url', '#');
+    
+    // Site Logo from Global Settings
+    $siteLogo = \App\Models\SystemSetting::get('site_logo');
+    $siteLogoUrl = $siteLogo ? (str_starts_with($siteLogo, 'http') ? $siteLogo : asset('storage/' . $siteLogo)) : null;
+    $siteName = \App\Models\SystemSetting::get('site_name', 'MOTOR BAZAR');
+?>
+
+<body class="home2" x-data>
 
     
-    <nav class="nav">
+    <?php if (isset($component)) { $__componentOriginala591787d01fe92c5706972626cdf7231 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginala591787d01fe92c5706972626cdf7231 = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.navbar','data' => ['variant' => 'modern','siteLogo' => $siteLogo ?? null,'siteName' => $siteName ?? null,'phone' => $navPhone ?? null,'whatsapp' => $navWhatsapp ?? null,'menu' => (object)['items' => $navMenuItems ?? []],'bgColor' => $navBgColor ?? '#e7e7e7','textColor' => $navTxtColor ?? '#031629','dotColor' => $navDotColor ?? '#ff6900','logoScale' => $navLogoScale ?? 1,'isSticky' => $navSticky,'isGlass' => $navGlass]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('navbar'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['variant' => 'modern','siteLogo' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($siteLogo ?? null),'siteName' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($siteName ?? null),'phone' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($navPhone ?? null),'whatsapp' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($navWhatsapp ?? null),'menu' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute((object)['items' => $navMenuItems ?? []]),'bgColor' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($navBgColor ?? '#e7e7e7'),'textColor' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($navTxtColor ?? '#031629'),'dotColor' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($navDotColor ?? '#ff6900'),'logoScale' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($navLogoScale ?? 1),'isSticky' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($navSticky),'isGlass' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($navGlass)]); ?>
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginala591787d01fe92c5706972626cdf7231)): ?>
+<?php $attributes = $__attributesOriginala591787d01fe92c5706972626cdf7231; ?>
+<?php unset($__attributesOriginala591787d01fe92c5706972626cdf7231); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginala591787d01fe92c5706972626cdf7231)): ?>
+<?php $component = $__componentOriginala591787d01fe92c5706972626cdf7231; ?>
+<?php unset($__componentOriginala591787d01fe92c5706972626cdf7231); ?>
+<?php endif; ?>
 
-        
-        <div class="nav-left">
-            <a href="<?php echo e(route('home2')); ?>" class="nav-logo">
-                <?php
-                    $siteLogo = \App\Models\SystemSetting::get('site_logo');
-                    $siteLogoUrl = $siteLogo ? (str_starts_with($siteLogo, 'http') ? $siteLogo : asset('storage/' . $siteLogo)) : null;
-                ?>
-                <?php if($siteLogoUrl): ?>
-                    <img src="<?php echo e($siteLogoUrl); ?>" alt="<?php echo e(\App\Models\SystemSetting::get('site_name', 'Motor Bazar')); ?>"
-                        style="height:70px;width:auto;object-fit:contain">
-                <?php else: ?>
-                    <div class="nav-dots">
-                        <div class="nav-dot big"></div>
-                        <div class="nav-dot sm"></div>
-                    </div>
-                    <span class="nav-brand"><?php echo e(\App\Models\SystemSetting::get('site_name', 'Motor Bazar')); ?></span>
-                <?php endif; ?>
-            </a>
-
+    
+    <main class="flex flex-col w-full min-h-screen relative">
+        <section id="hero-master" class="hero w-full block relative z-50">
             
-            <div class="nav-pill">
-                <a href="<?php echo e(route('home2')); ?>" class="nav-pill-item active" title="Home">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-                        stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
-                    </svg>
-                </a>
-                <div class="nav-pill-sep"></div>
-                <a href="<?php echo e(route('auctions.index')); ?>" class="nav-pill-item" title="Auctions">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-                        stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z" />
-                    </svg>
-                </a>
-                <?php if($navPhone): ?>
-                    <div class="nav-pill-sep"></div>
-                    <a href="tel:<?php echo e($navPhone); ?>" class="nav-pill-item" title="<?php echo e($navPhone); ?>">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-                            stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 0 0 2.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 0 1-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 0 0-1.091-.852H4.5A2.25 2.25 0 0 0 2.25 6.75Z" />
-                        </svg>
-                    </a>
-                <?php endif; ?>
-                <?php if($navWhatsapp): ?>
-                    <div class="nav-pill-sep"></div>
-                    <a href="https://wa.me/<?php echo e(preg_replace('/[^0-9]/', '', $navWhatsapp)); ?>" target="_blank"
-                        class="nav-pill-item" title="WhatsApp">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                            <path
-                                d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z" />
-                        </svg>
-                    </a>
-                <?php endif; ?>
-                <div class="nav-pill-sep"></div>
-                <a href="#" class="nav-pill-item" title="Location">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-                        stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
-                    </svg>
-                </a>
-            </div>
-        </div>
-
-        
-        <div class="nav-center">
-            <?php $__currentLoopData = $navMenuItems; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                <a href="<?php echo e($item->url); ?>" class="nav-menu-link"><?php echo e($item->label); ?></a>
-            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-        </div>
-
-        
-        <div class="nav-right">
-
-            
-            <div class="nav-search">
-                <input type="text" placeholder="Search..."
-                    onkeydown="if(event.key==='Enter') window.location='<?php echo e(route('auctions.index')); ?>?search='+encodeURIComponent(this.value)">
-                <button class="nav-search-btn"
-                    onclick="window.location='<?php echo e(route('auctions.index')); ?>?search='+encodeURIComponent(this.previousElementSibling.value)">
-                    Go
-                </button>
-            </div>
-
-            
-            <?php if(auth()->guard()->check()): ?>
-                <div style="position:relative" x-data="{open:false}">
-                    <button @click="open=!open"
-                        style="width:40px;height:40px;border-radius:50%;border:2px solid #ff6900;overflow:hidden;cursor:pointer;background:#f1f5f9;flex-shrink:0;display:flex;align-items:center;justify-content:center;padding:0">
-                        <?php if(auth()->user()->profile_photo_path): ?>
-                            <img src="<?php echo e(Storage::url(auth()->user()->profile_photo_path)); ?>"
-                                style="width:100%;height:100%;object-fit:cover" alt="">
-                        <?php else: ?>
-                            <span
-                                style="font-size:.7rem;font-weight:900;color:#031629"><?php echo e(strtoupper(substr(auth()->user()->name, 0, 2))); ?></span>
-                        <?php endif; ?>
-                    </button>
-                    <div x-show="open" @click.outside="open=false" x-cloak
-                        style="position:absolute;top:calc(100% + 8px);right:0;background:#fff;border:1px solid #e8ecf0;border-radius:0.75rem;box-shadow:0 16px 40px rgba(3,22,41,.12);min-width:180px;padding:8px;z-index:999">
-                        <div style="padding:10px 12px 8px;border-bottom:1px solid #f1f5f9;margin-bottom:4px">
-                            <p style="font-size:.72rem;font-weight:800;color:#031629"><?php echo e(auth()->user()->name); ?></p>
-                            <p style="font-size:.62rem;color:#94a3b8"><?php echo e(auth()->user()->email); ?></p>
-                        </div>
-                        <?php if(auth()->user()->hasRole('admin') || auth()->user()->hasRole('super-admin')): ?>
-                            <a href="<?php echo e(route('admin.dashboard')); ?>"
-                                style="display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:8px;font-size:.68rem;font-weight:700;color:#031629;text-decoration:none;transition:background .15s"
-                                onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" viewBox="0 0 24 24"
-                                    stroke-width="2" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M10.5 6a7.5 7.5 0 1 0 7.5 7.5h-7.5V6Z" />
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M13.5 10.5H21A7.5 7.5 0 0 0 13.5 3v7.5Z" />
-                                </svg>
-                                Admin Panel
-                            </a>
-                        <?php endif; ?>
-                        <a href="#"
-                            style="display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:8px;font-size:.68rem;font-weight:700;color:#031629;text-decoration:none;transition:background .15s"
-                            onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" viewBox="0 0 24 24"
-                                stroke-width="2" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
-                            </svg>
-                            My Profile
-                        </a>
-                        <div style="height:1px;background:#f1f5f9;margin:4px 0"></div>
-                        <form method="POST" action="<?php echo e(route('logout')); ?>">
-                            <?php echo csrf_field(); ?>
-                            <button type="submit"
-                                style="width:100%;display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:8px;font-size:.68rem;font-weight:700;color:#ef4444;background:none;border:none;cursor:pointer;text-align:left;transition:background .15s"
-                                onmouseover="this.style.background='#fff5f5'"
-                                onmouseout="this.style.background='transparent'">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none"
-                                    viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15M12 9l-3 3m0 0 3 3m-3-3h12.75" />
-                                </svg>
-                                Sign Out
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            <?php else: ?>
-                <a href="<?php echo e(route('login')); ?>"
-                    style="display:flex;align-items:center;gap:7px;height:40px;padding:0 18px;background:#031629;color:#fff;border-radius:0.75rem;font-size:.65rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;transition:background .2s"
-                    onmouseover="this.style.background='#ff6900'" onmouseout="this.style.background='#031629'">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" viewBox="0 0 24 24"
-                        stroke-width="2.5" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9" />
-                    </svg>
-                    Sign In
-                </a>
+            <?php 
+                $showHeroOverlay = $heroOverlayEnabled && ($heroBgMode !== 'custom');
+                $finalOverlayColor = ($heroBgMode === 'blend') ? $heroBgColor : 'rgba(14,16,23,1)';
+            ?>
+            <?php if($showHeroOverlay): ?>
+                <div class="absolute inset-0 z-[1]" 
+                     style="background: <?php echo e($finalOverlayColor); ?>; opacity: <?php echo e($heroOverlayOpacity); ?>; pointer-events: none;"></div>
             <?php endif; ?>
-
-        </div>
-
-    </nav>
-
-    
-    <div class="social-bar">
-        <a href="#" title="Account">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8"
-                stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round"
-                    d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
-            </svg>
-        </a>
-        <a href="#" title="Explore">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8"
-                stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round"
-                    d="M12 21a9.004 9.004 0 0 0 8.716-6.747M12 21a9.004 9.004 0 0 1-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 0 1 7.843 4.582M12 3a8.997 8.997 0 0 0-7.843 4.582m15.686 0A11.953 11.953 0 0 1 12 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0 1 21 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0 1 12 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 0 1 3 12c0-1.605.42-3.113 1.157-4.418" />
-            </svg>
-        </a>
-        <a href="#" title="Share">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8"
-                stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round"
-                    d="M7.217 10.907a2.25 2.25 0 1 0 0 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186 9.566-5.314m-9.566 7.5 9.566 5.314m0 0a2.25 2.25 0 1 0 3.935 2.186 2.25 2.25 0 0 0-3.935-2.186Zm0-12.814a2.25 2.25 0 1 0 3.933-2.185 2.25 2.25 0 0 0-3.933 2.185Z" />
-            </svg>
-        </a>
-    </div>
-
-    
-    <main>
-        <section class="hero">
             <div class="hero-inner">
 
                 <?php if($lfShowHero): ?>
@@ -604,65 +723,69 @@
                         ?>
                         <textarea id="h2-models-data" style="display:none"><?php echo json_encode($h2Models, 15, 512) ?></textarea>
                         <div class="search-card" x-cloak x-data="{
-                            allModels: JSON.parse(document.getElementById('h2-models-data')?.value || '{}'),
-                            heroWizardTab: 'car',
-                            heroWizardStep: 1,
-                            name: '', phone: '', email: '',
-                            make: '', model: '', year: '', condition: 'good',
-                            body: '', engine: '', mileage: '', trim: 'Full option', paint: 'Original', gcc: 'GCC',
-                            inspectionDate: '<?php echo e(now()->addDays(1)->format('Y-m-d')); ?>', inspectionTime: '10:00',
-                            address: '',
-                            inspectionType: 'branch',
-                            plate: '', plateCode: 'A', emirate: 'Dubai',
-                            search: '', modelSearch: '',
-                            scCurrentField: null,
-                            showToast: false,
-                            toastMsg: '',
-                            triggerToast(msg) {
-                                this.toastMsg = msg;
-                                this.showToast = true;
-                                setTimeout(() => { this.showToast = false; }, 3000);
-                            },
-                            init() {
-                                window.addEventListener('sync-pickers', (e) => {
-                                    this.inspectionDate = e.detail.date;
-                                    this.inspectionTime = e.detail.time;
-                                });
-                            },
-                            plateCodeMap: {
-                                'Dubai': ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z', 'AA','BB','CC','DD','EE','FF','GG','HH','II','JJ','KK','LL','MM','NN','OO','PP','QQ','RR','SS','TT','UU','VV','WW','XX','YY','ZZ', 'Blank'],
-                                'Abu Dhabi': ['1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20', '50', 'Blank'],
-                                'Sharjah': ['1','2','3','Blank'],
-                                'Ajman': ['A','B','C','D','E','H','Blank'],
-                                'RAK': ['A','C','D','I','K','M','N','S','V','Y','Blank'],
-                                'UAQ': ['A','B','C','D','E','F','G','I','X','Blank'],
-                                'Fujairah': ['A','B','C','D','E','F','G','K','M','P','R','S','T','Blank'],
-                                'Other': ['Blank']
-                            },
-                            get availableCodes() { return this.plateCodeMap[this.emirate] || ['Blank']; },
-                            get plateFile() {
-                                const map = { 
-                                    'UAQ': 'quwain', 
-                                    'Abu Dhabi': 'abudhabi',
-                                    'Fujairah': 'fujaira'
-                                };
-                                return '/images/plates/' + (map[this.emirate] || this.emirate.toLowerCase().replace(/\s+/g, '')) + '.png';
-                            },
+                                            allModels: JSON.parse(document.getElementById('h2-models-data')?.value || '{}'),
+                                            heroWizardTab: 'car',
+                                            heroWizardStep: 1,
+                                            name: '', phone: '', email: '',
+                                            make: '', model: '', year: '', condition: 'good',
+                                            body: '', engine: '', mileage: '', trim: 'Full option', paint: 'Original', gcc: 'GCC',
+                                            inspectionDate: '<?php echo e(now()->addDays(1)->format('Y-m-d')); ?>', inspectionTime: '10:00',
+                                            address: '',
+                                            inspectionType: 'branch',
+                                            plate: '', plateCode: 'A', emirate: 'Dubai',
+                                            search: '', modelSearch: '',
+                                            scCurrentField: null,
+                                            showToast: false,
+                                            toastMsg: '',
+                                            triggerToast(msg) {
+                                                this.toastMsg = msg;
+                                                this.showToast = true;
+                                                setTimeout(() => { this.showToast = false; }, 3000);
+                                            },
+                                            init() {
+                                                window.addEventListener('sync-pickers', (e) => {
+                                                    this.inspectionDate = e.detail.date;
+                                                    this.inspectionTime = e.detail.time;
+                                                });
+                                            },
+                                            plateCodeMap: {
+                                                'Dubai': ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z', 'AA','BB','CC','DD','EE','FF','GG','HH','II','JJ','KK','LL','MM','NN','OO','PP','QQ','RR','SS','TT','UU','VV','WW','XX','YY','ZZ', 'Blank'],
+                                                'Abu Dhabi': ['1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20', '50', 'Blank'],
+                                                'Sharjah': ['1','2','3','Blank'],
+                                                'Ajman': ['A','B','C','D','E','H','Blank'],
+                                                'RAK': ['A','C','D','I','K','M','N','S','V','Y','Blank'],
+                                                'UAQ': ['A','B','C','D','E','F','G','I','X','Blank'],
+                                                'Fujairah': ['A','B','C','D','E','F','G','K','M','P','R','S','T','Blank'],
+                                                'Other': ['Blank']
+                                            },
+                                            get availableCodes() { return this.plateCodeMap[this.emirate] || ['Blank']; },
+                                            get plateFile() {
+                                                const map = { 
+                                                    'UAQ': 'quwain', 
+                                                    'Abu Dhabi': 'abudhabi',
+                                                    'Fujairah': 'fujaira'
+                                                };
+                                                return '/images/plates/' + (map[this.emirate] || this.emirate.toLowerCase().replace(/\s+/g, '')) + '.png';
+                                            },
 
-                            get models() {
-                                const k = this.make.toLowerCase().replace(/[^a-z0-9]+/g,'');
-                                return this.allModels[k] || this.allModels['__all__'] || [];
-                            }
-                         }">
+                                            get models() {
+                                                const k = this.make.toLowerCase().replace(/[^a-z0-9]+/g,'');
+                                                return this.allModels[k] || this.allModels['__all__'] || [];
+                                            }
+                                         }">
 
                             
                             <div class="sc-header" style="margin-bottom: 25px;">
                                 <p class="sc-label"
                                     style="margin-bottom: 4px !important; color: #ff6900; font-size: 0.7rem; font-weight: 1000; letter-spacing: 0.1em;">
-                                    <?php echo e($lfHeaderLabel); ?></p>
+                                    <?php echo e($lfHeaderLabel); ?>
+
+                                </p>
                                 <h3 class="sc-title"
                                     style="margin-top: 0 !important; font-size: 1.35rem; font-weight: 900; line-height: 1.1; color: #031629;">
-                                    <?php echo $lfHeaderTitle; ?></h3>
+                                    <?php echo $lfHeaderTitle; ?>
+
+                                </h3>
                             </div>
 
 
@@ -860,8 +983,10 @@
                                         <div class="space-y-6">
                                             <div>
                                                 <span class="field-lbl"><?php echo e($lfBodyLabel); ?></span>
-                                                <div class="sc-field mt-1" style="height:52px; background:#f8fafc; border-radius:1rem;">
-                                                    <select x-model="body" class="wiz-input-sm w-full h-full bg-transparent border-none outline-none px-4 font-bold text-[#031629]">
+                                                <div class="sc-field mt-1"
+                                                    style="height:52px; background:#f8fafc; border-radius:1rem;">
+                                                    <select x-model="body"
+                                                        class="wiz-input-sm w-full h-full bg-transparent border-none outline-none px-4 font-bold text-[#031629]">
                                                         <option value="">Select <?php echo e($lfBodyLabel); ?></option>
                                                         <?php $__currentLoopData = $lfBodyOptions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $opt): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                                             <option><?php echo e($opt); ?></option>
@@ -871,8 +996,10 @@
                                             </div>
                                             <div>
                                                 <span class="field-lbl"><?php echo e($lfEngineLabel); ?></span>
-                                                <div class="sc-field mt-1" style="height:52px; background:#f8fafc; border-radius:1rem;">
-                                                    <select x-model="engine" class="wiz-input-sm w-full h-full bg-transparent border-none outline-none px-4 font-bold text-[#031629]">
+                                                <div class="sc-field mt-1"
+                                                    style="height:52px; background:#f8fafc; border-radius:1rem;">
+                                                    <select x-model="engine"
+                                                        class="wiz-input-sm w-full h-full bg-transparent border-none outline-none px-4 font-bold text-[#031629]">
                                                         <option value="">Select <?php echo e($lfEngineLabel); ?></option>
                                                         <?php $__currentLoopData = $lfEngineOptions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $eng): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                                             <option><?php echo e($eng); ?></option>
@@ -882,8 +1009,10 @@
                                             </div>
                                             <div>
                                                 <span class="field-lbl"><?php echo e($lfMileageLabel); ?></span>
-                                                <div class="sc-field mt-1" style="height:52px; background:#f8fafc; border-radius:1rem;">
-                                                    <select x-model="mileage" class="wiz-input-sm w-full h-full bg-transparent border-none outline-none px-4 font-bold text-[#031629]">
+                                                <div class="sc-field mt-1"
+                                                    style="height:52px; background:#f8fafc; border-radius:1rem;">
+                                                    <select x-model="mileage"
+                                                        class="wiz-input-sm w-full h-full bg-transparent border-none outline-none px-4 font-bold text-[#031629]">
                                                         <option value="">Select <?php echo e($lfMileageLabel); ?></option>
                                                         <?php $__currentLoopData = $lfMileageOptions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $mile): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                                             <option><?php echo e($mile); ?></option>
@@ -893,8 +1022,10 @@
                                             </div>
                                             <div>
                                                 <span class="field-lbl"><?php echo e($lfSpecsLabel); ?></span>
-                                                <div class="sc-field mt-1" style="height:52px; background:#f8fafc; border-radius:1rem;">
-                                                    <select x-model="gcc" class="wiz-input-sm w-full h-full bg-transparent border-none outline-none px-4 font-bold text-[#031629]">
+                                                <div class="sc-field mt-1"
+                                                    style="height:52px; background:#f8fafc; border-radius:1rem;">
+                                                    <select x-model="gcc"
+                                                        class="wiz-input-sm w-full h-full bg-transparent border-none outline-none px-4 font-bold text-[#031629]">
                                                         <option value="">Select <?php echo e($lfSpecsLabel); ?></option>
                                                         <?php $__currentLoopData = $lfSpecsOptions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $spec): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                                             <option><?php echo e($spec); ?></option>
@@ -934,14 +1065,16 @@
                                         </div>
                                     </div>
 
-                                    <div style="display:flex; align-items:center; justify-content:between; pt-8 border-t border-slate-100 mt-6 gap-3">
+                                    <div
+                                        style="display:flex; align-items:center; justify-content:between; pt-8 border-t border-slate-100 mt-6 gap-3">
                                         <button type="button" class="sc-btn-back" @click="heroWizardStep=1">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none"
+                                                viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
                                             </svg>
                                         </button>
-                                        <button type="button" class="sc-btn flex-1"
-                                            @click="heroWizardStep=3">
+                                        <button type="button" class="sc-btn flex-1" @click="heroWizardStep=3">
                                             CONTINUE TO BOOKING &rarr;
                                         </button>
                                     </div>
@@ -950,79 +1083,137 @@
                                 
                                 <div x-show="heroWizardStep === 3" x-cloak>
                                     
-                                    <p class="sc-label" style="color:#94a3b8; font-size:0.55rem; margin-bottom:12px; text-transform:uppercase; letter-spacing:0.1em;">Where should we meet?</p>
+                                    <p class="sc-label"
+                                        style="color:#94a3b8; font-size:0.55rem; margin-bottom:12px; text-transform:uppercase; letter-spacing:0.1em;">
+                                        Where should we meet?</p>
                                     <div class="grid grid-cols-2 gap-4" style="margin-bottom:25px;">
                                         <button type="button" @click="inspectionType='branch'"
                                             class="group relative flex flex-col items-center justify-center gap-1.5 border-2 rounded-2xl transition-all p-2 h-[75px]"
                                             :style="inspectionType === 'branch' ? 'border-color:#ff6900; background:#fff7f0; color:#ff6900; box-shadow:0 10px 30px -10px rgba(255,105,0,0.2)' : 'border-color:#eef2f6; background:#f8fafc; color:#64748b;'">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                                <rect x="2" y="10" width="20" height="12" rx="2" ry="2"/><path d="m12 10 4.46-4.46a2 2 0 0 0-2.82-2.82L9 7.32"/><path d="m7 10 4.46-4.46a2 2 0 0 0-2.82-2.82L4 7.32"/>
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22"
+                                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                                                stroke-linecap="round" stroke-linejoin="round">
+                                                <rect x="2" y="10" width="20" height="12" rx="2" ry="2" />
+                                                <path d="m12 10 4.46-4.46a2 2 0 0 0-2.82-2.82L9 7.32" />
+                                                <path d="m7 10 4.46-4.46a2 2 0 0 0-2.82-2.82L4 7.32" />
                                             </svg>
-                                            <span style="font-size: 0.6rem; font-weight: 1000; text-transform: uppercase; letter-spacing: 0.05em;">Visit Branch</span>
-                                            <div x-show="inspectionType === 'branch'" class="absolute -top-1.5 -right-1.5 bg-[#ff6900] text-white p-0.5 rounded-full shadow-lg">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="4"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
+                                            <span
+                                                style="font-size: 0.6rem; font-weight: 1000; text-transform: uppercase; letter-spacing: 0.05em;">Visit
+                                                Branch</span>
+                                            <div x-show="inspectionType === 'branch'"
+                                                class="absolute -top-1.5 -right-1.5 bg-[#ff6900] text-white p-0.5 rounded-full shadow-lg">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" fill="none"
+                                                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="4">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        d="m4.5 12.75 6 6 9-13.5" />
+                                                </svg>
                                             </div>
                                         </button>
                                         <button type="button" @click="inspectionType='home'"
                                             class="group relative flex flex-col items-center justify-center gap-1.5 border-2 rounded-2xl transition-all p-2 h-[75px]"
                                             :style="inspectionType === 'home' ? 'border-color:#ff6900; background:#fff7f0; color:#ff6900; box-shadow:0 10px 30px -10px rgba(255,105,0,0.2)' : 'border-color:#eef2f6; background:#f8fafc; color:#64748b;'">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                                <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22"
+                                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                                                stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                                                <polyline points="9 22 9 12 15 12 15 22" />
                                             </svg>
-                                            <span style="font-size: 0.6rem; font-weight: 1000; text-transform: uppercase; letter-spacing: 0.05em;">Home Service</span>
-                                            <div x-show="inspectionType === 'home'" class="absolute -top-1.5 -right-1.5 bg-[#ff6900] text-white p-0.5 rounded-full shadow-lg">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="4"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
+                                            <span
+                                                style="font-size: 0.6rem; font-weight: 1000; text-transform: uppercase; letter-spacing: 0.05em;">Home
+                                                Service</span>
+                                            <div x-show="inspectionType === 'home'"
+                                                class="absolute -top-1.5 -right-1.5 bg-[#ff6900] text-white p-0.5 rounded-full shadow-lg">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" fill="none"
+                                                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="4">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        d="m4.5 12.75 6 6 9-13.5" />
+                                                </svg>
                                             </div>
                                         </button>
                                     </div>
- 
+
                                     
                                     <div x-data="{ 
-                                        mapUrl: 'https://maps.googleapis.com/maps/api/staticmap?center=25.07,55.15&zoom=12&size=600x400&scale=2&style=feature:all|element:labels|visibility:off&style=feature:geometry|color:0xf5f5f5&style=feature:water|color:0xc9c9c9&key=<?php echo e(\App\Models\SystemSetting::get('google_maps_api_key', env('GOOGLE_MAPS_API_KEY'))); ?>',
-                                        isLocating: false,
-                                        locate() {
-                                            this.isLocating = true;
-                                            if (navigator.geolocation) {
-                                                navigator.geolocation.getCurrentPosition((position) => {
-                                                    const lat = position.coords.latitude;
-                                                    const lng = position.coords.longitude;
-                                                    address = `Location: ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
-                                                    this.mapUrl = `https://maps.googleapis.com/maps/api/staticmap?center=${lat},${lng}&zoom=15&size=600x400&scale=2&markers=color:orange|${lat},${lng}&key=<?php echo e(\App\Models\SystemSetting::get('google_maps_api_key', env('GOOGLE_MAPS_API_KEY'))); ?>`;
-                                                    this.isLocating = false;
-                                                });
-                                            }
-                                        }
-                                    }" style="height:270px; position:relative; border-radius:1.5rem; overflow:hidden; border:4px solid #fff; box-shadow:0 25px 60px -20px rgba(3,22,41,0.2); margin-bottom:30px;">
-                                        <img :src="mapUrl" class="w-full h-full object-cover grayscale opacity-80 transition-all duration-700">
-                                        
+                                                        mapUrl: 'https://maps.googleapis.com/maps/api/staticmap?center=25.07,55.15&zoom=12&size=600x400&scale=2&style=feature:all|element:labels|visibility:off&style=feature:geometry|color:0xf5f5f5&style=feature:water|color:0xc9c9c9&key=<?php echo e(\App\Models\SystemSetting::get('google_maps_api_key', env('GOOGLE_MAPS_API_KEY'))); ?>',
+                                                        isLocating: false,
+                                                        locate() {
+                                                            this.isLocating = true;
+                                                            if (navigator.geolocation) {
+                                                                navigator.geolocation.getCurrentPosition((position) => {
+                                                                    const lat = position.coords.latitude;
+                                                                    const lng = position.coords.longitude;
+                                                                    address = `Location: ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+                                                                    this.mapUrl = `https://maps.googleapis.com/maps/api/staticmap?center=${lat},${lng}&zoom=15&size=600x400&scale=2&markers=color:orange|${lat},${lng}&key=<?php echo e(\App\Models\SystemSetting::get('google_maps_api_key', env('GOOGLE_MAPS_API_KEY'))); ?>`;
+                                                                    this.isLocating = false;
+                                                                });
+                                                            }
+                                                        }
+                                                    }"
+                                        style="height:270px; position:relative; border-radius:1.5rem; overflow:hidden; border:4px solid #fff; box-shadow:0 25px 60px -20px rgba(3,22,41,0.2); margin-bottom:30px;">
+                                        <img :src="mapUrl"
+                                            class="w-full h-full object-cover grayscale opacity-80 transition-all duration-700">
+
                                         
                                         <div class="absolute top-4 left-4 right-4 group">
-                                            <div class="bg-white/90 backdrop-blur-md rounded-xl p-1 shadow-2xl border border-white/50 flex items-center transition-all group-hover:bg-white">
+                                            <div
+                                                class="bg-white/90 backdrop-blur-md rounded-xl p-1 shadow-2xl border border-white/50 flex items-center transition-all group-hover:bg-white">
                                                 <div class="w-9 h-9 flex items-center justify-center text-slate-400">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" /></svg>
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                                                        fill="none" viewBox="0 0 24 24" stroke-width="2.5"
+                                                        stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                                                    </svg>
                                                 </div>
-                                                <input type="text" x-model="address" placeholder="Search for location..." class="flex-1 bg-transparent border-none outline-none text-[0.75rem] font-bold text-[#031629] py-2">
-                                                <button type="button" class="w-8 h-8 rounded-lg bg-[#ff6900] text-white flex items-center justify-center shadow-lg mr-1 hover:scale-105 transition-all">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" /></svg>
+                                                <input type="text" x-model="address" placeholder="Search for location..."
+                                                    class="flex-1 bg-transparent border-none outline-none text-[0.75rem] font-bold text-[#031629] py-2">
+                                                <button type="button"
+                                                    class="w-8 h-8 rounded-lg bg-[#ff6900] text-white flex items-center justify-center shadow-lg mr-1 hover:scale-105 transition-all">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+                                                        fill="none" viewBox="0 0 24 24" stroke-width="3"
+                                                        stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                                                    </svg>
                                                 </button>
                                             </div>
                                         </div>
- 
+
                                         
                                         <div class="absolute bottom-4 right-4" x-data="{ pulse: false }">
-                                            <button type="button" @click="locate()" :class="isLocating ? 'animate-pulse' : ''" class="w-10 h-10 bg-white shadow-xl rounded-xl flex items-center justify-center text-slate-600 hover:text-orange-600 transition-all border border-slate-100">
-                                                <svg x-show="!isLocating" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" /></svg>
-                                                <svg x-show="isLocating" class="animate-spin" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" /></svg>
+                                            <button type="button" @click="locate()"
+                                                :class="isLocating ? 'animate-pulse' : ''"
+                                                class="w-10 h-10 bg-white shadow-xl rounded-xl flex items-center justify-center text-slate-600 hover:text-orange-600 transition-all border border-slate-100">
+                                                <svg x-show="!isLocating" xmlns="http://www.w3.org/2000/svg" width="20"
+                                                    height="20" fill="none" viewBox="0 0 24 24" stroke-width="2.5"
+                                                    stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
+                                                </svg>
+                                                <svg x-show="isLocating" class="animate-spin"
+                                                    xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none"
+                                                    viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
+                                                </svg>
                                             </button>
                                         </div>
- 
-                                        <div class="absolute inset-0 flex items-center justify-center pointer-events-none" x-show="!isLocating">
-                                            <div class="w-12 h-12 bg-[#ff6900] rounded-full border-4 border-white shadow-2xl flex items-center justify-center animate-bounce">
+
+
+
+
+
+                                        <div class="absolute inset-0 flex items-center justify-center pointer-events-none"
+                                            x-show="!isLocating">
+                                            <div
+                                                class="w-12 h-12 bg-[#ff6900] rounded-full border-4 border-white shadow-2xl flex items-center justify-center animate-bounce">
                                                 <div class="w-2 h-2 bg-white rounded-full"></div>
                                             </div>
                                         </div>
                                     </div>
- 
+
                                     
                                     <div style="margin-bottom:30px;">
                                         <?php if (isset($component)) { $__componentOriginalf4891fa44f09df093b640787c7c16efe = $component; } ?>
@@ -1046,90 +1237,96 @@
 <?php unset($__componentOriginalf4891fa44f09df093b640787c7c16efe); ?>
 <?php endif; ?>
                                     </div>
- 
+
                                     
                                     <div class="grid grid-cols-2 gap-3 mb-6" style="margin-top:30px;">
                                         <div class="col-span-2">
                                             <div class="sc-field" style="height:52px; background:#f8fafc;">
-                                                <input type="text" x-model="name" placeholder="<?php echo e($lfNameLabel); ?>" class="w-full h-full bg-transparent border-none outline-none text-[0.85rem] font-bold text-[#031629] px-6">
+                                                <input type="text" x-model="name" placeholder="<?php echo e($lfNameLabel); ?>"
+                                                    class="w-full h-full bg-transparent border-none outline-none text-[0.85rem] font-bold text-[#031629] px-6">
                                             </div>
                                         </div>
                                         <div class="sc-field" style="height:52px; background:#f8fafc;">
-                                            <input type="tel" x-model="phone" placeholder="<?php echo e($lfPhoneLabel); ?>" class="w-full h-full bg-transparent border-none outline-none text-[0.85rem] font-bold text-[#031629] px-6">
+                                            <input type="tel" x-model="phone" placeholder="<?php echo e($lfPhoneLabel); ?>"
+                                                class="w-full h-full bg-transparent border-none outline-none text-[0.85rem] font-bold text-[#031629] px-6">
                                         </div>
                                         <div class="sc-field" style="height:52px; background:#f8fafc;">
-                                            <input type="email" x-model="email" placeholder="Email Address" class="w-full h-full bg-transparent border-none outline-none text-[0.85rem] font-bold text-[#031629] px-6">
+                                            <input type="email" x-model="email" placeholder="Email Address"
+                                                class="w-full h-full bg-transparent border-none outline-none text-[0.85rem] font-bold text-[#031629] px-6">
                                         </div>
                                     </div>
 
                                     <div style="display:flex; align-items:center; gap:10px; margin-top:20px;">
                                         <button type="button" class="sc-btn-back" @click="heroWizardStep=2">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none"
+                                                viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
                                             </svg>
                                         </button>
-                                        <button type="button" class="sc-btn flex-1" 
-                                            @click="if(name && phone && email) { 
-                                                $refs.carForm.submit(); 
-                                                triggerToast('<?php echo e($lfSuccessMsg); ?>');
-                                            } else {
-                                                triggerToast('Please fill all fields to continue!');
-                                            }">
+                                        <button type="button" class="sc-btn flex-1" @click="if(name && phone && email) { 
+                                                                $refs.carForm.submit(); 
+                                                                triggerToast('<?php echo e($lfSuccessMsg); ?>');
+                                                            } else {
+                                                                triggerToast('Please fill all fields to continue!');
+                                                            }">
                                             <?php echo e($lfFinalBtn); ?> &rarr;
                                         </button>
                                     </div>
                                 </div>
 
-                                    <form action="<?php echo e(route('sell-car-lead')); ?>" method="POST" x-ref="carForm">
-                                        <?php echo csrf_field(); ?>
-                                        <input type="hidden" name="make" :value="make">
-                                        <input type="hidden" name="model" :value="model">
-                                        <input type="hidden" name="year" :value="year">
-                                        <input type="hidden" name="condition" :value="condition">
-                                        <input type="hidden" name="name" :value="name">
-                                        <input type="hidden" name="phone" :value="phone">
-                                        <input type="hidden" name="email" :value="email">
-                                        <input type="hidden" name="body" :value="body">
-                                        <input type="hidden" name="engine" :value="engine">
-                                        <input type="hidden" name="mileage" :value="mileage">
-                                        <input type="hidden" name="trim" :value="trim">
-                                        <input type="hidden" name="paint" :value="paint">
-                                        <input type="hidden" name="gcc" :value="gcc">
-                                        <input type="hidden" name="inspection_type" :value="inspectionType">
-                                        <input type="hidden" name="inspection_date" id="final_inspection_date" :value="inspectionDate">
-                                        <input type="hidden" name="inspection_time" id="final_inspection_time" :value="inspectionTime">
-                                        <input type="hidden" name="home_address" :value="address">
-                                    </form>
-                                    
-                                    
-                                    <script>
-                                        document.addEventListener('DOMContentLoaded', () => {
-                                            const dInput = document.getElementById('carInspDate');
-                                            const tInput = document.getElementById('carInspTime');
-                                            if(dInput && tInput) {
-                                                const observer = new MutationObserver(() => {
-                                                    // This will be caught by Alpine if we trigger an event or use a watcher
-                                                    window.dispatchEvent(new CustomEvent('sync-pickers', {
-                                                        detail: { date: dInput.value, time: tInput.value }
-                                                    }));
-                                                });
-                                                observer.observe(dInput, { attributes: true });
-                                                observer.observe(tInput, { attributes: true });
-                                                
-                                                // Also handle manual set
-                                                setInterval(() => {
-                                                    window.dispatchEvent(new CustomEvent('sync-pickers', {
-                                                        detail: { date: dInput.value, time: tInput.value }
-                                                    }));
-                                                }, 1000);
-                                            }
-                                        });
-                                    </script>
-                                </div>
+                                <form action="<?php echo e(route('sell-car-lead')); ?>" method="POST" x-ref="carForm">
+                                    <?php echo csrf_field(); ?>
+                                    <input type="hidden" name="make" :value="make">
+                                    <input type="hidden" name="model" :value="model">
+                                    <input type="hidden" name="year" :value="year">
+                                    <input type="hidden" name="condition" :value="condition">
+                                    <input type="hidden" name="name" :value="name">
+                                    <input type="hidden" name="phone" :value="phone">
+                                    <input type="hidden" name="email" :value="email">
+                                    <input type="hidden" name="body" :value="body">
+                                    <input type="hidden" name="engine" :value="engine">
+                                    <input type="hidden" name="mileage" :value="mileage">
+                                    <input type="hidden" name="trim" :value="trim">
+                                    <input type="hidden" name="paint" :value="paint">
+                                    <input type="hidden" name="gcc" :value="gcc">
+                                    <input type="hidden" name="inspection_type" :value="inspectionType">
+                                    <input type="hidden" name="inspection_date" id="final_inspection_date"
+                                        :value="inspectionDate">
+                                    <input type="hidden" name="inspection_time" id="final_inspection_time"
+                                        :value="inspectionTime">
+                                    <input type="hidden" name="home_address" :value="address">
+                                </form>
 
                                 
-                                <div class="sc-body" x-show="heroWizardTab==='plate'" x-cloak
-                                    :style="heroWizardTab==='plate' ? 'display:block' : 'display:none'">
+                                <script>
+                                    document.addEventListener('DOMContentLoaded', () => {
+                                        const dInput = document.getElementById('carInspDate');
+                                        const tInput = document.getElementById('carInspTime');
+                                        if (dInput && tInput) {
+                                            const observer = new MutationObserver(() => {
+                                                // This will be caught by Alpine if we trigger an event or use a watcher
+                                                window.dispatchEvent(new CustomEvent('sync-pickers', {
+                                                    detail: { date: dInput.value, time: tInput.value }
+                                                }));
+                                            });
+                                            observer.observe(dInput, { attributes: true });
+                                            observer.observe(tInput, { attributes: true });
+
+                                            // Also handle manual set
+                                            setInterval(() => {
+                                                window.dispatchEvent(new CustomEvent('sync-pickers', {
+                                                    detail: { date: dInput.value, time: tInput.value }
+                                                }));
+                                            }, 1000);
+                                        }
+                                    });
+                                </script>
+                            </div>
+
+                            
+                            <div class="sc-body" x-show="heroWizardTab==='plate'" x-cloak
+                                :style="heroWizardTab==='plate' ? 'display:block' : 'display:none'">
                                 
                                 <div
                                     style="margin-bottom: 20px; position: relative; height: 90px; display: flex; align-items: center; justify-content: center;">
@@ -1287,14 +1484,14 @@
 
                                     <div class="grid grid-cols-3 gap-x-2 gap-y-4 pt-4 mb-4">
                                         <?php $__currentLoopData = ['Dubai', 'Abu Dhabi', 'Sharjah', 'Ajman', 'RAK', 'UAQ', 'Fujairah']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $em): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                            <button type="button" 
+                                            <button type="button"
                                                 class="h-[42px] rounded-xl border text-[0.6rem] font-black uppercase transition-all"
                                                 :class="emirate==='<?php echo e($em); ?>' ? 'bg-[#ff6900] border-[#ff6900] text-white shadow-md' : 'bg-white border-slate-200 text-slate-600 hover:border-slate-400'"
                                                 @click="emirate='<?php echo e($em); ?>'; plateCode = availableCodes[0]"><?php echo e($em); ?></button>
                                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                     </div>
 
-                                    <button type="button" class="sc-btn w-full mt-4" 
+                                    <button type="button" class="sc-btn w-full mt-4"
                                         @click="if(plate) { heroWizardStep=2 } else { triggerToast('Please enter your plate number first!') }">
                                         <?php echo e($lfPlateBtn); ?> &rarr;
                                     </button>
@@ -1311,13 +1508,16 @@
 
                                     <div class="space-y-4">
                                         <div class="sc-field" style="height:52px; background:#f8fafc;">
-                                            <input type="text" x-model="name" placeholder="<?php echo e($lfNameLabel); ?>" class="w-full h-full bg-transparent border-none outline-none text-[0.85rem] font-bold text-[#031629] px-6">
+                                            <input type="text" x-model="name" placeholder="<?php echo e($lfNameLabel); ?>"
+                                                class="w-full h-full bg-transparent border-none outline-none text-[0.85rem] font-bold text-[#031629] px-6">
                                         </div>
                                         <div class="sc-field" style="height:52px; background:#f8fafc;">
-                                            <input type="tel" x-model="phone" placeholder="<?php echo e($lfPhoneLabel); ?>" class="w-full h-full bg-transparent border-none outline-none text-[0.85rem] font-bold text-[#031629] px-6">
+                                            <input type="tel" x-model="phone" placeholder="<?php echo e($lfPhoneLabel); ?>"
+                                                class="w-full h-full bg-transparent border-none outline-none text-[0.85rem] font-bold text-[#031629] px-6">
                                         </div>
                                         <div class="sc-field" style="height:52px; background:#f8fafc;">
-                                            <input type="email" x-model="email" placeholder="Email Address" class="w-full h-full bg-transparent border-none outline-none text-[0.85rem] font-bold text-[#031629] px-6">
+                                            <input type="email" x-model="email" placeholder="Email Address"
+                                                class="w-full h-full bg-transparent border-none outline-none text-[0.85rem] font-bold text-[#031629] px-6">
                                         </div>
                                     </div>
 
@@ -1337,17 +1537,18 @@
 
                                     <div style="display:flex; align-items:center; gap:10px; margin-top:30px;">
                                         <button type="button" class="sc-btn-back" @click="heroWizardStep=1">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none"
+                                                viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
                                             </svg>
                                         </button>
-                                        <button type="button" class="sc-btn w-full" style="flex:1"
-                                            @click="if(plate && name && phone && email) {
-                                                $refs.plateForm.submit();
-                                                triggerToast('<?php echo e($lfSuccessMsg); ?>');
-                                            } else {
-                                                triggerToast('Please complete your contact details!');
-                                            }">
+                                        <button type="button" class="sc-btn w-full" style="flex:1" @click="if(plate && name && phone && email) {
+                                                                $refs.plateForm.submit();
+                                                                triggerToast('<?php echo e($lfSuccessMsg); ?>');
+                                                            } else {
+                                                                triggerToast('Please complete your contact details!');
+                                                            }">
                                             <?php echo e($lfFinalBtn); ?> &rarr;
                                         </button>
                                     </div>
@@ -1363,6 +1564,15 @@
                     <span class="hero-eyebrow"><?php echo $h2Eyebrow; ?></span>
                     <h1 class="hero-title"><?php echo $h2Title; ?></h1>
                     <p class="hero-desc"><?php echo $h2Subtitle; ?></p>
+                    <?php if($h2SecondaryCtaLabel): ?>
+                    <div class="mt-6">
+                        <a href="<?php echo e($h2SecondaryCtaUrl); ?>" class="inline-flex items-center gap-3 px-8 py-4 bg-white/10 backdrop-blur border border-white/30 text-white rounded-full text-sm font-bold hover:bg-white/20 transition-all">
+                            <?php echo $h2SecondaryCtaLabel; ?>
+
+                            <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                        </a>
+                    </div>
+                    <?php endif; ?>
                 </div>
 
             </div>
@@ -1370,13 +1580,13 @@
             
             <div class="hero-car">
                 <?php if($h2CirclesEnabled): ?>
-                <div class="hero-car-decor">
-                    <div class="decor-circle decor-1"></div>
-                    <div class="decor-circle decor-2"></div>
-                    <div class="decor-circle decor-3"></div>
-                    <div class="decor-circle decor-4"></div>
-                    <div class="decor-circle decor-5"></div>
-                </div>
+                    <div class="hero-car-decor">
+                        <div class="decor-circle decor-1"></div>
+                        <div class="decor-circle decor-2"></div>
+                        <div class="decor-circle decor-3"></div>
+                        <div class="decor-circle decor-4"></div>
+                        <div class="decor-circle decor-5"></div>
+                    </div>
                 <?php endif; ?>
 
                 <img src="<?php echo e($h2CarImage); ?>" onerror="this.src='/images/cars/mclaren.png'" alt="Featured Car"
@@ -1384,1132 +1594,880 @@
 
             </div>
 
-            
-            <div class="sc-pill-container">
-                <div class="sc-pill-stats">
-                    <?php $__currentLoopData = $formattedBadges; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $badge): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                        <div class="sc-pill-item">
-                            <div class="sc-pill-icon" style="background: <?php echo e($badge['bg']); ?>; color: <?php echo e($badge['color']); ?>;">
-                                <div class="sc-pill-icon-glow" style="background: <?php echo e($badge['color']); ?>;"></div>
-                                <i data-lucide="<?php echo e($badge['icon']); ?>" style="stroke-width: 2.5px;"></i>
-                            </div>
-                            <div class="sc-pill-content">
-                                <span class="sc-pill-label"><?php echo e($badge['main']); ?></span>
-                                <?php if($badge['sub']): ?>
-                                    <span class="sc-pill-val"><?php echo e($badge['sub']); ?></span>
-                                <?php endif; ?>
-                                <?php if($badge['desc']): ?>
-                                    <span class="sc-pill-desc"><?php echo e($badge['desc']); ?></span>
-                                <?php endif; ?>
-                            </div>
-                        </div>
-                        <?php if(!$loop->last): ?>
-                            <div class="sc-pill-sep"></div>
-                        <?php endif; ?>
-                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                </div>
-            </div>
-
         </section>
-    </main>
 
-    
-    <?php
-        $buySectionBrands = collect($catalogMakesWithLogos ?? [])
-            ->filter(fn($b) => !empty(data_get($b, 'name')))
-            ->values()->all();
-        $buySectionYears = range((int) date('Y') + 1, 2000);
-    ?>
-
-    <section style="background:#f0f2f5;padding:0 80px 36px">
-        <div style="max-width:1200px;margin:0 auto">
-            <div
-                style="background:#fff;border-radius:20px;padding:24px 28px;box-shadow:0 2px 16px rgba(44,74,110,.08);border:1px solid #e8ecf0">
-
+        <?php if($h2ShowMiddleSections): ?>
+            <?php
+                $sectionOrder = data_get($page?->content, 'section_order', [
+                    'trust_badges' => 1,
+                    'services' => 2,
+                    'google_reviews' => 3,
+                    'location' => 4,
+                    'featured_cars' => 5,
+                    'brand_logos' => 6,
+                    'blog' => 7,
+                ]);
                 
-                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
-                    <div style="display:flex;align-items:center;gap:14px">
-                        <div
-                            style="width:36px;height:36px;background:#031629;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none"
-                                viewBox="0 0 24 24" stroke-width="2.5" stroke="#fff">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007Z" />
-                            </svg>
-                        </div>
-                        <div>
-                            <p
-                                style="font-size:.55rem;font-weight:800;letter-spacing:.22em;text-transform:uppercase;color:#031629;margin-bottom:2px">
-                                Car Sale</p>
-                            <p
-                                style="font-size:.95rem;font-weight:900;color:#031629;font-family:'Outfit',sans-serif;line-height:1">
-                                Find Your Next Car</p>
-                        </div>
-                    </div>
-                    <p
-                        style="font-size:.72rem;color:#94a3b8;font-weight:500;max-width:260px;text-align:right;line-height:1.5">
-                        Tell us what you're looking for and we'll match you with available stock.</p>
-                </div>
-
+                $showSection = function($section, $defaultOrder = 1) use ($sectionOrder) {
+                    $order = (int) ($sectionOrder[$section] ?? $defaultOrder);
+                    return $order > 0;
+                };
                 
-                <form action="<?php echo e(route('sell-car-lead')); ?>" method="POST" x-data="{
-                    allModels: <?php echo e(Js::from($catalogModelsByMake ?? [])); ?>,
-                    brand: '',
-                    models: [],
-                    onBrand(v) { this.brand=v; const k=v.toLowerCase().replace(/[^a-z0-9]+/g,''); this.models=this.allModels[k]||this.allModels['__all__']||[]; }
-                }">
-                    <?php echo csrf_field(); ?>
-                    <input type="hidden" name="lead_type" value="buy">
-
-                    
-                    <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;margin-bottom:10px">
-
-                        
-                        <div>
-                            <label
-                                style="font-size:.52rem;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:#94a3b8;display:block;margin-bottom:5px">Brand</label>
-                            <div style="position:relative">
-                                <select name="make" x-model="brand" @change="onBrand($event.target.value)"
-                                    style="width:100%;height:42px;padding:0 32px 0 12px;border-radius:10px;border:1.5px solid #e8ecf0;background:#f8fafc;font-size:.75rem;font-weight:600;color:#031629;cursor:pointer;appearance:none;outline:none;transition:border-color .2s"
-                                    onfocus="this.style.borderColor='#031629'"
-                                    onblur="this.style.borderColor='#e8ecf0'">
-                                    <option value="">Any Brand</option>
-                                    <?php $__currentLoopData = $buySectionBrands; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $b): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                        <option value="<?php echo e($b['name']); ?>"><?php echo e($b['name']); ?></option>
-                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                                </select>
-                                <svg style="position:absolute;right:10px;top:50%;transform:translateY(-50%);pointer-events:none;color:#94a3b8"
-                                    xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none"
-                                    viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="m19.5 8.25-7.5 7.5-7.5-7.5" />
-                                </svg>
-                            </div>
-                        </div>
-
-                        
-                        <div>
-                            <label
-                                style="font-size:.52rem;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:#94a3b8;display:block;margin-bottom:5px">Model</label>
-                            <div style="position:relative">
-                                <select name="model"
-                                    style="width:100%;height:42px;padding:0 32px 0 12px;border-radius:10px;border:1.5px solid #e8ecf0;background:#f8fafc;font-size:.75rem;font-weight:600;color:#031629;cursor:pointer;appearance:none;outline:none;transition:border-color .2s"
-                                    onfocus="this.style.borderColor='#031629'"
-                                    onblur="this.style.borderColor='#e8ecf0'">
-                                    <option value="">Any Model</option>
-                                    <template x-for="m in models" :key="m">
-                                        <option :value="m" x-text="m"></option>
-                                    </template>
-                                </select>
-                                <svg style="position:absolute;right:10px;top:50%;transform:translateY(-50%);pointer-events:none;color:#94a3b8"
-                                    xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none"
-                                    viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="m19.5 8.25-7.5 7.5-7.5-7.5" />
-                                </svg>
-                            </div>
-                        </div>
-
-                        
-                        <div>
-                            <label
-                                style="font-size:.52rem;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:#94a3b8;display:block;margin-bottom:5px">Year</label>
-                            <div style="position:relative">
-                                <select name="year"
-                                    style="width:100%;height:42px;padding:0 32px 0 12px;border-radius:10px;border:1.5px solid #e8ecf0;background:#f8fafc;font-size:.75rem;font-weight:600;color:#031629;cursor:pointer;appearance:none;outline:none;transition:border-color .2s"
-                                    onfocus="this.style.borderColor='#031629'"
-                                    onblur="this.style.borderColor='#e8ecf0'">
-                                    <option value="">Any Year</option>
-                                    <?php $__currentLoopData = $buySectionYears; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $yr): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                        <option value="<?php echo e($yr); ?>"><?php echo e($yr); ?></option>
-                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                                </select>
-                                <svg style="position:absolute;right:10px;top:50%;transform:translateY(-50%);pointer-events:none;color:#94a3b8"
-                                    xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none"
-                                    viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="m19.5 8.25-7.5 7.5-7.5-7.5" />
-                                </svg>
-                            </div>
-                        </div>
-
-                        
-                        <div>
-                            <label
-                                style="font-size:.52rem;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:#94a3b8;display:block;margin-bottom:5px">Max
-                                Budget</label>
-                            <div style="position:relative">
-                                <select name="budget"
-                                    style="width:100%;height:42px;padding:0 32px 0 12px;border-radius:10px;border:1.5px solid #e8ecf0;background:#f8fafc;font-size:.75rem;font-weight:600;color:#031629;cursor:pointer;appearance:none;outline:none;transition:border-color .2s"
-                                    onfocus="this.style.borderColor='#031629'"
-                                    onblur="this.style.borderColor='#e8ecf0'">
-                                    <option value="">Any Budget</option>
-                                    <?php $__currentLoopData = ['Under 30k AED', '30k – 60k AED', '60k – 100k AED', '100k – 150k AED', '150k – 250k AED', 'Over 250k AED']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $b): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                        <option value="<?php echo e($b); ?>"><?php echo e($b); ?></option>
-                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                                </select>
-                                <svg style="position:absolute;right:10px;top:50%;transform:translateY(-50%);pointer-events:none;color:#94a3b8"
-                                    xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none"
-                                    viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="m19.5 8.25-7.5 7.5-7.5-7.5" />
-                                </svg>
-                            </div>
-                        </div>
-
-                    </div>
-
-                    
-                    <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:10px;align-items:end">
-
-                        <div>
-                            <label
-                                style="font-size:.52rem;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:#94a3b8;display:block;margin-bottom:5px">Full
-                                Name</label>
-                            <input type="text" name="name" placeholder="Your name" required
-                                style="width:100%;height:42px;padding:0 12px;border-radius:10px;border:1.5px solid #e8ecf0;background:#f8fafc;font-size:.75rem;font-weight:600;color:#031629;outline:none;transition:border-color .2s"
-                                onfocus="this.style.borderColor='#031629'" onblur="this.style.borderColor='#e8ecf0'">
-                        </div>
-
-                        <div>
-                            <label
-                                style="font-size:.52rem;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:#94a3b8;display:block;margin-bottom:5px">Phone</label>
-                            <input type="tel" name="phone" placeholder="+971 50 000 0000" required
-                                style="width:100%;height:42px;padding:0 12px;border-radius:10px;border:1.5px solid #e8ecf0;background:#f8fafc;font-size:.75rem;font-weight:600;color:#031629;outline:none;transition:border-color .2s"
-                                onfocus="this.style.borderColor='#031629'" onblur="this.style.borderColor='#e8ecf0'">
-                        </div>
-
-                        <div>
-                            <label
-                                style="font-size:.52rem;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:#94a3b8;display:block;margin-bottom:5px">Email</label>
-                            <input type="email" name="email" placeholder="you@example.com"
-                                style="width:100%;height:42px;padding:0 12px;border-radius:10px;border:1.5px solid #e8ecf0;background:#f8fafc;font-size:.75rem;font-weight:600;color:#031629;outline:none;transition:border-color .2s"
-                                onfocus="this.style.borderColor='#031629'" onblur="this.style.borderColor='#e8ecf0'">
-                        </div>
-
-                        <button type="submit"
-                            style="height:42px;padding:0 28px;border-radius:10px;background:#031629;color:#fff;border:none;font-size:.62rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;white-space:nowrap;transition:background .2s,transform .15s;flex-shrink:0"
-                            onmouseover="this.style.background='#031629';this.style.transform='translateY(-1px)'"
-                            onmouseout="this.style.background='#031629';this.style.transform='translateY(0)'">
-                            Request Car &rarr;
-                        </button>
-
-                    </div>
-                </form>
-            </div>
-        </div>
-    </section>
-
-    
-    <?php
-        $sellCarYears2 = $sellCarYears ?? range((int) date('Y') + 1, 1995);
-    ?>
-
-    <section class="wiz-section" id="sellSection">
-        <div style="max-width:1200px;margin:0 auto">
+                $sectionSort = function($a, $b) use ($sectionOrder) {
+                    $orderA = (int) ($sectionOrder[$a] ?? 999);
+                    $orderB = (int) ($sectionOrder[$b] ?? 999);
+                    return $orderA <=> $orderB;
+                };
+            ?>
+            <div class="h2-main-below-hero" id="sectionsContainer" data-section-order='<?php echo json_encode($sectionOrder, 15, 512) ?>'>
 
             
-            <div class="wiz-header">
-                <p class="wiz-eyebrow"><?php echo e($leadArchitecture['header']); ?></p>
-                <div class="wiz-title">
-                    <span class="step-word active" id="h2w1"><?php echo e($leadArchitecture['step1']); ?></span>
-                    <span class="sep">&bull;</span>
-                    <span class="step-word muted" id="h2w2"><?php echo e($leadArchitecture['step2']); ?></span>
-                    <span class="sep">&bull;</span>
-                    <span class="step-word muted" id="h2w3"><?php echo e($leadArchitecture['step3']); ?></span>
+            <?php if(count($formattedBadges) > 0 && ($sectionOrder['trust_badges'] ?? 1) > 0): ?>
+        <section
+            id="section-trust_badges"
+            class="h2-trust-strip relative w-full"
+            style="background-color: <?php echo e(data_get($page?->content, 'trust_strip_bg', '#e7e7e7')); ?>;"
+            aria-label="Trust badges">
+                <?php if(data_get($page?->content, 'trust_badges_title')): ?>
+                <div class="text-center pt-6 pb-4">
+                    <h3 class="text-lg font-black text-[#031629] tracking-tight"><?php echo e(data_get($page?->content, 'trust_badges_title', 'We built our business on trust')); ?></h3>
                 </div>
-            </div>
-
-            
-            <div class="wiz-dots">
-                <div class="wiz-dot active" id="h2dot0"></div>
-                <div class="wiz-dot" id="h2dot1"></div>
-                <div class="wiz-dot" id="h2dot2"></div>
-            </div>
-
-            <div class="wiz-card" id="h2wizCard">
-                <form action="<?php echo e(route('sell-car-lead')); ?>" method="POST" id="h2wizard"
-                    data-start-step="<?php echo e($wizardStartStep2); ?>">
-                    <?php echo csrf_field(); ?>
-
-                    
-                    <div data-step="1" class="wiz-step active">
-
-                        
-                        <?php if(!empty($brandCardBrands2)): ?>
-                            <div style="margin-bottom:16px">
-                                <span class="field-lbl">Popular Brands</span>
-                                <div class="brand-grid">
-                                    <?php $__currentLoopData = $brandCardBrands2; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $brand): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                        <?php
-                                            $bKey2 = mb_strtolower(preg_replace('/[^a-z0-9]+/i', '', $brand['name']));
-                                            $bModels2 = data_get($catalogModelsByMake ?? [], $bKey2, data_get($catalogModelsByMake ?? [], '__all__', []));
-                                        ?>
-                                        <button type="button" class="brand-card" data-brand-pick="<?php echo e($brand['name']); ?>"
-                                            data-brand-models='<?php echo json_encode($bModels2, 15, 512) ?>'>
-                                            <img src="<?php echo e($brand['logo']); ?>" alt="<?php echo e($brand['name']); ?>"
-                                                onerror="this.style.opacity=0">
-                                            <span><?php echo e($brand['name']); ?></span>
-                                        </button>
-                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                <?php endif; ?>
+                
+                <div class="w-full flex justify-center pt-4 pb-8">
+                    <div class="flex flex-row justify-center items-start gap-24">
+                        <?php $__currentLoopData = $formattedBadges; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $badge): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <div class="flex flex-col items-center text-center space-y-4 group min-w-[280px]">
+                                <div class="flex items-center justify-center transition-transform duration-300 group-hover:scale-110 mb-4"
+                                    style="color: <?php echo e($badge['color']); ?>;">
+                                    <i data-lucide="<?php echo e($badge['icon']); ?>" class="w-14 h-14 stroke-width-2"></i>
                                 </div>
-                            </div>
-                        <?php endif; ?>
-
-                        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px">
-
-                            
-                            <div>
-                                <span class="field-lbl">Brand</span>
-                                <input type="hidden" name="make" id="h2make">
-                                <div class="field-wrap">
-                                    <button type="button" class="hub-toggle" id="h2brandToggle">
-                                        <span style="display:flex;align-items:center;gap:10px">
-                                            <span id="h2brandIcon"
-                                                style="display:none;width:28px;height:28px;border-radius:8px;border:1px solid #e8ecf0;overflow:hidden;flex-shrink:0">
-                                                <img id="h2brandIconImg" src=""
-                                                    style="width:100%;height:100%;object-fit:contain;padding:3px">
-                                            </span>
-                                            <span id="h2brandLabel" class="hub-placeholder">Select Brand</span>
-                                        </span>
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none"
-                                            viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                d="m19.5 8.25-7.5 7.5-7.5-7.5" />
-                                        </svg>
-                                    </button>
-                                    <div class="hub-drawer" id="h2brandDrawer">
-                                        <div class="hub-drawer-header">
-                                            <div style="position:relative;flex:1">
-                                                <svg style="position:absolute;left:22px;top:50%;transform:translateY(-50%);color:#ff6900;width:20px;height:20px"
-                                                    xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                                    stroke-width="2.5" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                        d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
-                                                </svg>
-                                                <input type="text" id="h2brandSearch" placeholder="Search brand..."
-                                                    class="hub-search">
-                                            </div>
-                                            <button type="button" id="h2brandReset" class="hub-btn-link">Reset</button>
-                                            <button type="button" id="h2brandClose" class="hub-btn-link"
-                                                style="color:#94a3b8">Close</button>
-                                        </div>
-                                        <div class="hub-list">
-                                            <?php $__currentLoopData = $brandSelectBrands2; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $brand): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                                <?php
-                                                    $bKey2b = mb_strtolower(preg_replace('/[^a-z0-9]+/i', '', $brand['name']));
-                                                    $bModels2b = data_get($catalogModelsByMake ?? [], $bKey2b, data_get($catalogModelsByMake ?? [], '__all__', []));
-                                                ?>
-                                                <button type="button" class="hub-option"
-                                                    data-brand-hub-value="<?php echo e($brand['name']); ?>"
-                                                    data-brand-hub-logo="<?php echo e($brand['logo']); ?>"
-                                                    data-brand-key="<?php echo e($bKey2b); ?>" data-brand-models='<?php echo json_encode($bModels2b, 15, 512) ?>'>
-                                                    <img src="<?php echo e($brand['logo']); ?>" alt="<?php echo e($brand['name']); ?>"
-                                                        onerror="this.style.display='none'"
-                                                        style="width:26px;height:26px;object-fit:contain">
-                                                    <span><?php echo e($brand['name']); ?></span>
-                                                </button>
-                                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                                        </div>
+                                <div class="space-y-2">
+                                    <div class="flex flex-col">
+                                        <span class="text-[#ff6900] text-[0.8rem] font-black uppercase tracking-[0.25em] mb-2"><?php echo e($badge['main']); ?></span>
+                                        <?php if($badge['sub']): ?>
+                                            <span class="text-[1.4rem] font-black text-[#031629] leading-tight block"><?php echo e($badge['sub']); ?></span>
+                                        <?php endif; ?>
                                     </div>
+                                    <?php if($badge['desc']): ?>
+                                        <p class="text-[0.9rem] leading-relaxed text-slate-500 max-w-[280px]"><?php echo e($badge['desc']); ?></p>
+                                    <?php endif; ?>
                                 </div>
                             </div>
-
-                            
-                            <div>
-                                <span class="field-lbl">Model</span>
-                                <input type="hidden" name="model" id="h2model">
-                                <div class="field-wrap">
-                                    <button type="button" class="hub-toggle disabled" id="h2modelToggle" disabled>
-                                        <span id="h2modelLabel" class="hub-placeholder">Select brand first</span>
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none"
-                                            viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                d="m19.5 8.25-7.5 7.5-7.5-7.5" />
-                                        </svg>
-                                    </button>
-                                    <div class="hub-drawer" id="h2modelDrawer">
-                                        <div class="hub-drawer-header">
-                                            <div style="position:relative;flex:1">
-                                                <svg style="position:absolute;left:22px;top:50%;transform:translateY(-50%);color:#ff6900;width:20px;height:20px"
-                                                    xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                                    stroke-width="2.5" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                        d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
-                                                </svg>
-                                                <input type="text" id="h2modelSearch" placeholder="Search model..."
-                                                    class="hub-search">
-                                            </div>
-                                            <button type="button" id="h2modelClose" class="hub-btn-link"
-                                                style="color:#94a3b8">Close</button>
-                                        </div>
-                                        <div class="hub-list" id="h2modelList"></div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            
-                            <div>
-                                <span class="field-lbl">Year</span>
-                                <input type="hidden" name="year" id="h2year">
-                                <div class="field-wrap">
-                                    <button type="button" class="hub-toggle" id="h2yearToggle">
-                                        <span id="h2yearLabel" class="hub-placeholder">Select Year</span>
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none"
-                                            viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                d="m19.5 8.25-7.5 7.5-7.5-7.5" />
-                                        </svg>
-                                    </button>
-                                    <div class="hub-drawer" id="h2yearDrawer">
-                                        <div class="hub-grid3">
-                                            <?php $__currentLoopData = $sellCarYears2; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $yr): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                                <button type="button" class="h2year-pick hub-option"
-                                                    data-year-value="<?php echo e($yr); ?>"
-                                                    style="justify-content:center"><?php echo e($yr); ?></button>
-                                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
-
-                        <div class="wiz-nav">
-                            <button type="button" class="wiz-btn-next" data-h2-action="next">Get Free Valuation
-                                &rarr;</button>
-                        </div>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </div>
-
-                    
-                    <div data-step="2" class="wiz-step">
-                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:28px">
-
-                            
-                            <div style="display:flex;flex-direction:column;gap:16px">
-                                <p class="field-lbl" style="margin-bottom:0">Vehicle Specs</p>
-
-                                
-                                <div>
-                                    <span class="field-lbl">Regional Specs</span>
-                                    <input type="hidden" name="gcc" id="h2gcc" value="GCC">
-                                    <div class="field-wrap">
-                                        <button type="button" class="hub-toggle" id="h2gccToggle">
-                                            <span id="h2gccLabel">GCC Specs</span>
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none"
-                                                viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round"
-                                                    d="m19.5 8.25-7.5 7.5-7.5-7.5" />
-                                            </svg>
-                                        </button>
-                                        <div class="hub-drawer" id="h2gccDrawer">
-                                            <?php $__currentLoopData = [['v' => 'GCC', 'l' => 'GCC Specs'], ['v' => 'European', 'l' => 'European'], ['v' => 'American', 'l' => 'American'], ['v' => 'Canadian', 'l' => 'Canadian'], ['v' => 'Korean', 'l' => 'Korean'], ['v' => 'Other', 'l' => 'Other']]; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $reg): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                                <button type="button" class="h2gcc-pick hub-option"
-                                                    data-gcc-value="<?php echo e($reg['v']); ?>"
-                                                    data-gcc-label="<?php echo e($reg['l']); ?>"><?php echo e($reg['l']); ?></button>
-                                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                
-                                <div>
-                                    <span class="field-lbl">Body Type</span>
-                                    <input type="hidden" name="body" id="h2body">
-                                    <div class="field-wrap">
-                                        <button type="button" class="hub-toggle" id="h2bodyToggle">
-                                            <span id="h2bodyLabel" class="hub-placeholder">Select Type</span>
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none"
-                                                viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round"
-                                                    d="m19.5 8.25-7.5 7.5-7.5-7.5" />
-                                            </svg>
-                                        </button>
-                                        <div class="hub-drawer" id="h2bodyDrawer">
-                                            <?php $__currentLoopData = ['Sedan', 'SUV', 'Coupe', 'Hatchback', 'Pickup', 'Luxury', 'Other']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $type): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                                <button type="button" class="h2body-pick hub-option"
-                                                    data-body-value="<?php echo e($type); ?>"><?php echo e($type); ?></button>
-                                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                
-                                <div>
-                                    <span class="field-lbl">Engine Size</span>
-                                    <input type="hidden" name="engine" id="h2engine">
-                                    <div class="field-wrap">
-                                        <button type="button" class="hub-toggle" id="h2engineToggle">
-                                            <span id="h2engineLabel" class="hub-placeholder">Select Engine</span>
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none"
-                                                viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round"
-                                                    d="m19.5 8.25-7.5 7.5-7.5-7.5" />
-                                            </svg>
-                                        </button>
-                                        <div class="hub-drawer" id="h2engineDrawer">
-                                            <?php $__currentLoopData = ['1.0L - 1.5L', '1.6L - 2.0L', '2.1L - 3.0L', '3.1L - 4.0L', 'Over 4.0L', 'EV / Electric', 'Other']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $sz): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                                <button type="button" class="h2engine-pick hub-option"
-                                                    data-engine-value="<?php echo e($sz); ?>"><?php echo e($sz); ?></button>
-                                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                
-                                <div>
-                                    <span class="field-lbl">Mileage (KM)</span>
-                                    <input type="hidden" name="mileage" id="h2mileage">
-                                    <div class="field-wrap">
-                                        <button type="button" class="hub-toggle" id="h2mileageToggle">
-                                            <span id="h2mileageLabel" class="hub-placeholder">Select Mileage</span>
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none"
-                                                viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round"
-                                                    d="m19.5 8.25-7.5 7.5-7.5-7.5" />
-                                            </svg>
-                                        </button>
-                                        <div class="hub-drawer" id="h2mileageDrawer">
-                                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px">
-                                                <?php $__currentLoopData = ['0-20k', '20k-50k', '50k-100k', '100k-150k', '150k-200k', 'Over 200k', 'Unknown']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $range): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                                    <button type="button" class="h2mileage-pick hub-option"
-                                                        data-mileage-value="<?php echo e($range); ?>"
-                                                        style="justify-content:center"><?php echo e($range); ?></button>
-                                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            
-                            <div
-                                style="border-left:1px solid #f1f5f9;padding-left:28px;display:flex;flex-direction:column;gap:16px">
-                                <p class="field-lbl" style="margin-bottom:0">Vehicle Options</p>
-
-                                
-                                <div>
-                                    <span class="field-lbl">Trim / Options</span>
-                                    <input type="hidden" name="trim" id="h2trim" value="Full option">
-                                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-                                        <?php $__currentLoopData = ['Basic', 'Mid option', 'Full option', 'Unknown']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $opt): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                            <button type="button"
-                                                class="pick-btn h2trim-pick <?php echo e($opt === 'Full option' ? 'active' : ''); ?>"
-                                                data-trim-value="<?php echo e($opt); ?>"><?php echo e($opt); ?></button>
-                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                                    </div>
-                                </div>
-
-                                
-                                <div>
-                                    <span class="field-lbl">Paint Condition</span>
-                                    <input type="hidden" name="paint" id="h2paint" value="Original">
-                                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-                                        <?php $__currentLoopData = ['Original', 'Partial', 'Total', 'Unknown']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $opt): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                            <button type="button"
-                                                class="pick-btn h2paint-pick <?php echo e($opt === 'Original' ? 'active' : ''); ?>"
-                                                data-paint-value="<?php echo e($opt); ?>"><?php echo e($opt); ?></button>
-                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                                    </div>
-                                </div>
-
-                                
-                                <div>
-                                    <span class="field-lbl">Overall Condition</span>
-                                    <input type="hidden" name="condition" id="h2condition" value="good">
-                                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-                                        <?php $__currentLoopData = ['excellent' => 'Elite', 'good' => 'Good', 'fair' => 'Fair', 'needs_work' => 'Needs Work']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $val => $lbl): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                            <button type="button"
-                                                class="pick-btn h2condition-pick <?php echo e($val === 'good' ? 'active' : ''); ?>"
-                                                data-condition-value="<?php echo e($val); ?>"><?php echo e($lbl); ?></button>
-                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
-
-                        <div class="wiz-nav">
-                            <button type="button" class="wiz-btn-back" data-h2-action="back">&larr; Back</button>
-                            <button type="button" class="wiz-btn-next" data-h2-action="next">Next Stage &rarr;</button>
-                        </div>
-                    </div>
-
-                    
-                    <div data-step="3" class="wiz-step">
-                        <input type="hidden" name="inspection_type" id="h2inspType" value="branch">
-
-                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:start">
-
-                            
-                            <div style="display:flex;flex-direction:column;gap:14px">
-                                <p class="field-lbl" style="margin-bottom:0">Your Details</p>
-
-                                <div>
-                                    <span class="field-lbl">Full Name</span>
-                                    <input type="text" name="name" placeholder="Enter your full name" class="wiz-input">
-                                </div>
-                                <div>
-                                    <span class="field-lbl">Mobile Number</span>
-                                    <input type="tel" name="phone" placeholder="+971 50 000 0000" class="wiz-input">
-                                </div>
-                                <div>
-                                    <span class="field-lbl">Email Address</span>
-                                    <input type="email" name="email" placeholder="you@example.com" class="wiz-input">
-                                </div>
-                            </div>
-
-                            
-                            <div style="display:flex;flex-direction:column;gap:14px">
-                                <p class="field-lbl" style="margin-bottom:0">Inspection Appointment</p>
-
-                                
-                                <div>
-                                    <span class="field-lbl">Preferred Date</span>
-                                    <input type="hidden" name="inspection_date" id="h2inspDate">
-                                    <div class="field-wrap">
-                                        <button type="button" class="hub-toggle" id="h2dateToggle">
-                                            <span id="h2dateLabel" class="hub-placeholder">Select Date</span>
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none"
-                                                viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round"
-                                                    d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
-                                            </svg>
-                                        </button>
-                                        <div class="hub-drawer" id="h2dateDrawer" style="padding:22px">
-                                            <div
-                                                style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-                                                <button type="button" id="h2calPrev"
-                                                    style="width:28px;height:28px;border-radius:8px;border:1px solid #e8ecf0;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
-                                                        fill="none" viewBox="0 0 24 24" stroke-width="2.5"
-                                                        stroke="currentColor">
-                                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                                            d="M15.75 19.5 8.25 12l7.5-7.5" />
-                                                    </svg>
-                                                </button>
-                                                <span id="h2calMonthYear"
-                                                    style="font-size:.7rem;font-weight:800;color:#031629;letter-spacing:.1em;text-transform:uppercase"></span>
-                                                <button type="button" id="h2calNext"
-                                                    style="width:28px;height:28px;border-radius:8px;border:1px solid #e8ecf0;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
-                                                        fill="none" viewBox="0 0 24 24" stroke-width="2.5"
-                                                        stroke="currentColor">
-                                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                                            d="m8.25 4.5 7.5 7.5-7.5 7.5" />
-                                                    </svg>
-                                                </button>
-                                            </div>
-                                            <div
-                                                style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:6px">
-                                                <?php $__currentLoopData = ['S', 'M', 'T', 'W', 'T', 'F', 'S']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $d): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                                    <div
-                                                        style="text-align:center;font-size:.5rem;font-weight:800;color:#94a3b8;padding:4px 0">
-                                                        <?php echo e($d); ?>
-
-                                                    </div>
-                                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                                            </div>
-                                            <div id="h2calGrid"
-                                                style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px"></div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                
-                                <div>
-                                    <span class="field-lbl">Preferred Time</span>
-                                    <input type="hidden" name="inspection_time" id="h2inspTime">
-                                    <div class="field-wrap">
-                                        <button type="button" class="hub-toggle" id="h2timeToggle">
-                                            <span id="h2timeLabel" class="hub-placeholder">Select Time</span>
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none"
-                                                viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round"
-                                                    d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                                            </svg>
-                                        </button>
-                                        <div class="hub-drawer" id="h2timeDrawer" style="padding:22px">
-                                            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px">
-                                                <?php $__currentLoopData = ['08:00 AM', '09:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', '01:00 PM', '02:00 PM', '03:00 PM', '04:00 PM', '05:00 PM', '06:00 PM', '07:00 PM']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $slot): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                                    <button type="button" class="h2time-pick" data-time-value="<?php echo e($slot); ?>"
-                                                        style="padding:8px 4px;border-radius:8px;border:1.5px solid #e8ecf0;background:#fff;font-size:.65rem;font-weight:700;color:#4a5568;cursor:pointer;transition:all .15s">
-                                                        <?php echo e($slot); ?>
-
-                                                    </button>
-                                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                
-                                <div style="margin-top:8px">
-                                    <button type="submit" data-h2-action="submit" class="wiz-btn-next"
-                                        style="width:100%;height:52px;font-size:.75rem">
-                                        Request Free Valuation
-                                    </button>
-                                    <button type="button" data-h2-action="back" class="wiz-btn-back"
-                                        style="width:100%;margin-top:8px;justify-content:center;display:flex">&larr;
-                                        Adjust Specs</button>
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-
-                </form>
-            </div>
-        </div>
-    </section>
-
-    
-    <?php
-        $reviewsConfig = $googleReviewBlock ?? [];
-        $showReviews = data_get($reviewsConfig, 'enabled') && count(data_get($reviewsConfig, 'reviews', []));
-        $reviews = data_get($reviewsConfig, 'reviews', []);
-    ?>
-    <?php if($showReviews): ?>
-    <section class="py-24 px-6 lg:px-12 bg-[#031629] relative z-30 overflow-hidden">
-        <div class="absolute inset-0 opacity-30" style="background-image: radial-gradient(circle at top, rgba(255,255,255,0.08), transparent 55%), radial-gradient(circle at bottom, rgba(255,105,0,0.08), transparent 45%);"></div>
-        <div class="relative max-w-[1440px] mx-auto space-y-12">
-            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-                <div>
-                    <span class="inline-flex items-center gap-3 px-4 py-1.5 rounded-full text-[0.72rem] font-black uppercase tracking-[0.32em] bg-white/10 text-white">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" class="w-4.5 h-4.5">
-                            <path fill="#EA4335" d="M24 9.5c3.54 0 6.72 1.22 9.23 3.6l6.89-6.89C35.82 2.38 30.41 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.99 6.21C12.12 13.39 17.55 9.5 24 9.5z"/>
-                            <path fill="#4285F4" d="M46.5 24.55c0-1.5-.13-2.94-.38-4.35H24v8.23h12.7c-.55 2.81-2.22 5.19-4.72 6.79l7.62 5.92C44.41 36.58 46.5 30.98 46.5 24.55z"/>
-                            <path fill="#FBBC05" d="M10.55 28.43A14.38 14.38 0 0 1 9.5 24c0-1.52.26-2.99.75-4.36l-7.99-6.21A23.884 23.884 0 0 0 0 24c0 3.82.91 7.42 2.51 10.59l8.04-6.16z"/>
-                            <path fill="#34A853" d="M24 47.5c6.11 0 11.24-2.01 14.99-5.46l-7.62-5.92c-2.12 1.42-4.8 2.25-7.37 2.25-5.64 0-10.42-3.79-12.45-9.02l-8.04 6.16C6.56 42.47 14.51 47.5 24 47.5z"/>
-                        </svg>
-                        Google Reviews
-                    </span>
-                    <h2 class="mt-4 text-4xl lg:text-5xl font-black text-white tracking-tight">
-                        <?php echo e(data_get($reviewsConfig, 'title', 'Loved by real buyers')); ?>
-
-                    </h2>
-                    <p class="mt-3 text-slate-300 font-medium max-w-2xl">
-                        <?php echo e(data_get($reviewsConfig, 'subtitle', 'Straight from verified Google customers.')); ?>
-
-                    </p>
                 </div>
-                <div class="flex flex-col items-start lg:items-end gap-3">
-                    <div class="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-white text-[#031629] font-black text-[0.75rem] uppercase tracking-[0.3em] shadow-lg">
-                        <i data-lucide="badge-check" class="w-4 h-4"></i>
-                        <?php echo e(data_get($reviewsConfig, 'badge', '4.9 / 5 • Google Reviews')); ?>
+            </section>
+        <?php endif; ?>
 
-                    </div>
-                    <p class="text-[0.6rem] text-slate-400 uppercase tracking-[0.35em]">Latest verified testimonials</p>
-                </div>
-            </div>
-
-            <div class="relative" data-review-slider>
-                <div class="overflow-hidden" data-review-scroll>
-                    <div class="flex gap-6">
-                <?php $__currentLoopData = $reviews; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $review): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                <div class="shrink-0 basis-[85vw] md:basis-[48%] xl:basis-[30%]">
-                    <div class="bg-white rounded-[1.75rem] border border-slate-100 shadow-[0_35px_90px_-35px_rgba(3,22,41,0.5)] p-6 h-full flex flex-col gap-5">
-                    <div class="flex items-start justify-between gap-3">
+        
+            <?php if(($sectionOrder['services'] ?? 2) > 0): ?>
+            <section id="section-services" class="w-full py-4 relative z-30">
+                <div class="h2-section-container flex flex-col items-center">
+                    <div class="text-center relative mb-16">
+                        <i data-lucide="car" class="absolute -top-10 -right-4 w-64 h-64 text-slate-200/40 -z-10 hidden lg:block rotate-12"></i>
                         <?php
-                            $photoUrl = data_get($review, 'photo_url');
-                            $initials = strtoupper(\Illuminate\Support\Str::substr(data_get($review, 'author', 'G'), 0, 2));
+                            $servicesSubtitle = data_get($page?->content, 'services_subtitle', 'We Offer Best Repair Services');
+                            $servicesTitle = data_get($page?->content, 'services_title', 'Our Services');
                         ?>
-                        <div class="w-12 h-12 rounded-full border-2 border-white shadow-md overflow-hidden flex items-center justify-center bg-gradient-to-br from-[#ff4605] to-[#ff6900] text-white font-black text-sm">
-                            <?php if($photoUrl): ?>
-                                <img src="<?php echo e($photoUrl); ?>" alt="<?php echo e(data_get($review, 'author', 'Reviewer')); ?>" class="w-full h-full object-cover" loading="lazy" referrerpolicy="no-referrer">
-                            <?php else: ?>
-                                <?php echo e($initials); ?>
+                        <span class="inline-block text-slate-500 text-[0.65rem] font-bold uppercase tracking-[0.1em] px-4 py-1.5 mb-5">
+                            <?php echo e(strtoupper($servicesSubtitle)); ?>
 
-                            <?php endif; ?>
+                        </span>
+                        <h2 class="text-4xl lg:text-5xl font-black text-[#031629] tracking-tight"><?php echo e($servicesTitle); ?></h2>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full justify-items-center">
+                         
+                        <?php
+                            $defaultServices = [
+                                ['title' => 'Oil Changes', 'icon' => 'droplet', 'description' => 'Curabitur at arcu sed ex venenatis laoreet.'],
+                                ['title' => 'Wash & Clean', 'icon' => 'waves', 'description' => 'Curabitur at arcu sed ex venenatis laoreet.'],
+                                ['title' => 'ABS Brakes', 'icon' => 'disc', 'description' => 'Curabitur at arcu sed ex venenatis laoreet.'],
+                                ['title' => 'Transmission', 'icon' => 'settings-2', 'description' => 'Curabitur at arcu sed ex venenatis laoreet.'],
+                                ['title' => 'Tires & Wheels', 'icon' => 'life-buoy', 'description' => 'Curabitur at arcu sed ex venenatis laoreet.'],
+                                ['title' => 'Engine Tuning', 'icon' => 'activity', 'description' => 'Curabitur at arcu sed ex venenatis laoreet.']
+                            ];
+                            $servicesList = data_get($page?->content, 'services_items', []) ?: $defaultServices;
+                        ?>
+                        <?php $__currentLoopData = $servicesList; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $service): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <div class="services-card bg-white p-12 rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.02)] hover:shadow-xl transition-all duration-300 flex flex-col items-center text-center group border border-transparent hover:border-[#ff6900]/20 w-full max-w-[420px]">
+                                <div class="w-16 h-16 mb-6 flex items-center justify-center">
+                                    <div class="relative">
+                                        <i data-lucide="<?php echo e($service['icon'] ?? 'settings'); ?>" class="w-12 h-12 text-[#031629] stroke-[1.5]"></i>
+                                        <div class="absolute bottom-1 right-1 w-2.5 h-2.5 bg-[#ff6900] rounded-full"></div>
+                                    </div>
+                                </div>
+                                <h3 class="text-[1.35rem] font-black text-[#031629] mb-4 group-hover:text-[#ff6900] transition-colors"><?php echo e($service['title']); ?></h3>
+                                <p class="text-slate-500 text-sm leading-relaxed max-w-[260px]"><?php echo e($service['description']); ?></p>
+                            </div>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                    </div>
+                </div>
+                
+                <div class="w-full flex justify-center py-4 mt-4">
+                     <div class="w-full max-w-5xl h-[2px] bg-gradient-to-r from-transparent via-[#ff6900] to-transparent opacity-60"></div>
+                </div>
+            </section>
+            <?php endif; ?>
+
+            
+            <?php
+                $reviewsConfig = $googleReviewBlock ?? [];
+                $showReviews = data_get($reviewsConfig, 'enabled') && count(data_get($reviewsConfig, 'reviews', []));
+                $allReviews = data_get($reviewsConfig, 'reviews', []);
+                $reviewsCount = (int) data_get($reviewsConfig, 'reviews_count', 6);
+                $onlyFiveStars = (bool) data_get($reviewsConfig, 'show_only_5_stars', false);
+                $reviews = collect($allReviews);
+                if ($onlyFiveStars) {
+                    $reviews = $reviews->filter(fn($r) => (int) data_get($r, 'rating', 5) === 5);
+                }
+                $reviews = $reviews->sortBy(fn($r) => (int) data_get($r, 'sort_order', 999))->values();
+                $reviews = $reviews->take($reviewsCount);
+            ?>
+            <?php if($showReviews && ($sectionOrder['google_reviews'] ?? 3) > 0): ?>
+                <section id="section-google_reviews" class="py-8 relative overflow-hidden bg-[#e7e7e7]">
+                    <div class="h2-section-container relative">
+                        
+                        <div class="flex flex-col items-center text-center mb-16 px-6">
+                            <div class="max-w-2xl">
+                                <span class="inline-flex items-center gap-3 px-4 py-2 rounded-full text-[0.72rem] font-black uppercase tracking-[0.32em] bg-white text-slate-600 border border-slate-200 shadow-sm mb-6">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" class="w-4.5 h-4.5">
+                                        <path fill="#EA4335" d="M24 9.5c3.54 0 6.72 1.22 9.23 3.6l6.89-6.89C35.82 2.38 30.41 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.99 6.21C12.12 13.39 17.55 9.5 24 9.5z" />
+                                        <path fill="#4285F4" d="M46.5 24.55c0-1.5-.13-2.94-.38-4.35H24v8.23h12.7c-.55 2.81-2.22 5.19-4.72 6.79l7.62 5.92C44.41 36.58 46.5 30.98 46.5 24.55z" />
+                                        <path fill="#FBBC05" d="M10.55 28.43A14.38 14.38 0 0 1 9.5 24c0-1.52.26-2.99.75-4.36l-7.99-6.21A23.884 23.884 0 0 0 0 24c0 3.82.91 7.42 2.51 10.59l8.04-6.16z" />
+                                        <path fill="#34A853" d="M24 47.5c6.11 0 11.24-2.01 14.99-5.46l-7.62-5.92c-2.12 1.42-4.8 2.25-7.37 2.25-5.64 0-10.42-3.79-12.45-9.02l-8.04 6.16C6.56 42.47 14.51 47.5 24 47.5z" />
+                                    </svg>
+                                    <?php echo e(data_get($reviewsConfig, 'badge', 'Google Reviews')); ?>
+
+                                </span>
+                                <h2 class="text-4xl lg:text-5xl font-black text-[#031629] tracking-tight leading-[1.1] mb-4">
+                                    <?php echo e(data_get($reviewsConfig, 'title', 'Loved by real buyers')); ?>
+
+                                </h2>
+                                <?php if(data_get($reviewsConfig, 'show_rating_badge', true) && (data_get($reviewsConfig, 'average_rating') || data_get($reviewsConfig, 'reviews_count_total'))): ?>
+                                    <div class="flex items-center justify-center gap-3 mb-4">
+                                        <div class="flex items-center gap-1">
+                                            <?php for($i = 0; $i < 5; $i++): ?>
+                                                <i data-lucide="star" class="w-4 h-4 fill-[#ff9900] text-[#ff9900]"></i>
+                                            <?php endfor; ?>
+                                        </div>
+                                        <span class="text-xl font-black text-[#031629]"><?php echo e(data_get($reviewsConfig, 'average_rating', '4.9')); ?></span>
+                                        <span class="text-sm font-medium text-slate-400">(<?php echo e(data_get($reviewsConfig, 'reviews_count_total', '500+')); ?> reviews)</span>
+                                    </div>
+                                <?php endif; ?>
+                                <p class="text-slate-500 font-bold text-sm tracking-wide">
+                                    <?php echo e(data_get($reviewsConfig, 'subtitle', 'Straight from verified Google customers.')); ?>
+
+                                </p>
+                            </div>
                         </div>
-                        <div class="flex-1 pe-6">
-                            <p class="text-[0.95rem] font-black text-[#031629] leading-tight"><?php echo e(data_get($review, 'author')); ?></p>
-                            <p class="text-[0.6rem] font-bold uppercase tracking-[0.3em] text-slate-400"><?php echo e(data_get($review, 'time', 'Recently')); ?></p>
+
+                        
+                        
+                        <div 
+                            x-data="{ 
+                                active: 0, 
+                                total: <?php echo e(count($reviews)); ?>,
+                                autoplay() {
+                                    this.timer = setInterval(() => {
+                                        this.active = (this.active + 1) % this.total;
+                                    }, 4000);
+                                },
+                                stop() { clearInterval(this.timer); }
+                            }"
+                            x-init="autoplay()"
+                            @mouseenter="stop()"
+                            @mouseleave="autoplay()"
+                            class="relative min-h-[400px] flex items-center justify-center overflow-hidden py-8"
+                        >
+                            <div class="relative w-full max-w-5xl h-[320px]">
+                                <?php $__currentLoopData = $reviews; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $idx => $review): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <div 
+                                        class="absolute inset-0 flex items-center justify-center transition-all duration-700 ease-in-out cursor-pointer"
+                                        x-cloak
+                                        :class="{
+                                            'z-30 opacity-100 scale-100 blur-0 translate-x-0 brightness-100': active === <?php echo e($idx); ?>,
+                                            'z-20 opacity-50 scale-[0.88] translate-x-[-15%] md:translate-x-[-25%] brightness-90 grayscale-[0.2] pointer-events-none': active === (<?php echo e($idx); ?> + 1) % total || (active === 0 && <?php echo e($idx); ?> === total - 1),
+                                            'z-20 opacity-50 scale-[0.88] translate-x-[15%] md:translate-x-[25%] brightness-90 grayscale-[0.2] pointer-events-none': active === (<?php echo e($idx); ?> - 1 + total) % total || (active === total - 1 && <?php echo e($idx); ?> === 0),
+                                            'z-10 opacity-30 scale-[0.75] translate-x-[-40%] md:translate-x-[-50%] translate-y-[10px] brightness-85 grayscale-[0.3] pointer-events-none': active === (<?php echo e($idx); ?> + 2) % total || (active === 0 && <?php echo e($idx); ?> === total - 2) || (active === 1 && <?php echo e($idx); ?> === total - 1),
+                                            'z-10 opacity-30 scale-[0.75] translate-x-[40%] md:translate-x-[50%] translate-y-[10px] brightness-85 grayscale-[0.3] pointer-events-none': active === (<?php echo e($idx); ?> - 2 + total) % total || (active === total - 2 && <?php echo e($idx); ?> === 0) || (active === total - 1 && <?php echo e($idx); ?> === 1),
+                                            'z-0 opacity-0 scale-50 blur-sm': active !== <?php echo e($idx); ?> && active !== (<?php echo e($idx); ?> + 1) % total && active !== (<?php echo e($idx); ?> - 1 + total) % total && active !== (<?php echo e($idx); ?> + 2) % total && active !== (<?php echo e($idx); ?> - 2 + total) % total
+                                        }"
+                                        @click="active = <?php echo e($idx); ?>"
+                                    >
+                                        <div class="bg-white rounded-2xl border border-slate-100 shadow-[0_20px_50px_rgba(0,0,0,0.08)] p-6 md:p-8 w-[90vw] md:w-[400px] flex flex-col h-full relative">
+                                             
+                                             <div class="absolute top-5 right-5 opacity-20">
+                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" class="w-4 h-4">
+                                                    <path fill="#757575" d="M24 9.5c3.54 0 6.72 1.22 9.23 3.6l6.89-6.89C35.82 2.38 30.41 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.99 6.21C12.12 13.39 17.55 9.5 24 9.5z" />
+                                                    <path fill="#757575" d="M46.5 24.55c0-1.5-.13-2.94-.38-4.35H24v8.23h12.7c-.55 2.81-2.22 5.19-4.72 6.79l7.62 5.92C44.41 36.58 46.5 30.98 46.5 24.55z" />
+                                                    <path fill="#757575" d="M10.55 28.43A14.38 14.38 0 0 1 9.5 24c0-1.52.26-2.99.75-4.36l-7.99-6.21A23.884 23.884 0 0 0 0 24c0 3.82.91 7.42 2.51 10.59l8.04-6.16z" />
+                                                    <path fill="#757575" d="M24 47.5c6.11 0 11.24-2.01 14.99-5.46l-7.62-5.92c-2.12 1.42-4.8 2.25-7.37 2.25-5.64 0-10.42-3.79-12.45-9.02l-8.04 6.16C6.56 42.47 14.51 47.5 24 47.5z" />
+                                                </svg>
+                                            </div>
+
+                                            <div class="flex items-center gap-4 mb-4">
+                                                <div class="relative">
+                                                    <div class="w-14 h-14 rounded-full bg-slate-50 overflow-hidden border border-slate-100 flex items-center justify-center shadow-inner">
+                                                        <?php if(data_get($review, 'photo_url')): ?>
+                                                            <img src="<?php echo e(data_get($review, 'photo_url')); ?>" class="w-full h-full object-cover">
+                                                        <?php else: ?>
+                                                            <span class="text-xs font-bold text-slate-400"><?php echo e(strtoupper(substr(data_get($review, 'author', 'G'), 0, 1))); ?></span>
+                                                        <?php endif; ?>
+                                                    </div>
+                                                    <div class="absolute -bottom-0.5 -right-0.5 w-6 h-6 bg-[#ff6900] rounded-full border-2 border-white flex items-center justify-center shadow-sm">
+                                                        <i data-lucide="star" class="w-3 h-3 text-white fill-current"></i>
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <h4 class="font-bold text-[#3366cc] text-[1.05rem] leading-none mb-1">
+                                                        <?php echo e(data_get($review, 'author', 'Anonymous')); ?>
+
+                                                    </h4>
+                                                    <div class="flex items-center gap-3">
+                                                        <span class="text-xs font-medium text-slate-400">
+                                                            <?php echo e(data_get($review, 'time', 'Recently')); ?>
+
+                                                        </span>
+                                                        <?php if(data_get($reviewsConfig, 'reviews_count_total') || data_get($reviewsConfig, 'average_rating')): ?>
+                                                            <span class="text-xs text-slate-300">|</span>
+                                                            <span class="text-xs font-bold text-[#ff6900]">
+                                                                <?php echo e(data_get($reviewsConfig, 'average_rating', '4.9')); ?> <?php echo e(data_get($reviewsConfig, 'reviews_count_total') ? '/ ' . data_get($reviewsConfig, 'reviews_count_total') . ' reviews' : ''); ?>
+
+                                                            </span>
+                                                        <?php endif; ?>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="flex gap-0.5 mb-4">
+                                                <?php $rating = (int) data_get($review, 'rating', 5); ?>
+                                                <?php for($i = 0; $i < 5; $i++): ?>
+                                                    <i data-lucide="star" class="w-4 h-4 <?php echo e($i < $rating ? 'fill-[#ff9900] text-[#ff9900]' : 'text-slate-200'); ?>"></i>
+                                                <?php endfor; ?>
+                                            </div>
+
+                                            <p class="text-slate-600 font-normal leading-relaxed text-[0.95rem] flex-grow italic">
+                                                “<?php echo e(data_get($review, 'text', '')); ?>”
+                                                <?php if(strlen(data_get($review, 'text', '')) > 100): ?>
+                                                    <a href="https://google.com/search?q=motorbazar+reviews" target="_blank" class="text-[#3366cc] font-bold hover:underline ml-1">read more</a>
+                                                <?php endif; ?>
+                                            </p>
+                                        </div>
+                                    </div>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                            </div>
+
+                            
+                            <div class="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-between px-4 md:px-12 pointer-events-none">
+                                <button @click="active = (active - 1 + total) % total" class="w-12 h-12 rounded-full bg-white shadow-xl border border-slate-100 flex items-center justify-center text-slate-400 hover:text-[#ff6900] transition-colors pointer-events-auto">
+                                    <i data-lucide="chevron-left" class="w-6 h-6"></i>
+                                </button>
+                                <button @click="active = (active + 1) % total" class="w-12 h-12 rounded-full bg-white shadow-xl border border-slate-100 flex items-center justify-center text-slate-400 hover:text-[#ff6900] transition-colors pointer-events-auto">
+                                    <i data-lucide="chevron-right" class="w-6 h-6"></i>
+                                </button>
+                            </div>
+
+                            
+                            <div class="absolute bottom-4 flex justify-center gap-2">
+                                <template x-for="(r, i) in total" :key="i">
+                                    <button 
+                                        @click="active = i"
+                                        class="w-2.5 h-2.5 rounded-full transition-all duration-300"
+                                        :class="active === i ? 'bg-[#ff6900] w-6' : 'bg-slate-300'"
+                                    ></button>
+                                </template>
+                            </div>
                         </div>
-                        <div class="flex flex-col items-end text-right">
-                            <span class="inline-flex items-center gap-1 text-[0.55rem] font-black uppercase tracking-[0.35em] text-slate-400">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16">
-                                    <path fill="#4285F4" d="M12 2l2.09 6.26h6.58l-5.32 3.87 2.03 6.24L12 15.5l-5.38 3.87 2.03-6.24-5.32-3.87h6.58z"/>
-                                </svg>
-                                Verified
-                            </span>
+                        </div>
+                    </section>
+
+                <?php else: ?>
+                    <section class="py-6 px-6 lg:px-12 bg-[#e7e7e7] relative z-20 text-center">
+                        <div class="max-w-3xl mx-auto space-y-4">
+                            <span
+                                class="inline-flex items-center justify-center px-3 py-1 rounded-full text-[0.6rem] font-black uppercase tracking-[0.3em] text-slate-500 bg-white shadow">Google
+                                Reviews Placeholder</span>
+                            <h2 class="text-3xl font-black text-slate-800">This is a placeholder message confirming the reviews
+                                block renders.</h2>
+                            <p class="text-slate-500 text-sm">Once Google Reviews are enabled and configured, this placeholder
+                                will be replaced by the live testimonials card.</p>
+                        </div>
+                    </section>
+                <?php endif; ?>
+
+                
+                <div class="w-full flex justify-center py-4">
+                    <div class="w-full max-w-5xl h-[2px] bg-gradient-to-r from-transparent via-[#ff6900] to-transparent opacity-60"></div>
+                </div>
+
+                
+                <?php if(($sectionOrder['featured_cars'] ?? 5) > 0): ?>
+                <section id="section-featured_cars"
+                    class="block w-full clear-both relative z-30 py-6 px-6 lg:px-12 border-t border-slate-200/50">
+                    <div class="max-w-[1440px] mx-auto">
+                        <div class="flex flex-col items-center text-center mb-12">
+                            <span
+                                class="text-[#ff6900] font-black uppercase tracking-[0.35em] text-[0.65rem] mb-3 block">Browse
+                                by category</span>
+                            <h2 class="text-3xl lg:text-4xl font-black tracking-tight text-[#031629] mb-4">Search cars by
+                                body type</h2>
+                            <a href="<?php echo e(route('auctions.index')); ?>"
+                                class="text-[#031629] font-black text-xs uppercase tracking-[0.22em] border-b-2 border-[#ff6900] pb-1 w-fit">View
+                                all inventory</a>
+                        </div>
+                        <?php
+                            $defaultBodyTypes = [
+                                ['label' => 'Sedan', 'icon' => 'car', 'slug' => 'sedan'],
+                                ['label' => 'SUV', 'icon' => 'shield', 'slug' => 'suv'],
+                                ['label' => 'Coupe', 'icon' => 'zap', 'slug' => 'coupe'],
+                                ['label' => 'Hatch', 'icon' => 'box', 'slug' => 'hatchback'],
+                                ['label' => 'Cabrio', 'icon' => 'sun', 'slug' => 'cabrio'],
+                                ['label' => 'Pickup', 'icon' => 'truck', 'slug' => 'pickup'],
+                            ];
+                            $bodyTypes = data_get($page?->content, 'body_types', []) ?: $defaultBodyTypes;
+                            $bodyTypesDisplayMode = data_get($page?->content, 'body_types_display_mode', 'cards');
+                            $bodyTypesShowGrid = data_get($page?->content, 'body_types_show_grid', true);
+                        ?>
+                        
+                        <?php if($bodyTypesDisplayMode === 'images_only'): ?>
+                        <style>
+                            .body-type-grid {
+                                display: grid;
+                                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                                gap: 1.5rem;
+                            }
+                            .body-type-grid.with-grid {
+                                gap: 0;
+                            }
+                            .body-type-grid.with-grid .type-image-item {
+                                border: 1px solid #e5e7eb;
+                            }
+                            .type-image-item {
+                                position: relative;
+                                aspect-ratio: 16/10;
+                                border-radius: 1rem;
+                                overflow: hidden;
+                                background: #f3f4f6;
+                            }
+                            .type-image-item img {
+                                width: 100%;
+                                height: 100%;
+                                object-fit: cover;
+                                transition: transform 0.5s ease;
+                            }
+                            .type-image-item:hover img {
+                                transform: scale(1.08);
+                            }
+                            .type-image-overlay {
+                                position: absolute;
+                                bottom: 0;
+                                left: 0;
+                                right: 0;
+                                background: linear-gradient(transparent, rgba(0,0,0,0.8));
+                                padding: 2rem 1rem 1rem;
+                                color: white;
+                            }
+                        </style>
+                        <div class="body-type-grid <?php echo e($bodyTypesShowGrid ? 'with-grid' : ''); ?>">
+                            <?php $__currentLoopData = $bodyTypes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $type): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <?php if(!empty($type['image'])): ?>
+                                <a href="<?php echo e(route('auctions.index', ['body_type' => $type['slug']])); ?>" class="type-image-item group">
+                                    <img src="<?php echo e($type['image']); ?>" alt="<?php echo e($type['label']); ?>">
+                                    <div class="type-image-overlay">
+                                        <span class="text-sm font-black tracking-tight"><?php echo e($type['label']); ?></span>
+                                    </div>
+                                </a>
+                                <?php endif; ?>
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                        </div>
+                        <?php else: ?>
+                        <div class="flex flex-col lg:flex-row gap-12" x-data="{ activeType: '<?php echo e($bodyTypes[0]['slug']); ?>' }">
+                            <!-- Sidebar List -->
+                            <div class="w-full lg:w-1/3 flex flex-col gap-4">
+                                <?php $__currentLoopData = $bodyTypes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $type): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <button 
+                                    @click="activeType = '<?php echo e($type['slug']); ?>'"
+                                    :class="activeType === '<?php echo e($type['slug']); ?>' ? 'bg-[#031629] text-white ring-4 ring-[#ff6900]/10 scale-[1.02]' : 'bg-white/80 text-[#031629] hover:bg-white hover:shadow-lg'"
+                                    class="flex items-center justify-between p-6 rounded-2xl border border-black/5 transition-all duration-500 text-left group">
+                                    <div class="flex items-center gap-6">
+                                        <div :class="activeType === '<?php echo e($type['slug']); ?>' ? 'bg-[#ff6900]' : 'bg-slate-100 group-hover:bg-[#ff6900]/10'" 
+                                             class="w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-500">
+                                            <i data-lucide="<?php echo e($type['icon'] ?? 'car'); ?>" 
+                                               :class="activeType === '<?php echo e($type['slug']); ?>' ? 'text-white rotate-0' : 'text-[#ff6900] -rotate-12 group-hover:rotate-0'" 
+                                               class="w-6 h-6 transition-all duration-500"></i>
+                                        </div>
+                                        <div>
+                                            <span class="block text-lg font-black tracking-tight leading-none mb-1"><?php echo e($type['label']); ?></span>
+                                            <span class="text-[0.6rem] font-bold uppercase tracking-[0.2em] opacity-50">Explore Collection</span>
+                                        </div>
+                                    </div>
+                                    <div :class="activeType === '<?php echo e($type['slug']); ?>' ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'"
+                                         class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center transition-all duration-500">
+                                        <i data-lucide="arrow-right" class="w-4 h-4 text-[#ff6900]"></i>
+                                    </div>
+                                </button>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                            </div>
+
+                            <!-- Cars Panel -->
+                            <div class="w-full lg:w-2/3">
+                                <div class="bg-white/50 backdrop-blur-xl rounded-2xl p-4 md:p-12 border border-white/50 shadow-2xl h-full min-h-[600px] relative overflow-hidden">
+                                    
+                                    <div class="absolute top-0 right-0 w-64 h-64 bg-[#ff6900]/5 blur-[100px] rounded-full"></div>
+                                    
+                                    <?php $__currentLoopData = $bodyTypes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $type): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <div x-show="activeType === '<?php echo e($type['slug']); ?>'" 
+                                         x-transition:enter="transition cubic-bezier(0.4, 0, 0.2, 1) duration-700" 
+                                         x-transition:enter-start="opacity-0 translate-y-8"
+                                         x-transition:enter-end="opacity-100 translate-y-0"
+                                         class="relative z-10">
+                                        
+                                        <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+                                            <div>
+                                                <div class="flex items-center gap-3 mb-2">
+                                                    <span class="w-8 h-1 bg-[#ff6900] rounded-full"></span>
+                                                    <span class="text-[0.65rem] font-black uppercase tracking-[0.3em] text-[#ff6900]">Premium Inventory</span>
+                                                </div>
+                                                <h3 class="text-3xl md:text-4xl font-black text-[#031629] tracking-tight">
+                                                    The <span class="italic text-[#ff6900]"><?php echo e($type['label']); ?></span> Experience
+                                                </h3>
+                                            </div>
+                                            <a href="<?php echo e(route('auctions.index', ['body_type' => $type['slug']])); ?>" 
+                                               class="px-8 py-4 bg-[#031629] text-white rounded-full text-[0.65rem] font-black uppercase tracking-widest flex items-center gap-3 hover:bg-[#ff6900] transition-all duration-500 shadow-lg hover:shadow-[#ff6900]/25">
+                                                View Catalog
+                                                <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                                            </a>
+                                        </div>
+
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                            <?php
+                                                // Ideally this would be dynamic, but for now we show featured ones
+                                                $filtered = $featuredAuctions->shuffle()->take(2);
+                                            ?>
+
+                                            <?php $__currentLoopData = $filtered; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $auction): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                            <a href="<?php echo e(route('auctions.show', $auction)); ?>" class="group block">
+                                                <div class="bg-white rounded-2xl p-8 border border-black/5 shadow-xl transition-all duration-500 group-hover:-translate-y-4 group-hover:shadow-2xl">
+                                                    <div class="aspect-[16/10] mb-8 overflow-hidden rounded-2xl bg-[#f8fafc] relative">
+                                                        <img src="<?php echo e($auction->car->image_url ?? '/images/cars/car-main.jpg'); ?>" 
+                                                             class="w-full h-full object-contain p-4 transition-transform duration-700 group-hover:scale-110">
+                                                        <div class="absolute bottom-4 left-4">
+                                                            <span class="px-4 py-2 bg-white/90 backdrop-blur rounded-full text-[0.6rem] font-black uppercase tracking-widest shadow-sm">
+                                                                <?php echo e($auction->car->year); ?> Model
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="flex items-center justify-between gap-4">
+                                                        <div class="flex-1 min-w-0">
+                                                            <span class="text-[0.6rem] font-black uppercase tracking-[0.25em] text-[#ff6900] block mb-1">
+                                                                <?php echo e($auction->car->brand?->name ?? $auction->car->make); ?>
+
+                                                            </span>
+                                                            <h4 class="text-xl font-black text-[#031629] tracking-tight truncate">
+                                                                <?php echo e($auction->car->carModel?->name ?? $auction->car->model); ?>
+
+                                                            </h4>
+                                                        </div>
+                                                        <div class="text-right shrink-0">
+                                                            <span class="text-[0.55rem] font-bold text-slate-400 block uppercase tracking-tighter mb-1">Starting at</span>
+                                                            <span class="text-xl font-black text-[#031629] tabular-nums">$<?php echo e(number_format($auction->initial_price)); ?></span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                        </div>
+                                    </div>
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="flex items-center gap-1 text-[#ffb703]">
-                        <?php for($i = 0; $i < data_get($review, 'rating', 5); $i++): ?>
-                            <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                </section>
+
+                
+                <div class="w-full flex justify-center py-12">
+                    <div class="w-full max-w-5xl h-[2px] bg-gradient-to-r from-transparent via-[#ff6900] to-transparent opacity-60"></div>
+                </div>
+                <?php endif; ?>
+
+                
+                <?php
+                    $locHeaderTitle = data_get($page?->content, 'location.section_header_title', 'Find Our Hub');
+                    $locHeaderSub = data_get($page?->content, 'location.section_header_subtitle', 'Visit our main showroom in the heart of Dubai');
+                    $locLabel = data_get($page?->content, 'location.section_label', 'Location');
+                    $locIframe = data_get($page?->content, 'location.iframe_url', 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3610.1234!2d55.2708!3d25.2048!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjXCsDEyJzE3LjMiTiA1NcKwMTYnMTQuOSJF!5e0!3m2!1sen!2sae!4v1680000000000!5m2!1sen!2sae');
+                    $locTitle = data_get($page?->content, 'location.title', 'Visit Motor');
+                    $locTitleAccent = data_get($page?->content, 'location.title_accent', 'Bazar');
+                    $locSub = data_get($page?->content, 'location.subtitle', 'Our team of experts is ready to welcome you and assist with your luxury car needs.');
+                    $locAddr = data_get($page?->content, 'location.address', 'Al Quoz Industrial Area 3, Dubai, UAE');
+                    $locPhone = data_get($page?->content, 'location.phone', \App\Models\SystemSetting::get('site_phone', '+971 4 000 0000'));
+                    $locHours = data_get($page?->content, 'location.hours', 'Mon – Sat: 9:00 AM – 7:00 PM');
+                    $locMapsUrl = data_get($page?->content, 'location.maps_url', 'https://maps.google.com');
+                    $locBtnLabel = data_get($page?->content, 'location.button_label', 'Get Directions');
+                ?>
+                <?php if(($sectionOrder['location'] ?? 4) > 0): ?>
+                <section id="section-location" class="w-full py-6 relative z-30 overflow-hidden">
+                    <div class="h2-section-container">
+                        
+                        <div class="text-center mb-16 relative">
+                            <span class="inline-block border border-slate-300 text-[#ff6900] text-[0.65rem] font-black uppercase tracking-[0.3em] px-5 py-2 mb-6 rounded-full bg-white shadow-sm">
+                                <?php echo e($locLabel); ?>
+
+                            </span>
+                            <h2 class="text-4xl lg:text-5xl font-extrabold text-[#031629] tracking-tight mb-4"><?php echo e($locHeaderTitle); ?></h2>
+                            <p class="text-slate-500 font-bold text-sm tracking-wide max-w-xl mx-auto"><?php echo e($locHeaderSub); ?></p>
+                        </div>
+
+                        
+                        <div class="relative rounded-2xl overflow-hidden shadow-[0_45px_100px_-30px_rgba(3,22,41,0.25)] border-[6px] border-white min-h-[550px] group">
+                            
+                            <iframe 
+                                src="<?php echo e($locIframe); ?>" 
+                                width="100%" height="100%" 
+                                class="absolute inset-0 w-full h-full object-cover grayscale opacity-80 group-hover:grayscale-0 transition-all duration-1000"
+                                style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
+                            </iframe>
+
+                            
+                            <div class="absolute inset-0 bg-gradient-to-r from-[#e7e7e7]/95 via-[#e7e7e7]/40 to-transparent flex items-center px-10 pointer-events-none">
+                                <div class="w-full max-w-md bg-white/5 backdrop-blur-xl border border-white/20 p-10 rounded-2xl shadow-2xl pointer-events-auto transition-transform duration-700 group-hover:translate-x-4">
+                                    <h3 class="text-3xl lg:text-4xl font-black text-[#031629] leading-tight mb-4">
+                                        <?php echo e($locTitle); ?> <span class="text-[#ff6900]"><?php echo e($locTitleAccent); ?></span>
+                                    </h3>
+                                    <p class="text-slate-500 text-sm font-medium leading-relaxed mb-10">
+                                        <?php echo e($locSub); ?>
+
+                                    </p>
+
+                                    <div class="space-y-6 mb-10">
+                                        <div class="flex items-center gap-5 group/item">
+                                            <div class="w-11 h-11 rounded-2xl bg-[#ff6900]/10 border border-[#ff6900]/20 flex items-center justify-center text-[#ff6900] group-hover/item:bg-[#ff6900] group-hover/item:text-white transition-all">
+                                                <i data-lucide="map-pin" class="w-5 h-5"></i>
+                                            </div>
+                                            <div>
+                                                <span class="block text-[0.55rem] font-black uppercase tracking-widest text-[#ff6900] mb-0.5">Physical HQ</span>
+                                                <span class="text-sm font-bold text-[#031629]"><?php echo e($locAddr); ?></span>
+                                            </div>
+                                        </div>
+
+                                        <div class="flex items-center gap-5 group/item">
+                                            <div class="w-11 h-11 rounded-2xl bg-[#ff6900]/10 border border-[#ff6900]/20 flex items-center justify-center text-[#ff6900] group-hover/item:bg-[#ff6900] group-hover/item:text-white transition-all">
+                                                <i data-lucide="phone" class="w-5 h-5"></i>
+                                            </div>
+                                            <div>
+                                                <span class="block text-[0.55rem] font-black uppercase tracking-widest text-[#ff6900] mb-0.5">Support Center</span>
+                                                <span class="text-sm font-bold text-[#031629]"><?php echo e($locPhone); ?></span>
+                                            </div>
+                                        </div>
+
+                                        <div class="flex items-center gap-5 group/item">
+                                            <div class="w-11 h-11 rounded-2xl bg-[#ff6900]/10 border border-[#ff6900]/20 flex items-center justify-center text-[#ff6900] group-hover/item:bg-[#ff6900] group-hover/item:text-white transition-all">
+                                                <i data-lucide="clock" class="w-5 h-5"></i>
+                                            </div>
+                                            <div>
+                                                <span class="block text-[0.55rem] font-black uppercase tracking-widest text-[#ff6900] mb-0.5">Opening Hours</span>
+                                                <span class="text-sm font-bold text-[#031629]"><?php echo e($locHours); ?></span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <a href="<?php echo e($locMapsUrl); ?>" target="_blank" class="flex items-center justify-center gap-3 bg-[#ff6900] text-white font-black text-xs uppercase tracking-[0.2em] py-4 px-8 rounded-xl hover:bg-white hover:text-[#031629] transition-all shadow-xl shadow-orange-500/20 group/btn">
+                                        <i data-lucide="navigation" class="w-4 h-4 group-hover/btn:scale-125 transition-transform"></i>
+                                        <?php echo e($locBtnLabel); ?>
+
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                
+                <div class="w-full flex justify-center py-4">
+                    <div class="w-full max-w-5xl h-[2px] bg-gradient-to-r from-transparent via-[#ff6900] to-transparent opacity-60"></div>
+                </div>
+                <?php endif; ?>
+
+            </div>
+        <?php endif; ?>
+
+        
+        <?php if(isset($latestPosts)): ?>
+            <?php if(count($latestPosts) > 0 && ($sectionOrder['blog'] ?? 7) > 0): ?>
+                <section id="section-blog" class="py-6 bg-[#e7e7e7] relative overflow-hidden">
+                    <div class="h2-section-container relative z-10">
+                        <div class="flex flex-col items-center text-center mb-16 px-6">
+                            <span class="text-[#ff6900] text-[0.7rem] font-black uppercase tracking-[0.3em] mb-4">
+                                <?php echo e(data_get($page?->content, 'blog_title', 'Latest Insights')); ?>
+
+                            </span>
+                            <h2 class="text-4xl lg:text-5xl font-black text-[#031629] tracking-tight">
+                                <?php echo e(data_get($page?->content, 'blog_subtitle', 'Blog & Articles')); ?>
+
+                            </h2>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 px-6">
+                            <?php $__currentLoopData = $latestPosts; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $post): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <a href="/blog/<?php echo e($post->slug); ?>" class="group">
+                                    <div class="bg-white rounded-2xl overflow-hidden border border-black/5 shadow-xl transition-all duration-500 group-hover:-translate-y-4 group-hover:shadow-[0_40px_80px_-20px_rgba(0,0,0,0.15)] h-full flex flex-col">
+                                        <div class="aspect-[16/10] overflow-hidden relative">
+                                            <?php if($post->featured_image): ?>
+                                                <img src="<?php echo e(asset('storage/'.$post->featured_image)); ?>" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                                            <?php else: ?>
+                                                <div class="w-full h-full bg-slate-50 flex items-center justify-center">
+                                                    <i data-lucide="image" class="w-12 h-12 text-slate-200"></i>
+                                                </div>
+                                            <?php endif; ?>
+                                            <div class="absolute inset-0 bg-gradient-to-t from-[#031629]/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                                        </div>
+                                        <div class="p-8 flex-1 flex flex-col">
+                                            <div class="flex items-center gap-3 mb-4">
+                                                <span class="px-3 py-1 bg-[#ff6900]/10 text-[#ff6900] text-[0.6rem] font-black uppercase tracking-widest rounded-full">
+                                                    <?php echo e($post->category->name ?? 'Article'); ?>
+
+                                                </span>
+                                                <span class="text-[0.65rem] font-bold text-slate-400 uppercase tracking-widest">
+                                                    <?php echo e($post->published_at ? $post->published_at->format('M d, Y') : $post->created_at->format('M d, Y')); ?>
+
+                                                </span>
+                                            </div>
+                                            <h3 class="text-xl font-black text-[#031629] leading-tight group-hover:text-[#ff6900] transition-colors line-clamp-2 mb-6">
+                                                <?php echo e($post->title); ?>
+
+                                            </h3>
+                                            <div class="mt-auto flex items-center gap-2 text-[#ff6900] text-[0.7rem] font-black uppercase tracking-widest">
+                                                Read More
+                                                <i data-lucide="arrow-right" class="w-3 h-3 transition-transform group-hover:translate-x-1"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                        </div>
+                    </div>
+                </section>
+                <?php endif; ?>
+
+                
+                <div class="w-full flex justify-center py-12">
+                    <div class="w-full max-w-5xl h-px bg-gradient-to-r from-transparent via-[#ff6900] to-transparent opacity-20"></div>
+                </div>
+            <?php endif; ?>
+        <?php endif; ?>
+
+        
+        <?php
+            $eliteBrands = data_get($page?->content, 'brands', []);
+            $eliteBrandImages = [
+                'mercedes-benz' => '/images/brands/mercedes.svg',
+                'bmw' => '/images/brands/bmw.svg',
+                'audi' => '/images/brands/audi.svg',
+                'porsche' => '/images/brands/porsche.svg',
+                'toyota' => '/images/brands/toyota.svg',
+                'honda' => '/images/brands/honda.svg',
+                'ford' => '/images/brands/ford.svg',
+                'nissan' => '/images/brands/nissan.svg',
+                'hyundai' => '/images/brands/hyundai.svg',
+                'mazda' => '/images/brands/mazda.svg',
+                'tesla' => '/images/brands/tesla.svg',
+                'volkswagen' => '/images/brands/volkswagen.svg',
+                'suzuki' => '/images/brands/suzuki.svg',
+                'lamborghini' => '/images/brands/lamborghini.svg',
+                'land-rover' => '/images/brands/land-rover.svg',
+            ];
+        ?>
+        <?php if(count($eliteBrands) > 0 && ($sectionOrder['brand_logos'] ?? 6) > 0): ?>
+            <div id="section-brand_logos">
+            <style>
+                @keyframes lux-marquee {
+                    0% { transform: translateX(0); }
+                    100% { transform: translateX(calc(-240px * <?php echo e(count($eliteBrands)); ?> - 4rem * <?php echo e(count($eliteBrands)); ?>)); }
+                }
+                .lux-slider-track {
+                    display: flex;
+                    width: max-content;
+                    animation: lux-marquee 40s linear infinite;
+                    padding: 2rem 0;
+                }
+                .lux-slider-track:hover {
+                    animation-play-state: paused;
+                }
+                .lux-brand-item {
+                    width: 240px;
+                    flex-shrink: 0;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    margin-right: 4rem;
+                    gap: 1.5rem;
+                    cursor: pointer;
+                }
+                .lux-brand-logo {
+                    height: 100px;
+                    width: 180px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+                    filter: grayscale(100%) brightness(0) opacity(0.35);
+                    transform: scale(0.95);
+                }
+                .lux-brand-item:hover .lux-brand-logo {
+                    filter: grayscale(0%) brightness(1) opacity(1) drop-shadow(0 10px 15px rgba(255,105,0,0.15));
+                    transform: scale(1.1) translateY(-5px);
+                }
+                .lux-brand-logo img {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: contain;
+                }
+                .lux-brand-name {
+                    font-size: 0.75rem;
+                    font-weight: 900;
+                    text-transform: uppercase;
+                    letter-spacing: 0.25em;
+                    color: #64748b;
+                    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+                }
+                .lux-brand-item:hover .lux-brand-name {
+                    color: #ff6900;
+                }
+            </style>
+            <div class="w-full relative z-40 bg-transparent pb-6">
+                <div class="text-center mb-4">
+                    <span class="text-[0.65rem] font-black uppercase tracking-[0.2em] text-[#ff6900]">Elite Architecture</span>
+                    <h3 class="text-xl font-black text-[#031629] mt-1 tracking-tight">Trusted by Premium Brands</h3>
+                </div>
+                <div class="overflow-hidden w-full relative group">
+                    
+                    <div class="absolute left-0 top-0 bottom-0 w-32 md:w-64 bg-gradient-to-r from-[#e7e7e7] to-transparent z-10 pointer-events-none"></div>
+                    <div class="absolute right-0 top-0 bottom-0 w-32 md:w-64 bg-gradient-to-l from-[#e7e7e7] to-transparent z-10 pointer-events-none"></div>
+                    
+                    <div class="lux-slider-track">
+                        
+                        <?php for($i = 0; $i < 2; $i++): ?>
+                            <?php $__currentLoopData = $eliteBrands; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $brand): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <div class="lux-brand-item">
+                                    <div class="lux-brand-logo">
+                                        <?php if(isset($eliteBrandImages[$brand['slug']])): ?>
+                                            <img src="<?php echo e($eliteBrandImages[$brand['slug']]); ?>" alt="<?php echo e($brand['name']); ?>">
+                                        <?php else: ?>
+                                            <span class="text-sm font-black text-slate-400 uppercase tracking-widest"><?php echo e($brand['name']); ?></span>
+                                        <?php endif; ?>
+                                    </div>
+                                    <span class="lux-brand-name"><?php echo e($brand['name']); ?></span>
+                                </div>
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         <?php endfor; ?>
                     </div>
-                    <p class="text-[0.95rem] text-slate-600 leading-relaxed flex-1">“<?php echo e(data_get($review, 'text')); ?>”</p>
-                    <?php if(data_get($review, 'profile_url')): ?>
-                        <a href="<?php echo e(data_get($review, 'profile_url')); ?>" target="_blank" class="inline-flex items-center gap-2 text-[0.65rem] font-black uppercase tracking-[0.3em] text-[#ff4605]">
-                            Read more
-                            <i data-lucide="arrow-up-right" class="w-3.5 h-3.5"></i>
-                        </a>
-                    <?php endif; ?>
-                    </div>
-                </div>
-                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                    </div>
-                </div>
-                <div class="absolute inset-y-0 flex items-center justify-between pointer-events-none w-full">
-                    <button type="button" class="pointer-events-auto w-11 h-11 rounded-full bg-white/80 text-[#031629] shadow-lg flex items-center justify-center hover:bg-white" data-review-prev>
-                        <i data-lucide="chevron-left" class="w-5 h-5"></i>
-                    </button>
-                    <button type="button" class="pointer-events-auto w-11 h-11 rounded-full bg-white/80 text-[#031629] shadow-lg flex items-center justify-center hover:bg-white" data-review-next>
-                        <i data-lucide="chevron-right" class="w-5 h-5"></i>
-                    </button>
                 </div>
             </div>
-        </div>
-    </section>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const slider = document.querySelector('[data-review-slider]');
-            if (!slider) return;
-            const scrollBox = slider.querySelector('[data-review-scroll]');
-            const prevBtn = slider.querySelector('[data-review-prev]');
-            const nextBtn = slider.querySelector('[data-review-next]');
-
-            const updateState = () => {
-                const maxScroll = scrollBox.scrollWidth - scrollBox.clientWidth;
-                const left = scrollBox.scrollLeft;
-                prevBtn.disabled = left <= 0;
-                nextBtn.disabled = left >= maxScroll - 5;
-                prevBtn.classList.toggle('opacity-30', prevBtn.disabled);
-                nextBtn.classList.toggle('opacity-30', nextBtn.disabled);
-            };
-
-            const scrollByViewport = (direction = 1) => {
-                const amount = scrollBox.clientWidth * direction;
-                scrollBox.scrollBy({ left: amount, behavior: 'smooth' });
-            };
-
-            prevBtn.addEventListener('click', () => scrollByViewport(-1));
-            nextBtn.addEventListener('click', () => scrollByViewport(1));
-            scrollBox.addEventListener('scroll', updateState, { passive: true });
-            window.addEventListener('resize', updateState);
-            updateState();
-        });
-    </script>
-    <?php else: ?>
-    <section class="py-24 px-6 lg:px-12 bg-slate-100 relative z-20 text-center">
-        <div class="max-w-3xl mx-auto space-y-4">
-            <span class="inline-flex items-center justify-center px-3 py-1 rounded-full text-[0.6rem] font-black uppercase tracking-[0.3em] text-slate-500 bg-white shadow">Google Reviews Placeholder</span>
-            <h2 class="text-3xl font-black text-slate-800">This is a placeholder message confirming the reviews block renders.</h2>
-            <p class="text-slate-500 text-sm">Once Google Reviews are enabled and configured, this placeholder will be replaced by the live testimonials card.</p>
-        </div>
-    </section>
-    <?php endif; ?>
-
-
+            </div>
+        <?php endif; ?>
+        <?php if (isset($component)) { $__componentOriginal8a8716efb3c62a45938aca52e78e0322 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal8a8716efb3c62a45938aca52e78e0322 = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.footer','data' => ['variant' => 'modern','siteLogo' => $siteLogo ?? null,'siteName' => $siteName ?? null,'description' => $footerDesc ?? null,'address' => $footerAddress ?? null,'email' => $footerEmail ?? null,'phone' => $footerPhone ?? null,'socials' => $footerSocials ?? null,'quickLinks' => $footerQuickLinks ?? [],'pages' => $footerPages ?? [],'copyright' => $footerCopy ?? null,'termsUrl' => $footerTerms ?? '#','privacyUrl' => $footerPrivacy ?? '#','cookiesUrl' => $footerCookies ?? '#','bgColor' => '#e7e7e7']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('footer'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['variant' => 'modern','siteLogo' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($siteLogo ?? null),'siteName' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($siteName ?? null),'description' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($footerDesc ?? null),'address' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($footerAddress ?? null),'email' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($footerEmail ?? null),'phone' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($footerPhone ?? null),'socials' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($footerSocials ?? null),'quickLinks' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($footerQuickLinks ?? []),'pages' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($footerPages ?? []),'copyright' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($footerCopy ?? null),'termsUrl' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($footerTerms ?? '#'),'privacyUrl' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($footerPrivacy ?? '#'),'cookiesUrl' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($footerCookies ?? '#'),'bgColor' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute('#e7e7e7')]); ?>
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal8a8716efb3c62a45938aca52e78e0322)): ?>
+<?php $attributes = $__attributesOriginal8a8716efb3c62a45938aca52e78e0322; ?>
+<?php unset($__attributesOriginal8a8716efb3c62a45938aca52e78e0322); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal8a8716efb3c62a45938aca52e78e0322)): ?>
+<?php $component = $__componentOriginal8a8716efb3c62a45938aca52e78e0322; ?>
+<?php unset($__componentOriginal8a8716efb3c62a45938aca52e78e0322); ?>
+<?php endif; ?>
+    </main>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             if (window.lucide) lucide.createIcons();
 
+            if (window.initCountdowns) {
+                window.initCountdowns();
+            }
+
             /* ═══════════════════════════════════════════════════
-               HOME2 SELL WIZARD
+               HOME2 SELL WIZARD (REMOVED)
             ═══════════════════════════════════════════════════ */
-            const wizard = document.getElementById('h2wizard');
-            if (!wizard) return;
 
-            const brandModelMap = <?php echo json_encode($catalogModelsByMake ?? [], 15, 512) ?>;
-            const startStep = Math.max(0, (parseInt(wizard.dataset.startStep || '1', 10) || 1) - 1);
-            const steps = Array.from(wizard.querySelectorAll('[data-step]'));
-            let currentIdx = startStep;
+            // Google Review Slider Script
+            const slider = document.querySelector('[data-review-slider]');
+            if (slider) {
+                const scrollBox = slider.querySelector('[data-review-scroll]');
+                const prevBtn = slider.querySelector('[data-review-prev]');
+                const nextBtn = slider.querySelector('[data-review-next]');
 
-            /* ── helpers ── */
-            const norm = v => String(v).toLowerCase().replace(/[^a-z0-9]+/g, '');
-            const parseM = raw => { try { const p = JSON.parse(raw); return Array.isArray(p) ? p : []; } catch (e) { return []; } };
-            const getModels = make => brandModelMap[norm(make)] || brandModelMap.__all__ || [];
-
-            /* ── DOM refs ── */
-            const h2make = document.getElementById('h2make');
-            const h2model = document.getElementById('h2model');
-            const h2year = document.getElementById('h2year');
-            const h2gcc = document.getElementById('h2gcc');
-            const h2body = document.getElementById('h2body');
-            const h2engine = document.getElementById('h2engine');
-            const h2mileage = document.getElementById('h2mileage');
-            const h2trim = document.getElementById('h2trim');
-            const h2paint = document.getElementById('h2paint');
-            const h2condition = document.getElementById('h2condition');
-            const h2inspDate = document.getElementById('h2inspDate');
-            const h2inspTime = document.getElementById('h2inspTime');
-
-            /* ── drawer toggle factory ── */
-            function makeHub(toggleId, drawerId) {
-                const tog = document.getElementById(toggleId);
-                const drw = document.getElementById(drawerId);
-                if (!tog || !drw) return { open: () => { }, close: () => { }, toggle: () => { } };
-                return {
-                    open() { drw.classList.add('hub-open'); },
-                    close() { drw.classList.remove('hub-open'); },
-                    toggle() { drw.classList.contains('hub-open') ? this.close() : this.open(); }
+                const updateState = () => {
+                    if (!scrollBox || !prevBtn || !nextBtn) return;
+                    const maxScroll = scrollBox.scrollWidth - scrollBox.clientWidth;
+                    const left = scrollBox.scrollLeft;
+                    prevBtn.disabled = left <= 0;
+                    nextBtn.disabled = left >= maxScroll - 5;
+                    prevBtn.style.opacity = prevBtn.disabled ? '0.2' : '1';
+                    nextBtn.style.opacity = nextBtn.disabled ? '0.2' : '1';
                 };
+
+                const scrollByViewport = (direction = 1) => {
+                    const amount = scrollBox.clientWidth * direction * 0.8;
+                    scrollBox.scrollBy({ left: amount, behavior: 'smooth' });
+                };
+
+                if (prevBtn) prevBtn.addEventListener('click', () => scrollByViewport(-1));
+                if (nextBtn) nextBtn.addEventListener('click', () => scrollByViewport(1));
+                if (scrollBox) scrollBox.addEventListener('scroll', updateState, { passive: true });
+                window.addEventListener('resize', updateState);
+                updateState();
             }
-            const hubs = {
-                brand: makeHub('h2brandToggle', 'h2brandDrawer'),
-                model: makeHub('h2modelToggle', 'h2modelDrawer'),
-                year: makeHub('h2yearToggle', 'h2yearDrawer'),
-                gcc: makeHub('h2gccToggle', 'h2gccDrawer'),
-                body: makeHub('h2bodyToggle', 'h2bodyDrawer'),
-                engine: makeHub('h2engineToggle', 'h2engineDrawer'),
-                mileage: makeHub('h2mileageToggle', 'h2mileageDrawer'),
-                date: makeHub('h2dateToggle', 'h2dateDrawer'),
-                time: makeHub('h2timeToggle', 'h2timeDrawer'),
-            };
-            function closeAll(except = '') { Object.entries(hubs).forEach(([k, h]) => { if (k !== except) h.close(); }); }
-
-            /* ── toggle clicks ── */
-            ['brand', 'model', 'year', 'gcc', 'body', 'engine', 'mileage', 'date', 'time'].forEach(k => {
-                const tog = document.getElementById('h2' + k + 'Toggle');
-                if (tog) tog.addEventListener('click', e => { e.stopPropagation(); closeAll(k); hubs[k].toggle(); });
-            });
-
-            /* close on outside click */
-            document.addEventListener('click', () => closeAll());
-            document.querySelectorAll('.hub-drawer').forEach(d => d.addEventListener('click', e => e.stopPropagation()));
-
-            /* ── Brand selection ── */
-            function setBrand(value, logo = '', models = []) {
-                h2make.value = value;
-                const lbl = document.getElementById('h2brandLabel');
-                const icon = document.getElementById('h2brandIcon');
-                const iconImg = document.getElementById('h2brandIconImg');
-                if (lbl) { lbl.textContent = value || 'Select Brand'; lbl.classList.toggle('hub-placeholder', !value); }
-                if (icon && iconImg) { if (logo) { iconImg.src = logo; icon.style.display = ''; } else { icon.style.display = 'none'; } }
-                document.querySelectorAll('[data-brand-hub-value]').forEach(b => b.classList.toggle('selected', b.getAttribute('data-brand-hub-value') === value));
-                document.querySelectorAll('[data-brand-pick]').forEach(b => b.classList.toggle('selected', b.getAttribute('data-brand-pick') === value));
-                populateModels(models.length ? models : getModels(value));
-                setModel('');
-            }
-            function clearBrand() { setBrand(''); populateModels([]); }
-
-            document.getElementById('h2brandClose')?.addEventListener('click', () => hubs.brand.close());
-            document.getElementById('h2brandReset')?.addEventListener('click', () => { clearBrand(); hubs.brand.open(); });
-
-            document.querySelectorAll('[data-brand-hub-value]').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    setBrand(btn.getAttribute('data-brand-hub-value'), btn.getAttribute('data-brand-hub-logo'), parseM(btn.getAttribute('data-brand-models')));
-                    hubs.brand.close();
-                });
-            });
-            document.querySelectorAll('[data-brand-pick]').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    setBrand(btn.getAttribute('data-brand-pick'), btn.querySelector('img')?.src || '', parseM(btn.getAttribute('data-brand-models')));
-                });
-            });
-
-            const brandSearch = document.getElementById('h2brandSearch');
-            if (brandSearch) brandSearch.addEventListener('input', e => {
-                const q = e.target.value.toLowerCase();
-                document.querySelectorAll('[data-brand-hub-value]').forEach(b => {
-                    b.style.display = (b.getAttribute('data-brand-hub-value') || '').toLowerCase().includes(q) ? '' : 'none';
-                });
-            });
-
-            /* ── Model selection ── */
-            function populateModels(models) {
-                const list = document.getElementById('h2modelList');
-                const tog = document.getElementById('h2modelToggle');
-                if (!list || !tog) return;
-                list.innerHTML = '';
-                if (!models.length) { tog.disabled = true; tog.classList.add('disabled'); document.getElementById('h2modelLabel').textContent = 'No models found'; return; }
-                tog.disabled = false; tog.classList.remove('disabled');
-                if (!h2model.value) document.getElementById('h2modelLabel').textContent = 'Select Model';
-                models.forEach(m => {
-                    const btn = document.createElement('button');
-                    btn.type = 'button'; btn.className = 'hub-option'; btn.setAttribute('data-model-value', m);
-                    btn.innerHTML = `<span style="width:8px;height:8px;border-radius:50%;background:#e8ecf0;flex-shrink:0"></span><span>${m}</span>`;
-                    btn.addEventListener('click', () => { setModel(m); hubs.model.close(); });
-                    list.appendChild(btn);
-                });
-                if (h2model.value) setModel(h2model.value);
-            }
-            function setModel(value) {
-                h2model.value = value;
-                const lbl = document.getElementById('h2modelLabel');
-                if (lbl) { lbl.textContent = value || 'Select Model'; lbl.classList.toggle('hub-placeholder', !value); }
-                document.querySelectorAll('[data-model-value]').forEach(b => b.classList.toggle('selected', b.getAttribute('data-model-value') === value));
-            }
-            document.getElementById('h2modelClose')?.addEventListener('click', () => hubs.model.close());
-            const modelSearch = document.getElementById('h2modelSearch');
-            if (modelSearch) modelSearch.addEventListener('input', e => {
-                const q = e.target.value.toLowerCase();
-                document.querySelectorAll('[data-model-value]').forEach(b => { b.style.display = b.getAttribute('data-model-value').toLowerCase().includes(q) ? '' : 'none'; });
-            });
-
-            /* ── Year selection ── */
-            document.querySelectorAll('.h2year-pick').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const v = btn.getAttribute('data-year-value');
-                    h2year.value = v;
-                    const lbl = document.getElementById('h2yearLabel');
-                    if (lbl) { lbl.textContent = v; lbl.classList.remove('hub-placeholder'); }
-                    document.querySelectorAll('.h2year-pick').forEach(b => b.classList.remove('selected'));
-                    btn.classList.add('selected');
-                    hubs.year.close();
-                });
-            });
-
-            /* ── Simple hub pickers ── */
-            function simplePick(cls, hiddenId, labelId, hub, displayFn) {
-                document.querySelectorAll('.' + cls).forEach(btn => {
-                    btn.addEventListener('click', () => {
-                        const v = btn.dataset[cls.replace('h2', '').replace('-pick', '').replace(/Pick$/, '') + 'Value'] || btn.dataset[Object.keys(btn.dataset)[0]];
-                        document.getElementById(hiddenId).value = v;
-                        const lbl = document.getElementById(labelId);
-                        if (lbl) { lbl.textContent = displayFn ? displayFn(v, btn) : v; lbl.classList.remove('hub-placeholder'); }
-                        document.querySelectorAll('.' + cls).forEach(b => b.classList.remove('selected'));
-                        btn.classList.add('selected');
-                        hubs[hub].close();
-                    });
-                });
-            }
-            simplePick('h2gcc-pick', 'h2gcc', 'h2gccLabel', 'gcc', (v, btn) => btn.getAttribute('data-gcc-label') || v);
-            simplePick('h2body-pick', 'h2body', 'h2bodyLabel', 'body');
-            simplePick('h2engine-pick', 'h2engine', 'h2engineLabel', 'engine');
-            simplePick('h2mileage-pick', 'h2mileage', 'h2mileageLabel', 'mileage', v => v + ' KM');
-
-            /* ── Pick buttons (trim/paint/condition) ── */
-            ['h2trim-pick', 'h2paint-pick', 'h2condition-pick'].forEach(cls => {
-                const hiddenId = cls.replace('-pick', '').replace('h2', 'h2');
-                document.querySelectorAll('.' + cls).forEach(btn => {
-                    btn.addEventListener('click', () => {
-                        document.querySelectorAll('.' + cls).forEach(b => b.classList.remove('active'));
-                        btn.classList.add('active');
-                        document.getElementById(hiddenId).value = btn.getAttribute('data-' + cls.replace('h2', '').replace('-pick', '').replace(/-/g, '') + '-value') || Object.values(btn.dataset)[0];
-                    });
-                });
-            });
-            // simpler pick for trim
-            document.querySelectorAll('.h2trim-pick').forEach(btn => btn.addEventListener('click', () => { h2trim.value = btn.getAttribute('data-trim-value'); }));
-            document.querySelectorAll('.h2paint-pick').forEach(btn => btn.addEventListener('click', () => { h2paint.value = btn.getAttribute('data-paint-value'); }));
-            document.querySelectorAll('.h2condition-pick').forEach(btn => btn.addEventListener('click', () => { h2condition.value = btn.getAttribute('data-condition-value'); }));
-
-            /* ── Calendar ── */
-            let calYear = new Date().getFullYear(), calMonth = new Date().getMonth();
-            function renderCal() {
-                const grid = document.getElementById('h2calGrid');
-                const lbl = document.getElementById('h2calMonthYear');
-                if (!grid || !lbl) return;
-                const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-                lbl.textContent = months[calMonth] + ' ' + calYear;
-                const first = new Date(calYear, calMonth, 1).getDay();
-                const days = new Date(calYear, calMonth + 1, 0).getDate();
-                const today = new Date(); today.setHours(0, 0, 0, 0);
-                grid.innerHTML = '';
-                for (let i = 0; i < first; i++) { const e = document.createElement('div'); grid.appendChild(e); }
-                for (let d = 1; d <= days; d++) {
-                    const dt = new Date(calYear, calMonth, d);
-                    const btn = document.createElement('button');
-                    btn.type = 'button';
-                    btn.style.cssText = 'padding:6px 2px;border-radius:8px;border:1.5px solid transparent;font-size:.7rem;font-weight:700;cursor:pointer;text-align:center;width:100%;background:transparent;';
-                    btn.textContent = d;
-                    if (dt < today) { btn.disabled = true; btn.style.color = '#d1d5db'; }
-                    else {
-                        btn.style.color = '#031629';
-                        btn.addEventListener('click', () => {
-                            const y = calYear, mo = String(calMonth + 1).padStart(2, '0'), day = String(d).padStart(2, '0');
-                            h2inspDate.value = `${y}-${mo}-${day}`;
-                            const lbl2 = document.getElementById('h2dateLabel');
-                            if (lbl2) { lbl2.textContent = `${day} ${months[calMonth].slice(0, 3)} ${y}`; lbl2.classList.remove('hub-placeholder'); }
-                            grid.querySelectorAll('button').forEach(b => b.style.background = 'transparent');
-                            btn.style.background = '#031629'; btn.style.color = '#fff'; btn.style.borderColor = '#031629';
-                            hubs.date.close();
-                        });
-                    }
-                    grid.appendChild(btn);
-                }
-            }
-            document.getElementById('h2calPrev')?.addEventListener('click', e => { e.stopPropagation(); calMonth--; if (calMonth < 0) { calMonth = 11; calYear--; } renderCal(); });
-            document.getElementById('h2calNext')?.addEventListener('click', e => { e.stopPropagation(); calMonth++; if (calMonth > 11) { calMonth = 0; calYear++; } renderCal(); });
-            renderCal();
-
-            /* ── Time slots ── */
-            document.querySelectorAll('.h2time-pick').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const v = btn.getAttribute('data-time-value');
-                    h2inspTime.value = v;
-                    const lbl = document.getElementById('h2timeLabel');
-                    if (lbl) { lbl.textContent = v; lbl.classList.remove('hub-placeholder'); }
-                    document.querySelectorAll('.h2time-pick').forEach(b => { b.style.background = '#fff'; b.style.borderColor = '#e8ecf0'; b.style.color = '#4a5568'; });
-                    btn.style.background = '#031629'; btn.style.borderColor = '#031629'; btn.style.color = '#fff';
-                    hubs.time.close();
-                });
-            });
-
-            /* ── Step navigation ── */
-            function updateUI() {
-                steps.forEach((s, i) => { s.classList.toggle('active', i === currentIdx); });
-                // dots
-                [0, 1, 2].forEach(i => {
-                    const dot = document.getElementById('h2dot' + i);
-                    if (dot) { dot.classList.toggle('active', i === currentIdx); }
-                });
-                // title words
-                ['h2w1', 'h2w2', 'h2w3'].forEach((id, i) => {
-                    const el = document.getElementById(id);
-                    if (el) { el.className = 'step-word ' + (i === currentIdx ? 'active' : 'muted'); }
-                });
-            }
-
-            function showWarn(msg) {
-                alert(msg); // simple fallback — could be replaced with a custom toast
-            }
-
-            function validate(idx) {
-                if (idx === 0) {
-                    if (!h2make.value || !h2model.value || !h2year.value) { showWarn('Please select Brand, Model and Year to continue.'); return false; }
-                }
-                if (idx === 1) {
-                    if (!h2gcc.value || !h2body.value || !h2engine.value || !h2mileage.value) { showWarn('Please complete all vehicle specs.'); return false; }
-                }
-                if (idx === 2) {
-                    const name = wizard.querySelector('[name="name"]')?.value;
-                    const phone = wizard.querySelector('[name="phone"]')?.value;
-                    if (!name || !phone) { showWarn('Please enter your name and phone number.'); return false; }
-                    if (!h2inspDate.value || !h2inspTime.value) { showWarn('Please select a date and time for inspection.'); return false; }
-                }
-                return true;
-            }
-
-            wizard.querySelectorAll('[data-h2-action="next"]').forEach(btn => {
-                btn.addEventListener('click', () => { if (validate(currentIdx)) { currentIdx++; updateUI(); } });
-            });
-            wizard.querySelectorAll('[data-h2-action="back"]').forEach(btn => {
-                btn.addEventListener('click', () => { currentIdx = Math.max(0, currentIdx - 1); updateUI(); });
-            });
-
-            /* ── Submit ── */
-            wizard.addEventListener('submit', async e => {
-                e.preventDefault();
-                if (!validate(2)) return;
-                const submitBtn = wizard.querySelector('[data-h2-action="submit"]');
-                if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Sending...'; }
-                try {
-                    const fd = new FormData(wizard);
-                    const mileageMap = { '0-20k': 20000, '20k-50k': 50000, '50k-100k': 100000, '100k-150k': 150000, '150k-200k': 200000, 'Over 200k': 250000, 'Unknown': 0 };
-                    const rawMi = fd.get('mileage');
-                    fd.set('mileage', mileageMap[rawMi] !== undefined ? mileageMap[rawMi] : (parseInt(rawMi) || 0));
-                    if (!fd.get('inspection_date')) fd.set('inspection_date', new Date().toISOString().split('T')[0]);
-                    if (!fd.get('inspection_time')) fd.set('inspection_time', 'ASAP');
-                    const res = await fetch(wizard.action, { method: 'POST', body: fd, headers: { 'X-Requested-With': 'XMLHttpRequest', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '' } });
-                    if (!res.ok) { const err = await res.json().catch(() => ({})); throw new Error(err.message || 'Submission failed'); }
-                    const card = document.getElementById('h2wizCard');
-                    if (card) card.innerHTML = `<div class="wiz-success"><div class="wiz-success-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg></div><h3>Request Submitted!</h3><p>Your details were received. An operator will contact you shortly.</p><button onclick="location.reload()" style="margin-top:24px;font-size:.65rem;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:#031629;background:none;border:none;cursor:pointer;border-bottom:2px solid #c5d3e0;padding-bottom:3px">Submit New Lead</button></div>`;
-                } catch (err) {
-                    if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Request Free Valuation'; }
-                    showWarn('Submission failed: ' + err.message);
-                }
-            });
-
-            updateUI();
         });
+
+        // Section Order Reordering
+        (function() {
+            const container = document.getElementById('sectionsContainer');
+            if (!container) return;
+            
+            const sectionOrder = JSON.parse(container.dataset.sectionOrder || '{}');
+            const sectionIds = ['trust_badges', 'services', 'google_reviews', 'location', 'featured_cars', 'brand_logos', 'blog'];
+            
+            // Get all section elements
+            const sectionElements = [];
+            sectionIds.forEach(key => {
+                const el = document.getElementById('section-' + key);
+                if (el) {
+                    sectionElements.push({
+                        key,
+                        el,
+                        order: parseInt(sectionOrder[key]) || 999
+                    });
+                }
+            });
+            
+            // Sort by order
+            sectionElements.sort((a, b) => a.order - b.order);
+            
+            // Reorder inside container
+            sectionElements.forEach((section) => {
+                container.appendChild(section.el);
+            });
+        })();
     </script>
 </body>
 
-</html><?php /**PATH F:\auction_app\resources\views/home2.blade.php ENDPATH**/ ?>
+</html>
+<?php
+    $trustStripBg = data_get($page?->content, 'trust_strip_bg', '#e7e7e7');
+?>
+<?php /**PATH F:\auction_app\resources\views/home2.blade.php ENDPATH**/ ?>

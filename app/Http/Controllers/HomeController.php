@@ -257,18 +257,18 @@ class HomeController extends Controller
             'needs_work' => 'Needs Work / Salvage',
         ];
 
-        $googleReviewBlock = $this->buildGoogleReviewsBlock();
+        $googleReviewBlock = $this->buildGoogleReviewsBlock($page);
 
         $pageContent = $page?->content ?? [];
         $leadArchitecture = [
-            'header'         => SystemSetting::get('lead_header_label', data_get($pageContent, 'lead_form.header', 'Ready to Sell?')),
-            'wizard_title'   => SystemSetting::get('lead_header_title', data_get($pageContent, 'lead_form.title', 'What would you like to sell?')),
-            'step1'          => SystemSetting::get('lead_wizard_w1', data_get($pageContent, 'lead_form.wizard_w1', 'Select')),
-            'step2'          => SystemSetting::get('lead_wizard_w2', data_get($pageContent, 'lead_form.wizard_w2', 'Customize')),
-            'step3'          => SystemSetting::get('lead_wizard_w3', data_get($pageContent, 'lead_form.wizard_w3', 'Submit')),
-            'featured_brand_names' => json_decode(SystemSetting::get('lead_form_brands'), true) 
-                                    ?: collect(data_get($pageContent, 'lead_form_brands', []))->pluck('name')->toArray(),
-            'circles_enabled' => SystemSetting::get('lead_circles_enabled', '1') === '1',
+            'header'         => data_get($pageContent, 'lead_form.header') ?: SystemSetting::get('lead_header_label', 'Ready to Sell?'),
+            'wizard_title'   => data_get($pageContent, 'lead_form.title') ?: SystemSetting::get('lead_header_title', 'What would you like to sell?'),
+            'step1'          => data_get($pageContent, 'lead_form.wizard_w1') ?: SystemSetting::get('lead_wizard_w1', 'Select'),
+            'step2'          => data_get($pageContent, 'lead_form.wizard_w2') ?: SystemSetting::get('lead_wizard_w2', 'Customize'),
+            'step3'          => data_get($pageContent, 'lead_form.wizard_w3') ?: SystemSetting::get('lead_wizard_w3', 'Submit'),
+            'featured_brand_names' => collect(data_get($pageContent, 'lead_form_brands', []))->pluck('name')->filter()->toArray() 
+                                     ?: json_decode(SystemSetting::get('lead_form_brands', '[]'), true),
+            'circles_enabled' => data_get($pageContent, 'lead_form.circles_enabled') ?? (SystemSetting::get('lead_circles_enabled', '1') === '1'),
         ];
 
         // Resolve logos for featured brands
@@ -281,11 +281,22 @@ class HomeController extends Controller
             ];
         })->all();
 
+        $latestPosts = Cache::remember('homepage.latest.posts', now()->addMinutes(10), function () {
+            if (!Schema::hasTable('posts')) return collect([]);
+            return \App\Models\Post::query()
+                ->where('is_published', true)
+                ->with('category')
+                ->orderBy('published_at', 'desc')
+                ->take(3)
+                ->get();
+        });
+
         return view($view, compact(
             'featuredAuctions', 'stats', 'page', 'catalogMakes', 
             'catalogMakesWithLogos', 'firstRow', 'secondRow',
             'catalogModelsByMake', 'popularBrands', 'wizardStartStep',
             'sellCarYears', 'sellCarConditions', 'googleReviewBlock',
+            'latestPosts',
             'leadArchitecture'
         ));
     }
@@ -423,18 +434,20 @@ class HomeController extends Controller
         return back()->with('lead_submitted', true);
     }
 
-    private function buildGoogleReviewsBlock(): array
+    private function buildGoogleReviewsBlock(?Page $page = null): array
     {
-        $enabled = SystemSetting::get('google_reviews_enabled', '0') === '1';
+        $cmsReviews = data_get($page?->content, 'google_reviews', []);
+        
+        $enabled = data_get($cmsReviews, 'enabled') ?? (SystemSetting::get('google_reviews_enabled', '0') === '1');
 
         $config = [
             'enabled' => $enabled,
-            'title' => SystemSetting::get('google_reviews_title', 'Loved by real buyers'),
-            'subtitle' => SystemSetting::get('google_reviews_subtitle', 'Straight from Google Reviews'),
-            'badge' => SystemSetting::get('google_reviews_badge', '4.9 / 5 • Google Reviews'),
-            'place_id' => SystemSetting::get('google_reviews_place_id'),
-            'api_key' => SystemSetting::get('google_reviews_api_key'),
-            'manual_reviews' => json_decode(SystemSetting::get('google_reviews_manual_list', '[]'), true) ?: [],
+            'title'   => data_get($cmsReviews, 'title') ?? SystemSetting::get('google_reviews_title', 'Loved by real buyers'),
+            'subtitle' => data_get($cmsReviews, 'subtitle') ?? SystemSetting::get('google_reviews_subtitle', 'Straight from Google Reviews'),
+            'badge'    => data_get($cmsReviews, 'badge') ?? SystemSetting::get('google_reviews_badge', '4.9 / 5 • Google Reviews'),
+            'place_id' => data_get($cmsReviews, 'place_id') ?? SystemSetting::get('google_reviews_place_id'),
+            'api_key'  => data_get($cmsReviews, 'api_key') ?? SystemSetting::get('google_reviews_api_key'),
+            'manual_reviews' => data_get($cmsReviews, 'manual_reviews') ?? (json_decode(SystemSetting::get('google_reviews_manual_list', '[]'), true) ?: []),
         ];
 
         if (!$enabled) {
@@ -443,7 +456,8 @@ class HomeController extends Controller
         }
 
         $remoteReviews = $this->fetchGoogleReviews($config['place_id'], $config['api_key']);
-        $reviews = !empty($remoteReviews) ? $remoteReviews : $config['manual_reviews'];
+        // Prioritize manual reviews if any exist, otherwise fallback to remote
+        $reviews = !empty($config['manual_reviews']) ? $config['manual_reviews'] : $remoteReviews;
         $config['reviews'] = collect($reviews)
             ->map(function ($review) {
                 $text = trim((string) data_get($review, 'text', ''));

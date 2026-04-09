@@ -43,10 +43,10 @@
     @endif
 
 
-    <!-- Fonts -->
+    <!-- Fonts: Inter for Latin, IBM Plex Sans Arabic for Arabic -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=IBM+Plex+Sans+Arabic:wght@100..700&display=swap" rel="stylesheet">
 
     @vite(['resources/css/admin.css', 'resources/js/admin.js'])
 
@@ -125,7 +125,7 @@
                                 style="color: #ff6900 !important;">{{ $secondaryAdminWord }}</span>
                         </h1>
                         <span
-                            class="text-[0.6rem] text-slate-400 font-bold uppercase tracking-[0.1em] mt-2 block italic opacity-60">Elite
+                            class="text-[0.6rem] text-slate-400 font-medium uppercase tracking-[0.1em] mt-2 block opacity-60">Elite
                             Admin Suite</span>
                     </div>
                 </div>
@@ -137,7 +137,7 @@
                 {{-- Global Dashboard --}}
                 <div class="space-y-1">
                     <a href="{{ route('admin.dashboard') }}"
-                        class="sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-bold {{ request()->routeIs('admin.dashboard') ? 'text-slate-900 bg-slate-50 border border-slate-100' : 'text-slate-500 hover:bg-slate-50' }}">
+                        class="sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-medium {{ request()->routeIs('admin.dashboard') ? 'text-slate-900 bg-slate-50 border border-slate-100' : 'text-slate-500 hover:bg-slate-50' }}">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
                             class="flex-shrink-0 {{ request()->routeIs('admin.dashboard') ? 'text-[#ff6900]' : 'text-slate-400' }}">
@@ -154,7 +154,7 @@
                 @can('view leads')
                     <div class="space-y-1">
                         <button @click="openCRM = !openCRM"
-                            class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-lg text-[0.8rem] font-bold text-slate-500 hover:bg-slate-50 transition-all">
+                            class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-lg text-[0.8rem] font-medium text-slate-500 hover:bg-slate-50 transition-all">
                             <div class="flex items-center gap-4">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
                                     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -207,14 +207,14 @@
                 @can('view hr')
                     <div class="space-y-2 pt-2">
                         <div x-show="sidebarOpen" x-cloak
-                            class="text-[0.6rem] text-slate-400 font-bold mb-3 uppercase tracking-[0.2em] pl-3 opacity-70 italic">
+                            class="text-[0.6rem] text-slate-400 font-semibold mb-3 uppercase tracking-[0.2em] pl-3">
                             HR Management</div>
                         <ul class="space-y-1">
                             {{-- ── HR Management Dropdown ──────────────────── --}}
                             <li x-data="{ open: {{ request()->routeIs('admin.hr.*') ? 'true' : 'false' }} }">
                                 {{-- Dropdown Toggle --}}
                                 <button @click="open = !open"
-                                    class="w-full sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-bold transition-all
+                                    class="w-full sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-medium transition-all
                                         {{ request()->routeIs('admin.hr.*') ? 'text-slate-900 bg-slate-50 border border-slate-100 shadow-sm' : 'text-slate-500 hover:bg-slate-50' }}">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
                                         fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -268,7 +268,7 @@
                                         @if(empty($link['perm']) || auth()->user()->can($link['perm']))
                                             <li>
                                                 <a href="{{ route($link['route']) }}"
-                                                    class="flex items-center gap-2.5 px-2 py-2 rounded-md text-[0.72rem] font-bold transition-all
+                                                    class="flex items-center gap-2.5 px-2 py-2 rounded-md text-[0.72rem] font-medium transition-all
                                                             {{ request()->routeIs($link['route']) ? 'text-[#ff6900] bg-orange-50' : 'text-slate-400 hover:text-slate-700 hover:bg-slate-50' }}">
                                                     <i data-lucide="{{ $link['icon'] }}" class="w-4 h-4 flex-shrink-0"></i>
                                                     {{ $link['label'] }}
@@ -287,13 +287,13 @@
                 @can('view cars')
                     <div class="space-y-2 pt-2">
                         <div x-show="sidebarOpen" x-cloak
-                            class="text-[0.6rem] text-slate-400 font-bold mb-3 uppercase tracking-[0.2em] pl-3 opacity-70 italic">
+                            class="text-[0.6rem] text-slate-400 font-semibold mb-3 uppercase tracking-[0.2em] pl-3">
                             Fleet Management</div>
                         <ul class="space-y-1">
                             @can('view cars')
                                 <li>
                                     <a href="{{ route('admin.cars.index') }}"
-                                        class="sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-bold {{ request()->routeIs('admin.cars.*') ? 'text-slate-900 bg-slate-50 border border-slate-100 shadow-sm' : 'text-slate-500 hover:bg-slate-50' }}">
+                                        class="sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-medium {{ request()->routeIs('admin.cars.*') ? 'text-slate-900 bg-slate-50 border border-slate-100 shadow-sm' : 'text-slate-500 hover:bg-slate-50' }}">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
                                             fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                             stroke-linejoin="round"
@@ -311,7 +311,7 @@
                             @can('view auctions')
                                 <li>
                                     <a href="{{ route('admin.auctions.index') }}"
-                                        class="sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-bold {{ request()->routeIs('admin.auctions.*') ? 'text-slate-900 bg-slate-50 border border-slate-100 shadow-sm' : 'text-slate-500 hover:bg-slate-50' }}">
+                                        class="sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-medium {{ request()->routeIs('admin.auctions.*') ? 'text-slate-900 bg-slate-50 border border-slate-100 shadow-sm' : 'text-slate-500 hover:bg-slate-50' }}">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
                                             fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                             stroke-linejoin="round"
@@ -329,7 +329,7 @@
                             @can('view stock')
                                 <li>
                                     <a href="{{ route('admin.stock.index') }}"
-                                        class="sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-bold {{ request()->routeIs('admin.stock.*') ? 'text-slate-900 bg-slate-50 border border-slate-100 shadow-sm' : 'text-slate-500 hover:bg-slate-50' }}">
+                                        class="sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-medium {{ request()->routeIs('admin.stock.*') ? 'text-slate-900 bg-slate-50 border border-slate-100 shadow-sm' : 'text-slate-500 hover:bg-slate-50' }}">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
                                             fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                             stroke-linejoin="round"
@@ -347,7 +347,7 @@
                             @can('view dealers')
                                 <li>
                                     <a href="{{ route('admin.dealers.index') }}"
-                                        class="sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-bold {{ request()->routeIs('admin.dealers.*') ? 'text-slate-900 bg-slate-50 border border-slate-100 shadow-sm' : 'text-slate-500 hover:bg-slate-50' }}">
+                                        class="sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-medium {{ request()->routeIs('admin.dealers.*') ? 'text-slate-900 bg-slate-50 border border-slate-100 shadow-sm' : 'text-slate-500 hover:bg-slate-50' }}">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
                                             fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                             stroke-linejoin="round"
@@ -367,7 +367,7 @@
                                 <li x-data="{ open: {{ request()->routeIs('admin.finance.*') ? 'true' : 'false' }} }">
                                     {{-- Dropdown Toggle --}}
                                     <button @click="open = !open"
-                                        class="w-full sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-bold transition-all
+                                        class="w-full sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-medium transition-all
                                             {{ request()->routeIs('admin.finance.*') ? 'text-slate-900 bg-slate-50 border border-slate-100 shadow-sm' : 'text-slate-500 hover:bg-slate-50' }}">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
                                             fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -406,7 +406,7 @@
                                         @foreach($financeLinks as $fl)
                                             <li>
                                                 <a href="{{ route($fl['route']) }}"
-                                                    class="flex items-center gap-2.5 px-2 py-2 rounded-md text-[0.72rem] font-bold transition-all
+                                                    class="flex items-center gap-2.5 px-2 py-2 rounded-md text-[0.72rem] font-medium transition-all
                                                         {{ request()->routeIs($fl['route']) ? 'text-[#ff6900] bg-orange-50' : 'text-slate-400 hover:text-slate-700 hover:bg-slate-50' }}">
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13"
                                                         viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -429,7 +429,7 @@
                 @can('view cms')
                     <div class="space-y-2 pt-2">
                         <div x-show="sidebarOpen" x-cloak
-                            class="text-[0.6rem] text-slate-400 font-bold mb-3 uppercase tracking-[0.2em] pl-3 opacity-70 italic">
+                            class="text-[0.6rem] text-slate-400 font-semibold mb-3 uppercase tracking-[0.2em] pl-3">
                             Content</div>
                         <ul class="space-y-1">
                             @can('view cms')
@@ -476,7 +476,7 @@
                 @can('view settings')
                     <div class="space-y-2 pt-2">
                         <div x-show="sidebarOpen" x-cloak
-                            class="text-[0.6rem] text-slate-400 font-bold mb-3 uppercase tracking-[0.2em] pl-3 opacity-70 italic">
+                            class="text-[0.6rem] text-slate-400 font-semibold mb-3 uppercase tracking-[0.2em] pl-3">
                             System</div>
                         <ul class="space-y-1">
                             @can('view seo')
@@ -504,7 +504,7 @@
                             @can('view settings')
                                 <li>
                                     <a href="{{ route('admin.settings.hub') }}"
-                                        class="sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-bold {{ request()->routeIs('admin.settings.*') ? 'text-slate-900 bg-slate-50 border border-slate-100 shadow-sm' : 'text-slate-500 hover:bg-slate-50' }}">
+                                        class="sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-medium {{ request()->routeIs('admin.settings.*') ? 'text-slate-900 bg-slate-50 border border-slate-100 shadow-sm' : 'text-slate-500 hover:bg-slate-50' }}">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
                                             fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                             stroke-linejoin="round"
@@ -520,7 +520,7 @@
                             @can('view roles')
                                 <li>
                                     <a href="{{ route('admin.roles.index') }}"
-                                        class="sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-bold {{ request()->routeIs('admin.roles.*') ? 'text-slate-900 bg-slate-50 border border-slate-100 shadow-sm' : 'text-slate-500 hover:bg-slate-50' }}">
+                                        class="sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-medium {{ request()->routeIs('admin.roles.*') ? 'text-slate-900 bg-slate-50 border border-slate-100 shadow-sm' : 'text-slate-500 hover:bg-slate-50' }}">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
                                             fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                             stroke-linejoin="round"
@@ -536,7 +536,7 @@
                             @endcan
                             <li>
                                 <a href="{{ route('admin.routes.inventory') }}"
-                                    class="sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-bold {{ request()->routeIs('admin.routes.inventory') ? 'text-slate-900 bg-slate-50 border border-slate-100 shadow-sm' : 'text-slate-500 hover:bg-slate-50' }}">
+                                    class="sidebar-item flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-medium {{ request()->routeIs('admin.routes.inventory') ? 'text-slate-900 bg-slate-50 border border-slate-100 shadow-sm' : 'text-slate-500 hover:bg-slate-50' }}">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
                                         fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                         stroke-linejoin="round"
@@ -558,7 +558,7 @@
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
                         <button type="submit"
-                            class="sidebar-item w-full flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-bold text-red-500 hover:bg-red-50 transition-all italic">
+                            class="sidebar-item w-full flex items-center gap-4 px-3.5 py-2.5 rounded-lg text-[0.8rem] font-medium text-red-500 hover:bg-red-50 transition-all">
                             <span x-show="sidebarOpen" x-cloak>Logout</span>
                         </button>
                     </form>
@@ -585,7 +585,7 @@
                 class="h-[74px] bg-white border-b border-slate-100 flex items-center justify-between px-8 relative z-30 flex-shrink-0">
                 <div class="flex items-center gap-4">
                     <div
-                        class="text-slate-500 font-bold text-[0.7rem] uppercase tracking-widest italic flex items-center gap-2">
+                        class="text-slate-500 font-semibold text-[0.7rem] uppercase tracking-widest flex items-center gap-2">
                         {{ __('messages.location') }} <i data-lucide="chevron-right"
                             class="w-3.5 h-3.5 text-slate-300"></i>
                         <span class="text-slate-900">
@@ -676,7 +676,7 @@
                         <button onclick="toggleUserPanel()"
                             class="flex items-center gap-3 pl-6 border-l border-slate-100 hover:opacity-80 transition-all">
                             <div class="text-right">
-                                <p class="text-[0.75rem] font-bold text-slate-800 leading-none italic">
+                                <p class="text-[0.75rem] font-medium text-slate-800 leading-none">
                                     {{ Auth::user()->name ?? 'Operator' }}</p>
                                 <p class="text-[0.55rem] text-slate-400 uppercase tracking-widest mt-1">Administrator
                                     Access</p>
@@ -693,7 +693,7 @@
 
                             {{-- User Info Header --}}
                             <div class="p-4 border-b border-slate-100/50 mb-1.5 bg-slate-50/50 rounded-2xl">
-                                <div class="text-[0.85rem] font-black text-slate-950 truncate leading-tight">
+                                <div class="text-[0.85rem] font-semibold text-slate-950 truncate leading-tight">
                                     {{ Auth::user()->name ?? 'Operator' }}</div>
                                 <div class="text-[0.55rem] text-slate-400 font-bold uppercase mt-1 tracking-[0.1em]">
                                     Administrator Access</div>
@@ -773,26 +773,22 @@
     @stack('scripts')
     <style>
         :root {
-            --font-outfit: "Outfit", sans-serif;
+            --font-admin: "Inter", "IBM Plex Sans Arabic", sans-serif;
         }
         body {
-            font-family: var(--font-outfit);
-            font-weight: 300; /* Lighter default for airy feel */
+            font-family: var(--font-admin);
+            font-weight: 300; /* Light weight for the requested 'light ordinary' look */
+            letter-spacing: -0.01em;
         }
         
-        /* Premium weight mapping to avoid "thickness" */
-        .font-black, .font-extrabold {
-            font-weight: 700 !important; /* Bold instead of Black */
-        }
-        .font-bold {
-            font-weight: 600 !important; /* Semibold instead of Bold */
-        }
-        .font-semibold {
-            font-weight: 500 !important; /* Medium instead of Semibold */
-        }
-        .font-medium {
-            font-weight: 400 !important; /* Regular instead of Medium */
-        }
+        /* Ensure consistency across all weights */
+        .font-black { font-weight: 900 !important; }
+        .font-extrabold { font-weight: 800 !important; }
+        .font-bold { font-weight: 700 !important; }
+        .font-semibold { font-weight: 600 !important; }
+        .font-medium { font-weight: 500 !important; }
+        .font-normal { font-weight: 400 !important; }
+        .font-light { font-weight: 300 !important; }
     </style>
 </body>
 

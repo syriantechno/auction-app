@@ -4,25 +4,74 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Mail\LeadConfirmation;
+use App\Models\Brand;
+use App\Models\Company;
 use App\Models\Lead;
+use App\Models\SystemSetting;
+use App\Models\User;
 use App\Services\WhatsAppService;
 use Illuminate\Http\Request;
-use App\Models\SystemSetting;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
+use Symfony\Component\Mailer\Transport\Smtp\EsmtpTransport;
 
 class SettingsController extends Controller
 {
+    public function syncGoogleReviews(Request $request)
+    {
+        $placeId = SystemSetting::get('google_reviews_place_id');
+        $apiKey = SystemSetting::get('google_reviews_api_key');
+
+        if (! $placeId || ! $apiKey) {
+            return response()->json(['success' => false, 'message' => 'Please save API Key and Place ID first.']);
+        }
+
+        try {
+            $response = Http::timeout(10)->get('https://maps.googleapis.com/maps/api/place/details/json', [
+                'place_id' => $placeId,
+                'fields' => 'reviews',
+                'reviews_sort' => 'newest',
+                'key' => $apiKey,
+            ]);
+
+            $payload = $response->json();
+            if ($response->ok() && data_get($payload, 'status') === 'OK') {
+                $reviews = collect(data_get($payload, 'result.reviews', []))
+                    ->map(function ($review) {
+                        return [
+                            'author' => data_get($review, 'author_name', 'Google User'),
+                            'rating' => (int) data_get($review, 'rating', 5),
+                            'text' => data_get($review, 'text', ''),
+                            'profile_url' => data_get($review, 'author_url'),
+                            'photo_url' => data_get($review, 'profile_photo_url', ''),
+                        ];
+                    })
+                    ->values()
+                    ->all();
+
+                return response()->json(['success' => true, 'reviews' => $reviews, 'message' => 'Fetched '.count($reviews).' reviews!']);
+            }
+
+            return response()->json(['success' => false, 'message' => 'API Error: '.data_get($payload, 'status', 'Unknown error')]);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()]);
+        }
+    }
+
     public function settingsHub()
     {
-        $socialKeys = ['instagram','facebook','tiktok','youtube','x','linkedin','whatsapp'];
+        $socialKeys = ['instagram', 'facebook', 'tiktok', 'youtube', 'x', 'linkedin', 'whatsapp'];
         $socialSettingKeys = [];
         foreach ($socialKeys as $sk) {
-            $socialSettingKeys[] = 'social_' . $sk;
-            $socialSettingKeys[] = 'social_' . $sk . '_show_nav';
-            $socialSettingKeys[] = 'social_' . $sk . '_show_footer';
+            $socialSettingKeys[] = 'social_'.$sk;
+            $socialSettingKeys[] = 'social_'.$sk.'_show_nav';
+            $socialSettingKeys[] = 'social_'.$sk.'_show_footer';
         }
 
         $keys = array_merge([
@@ -31,7 +80,7 @@ class SettingsController extends Controller
             'site_language', 'site_currency', 'site_timezone', 'currency_position', 'date_format',
             'maintenance_mode', 'maintenance_message',
         ], $socialSettingKeys, [
-            'blog_index_hero_image', 'blog_show_hero_image'
+            'blog_index_hero_image', 'blog_show_hero_image',
         ]);
 
         $settings = [];
@@ -40,9 +89,9 @@ class SettingsController extends Controller
         }
 
         // Tab 02 — Roles & Permissions
-        $roles    = \Spatie\Permission\Models\Role::withCount(['users', 'permissions'])->with('permissions')->orderBy('name')->get();
-        $allPerms = \Spatie\Permission\Models\Permission::orderBy('name')->get()->groupBy(fn($p) => explode('.', $p->name)[0]);
-        $users    = \App\Models\User::with('roles')->orderBy('name')->paginate(15);
+        $roles = Role::withCount(['users', 'permissions'])->with('permissions')->orderBy('name')->get();
+        $allPerms = Permission::orderBy('name')->get()->groupBy(fn ($p) => explode('.', $p->name)[0]);
+        $users = User::with('roles')->orderBy('name')->paginate(15);
 
         // Tab 03 — Notification Settings
         $notifKeys = [
@@ -99,7 +148,7 @@ class SettingsController extends Controller
             'lead_header_label', 'lead_header_title',
             'lead_wizard_w1', 'lead_wizard_w2', 'lead_wizard_w3',
             'lead_form_brands',
-            'lead_circles_enabled'
+            'lead_circles_enabled',
         ];
         $leadSettings = [];
         foreach ($leadKeys as $key) {
@@ -110,8 +159,8 @@ class SettingsController extends Controller
             $leadSettings[$key] = $val;
         }
 
-        $brands = \App\Models\Brand::orderBy('name')->get();
-        $companies = \App\Models\Company::latest()->get();
+        $brands = Brand::orderBy('name')->get();
+        $companies = Company::latest()->get();
 
         return view('admin.settings.hub', compact(
             'settings', 'roles', 'allPerms', 'users',
@@ -119,8 +168,6 @@ class SettingsController extends Controller
             'leadSettings', 'brands'
         ));
     }
-
-
 
     public function saveNotificationSettings(Request $request)
     {
@@ -136,13 +183,11 @@ class SettingsController extends Controller
             SystemSetting::set($field, $request->input($field, '0'));
         }
 
-        \Illuminate\Support\Facades\Cache::forget('system_settings_global');
+        Cache::forget('system_settings_global');
 
         return redirect()->route('admin.settings.hub', ['tab' => 'tab3'])
             ->with('success', 'Notification settings saved successfully.');
     }
-
-
 
     public function saveGoogleReviewsSettings(Request $request)
     {
@@ -156,6 +201,7 @@ class SettingsController extends Controller
             'reviews.*.rating' => 'nullable|integer|min:1|max:5',
             'reviews.*.text' => 'nullable|string|max:500',
             'reviews.*.profile_url' => 'nullable|url|max:255',
+            'reviews.*.photo_url' => 'nullable|url|max:255',
         ]);
 
         SystemSetting::set('google_reviews_enabled', $request->has('google_reviews_enabled') ? '1' : '0');
@@ -166,13 +212,14 @@ class SettingsController extends Controller
         SystemSetting::set('google_reviews_api_key', trim($request->input('google_reviews_api_key', '')));
 
         $manualReviews = collect($request->input('reviews', []))
-            ->filter(fn($review) => filled(data_get($review, 'author')) || filled(data_get($review, 'text')))
+            ->filter(fn ($review) => filled(data_get($review, 'author')) || filled(data_get($review, 'text')))
             ->map(function ($review) {
                 return [
                     'author' => data_get($review, 'author', 'Verified Buyer'),
                     'rating' => (int) data_get($review, 'rating', 5),
                     'text' => data_get($review, 'text', ''),
                     'profile_url' => data_get($review, 'profile_url'),
+                    'photo_url' => data_get($review, 'photo_url'),
                 ];
             })
             ->values()
@@ -180,31 +227,30 @@ class SettingsController extends Controller
 
         SystemSetting::set('google_reviews_manual_list', json_encode($manualReviews));
 
-        \Illuminate\Support\Facades\Cache::forget('system_settings_global');
+        Cache::forget('system_settings_global');
 
         return redirect()->route('admin.settings.hub', ['tab' => 'tab14'])
             ->with('success', 'Google reviews settings saved.');
     }
 
-
     public function saveGeneralSettings(Request $request)
     {
         $request->validate([
-            'site_name'           => 'required|string|max:80',
-            'site_tagline'        => 'nullable|string|max:160',
-            'site_logo'           => 'nullable|image|mimes:jpeg,png,jpg,svg,webp|max:2048',
-            'site_favicon'        => 'nullable|image|mimes:jpeg,png,jpg,ico,svg|max:512',
-            'contact_phone'       => 'nullable|string|max:30',
-            'contact_email'       => 'nullable|email|max:100',
-            'contact_address'     => 'nullable|string|max:255',
-            'contact_whatsapp'    => 'nullable|string|max:30',
-            'support_hours'       => 'nullable|string|max:100',
-            'site_language'       => 'nullable|in:en,ar,fr,tr,ur',
-            'site_currency'       => 'nullable|string|max:10',
-            'site_timezone'       => 'nullable|string|max:60',
-            'currency_position'   => 'nullable|in:before,after',
-            'date_format'         => 'nullable|string|max:20',
-            'maintenance_mode'    => 'nullable|in:0,1',
+            'site_name' => 'required|string|max:80',
+            'site_tagline' => 'nullable|string|max:160',
+            'site_logo' => 'nullable|image|mimes:jpeg,png,jpg,svg,webp|max:2048',
+            'site_favicon' => 'nullable|image|mimes:jpeg,png,jpg,ico,svg|max:512',
+            'contact_phone' => 'nullable|string|max:30',
+            'contact_email' => 'nullable|email|max:100',
+            'contact_address' => 'nullable|string|max:255',
+            'contact_whatsapp' => 'nullable|string|max:30',
+            'support_hours' => 'nullable|string|max:100',
+            'site_language' => 'nullable|in:en,ar,fr,tr,ur',
+            'site_currency' => 'nullable|string|max:10',
+            'site_timezone' => 'nullable|string|max:60',
+            'currency_position' => 'nullable|in:before,after',
+            'date_format' => 'nullable|string|max:20',
+            'maintenance_mode' => 'nullable|in:0,1',
             'maintenance_message' => 'nullable|string|max:500',
         ]);
 
@@ -222,30 +268,33 @@ class SettingsController extends Controller
         // Social media links + visibility toggles
         $socialPlatforms = ['instagram', 'facebook', 'tiktok', 'youtube', 'x', 'linkedin', 'whatsapp'];
         foreach ($socialPlatforms as $platform) {
-            SystemSetting::set('social_' . $platform, $request->input('social_' . $platform, ''));
+            SystemSetting::set('social_'.$platform, $request->input('social_'.$platform, ''));
             // Checkbox: present with value='1' if checked, absent entirely if unchecked
-            SystemSetting::set('social_' . $platform . '_show_nav',    $request->has('social_' . $platform . '_show_nav')    ? '1' : '0');
-            SystemSetting::set('social_' . $platform . '_show_footer',  $request->has('social_' . $platform . '_show_footer')  ? '1' : '0');
+            SystemSetting::set('social_'.$platform.'_show_nav', $request->has('social_'.$platform.'_show_nav') ? '1' : '0');
+            SystemSetting::set('social_'.$platform.'_show_footer', $request->has('social_'.$platform.'_show_footer') ? '1' : '0');
         }
-
 
         // Logo upload
         if ($request->hasFile('site_logo')) {
             $old = SystemSetting::get('site_logo');
-            if ($old && Storage::disk('public')->exists($old)) Storage::disk('public')->delete($old);
+            if ($old && Storage::disk('public')->exists($old)) {
+                Storage::disk('public')->delete($old);
+            }
             SystemSetting::set('site_logo', $request->file('site_logo')->store('branding', 'public'));
         }
 
         // Favicon upload
         if ($request->hasFile('site_favicon')) {
             $old = SystemSetting::get('site_favicon');
-            if ($old && Storage::disk('public')->exists($old)) Storage::disk('public')->delete($old);
+            if ($old && Storage::disk('public')->exists($old)) {
+                Storage::disk('public')->delete($old);
+            }
             SystemSetting::set('site_favicon', $request->file('site_favicon')->store('branding', 'public'));
         }
 
-        \Illuminate\Support\Facades\Cache::forget('system_settings_global');
-        \Illuminate\Support\Facades\Cache::forget('menu_nav_header');
-        \Illuminate\Support\Facades\Cache::forget('menu_nav_footer');
+        Cache::forget('system_settings_global');
+        Cache::forget('menu_nav_header');
+        Cache::forget('menu_nav_footer');
 
         return redirect()->route('admin.settings.hub', ['tab' => 'tab1'])
             ->with('success', 'General settings saved successfully.');
@@ -267,7 +316,7 @@ class SettingsController extends Controller
         return response()->json([
             'site_name' => $siteName,
             'site_logo_path' => $logo,
-            'site_logo_url' => $logo ? asset('storage/' . $logo) : null,
+            'site_logo_url' => $logo ? asset('storage/'.$logo) : null,
         ]);
     }
 
@@ -298,7 +347,7 @@ class SettingsController extends Controller
     {
         $apiKey = SystemSetting::get('google_maps_api_key', env('GOOGLE_MAPS_API_KEY'));
         $provider = SystemSetting::get('google_maps_provider', 'google');
-        
+
         $branchName = SystemSetting::get('branch_name', 'Hub Al Quoz HQ');
         $branchAddress = SystemSetting::get('branch_address', 'SZR, Exit 40, Dubai - UAE');
         $branchLat = SystemSetting::get('branch_lat', '25.1384');
@@ -319,7 +368,7 @@ class SettingsController extends Controller
         ]);
 
         SystemSetting::set('google_maps_api_key', trim($request->input('google_maps_api_key')));
-        SystemSetting::set('google_maps_provider', $request->input('google_maps_provider'));
+        SystemSetting::set('map_provider', $request->input('map_provider', 'google'));
         SystemSetting::set('branch_name', $request->input('branch_name'));
         SystemSetting::set('branch_address', $request->input('branch_address'));
         SystemSetting::set('branch_lat', $request->input('branch_lat'));
@@ -336,13 +385,15 @@ class SettingsController extends Controller
     public function mapTest()
     {
         $apiKey = SystemSetting::get('google_maps_api_key', env('GOOGLE_MAPS_API_KEY'));
+
         return view('admin.settings.map_test', compact('apiKey'));
     }
 
     public function inspectionFields()
     {
         $sections = json_decode(SystemSetting::get('inspection_fields', '[]'), true) ?: [];
-        // If it's the old flat structure, we might need a migration, 
+
+        // If it's the old flat structure, we might need a migration,
         // but typically we'll just re-save it in the new format.
         return view('admin.settings.inspection_fields', compact('sections'));
     }
@@ -362,16 +413,16 @@ class SettingsController extends Controller
 
         // Clean up or normalize if needed
         foreach ($sections as $si => &$section) {
-            $section['id'] = $section['id'] ?? ('sec_' . ($si + 1));
+            $section['id'] = $section['id'] ?? ('sec_'.($si + 1));
             if (isset($section['fields']) && is_array($section['fields'])) {
                 foreach ($section['fields'] as $fi => &$field) {
-                    $field['id'] = $field['id'] ?? ('fld_' . ($si + 1) . '_' . ($fi + 1));
+                    $field['id'] = $field['id'] ?? ('fld_'.($si + 1).'_'.($fi + 1));
                     $field['required'] = isset($field['required']);
                     $field['allow_attachment'] = isset($field['allow_attachment']);
                     $field['allow_notes'] = isset($field['allow_notes']);
                     // Options might need filtering
                     if (isset($field['options']) && is_array($field['options'])) {
-                        $field['options'] = array_values(array_filter($field['options'], fn($o) => !is_null($o) && trim($o) !== ''));
+                        $field['options'] = array_values(array_filter($field['options'], fn ($o) => ! is_null($o) && trim($o) !== ''));
                     }
                 }
             }
@@ -385,12 +436,12 @@ class SettingsController extends Controller
     public function auctionSettings()
     {
         $settings = [
-            'anti_snipe_enabled'       => SystemSetting::get('anti_snipe_enabled', '1'),
-            'time_extension_threshold'  => SystemSetting::get('time_extension_threshold', '30'),
-            'time_extension_seconds'    => SystemSetting::get('time_extension_seconds', '20'),
-            'default_bid_increment'     => SystemSetting::get('default_bid_increment', '500'),
-            'default_deposit'           => SystemSetting::get('default_deposit', '500'),
-            'auction_auto_close'        => SystemSetting::get('auction_auto_close', '1'),
+            'anti_snipe_enabled' => SystemSetting::get('anti_snipe_enabled', '1'),
+            'time_extension_threshold' => SystemSetting::get('time_extension_threshold', '30'),
+            'time_extension_seconds' => SystemSetting::get('time_extension_seconds', '20'),
+            'default_bid_increment' => SystemSetting::get('default_bid_increment', '500'),
+            'default_deposit' => SystemSetting::get('default_deposit', '500'),
+            'auction_auto_close' => SystemSetting::get('auction_auto_close', '1'),
             'global_bid_feed_admin_only' => SystemSetting::get('global_bid_feed_admin_only', '1'),
         ];
 
@@ -401,25 +452,24 @@ class SettingsController extends Controller
     {
         $request->validate([
             'time_extension_threshold' => 'required|integer|min:5|max:300',
-            'time_extension_seconds'   => 'required|integer|min:5|max:300',
-            'default_bid_increment'    => 'required|integer|min:1',
-            'default_deposit'          => 'required|integer|min:0',
+            'time_extension_seconds' => 'required|integer|min:5|max:300',
+            'default_bid_increment' => 'required|integer|min:1',
+            'default_deposit' => 'required|integer|min:0',
         ]);
 
-        SystemSetting::set('anti_snipe_enabled',         $request->input('anti_snipe_enabled') === '1' ? '1' : '0');
-        SystemSetting::set('time_extension_threshold',   $request->input('time_extension_threshold'));
-        SystemSetting::set('time_extension_seconds',     $request->input('time_extension_seconds'));
-        SystemSetting::set('default_bid_increment',      $request->input('default_bid_increment'));
-        SystemSetting::set('default_deposit',            $request->input('default_deposit'));
-        SystemSetting::set('auction_auto_close',         $request->input('auction_auto_close') === '1' ? '1' : '0');
+        SystemSetting::set('anti_snipe_enabled', $request->input('anti_snipe_enabled') === '1' ? '1' : '0');
+        SystemSetting::set('time_extension_threshold', $request->input('time_extension_threshold'));
+        SystemSetting::set('time_extension_seconds', $request->input('time_extension_seconds'));
+        SystemSetting::set('default_bid_increment', $request->input('default_bid_increment'));
+        SystemSetting::set('default_deposit', $request->input('default_deposit'));
+        SystemSetting::set('auction_auto_close', $request->input('auction_auto_close') === '1' ? '1' : '0');
         SystemSetting::set('global_bid_feed_admin_only', $request->input('global_bid_feed_admin_only') === '1' ? '1' : '0');
 
-        \Illuminate\Support\Facades\Cache::forget('system_settings_global');
+        Cache::forget('system_settings_global');
 
         return redirect()->route('admin.settings.hub', ['tab' => 'tab6'])
             ->with('success', 'Auction settings saved successfully.');
     }
-
 
     // ──────────────────────────────────────────────────
     // Communication Settings (Email + WhatsApp)
@@ -464,7 +514,7 @@ class SettingsController extends Controller
             SystemSetting::set($field, $request->input($field, ''));
         }
 
-        \Illuminate\Support\Facades\Cache::forget('system_settings_global');
+        Cache::forget('system_settings_global');
 
         return redirect()->route('admin.settings.hub', ['tab' => 'tab4'])
             ->with('success', 'Email & WhatsApp settings saved successfully.');
@@ -474,7 +524,7 @@ class SettingsController extends Controller
     public function testEmail(Request $request)
     {
         $email = $request->input('email');
-        if (!$email || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        if (! $email || ! filter_var($email, FILTER_VALIDATE_EMAIL)) {
             return response()->json(['message' => 'Invalid email address.'], 422);
         }
 
@@ -483,19 +533,21 @@ class SettingsController extends Controller
 
         try {
             // Create a dummy lead for preview
-            $fakeLead = new Lead();
+            $fakeLead = new Lead;
             $fakeLead->id = 999999;
             $fakeLead->car_details = [
-                'name'  => 'Test User', 'make' => 'Toyota', 'model' => 'Camry',
-                'year'  => '2024', 'inspection_date' => date('Y-m-d'),
+                'name' => 'Test User', 'make' => 'Toyota', 'model' => 'Camry',
+                'year' => '2024', 'inspection_date' => date('Y-m-d'),
                 'inspection_time' => '10:00 AM', 'inspection_type' => 'branch',
             ];
 
             Mail::to($email)->send(new LeadConfirmation($fakeLead));
+
             return response()->json(['message' => "Test email sent to {$email} ✓"]);
         } catch (\Throwable $e) {
-            Log::error('[Test Email] ' . $e->getMessage());
-            return response()->json(['message' => 'Failed: ' . $e->getMessage()], 500);
+            Log::error('[Test Email] '.$e->getMessage());
+
+            return response()->json(['message' => 'Failed: '.$e->getMessage()], 500);
         }
     }
 
@@ -506,18 +558,20 @@ class SettingsController extends Controller
 
         try {
             $transport = Mail::getSymfonyTransport();
-            
-            if ($transport instanceof \Symfony\Component\Mailer\Transport\Smtp\EsmtpTransport) {
+
+            if ($transport instanceof EsmtpTransport) {
                 // Force a STARTTLS or connection check
-                $transport->stop(); 
+                $transport->stop();
                 $transport->start();
+
                 return response()->json(['message' => 'Connection successful! Your SMTP settings are correct. ✓']);
             }
 
             return response()->json(['message' => 'Connection tested, but transport is not SMTP. Check logs.']);
         } catch (\Throwable $e) {
-            Log::error('[SMTP Test] ' . $e->getMessage());
-            return response()->json(['message' => 'Connection failed: ' . $e->getMessage()], 500);
+            Log::error('[SMTP Test] '.$e->getMessage());
+
+            return response()->json(['message' => 'Connection failed: '.$e->getMessage()], 500);
         }
     }
 
@@ -525,40 +579,44 @@ class SettingsController extends Controller
     public function testWhatsApp(Request $request)
     {
         $phone = $request->input('phone');
-        if (!$phone) {
+        if (! $phone) {
             return response()->json(['message' => 'Phone number required.'], 422);
         }
 
         try {
-            $message = "🔔 Motor Bazar — This is a test WhatsApp message from your admin panel. If you received this, WhatsApp is configured correctly! ✅";
-            $result  = app(WhatsAppService::class)->send($phone, $message);
+            $message = '🔔 Motor Bazar — This is a test WhatsApp message from your admin panel. If you received this, WhatsApp is configured correctly! ✅';
+            $result = app(WhatsAppService::class)->send($phone, $message);
 
             return response()->json([
                 'message' => $result ? "Test WhatsApp sent to {$phone} ✓" : 'Send returned false — check API credentials.',
             ], $result ? 200 : 500);
         } catch (\Throwable $e) {
-            return response()->json(['message' => 'Error: ' . $e->getMessage()], 500);
+            return response()->json(['message' => 'Error: '.$e->getMessage()], 500);
         }
     }
 
     public function saveBlogSettings(Request $request)
     {
         $request->validate([
-            'blog_index_hero_image'  => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
-            'blog_show_hero_image'   => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
-            'blog_post_hero_mode'    => 'nullable|string|in:auto,manual',
+            'blog_index_hero_image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'blog_show_hero_image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'blog_post_hero_mode' => 'nullable|string|in:auto,manual',
             'blog_post_hero_opacity' => 'nullable|integer|min:0|max:100',
         ]);
 
         if ($request->hasFile('blog_index_hero_image')) {
             $old = SystemSetting::get('blog_index_hero_image');
-            if ($old && Storage::disk('public')->exists($old)) Storage::disk('public')->delete($old);
+            if ($old && Storage::disk('public')->exists($old)) {
+                Storage::disk('public')->delete($old);
+            }
             SystemSetting::set('blog_index_hero_image', $request->file('blog_index_hero_image')->store('blog', 'public'));
         }
 
         if ($request->hasFile('blog_show_hero_image')) {
             $old = SystemSetting::get('blog_show_hero_image');
-            if ($old && Storage::disk('public')->exists($old)) Storage::disk('public')->delete($old);
+            if ($old && Storage::disk('public')->exists($old)) {
+                Storage::disk('public')->delete($old);
+            }
             SystemSetting::set('blog_show_hero_image', $request->file('blog_show_hero_image')->store('blog', 'public'));
         }
 
@@ -570,7 +628,7 @@ class SettingsController extends Controller
             SystemSetting::set('blog_post_hero_opacity', $request->blog_post_hero_opacity);
         }
 
-        \Illuminate\Support\Facades\Cache::forget('system_settings_global');
+        Cache::forget('system_settings_global');
 
         return redirect()->route('admin.settings.hub', ['tab' => 'tab11'])
             ->with('success', 'Blog settings saved successfully.');
@@ -579,18 +637,18 @@ class SettingsController extends Controller
     public function saveNavbarSettings(Request $request)
     {
         $request->validate([
-            'navbar_hours'   => 'nullable|string|max:255',
-            'navbar_phone'   => 'nullable|string|max:50',
-            'navbar_sticky'  => 'nullable|boolean',
-            'navbar_glass'   => 'nullable|boolean',
+            'navbar_hours' => 'nullable|string|max:255',
+            'navbar_phone' => 'nullable|string|max:50',
+            'navbar_sticky' => 'nullable|boolean',
+            'navbar_glass' => 'nullable|boolean',
         ]);
 
-        \App\Models\SystemSetting::set('navbar_hours', $request->navbar_hours);
-        \App\Models\SystemSetting::set('navbar_phone', $request->navbar_phone);
-        \App\Models\SystemSetting::set('navbar_sticky', $request->has('navbar_sticky') ? '1' : '0');
-        \App\Models\SystemSetting::set('navbar_glass',  $request->has('navbar_glass') ? '1' : '0');
+        SystemSetting::set('navbar_hours', $request->navbar_hours);
+        SystemSetting::set('navbar_phone', $request->navbar_phone);
+        SystemSetting::set('navbar_sticky', $request->has('navbar_sticky') ? '1' : '0');
+        SystemSetting::set('navbar_glass', $request->has('navbar_glass') ? '1' : '0');
 
-        \Illuminate\Support\Facades\Cache::forget('system_settings_global');
+        Cache::forget('system_settings_global');
 
         return redirect()->route('admin.settings.hub', ['tab' => 'tab12'])
             ->with('success', 'Navigation settings saved successfully.');
@@ -601,7 +659,7 @@ class SettingsController extends Controller
         $fields = [
             'lead_header_label', 'lead_header_title',
             'lead_wizard_w1', 'lead_wizard_w2', 'lead_wizard_w3',
-            'lead_circles_enabled'
+            'lead_circles_enabled',
         ];
 
         foreach ($fields as $field) {
@@ -612,7 +670,7 @@ class SettingsController extends Controller
         $brands = $request->input('lead_form_brands', []);
         SystemSetting::set('lead_form_brands', json_encode($brands));
 
-        \Illuminate\Support\Facades\Cache::forget('system_settings_global');
+        Cache::forget('system_settings_global');
 
         return redirect()->route('admin.settings.hub', ['tab' => 'tab15'])
             ->with('success', 'Lead architecture synchronized with global mesh.');
@@ -622,21 +680,23 @@ class SettingsController extends Controller
     private function applyMailConfig(): void
     {
         $map = [
-            'host'       => 'mail_host',
-            'port'       => 'mail_port',
-            'username'   => 'mail_username',
-            'password'   => 'mail_password',
+            'host' => 'mail_host',
+            'port' => 'mail_port',
+            'username' => 'mail_username',
+            'password' => 'mail_password',
             'encryption' => 'mail_encryption',
         ];
 
         foreach ($map as $configKey => $settingKey) {
             $value = SystemSetting::get($settingKey);
-            if ($value) Config::set("mail.mailers.smtp.{$configKey}", $value);
+            if ($value) {
+                Config::set("mail.mailers.smtp.{$configKey}", $value);
+            }
         }
 
         // For Laravel 9/10/11+ (Symfony Mailer), port 465 usually needs 'smtps' scheme
         $port = (int) SystemSetting::get('mail_port');
-        $enc  = strtolower(SystemSetting::get('mail_encryption', ''));
+        $enc = strtolower(SystemSetting::get('mail_encryption', ''));
         if ($port === 465 || $enc === 'ssl') {
             Config::set('mail.mailers.smtp.scheme', 'smtps');
         } else {

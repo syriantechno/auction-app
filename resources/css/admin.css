@@ -4,13 +4,6 @@
 @source '../js/**/*.js';
 
 @theme {
-    /* Global Soft Font Weight Override */
-    --font-weight-medium: 400;
-    --font-weight-semibold: 500;
-    --font-weight-bold: 500;
-    --font-weight-extrabold: 600;
-    --font-weight-black: 600;
-
     /* Brand Colors */
     --color-primary: #ff4605;
     --color-primary-hover: #e03d04;
@@ -331,7 +324,7 @@ html body { transition: opacity 0.1s ease; }
     border: 1px solid #e2e8f0;
     padding: 14px 18px;
     background: #fff;
-    font-family: 'JetBrains Mono', 'Plus Jakarta Sans', monospace;
+    font-family: var(--font-admin);
     font-size: 0.95rem;
     resize: vertical;
     white-space: pre-wrap;
@@ -518,7 +511,7 @@ header { z-index: 30; }
 /* Data Matrix Component Styles (Tabulator Integration) */
 .matrix-enterprise-table {
     border: none !important;
-    font-family: 'Plus Jakarta Sans', sans-serif !important;
+    font-family: inherit !important;
     background: transparent !important;
 }
 .tabulator-header {

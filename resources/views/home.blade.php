@@ -1074,61 +1074,6 @@
         </div>
     </section>
 
-    {{-- Brands Carousel: Rotating Slider --}}
-    <section class="py-16 bg-transparent relative overflow-hidden z-10">
-        <div class="max-w-[1440px] mx-auto px-6 lg:px-12 mb-8">
-            <div class="flex items-center justify-between">
-                <div>
-                    <span class="text-bazar-500 font-black uppercase tracking-[0.35em] text-[0.65rem] mb-2 block">Trusted Partners</span>
-                    <h2 class="text-2xl lg:text-3xl font-black tracking-tight text-deep-900">Premium Brands</h2>
-                </div>
-                <a href="{{ route('auctions.index') }}" class="text-gray-600 hover:text-deep-900 font-bold text-xs uppercase tracking-widest border-b border-gray-400 pb-1 transition-colors">View All</a>
-            </div>
-        </div>
-        
-        @php
-            $brands = data_get($page?->content, 'brands', []);
-            if (count($brands) > 0) {
-                // Repeat brands enough times to fill viewport width (need at least 12+ duplicates)
-                $repeatCount = max(20, ceil(12 / count($brands)) * 2);
-                $displayBrands = [];
-                for ($i = 0; $i < $repeatCount; $i++) {
-                    $displayBrands = array_merge($displayBrands, $brands);
-                }
-            } else {
-                $displayBrands = [];
-            }
-        @endphp
-        
-        <div class="brands-carousel-container relative">
-            <div class="brands-track" id="brands-track">
-                @foreach($displayBrands as $brand)
-                    @php
-                        $logoPath = '/images/brands/' . $brand['slug'] . '.svg';
-                        if (!file_exists(public_path($logoPath))) {
-                            $logoPath = '/images/brands/' . $brand['slug'] . '.png';
-                        }
-                    @endphp
-                    <a href="{{ route('auctions.index', ['make' => $brand['name']]) }}" class="brand-slide group">
-                        <div class="brand-logo-wrapper" style="width:60px;height:60px;overflow:hidden;display:flex;align-items:center;justify-content:center;flex-shrink:0">
-                            <img src="{{ $logoPath }}" alt="{{ $brand['name'] }}" class="brand-logo" style="max-width:100%;max-height:100%;object-fit:contain;filter:grayscale(100%) opacity(0.6)">
-                        </div>
-                        <span class="brand-name">{{ $brand['name'] }}</span>
-                    </a>
-                @endforeach
-            </div>
-        </div>
-    </section>
-
-    
-
-    {{-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-         BAZAR TOAST NOTIFICATION SYSTEM
-         Replaces native alert() with premium UI
-    â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• --}}
-    {{-- ══════════════════════════════════════════
-         LIVE AUCTION SHOWCASE SECTION
-    ══════════════════════════════════════════ --}}
     @php
         $showLiveAuctions = $featuredAuctions->isNotEmpty() && auth()->check() && auth()->user()->isAdmin();
     @endphp
@@ -1227,7 +1172,7 @@
             // This modular engine handles all steps, mapping, maps, and pickers.
             if (window.initBazarWizard) {
                 window.initBazarWizard({
-                    brandModelMap: @json( ?? (object)[]),
+                    brandModelMap: @json($catalogModelsByMake ?? (object)[]),
                     branchCoords: [
                         {{ \App\Models\SystemSetting::get('branch_lat', '25.1384') }},
                         {{ \App\Models\SystemSetting::get('branch_lng', '55.2285') }}

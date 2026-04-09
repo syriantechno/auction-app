@@ -33,16 +33,20 @@
     @if($href) href="{{ $href }}" @endif
     @if($click) @click="{{ $click }}" @endif 
     title="{{ $title }}"
-    class="group w-11 h-11 rounded-xl flex items-center justify-center transition-all duration-300 shadow-sm hover:shadow-xl active:scale-90 border {{ $v['btn'] }} {{ $v['glow'] }}">
+    class="group w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200 border {{ $v['btn'] }}">
     
     @if($icon == 'edit-3' || $icon == 'user-cog' || $icon == 'edit')
-        <i data-lucide="edit-3" class="w-5 h-5 transition-transform duration-500 group-hover:rotate-12 group-hover:scale-110"></i>
+        <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
     @elseif($icon == 'trash-2' || $icon == 'trash')
-        <i data-lucide="trash-2" class="w-5 h-5 transition-transform duration-500 group-hover:-translate-y-0.5 group-hover:scale-110"></i>
+        <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
     @elseif($icon == 'eye')
-        <i data-lucide="eye" class="w-5 h-5 transition-transform duration-500 group-hover:scale-125"></i>
+        <i data-lucide="eye" class="w-3.5 h-3.5"></i>
+    @elseif($icon == 'calendar-check')
+        <i data-lucide="calendar-check" class="w-3.5 h-3.5"></i>
+    @elseif($icon == 'message-circle')
+        <i data-lucide="message-circle" class="w-3.5 h-3.5"></i>
     @elseif($icon)
-        <i data-lucide="{{ $icon }}" class="w-5 h-5 transition-transform duration-500 group-hover:scale-110"></i>
+        <i data-lucide="{{ $icon }}" class="w-3.5 h-3.5"></i>
     @endif
     
     {{ $slot }}
